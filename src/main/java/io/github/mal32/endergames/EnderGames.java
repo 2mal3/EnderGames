@@ -5,25 +5,17 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
-import io.papermc.paper.datapack.Datapack;
-import io.papermc.paper.datapack.DatapackRegistrar;
-import io.papermc.paper.datapack.DiscoveredDatapack;
-import io.papermc.paper.plugin.bootstrap.BootstrapContext;
-import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.*;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
 public class EnderGames extends JavaPlugin implements Listener {
-    private Manager manager;
+    private GameManager manager;
 
     @Override
     public void onEnable() {
@@ -31,7 +23,7 @@ public class EnderGames extends JavaPlugin implements Listener {
 
         World world = Bukkit.getWorlds().getFirst();
         Location location = new Location(world, 0, 100, 0);
-        manager = new Manager(this, location);
+        manager = new GameManager(this, location);
     }
 
     private LiteralCommandNode<CommandSourceStack> endergamesCommand() {
@@ -41,7 +33,7 @@ public class EnderGames extends JavaPlugin implements Listener {
                 .then(Commands.literal("start")
                         .requires(sender -> sender.getSender().isOp())
                         .executes(ctx -> {
-                            manager.startStartPhase();
+                            manager.nextPhase();
                             return Command.SINGLE_SUCCESS;
                         })
                 )

@@ -1,12 +1,11 @@
-package io.github.mal32.endergames;
+package io.github.mal32.endergames.phases;
 
+import io.github.mal32.endergames.GameManager;
 import org.bukkit.*;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,15 +15,12 @@ import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
 import org.bukkit.util.BlockVector;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Random;
 
 public class LobbyPhase extends AbstractPhase {
     public Location playerSpawnLocation;
 
-    public LobbyPhase(JavaPlugin plugin, Manager manager, Location spawn) {
+    public LobbyPhase(JavaPlugin plugin, GameManager manager, Location spawn) {
         super(plugin, manager, spawn);
         this.playerSpawnLocation = new Location(spawn.getWorld(), spawn.getX() + 0.5, spawn.getY() + 5, spawn.getZ() + 0.5);
 

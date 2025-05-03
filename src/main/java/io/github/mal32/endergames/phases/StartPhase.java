@@ -1,6 +1,8 @@
-package io.github.mal32.endergames;
+package io.github.mal32.endergames.phases;
 
+import io.github.mal32.endergames.GameManager;
 import com.destroystokyo.paper.Title;
+import io.github.mal32.endergames.GameManager;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -10,7 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
 public class StartPhase extends AbstractPhase {
-    public StartPhase(JavaPlugin plugin, Manager manager, Location spawn) {
+    public StartPhase(JavaPlugin plugin, GameManager manager, Location spawn) {
         super(plugin, manager, spawn);
 
         BukkitScheduler scheduler = plugin.getServer().getScheduler();
@@ -31,7 +33,7 @@ public class StartPhase extends AbstractPhase {
             }, 5*20);
         }
 
-        scheduler.runTaskLater(plugin, () -> manager.startGamePhase(), 5*20);
+        scheduler.runTaskLater(plugin, manager::nextPhase, 5*20);
     }
 
     @Override

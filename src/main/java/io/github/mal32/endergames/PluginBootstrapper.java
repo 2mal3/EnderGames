@@ -13,14 +13,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
 
-public class Bootstrapper implements PluginBootstrap {
+public class PluginBootstrapper implements PluginBootstrap {
     @Override
     public void bootstrap(BootstrapContext context) {
         final LifecycleEventManager<BootstrapContext> manager = context.getLifecycleManager();
         manager.registerEventHandler(LifecycleEvents.DATAPACK_DISCOVERY, event -> {
             DatapackRegistrar registrar = event.registrar();
             try {
-                final URI uri = Objects.requireNonNull(Bootstrapper.class.getResource("/EnderGamesDatapack")).toURI();
+                final URI uri = Objects.requireNonNull(PluginBootstrapper.class.getResource("/EnderGamesDatapack")).toURI();
                 registrar.discoverPack(uri, "endergames");
             } catch (final URISyntaxException | IOException e) {
                 throw new RuntimeException(e);

@@ -1,22 +1,17 @@
-package io.github.mal32.endergames;
+package io.github.mal32.endergames.phases;
 
+import io.github.mal32.endergames.GameManager;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -32,7 +27,6 @@ import org.bukkit.scheduler.BukkitScheduler;
 import io.github.mal32.endergames.kits.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -40,7 +34,7 @@ import java.util.Random;
 public class GamePhase extends AbstractPhase implements Listener {
     private List<AbstractKit> kits = List.of(new Lumberjack(plugin));
 
-    public GamePhase(JavaPlugin plugin, Manager manager, Location spawn) {
+    public GamePhase(JavaPlugin plugin, GameManager manager, Location spawn) {
         super(plugin, manager, spawn);
 
         for (Player player : plugin.getServer().getOnlinePlayers()) {
@@ -88,22 +82,18 @@ public class GamePhase extends AbstractPhase implements Listener {
     }
 
     @EventHandler
-    private void onPlayerInteract(PlayerInteractEvent event) {
+    private void onTrackerClick(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-
         ItemStack item = event.getItem();
-        if (item == null) {
+        if (item == null || item.getType() != Material.COMPASS) {
             return;
         }
-        if (item.getType() == Material.COMPASS) {
-            Location targetLocation = spawnLocation;
-            Location currentLocation = player.getLocation();
-            double distance = (int) currentLocation.distance(targetLocation);
-            player.sendActionBar(Component.text(distance + " Blocks").style(Style.style(NamedTextColor.YELLOW)));
-            item.setData(DataComponentTypes.LODESTONE_TRACKER, LodestoneTracker.lodestoneTracker().tracked(false).location(targetLocation).build());
 
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1, 1);
-        }
+        Location targetLocation = spawnLocation;
+        Location currentLocation = player.getLocation();
+        double distance = (int) currentLocation.distance(targetLocation);
+        player.sendActionBar(Component.text(distance + " Blocks").style(Style.style(NamedTextColor.YELLOW)));
+        item.setData(DataComponentTypes.LODESTONE_TRACKER, LodestoneTracker.lodestoneTracker().tracked(false).location(targetLocation).build());
     }
 
     @EventHandler
