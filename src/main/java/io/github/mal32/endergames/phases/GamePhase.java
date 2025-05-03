@@ -5,6 +5,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -27,9 +29,11 @@ import org.bukkit.scheduler.BukkitScheduler;
 import io.github.mal32.endergames.kits.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class GamePhase extends AbstractPhase implements Listener {
     private List<AbstractKit> kits = List.of(new Lumberjack(plugin));
@@ -38,7 +42,7 @@ public class GamePhase extends AbstractPhase implements Listener {
         super(plugin, manager, spawn);
 
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 20*60*3, 4, true));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 20 * 60 * 3, 4, true));
             player.setGameMode(GameMode.SURVIVAL);
 
             player.give(new ItemStack(Material.COMPASS));
@@ -56,21 +60,21 @@ public class GamePhase extends AbstractPhase implements Listener {
         WorldBorder worldBorder = world.getWorldBorder();
         worldBorder.setCenter(spawnLocation);
         worldBorder.setSize(600);
-        worldBorder.setSize(50, 20*60);
+        worldBorder.setSize(50, 20 * 60);
         worldBorder.setWarningDistance(10);
         worldBorder.setWarningTime(30);
         worldBorder.setDamageBuffer(1);
 
         BukkitScheduler scheduler = plugin.getServer().getScheduler();
         scheduler.runTaskLater(plugin, () -> {
-            for (int x = spawn.blockX()-20; x <= spawn.blockX()+20; x++) {
-                for (int z = spawn.blockZ()-20; z <= spawn.blockZ()+20; z++) {
-                    for (int y = spawn.blockY()-20; y <= spawn.blockY()+20; y++) {
+            for (int x = spawn.blockX() - 20; x <= spawn.blockX() + 20; x++) {
+                for (int z = spawn.blockZ() - 20; z <= spawn.blockZ() + 20; z++) {
+                    for (int y = spawn.blockY() - 20; y <= spawn.blockY() + 20; y++) {
                         world.getBlockAt(x, y, z).setType(Material.AIR);
                     }
                 }
             }
-        }, 30*20);
+        }, 30 * 20);
     }
 
     @Override
@@ -78,6 +82,18 @@ public class GamePhase extends AbstractPhase implements Listener {
         HandlerList.unregisterAll(this);
         for (AbstractKit kit : kits) {
             kit.stop();
+        }
+
+        WorldBorder worldBorder = spawnLocation.getWorld().getWorldBorder();
+        worldBorder.setSize(600);
+
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+            player.getInventory().clear();
+            player.setGameMode(GameMode.SPECTATOR);
+
+            for (PotionEffect effect : player.getActivePotionEffects()) {
+                player.removePotionEffect(effect.getType());
+            }
         }
     }
 
@@ -115,6 +131,47 @@ public class GamePhase extends AbstractPhase implements Listener {
         for (Player p : Bukkit.getOnlinePlayers()) {
             player.playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);
         }
+
+        Bukkit.getServer().sendMessage(Component.text("☠ " + player.getName()).color(NamedTextColor.RED));
+
+        if (!moreThanOnePlayersAlive()) {
+            plugin.getServer().getScheduler().runTask(plugin, this::end);
+        }
+    }
+
+    private void end() {
+        // TODO: change to survival
+        List<Player> survivalPlayers = Bukkit.getOnlinePlayers().stream()
+                .filter(player -> player.getGameMode() == GameMode.SPECTATOR)
+                .collect(Collectors.toList());
+        Player lastPlayer = survivalPlayers.getFirst();
+
+        Title title = Title.title(
+                Component.text(lastPlayer.getName() + " has Won!").color(NamedTextColor.GOLD),
+                Component.text(""),
+                Title.Times.times(
+                        Duration.ofSeconds(1),
+                        Duration.ofSeconds(5),
+                        Duration.ofSeconds(1)
+                )
+        );
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.showTitle(title);
+        }
+
+        lastPlayer.playSound(lastPlayer.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
+
+        manager.nextPhase();
+    }
+
+    private boolean moreThanOnePlayersAlive() {
+        int playersAlive = 0;
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getGameMode() == GameMode.SURVIVAL) {
+                playersAlive++;
+            }
+        }
+        return playersAlive > 1;
     }
 
     @EventHandler
@@ -128,6 +185,12 @@ public class GamePhase extends AbstractPhase implements Listener {
         Bukkit.getScheduler().runTask(plugin, () -> {
             event.getPlayer().openInventory(inv.getInventory());
         });
+    }
+
+    @EventHandler
+    private void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        player.setGameMode(GameMode.SPECTATOR);
     }
 }
 

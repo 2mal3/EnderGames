@@ -47,6 +47,15 @@ public class LobbyPhase extends AbstractPhase {
         structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
     }
 
+    @Override
+    public void stop() {
+        super.stop();
+
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+            player.clearActivePotionEffects();
+        }
+    }
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
