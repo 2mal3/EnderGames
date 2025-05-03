@@ -34,6 +34,10 @@ public class LobbyPhase extends AbstractPhase {
         WorldBorder border = world.getWorldBorder();
         border.setCenter(spawnLocation);
         border.setSize(600);
+
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            intiPlayer(player);
+        }
     }
 
     private void placeSpawnPlatform() {
@@ -45,6 +49,12 @@ public class LobbyPhase extends AbstractPhase {
         int posZ = (int) (spawnLocation.z() - (structureSize.getBlockZ() / 2.0));
         Location location = new Location(spawnLocation.getWorld(), (int) posX, 100, posZ);
         structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
+    }
+
+    private void intiPlayer(Player player) {
+        player.teleport(playerSpawnLocation);
+        player.setGameMode(GameMode.ADVENTURE);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 1, true, false));
     }
 
     @Override
@@ -59,9 +69,7 @@ public class LobbyPhase extends AbstractPhase {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-
-        player.setGameMode(GameMode.ADVENTURE);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 1, true, false));
+        intiPlayer(player);
     }
 
     @EventHandler
