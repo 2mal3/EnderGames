@@ -105,7 +105,9 @@ public class GamePhase extends AbstractPhase implements Listener {
             return;
         }
 
-        Location targetLocation = spawnLocation;
+        Player nearestPlayer = getNearestPlayer(player);
+
+        Location targetLocation = nearestPlayer.getLocation();
         Location currentLocation = player.getLocation();
         double distance = (int) currentLocation.distance(targetLocation);
         player.sendActionBar(Component.text(distance + " Blocks").style(Style.style(NamedTextColor.YELLOW)));
@@ -137,6 +139,24 @@ public class GamePhase extends AbstractPhase implements Listener {
         if (!moreThanOnePlayersAlive()) {
             plugin.getServer().getScheduler().runTask(plugin, this::end);
         }
+    }
+
+    public Player getNearestPlayer(Player executor) {
+        Player nearest = null;
+        double nearestDistance = Double.MAX_VALUE;
+        Location executorLocation = executor.getLocation();
+
+        for (Player other : executor.getServer().getOnlinePlayers()) {
+            if (other.equals(executor)) {
+                continue;
+            }
+            double distance = executorLocation.distance(other.getLocation());
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearest = other;
+            }
+        }
+        return nearest;
     }
 
     private void end() {
