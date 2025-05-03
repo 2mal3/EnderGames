@@ -37,7 +37,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class GamePhase extends AbstractPhase implements Listener {
-    private List<AbstractKit> kits = List.of(new Lumberjack(plugin));
+    private List<AbstractKit> kits = List.of(new Lumberjack(plugin), new Cat(plugin));
     private final BukkitTask playerSwapTask;
 
     public GamePhase(JavaPlugin plugin, GameManager manager, Location spawn) {
