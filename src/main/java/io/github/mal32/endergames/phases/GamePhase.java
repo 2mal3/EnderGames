@@ -27,6 +27,7 @@ import org.bukkit.potion.PotionEffectType;
 import net.kyori.adventure.text.Component;
 import org.bukkit.scheduler.BukkitScheduler;
 import io.github.mal32.endergames.kits.*;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 
 public class GamePhase extends AbstractPhase implements Listener {
     private List<AbstractKit> kits = List.of(new Lumberjack(plugin));
+    private final BukkitTask playerSwapTask;
 
     public GamePhase(JavaPlugin plugin, GameManager manager, Location spawn) {
         super(plugin, manager, spawn);
@@ -75,10 +77,35 @@ public class GamePhase extends AbstractPhase implements Listener {
                 }
             }
         }, 30 * 20);
+
+        playerSwapTask = Bukkit.getScheduler().runTaskTimer(plugin, this::playerSwap, 20 * 60, 20 * 60);
+    }
+
+    private void playerSwap() {
+        // get two distinct players
+        List<Player> players = Bukkit.getOnlinePlayers().stream()
+                .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
+                .collect(Collectors.toList());
+        if (players.size() < 2) {
+            return;
+        }
+
+        Player player1 = players.get(new Random().nextInt(players.size()));
+        players.remove(player1);
+        Player player2 = players.get(new Random().nextInt(players.size()));
+
+        // swap their locations
+        Location player1Location = player1.getLocation().clone();
+        Location player2Location = player2.getLocation().clone();
+
+        player1.teleport(player2Location);
+        player2.teleport(player1Location);
     }
 
     @Override
     public void stop() {
+        playerSwapTask.cancel();
+
         HandlerList.unregisterAll(this);
         for (AbstractKit kit : kits) {
             kit.stop();
