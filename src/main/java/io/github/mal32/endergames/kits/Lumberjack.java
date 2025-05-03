@@ -1,7 +1,5 @@
 package io.github.mal32.endergames.kits;
 
-import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.DyedItemColor;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -15,21 +13,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Lumberjack extends AbstractKit {
     public Lumberjack(JavaPlugin plugin) {
         super(plugin);
-    }
-
-    @Override
-    public void start(Player player) {
-        ItemStack axe = new ItemStack(Material.WOODEN_AXE);
-        axe.addEnchantment(Enchantment.SHARPNESS, 1);
-        player.give(axe);
-
-        ItemStack leatherChest = new ItemStack(Material.LEATHER_CHESTPLATE);
-        leatherChest.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor().color(Color.RED).build());
-        player.give(leatherChest);
-
-        ItemStack leatherLeggings = new ItemStack(Material.LEATHER_LEGGINGS);
-        leatherLeggings.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor().color(Color.BLUE).build());
-        player.give(leatherLeggings);
     }
 
     @Override
