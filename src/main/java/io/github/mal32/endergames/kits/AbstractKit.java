@@ -31,10 +31,7 @@ public abstract class AbstractKit implements Listener {
     }
 
     public void start(Player player) {
-        LootTable lootTable = Bukkit.getLootTable(new NamespacedKey("enga", "kits/" + getName()));
-        LootContext.Builder lootContextBuilder = new LootContext.Builder(player.getLocation());
-        LootContext lootContext = lootContextBuilder.build();
-        lootTable.fillInventory(player.getInventory(), new Random(), lootContext);
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "loot give " + player.getName() + " loot enga:kits/" + getName());
     };
 
     public abstract String getName();
