@@ -7,6 +7,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -31,6 +32,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -38,6 +40,7 @@ import java.util.stream.Collectors;
 
 public class GamePhase extends AbstractPhase implements Listener {
     private List<AbstractKit> kits = List.of(new Lumberjack(plugin), new Cat(plugin));
+    private List<EnderChest> enderChests = new ArrayList<>();
     private final BukkitTask playerSwapTask;
 
     public GamePhase(JavaPlugin plugin, GameManager manager, Location spawn) {
@@ -227,10 +230,19 @@ public class GamePhase extends AbstractPhase implements Listener {
             return;
         }
 
-        EnderChest inv = new EnderChest(plugin, event.getPlayer().getLocation());
+        Location blockLocation = event.getClickedBlock().getLocation();
+        EnderChest enderChest = enderChests.stream()
+                .filter(chest -> chest.getLocation().equals(blockLocation))
+                .findFirst()
+                .orElse(null);
+        if (enderChest == null) {
+            enderChest = new EnderChest(plugin, blockLocation);
+            enderChests.add(enderChest);
+        }
 
+        EnderChest finalEnderChest = enderChest;
         Bukkit.getScheduler().runTask(plugin, () -> {
-            event.getPlayer().openInventory(inv.getInventory());
+            event.getPlayer().openInventory(finalEnderChest.getInventory());
         });
     }
 
@@ -243,9 +255,30 @@ public class GamePhase extends AbstractPhase implements Listener {
 
 class EnderChest implements InventoryHolder {
     private final Inventory inventory;
+    private Location location;
 
     public EnderChest(JavaPlugin plugin, Location location) {
         this.inventory = plugin.getServer().createInventory(this, 27, "Ender Chest");
+        this.location = location;
+
+        fill();
+    }
+
+    public void teleport(Location location) {
+        this.location.getWorld().getBlockAt(location).setType(Material.AIR);
+
+        this.location = location;
+        place();
+        fill();
+    }
+
+    private void place() {
+        Block block = location.getWorld().getBlockAt(location);
+        block.setType(Material.ENDER_CHEST);
+    }
+
+    private void fill() {
+        inventory.clear();
 
         LootTable lootTable = Bukkit.getLootTable(new NamespacedKey("enga", "ender_chest"));
         LootContext.Builder lootContextBuilder = new LootContext.Builder(location);
@@ -257,5 +290,9 @@ class EnderChest implements InventoryHolder {
     @NotNull
     public Inventory getInventory() {
         return inventory;
+    }
+
+    public Location getLocation() {
+        return location;
     }
 }
