@@ -72,11 +72,15 @@ public class StartPhase extends AbstractPhase {
     private void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
 
-        if (!event.hasChangedBlock()) {
-            return;
-        }
+        Location startLocation = event.getFrom();
+        Location startLocationBlock = startLocation.getBlock().getLocation();
+        Location endLocation = event.getTo();
+        Location endLocationBlock = endLocation.getBlock().getLocation();
 
-        event.setCancelled(true);
+        if (startLocationBlock.getX() != endLocationBlock.getX() || startLocationBlock.getZ() != endLocationBlock.getZ()) {
+            event.getTo().setX(startLocation.getX());
+            event.getTo().setZ(startLocation.getZ());
+        }
     }
 
     @EventHandler
