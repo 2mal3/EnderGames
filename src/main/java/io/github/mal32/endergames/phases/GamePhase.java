@@ -8,6 +8,7 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -32,16 +33,14 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GamePhase extends AbstractPhase implements Listener {
     private List<AbstractKit> kits = List.of(new Lumberjack(plugin), new Cat(plugin));
     private List<EnderChest> enderChests = new ArrayList<>();
     private final BukkitTask playerSwapTask;
+    private final BukkitTask enderChestTeleportTask;
 
     public GamePhase(JavaPlugin plugin, GameManager manager, Location spawn) {
         super(plugin, manager, spawn);
@@ -81,10 +80,11 @@ public class GamePhase extends AbstractPhase implements Listener {
             }
         }, 30 * 20);
 
-        playerSwapTask = Bukkit.getScheduler().runTaskTimer(plugin, this::playerSwap, 20 * 60, 20 * 60);
+        playerSwapTask = Bukkit.getScheduler().runTaskTimer(plugin, this::playerSwapTask, 20 * 60, 20 * 60);
+        enderChestTeleportTask = Bukkit.getScheduler().runTaskTimer(plugin, this::enderChestTeleportTask, 20 * 10, 20 * 10);
     }
 
-    private void playerSwap() {
+    private void playerSwapTask() {
         // get two distinct players
         List<Player> players = Bukkit.getOnlinePlayers().stream()
                 .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
@@ -105,9 +105,34 @@ public class GamePhase extends AbstractPhase implements Listener {
         player2.teleport(player1Location);
     }
 
+    private void enderChestTeleportTask() {
+        EnderChest enderChest = enderChests.get(new Random().nextInt(enderChests.size()));
+
+        // get a random location near a player unobstructed by blocks
+        List<Player> players = Bukkit.getOnlinePlayers().stream()
+                .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
+                .collect(Collectors.toList());
+        if (players.isEmpty()) {
+            return;
+        }
+        Player player = players.get(new Random().nextInt(players.size()));
+
+        Location location = player.getLocation().getBlock().getLocation().clone();
+        // get a random location near the player
+        final int range = 64;
+        int xOffset = new Random().nextInt(range * 2) - range;
+        int zOffset = new Random().nextInt(range * 2) - range;
+        location.add(xOffset, 0, zOffset);
+        location.setY(location.getWorld().getHighestBlockYAt(location));
+        location.add(0, 1, 0);
+
+        enderChest.teleport(location);
+    }
+
     @Override
     public void stop() {
         playerSwapTask.cancel();
+        enderChestTeleportTask.cancel();
 
         HandlerList.unregisterAll(this);
         for (AbstractKit kit : kits) {
@@ -230,11 +255,14 @@ public class GamePhase extends AbstractPhase implements Listener {
             return;
         }
 
-        Location blockLocation = event.getClickedBlock().getLocation();
-        EnderChest enderChest = enderChests.stream()
-                .filter(chest -> chest.getLocation().equals(blockLocation))
-                .findFirst()
-                .orElse(null);
+        Location blockLocation = event.getClickedBlock().getLocation().clone();
+        EnderChest enderChest = null;
+        for (EnderChest e : enderChests) {
+            if (e.getLocation().getX() == blockLocation.getX() && e.getLocation().getZ() == blockLocation.getZ()) {
+                enderChest = e;
+                break;
+            }
+        }
         if (enderChest == null) {
             enderChest = new EnderChest(plugin, blockLocation);
             enderChests.add(enderChest);
@@ -265,16 +293,34 @@ class EnderChest implements InventoryHolder {
     }
 
     public void teleport(Location location) {
-        this.location.getWorld().getBlockAt(location).setType(Material.AIR);
+        new ArrayList<>(inventory.getViewers()).forEach(HumanEntity::closeInventory);
 
+        destroy();
         this.location = location;
         place();
         fill();
     }
 
+    public void destroy() {
+        Block block = this.location.getBlock();
+
+        if (!location.getChunk().isLoaded()) {
+            location.getChunk().load();
+        }
+
+        block.setType(Material.AIR);
+        effects();
+    }
+
     private void place() {
         Block block = location.getWorld().getBlockAt(location);
         block.setType(Material.ENDER_CHEST);
+        effects();
+    }
+
+    private void effects() {
+        location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.5f);
+        location.getWorld().spawnParticle(Particle.PORTAL, location, 50, 0, 0, 0);
     }
 
     private void fill() {
