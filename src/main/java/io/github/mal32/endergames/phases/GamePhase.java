@@ -236,25 +236,27 @@ public class GamePhase extends AbstractPhase implements Listener {
     }
 
     private void win() {
-        List<Player> survivalPlayers = Bukkit.getOnlinePlayers().stream()
-                .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
-                .collect(Collectors.toList());
-        Player lastPlayer = survivalPlayers.getFirst();
+        try {
+            List<Player> survivalPlayers = Bukkit.getOnlinePlayers().stream()
+                    .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
+                    .collect(Collectors.toList());
+            Player lastPlayer = survivalPlayers.getFirst();
 
-        Title title = Title.title(
-                Component.text(lastPlayer.getName() + " has Won!").color(NamedTextColor.GOLD),
-                Component.text(""),
-                Title.Times.times(
-                        Duration.ofSeconds(1),
-                        Duration.ofSeconds(5),
-                        Duration.ofSeconds(1)
-                )
-        );
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            player.showTitle(title);
-        }
+            Title title = Title.title(
+                    Component.text(lastPlayer.getName() + " has Won!").color(NamedTextColor.GOLD),
+                    Component.text(""),
+                    Title.Times.times(
+                            Duration.ofSeconds(1),
+                            Duration.ofSeconds(5),
+                            Duration.ofSeconds(1)
+                    )
+            );
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.showTitle(title);
+            }
 
-        lastPlayer.playSound(lastPlayer.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
+            lastPlayer.playSound(lastPlayer.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
+        } catch (NoSuchElementException ignored) {}
 
         manager.nextPhase();
     }
