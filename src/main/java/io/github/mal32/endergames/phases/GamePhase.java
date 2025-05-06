@@ -17,6 +17,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -188,6 +189,10 @@ public class GamePhase extends AbstractPhase implements Listener {
         player.setGameMode(GameMode.SPECTATOR);
         player.setHealth(20);
 
+        abstractPlayerDeath(player);
+    }
+
+    private void abstractPlayerDeath(Player player) {
         for (ItemStack item : player.getInventory().getContents()) {
             if (item == null) {
                 continue;
@@ -203,7 +208,7 @@ public class GamePhase extends AbstractPhase implements Listener {
         Bukkit.getServer().sendMessage(Component.text("☠ " + player.getName()).color(NamedTextColor.RED));
 
         if (!moreThanOnePlayersAlive()) {
-            plugin.getServer().getScheduler().runTask(plugin, this::end);
+            plugin.getServer().getScheduler().runTask(plugin, this::win);
         }
     }
 
@@ -225,10 +230,14 @@ public class GamePhase extends AbstractPhase implements Listener {
         return nearest;
     }
 
-    private void end() {
-        // TODO: change to survival
+    @EventHandler
+    private void onPlayerQuit(PlayerQuitEvent event) {
+        abstractPlayerDeath(event.getPlayer());
+    }
+
+    private void win() {
         List<Player> survivalPlayers = Bukkit.getOnlinePlayers().stream()
-                .filter(player -> player.getGameMode() == GameMode.SPECTATOR)
+                .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
                 .collect(Collectors.toList());
         Player lastPlayer = survivalPlayers.getFirst();
 
