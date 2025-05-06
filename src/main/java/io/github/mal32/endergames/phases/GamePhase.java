@@ -50,7 +50,7 @@ public class GamePhase extends AbstractPhase implements Listener {
             player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 20 * 60 * 3, 4, true));
             player.setGameMode(GameMode.SURVIVAL);
 
-            player.give(new ItemStack(Material.COMPASS));
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "loot give " + player.getName() + " loot enga:tracker");
 
             String playerKit = player.getPersistentDataContainer().get(new NamespacedKey(plugin, "kit"), PersistentDataType.STRING);
             for (AbstractKit kit : kits) {
