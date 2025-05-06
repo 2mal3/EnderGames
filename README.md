@@ -2,6 +2,11 @@
 
 Work in progress Paper plugin that brings back the discontinued EnderGames game mode from the GommeHD server.
 
+## Kits
+
+- Lumberjack
+- Cat
+
 ## Using the Plugin
 
 Install the plugin as usual on a Paper Server for Minecraft 1.21.4 of your choice. It is advisable to use a new world, as this can be damaged by the game.
