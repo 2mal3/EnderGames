@@ -62,6 +62,6 @@ public class Cat extends AbstractKit {
             return;
         }
 
-        event.setDamage(event.getDamage() + 2);
+        event.setDamage(event.getDamage() + 1);
     }
 }
