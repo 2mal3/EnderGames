@@ -22,7 +22,7 @@ public class EnderGames extends JavaPlugin implements Listener {
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(endergamesCommand()));
 
         World world = Bukkit.getWorlds().getFirst();
-        Location location = new Location(world, 0, 100, 0);
+        Location location = new Location(world, 0, 150, 0);
         manager = new GameManager(this, location);
     }
 
