@@ -15,49 +15,63 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.List;
 
 public class EnderGames extends JavaPlugin implements Listener {
-    private GameManager manager;
+  private GameManager manager;
 
-    @Override
-    public void onEnable() {
-        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(endergamesCommand()));
+  @Override
+  public void onEnable() {
+    this.getLifecycleManager()
+        .registerEventHandler(
+            LifecycleEvents.COMMANDS,
+            commands -> commands.registrar().register(endergamesCommand()));
 
-        World world = Bukkit.getWorlds().getFirst();
-        Location location = new Location(world, 0, 150, 0);
-        manager = new GameManager(this, location);
-    }
+    World world = Bukkit.getWorlds().getFirst();
+    Location location = new Location(world, 0, 150, 0);
+    manager = new GameManager(this, location);
+  }
 
-    private LiteralCommandNode<CommandSourceStack> endergamesCommand() {
-        final List<String> kits = List.of("lumberjack", "cat");
+  private LiteralCommandNode<CommandSourceStack> endergamesCommand() {
+    final List<String> kits = List.of("lumberjack", "cat");
 
-        return Commands.literal("endergames")
-                .then(Commands.literal("start")
-                        .requires(sender -> sender.getSender().isOp())
-                        .executes(ctx -> {
-                            manager.nextPhase();
-                            return Command.SINGLE_SUCCESS;
-                        })
-                )
-                .then(Commands.literal("kit")
-                        .then(Commands.argument("kit", StringArgumentType.word())
-                                .suggests((ctx, builder) -> {
-                                    kits.stream()
-                                            .filter(entry -> entry.toLowerCase().startsWith(builder.getRemainingLowerCase()))
-                                            .forEach(builder::suggest);
-                                    return builder.buildFuture();
-                                })
-                                .executes(ctx -> {
-                                    Player sender = (Player) ctx.getSource().getSender();
+    return Commands.literal("endergames")
+        .then(
+            Commands.literal("start")
+                .requires(sender -> sender.getSender().isOp())
+                .executes(
+                    ctx -> {
+                      manager.nextPhase();
+                      return Command.SINGLE_SUCCESS;
+                    }))
+        .then(
+            Commands.literal("kit")
+                .then(
+                    Commands.argument("kit", StringArgumentType.word())
+                        .suggests(
+                            (ctx, builder) -> {
+                              kits.stream()
+                                  .filter(
+                                      entry ->
+                                          entry
+                                              .toLowerCase()
+                                              .startsWith(builder.getRemainingLowerCase()))
+                                  .forEach(builder::suggest);
+                              return builder.buildFuture();
+                            })
+                        .executes(
+                            ctx -> {
+                              Player sender = (Player) ctx.getSource().getSender();
 
-                                    String selectedKit = StringArgumentType.getString(ctx, "kit");
-                                    sender.sendPlainMessage("You selected the " + selectedKit + " kit");
-                                    sender.playSound(sender.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1, 1);
+                              String selectedKit = StringArgumentType.getString(ctx, "kit");
+                              sender.sendPlainMessage("You selected the " + selectedKit + " kit");
+                              sender.playSound(
+                                  sender.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1, 1);
 
-                                    NamespacedKey key = new NamespacedKey(this, "kit");
-                                    sender.getPersistentDataContainer().set(key, PersistentDataType.STRING, selectedKit);
+                              NamespacedKey key = new NamespacedKey(this, "kit");
+                              sender
+                                  .getPersistentDataContainer()
+                                  .set(key, PersistentDataType.STRING, selectedKit);
 
-                                    return Command.SINGLE_SUCCESS;
-                                })
-                ))
-                .build();
-    }
+                              return Command.SINGLE_SUCCESS;
+                            })))
+        .build();
+  }
 }

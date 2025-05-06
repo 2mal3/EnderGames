@@ -11,57 +11,57 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Cat extends AbstractKit {
-    public Cat(JavaPlugin plugin) {
-        super(plugin);
+  public Cat(JavaPlugin plugin) {
+    super(plugin);
+  }
+
+  @Override
+  public String getName() {
+    return "cat";
+  }
+
+  @EventHandler
+  private void onFallDamage(EntityDamageEvent event) {
+    if (!(event.getEntity() instanceof Player)) {
+      return;
+    }
+    if (!playerHasKit((Player) event.getEntity())) {
+      return;
+    }
+    if (event.getCause() != EntityDamageEvent.DamageCause.FALL) {
+      return;
     }
 
-    @Override
-    public String getName() {
-        return "cat";
+    event.setDamage(event.getDamage() * 0.5);
+  }
+
+  @EventHandler
+  private void onPlayerEatFish(PlayerItemConsumeEvent event) {
+    if (!playerHasKit((Player) event.getPlayer())) {
+      return;
+    }
+    if (!Tag.ITEMS_FISHES.isTagged(event.getItem().getType())) {
+      return;
     }
 
-    @EventHandler
-    private void onFallDamage(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
-            return;
-        }
-        if (!playerHasKit((Player) event.getEntity())) {
-            return;
-        }
-        if (event.getCause() != EntityDamageEvent.DamageCause.FALL) {
-            return;
-        }
+    event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 30, 2, true));
+  }
 
-        event.setDamage(event.getDamage() * 0.5);
+  @EventHandler
+  private void onPlayerHit(EntityDamageByEntityEvent event) {
+    if (!(event.getDamager() instanceof Player)) {
+      return;
+    }
+    Player damager = (Player) event.getDamager();
+    if (!playerHasKit(damager)) {
+      return;
     }
 
-    @EventHandler
-    private void onPlayerEatFish(PlayerItemConsumeEvent event) {
-        if (!playerHasKit((Player) event.getPlayer())) {
-            return;
-        }
-        if (!Tag.ITEMS_FISHES.isTagged(event.getItem().getType())) {
-            return;
-        }
-
-        event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 30, 2, true));
+    // skip if damage is not with bare hands
+    if (!damager.getInventory().getItemInMainHand().getType().isAir()) {
+      return;
     }
 
-    @EventHandler
-    private void onPlayerHit(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player)) {
-            return;
-        }
-        Player damager = (Player) event.getDamager();
-        if (!playerHasKit(damager)) {
-            return;
-        }
-
-        // skip if damage is not with bare hands
-        if (!damager.getInventory().getItemInMainHand().getType().isAir()) {
-            return;
-        }
-
-        event.setDamage(event.getDamage() + 1);
-    }
+    event.setDamage(event.getDamage() + 1);
+  }
 }
