@@ -103,6 +103,17 @@ public class GamePhase extends AbstractPhase implements Listener {
 
         player1.teleport(player2Location);
         player2.teleport(player1Location);
+
+        playerSwapEffects(player1);
+        playerSwapEffects(player2);
+    }
+
+    private void playerSwapEffects(Player player) {
+        Location location = player.getLocation();
+        location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.5f);
+        location.getWorld().spawnParticle(Particle.PORTAL, location, 50, 0, 0, 0);
+
+        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 0, true));
     }
 
     private void enderChestTeleportTask() {
