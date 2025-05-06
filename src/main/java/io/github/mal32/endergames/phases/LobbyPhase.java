@@ -6,6 +6,8 @@ import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -52,8 +54,9 @@ public class LobbyPhase extends AbstractPhase {
     }
 
     private void intiPlayer(Player player) {
-        player.getInventory().clear();
         player.teleport(playerSpawnLocation);
+
+        player.getInventory().clear();
         player.setGameMode(GameMode.ADVENTURE);
         player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 1, true, false));
     }
@@ -85,7 +88,18 @@ public class LobbyPhase extends AbstractPhase {
 
         if (player.getLocation().distance(spawnLocation) > 20) {
             player.teleport(playerSpawnLocation);
-            player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 20, 256, true, false));
         }
+    }
+
+    @EventHandler
+    public void onPlayerDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+        if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+            return;
+        }
+
+        event.setCancelled(true);
     }
 }
