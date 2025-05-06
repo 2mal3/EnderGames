@@ -39,7 +39,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class GamePhase extends AbstractPhase implements Listener {
-    private List<AbstractKit> kits = List.of(new Lumberjack(plugin), new Cat(plugin));
+    private List<AbstractKit> kits = List.of(new Lumberjack(plugin), new Cat(plugin), new Cactus(plugin));
     private List<EnderChest> enderChests = new ArrayList<>();
     private final BukkitTask playerSwapTask;
     private final BukkitTask enderChestTeleportTask;
