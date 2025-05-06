@@ -52,6 +52,7 @@ public class LobbyPhase extends AbstractPhase {
     }
 
     private void intiPlayer(Player player) {
+        player.getInventory().clear();
         player.teleport(playerSpawnLocation);
         player.setGameMode(GameMode.ADVENTURE);
         player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 1, true, false));
@@ -68,8 +69,7 @@ public class LobbyPhase extends AbstractPhase {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        intiPlayer(player);
+        intiPlayer(event.getPlayer());
     }
 
     @EventHandler
