@@ -1,6 +1,6 @@
 package io.github.mal32.endergames.phases;
 
-import io.github.mal32.endergames.GameManager;
+import io.github.mal32.endergames.EnderGames;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -45,8 +45,8 @@ public class GamePhase extends AbstractPhase implements Listener {
   private final BukkitTask playerSwapTask;
   private final BukkitTask enderChestTeleportTask;
 
-  public GamePhase(JavaPlugin plugin, GameManager manager, Location spawn) {
-    super(plugin, manager, spawn);
+  public GamePhase(EnderGames plugin, Location spawn) {
+    super(plugin, spawn);
 
     for (Player player : plugin.getServer().getOnlinePlayers()) {
       player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 20 * 60 * 3, 4, true));
@@ -277,7 +277,7 @@ public class GamePhase extends AbstractPhase implements Listener {
     } catch (NoSuchElementException ignored) {
     }
 
-    manager.nextPhase();
+    plugin.nextPhase();
   }
 
   private boolean moreThanOnePlayersAlive() {
