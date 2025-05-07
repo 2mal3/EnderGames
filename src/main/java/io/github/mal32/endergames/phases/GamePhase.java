@@ -67,6 +67,9 @@ public class GamePhase extends AbstractPhase implements Listener {
 
     World world = spawnLocation.getWorld();
 
+    world.setTime(0);
+    world.getClearWeatherDuration();
+
     WorldBorder worldBorder = world.getWorldBorder();
     worldBorder.setCenter(spawnLocation);
     worldBorder.setSize(600);
