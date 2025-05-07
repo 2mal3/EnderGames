@@ -6,36 +6,39 @@ import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class Cactus extends AbstractKit {
-    public Cactus(JavaPlugin plugin) {
-        super(plugin);
+  public Cactus(JavaPlugin plugin) {
+    super(plugin);
+  }
+
+  @Override
+  public String getName() {
+    return "cactus";
+  }
+
+  @EventHandler
+  public void onEntityDamagedByEntity(EntityDamageByEntityEvent event) {
+    if (!(event.getEntity() instanceof Player player)
+        || !(event.getDamager() instanceof Damageable damager)) {
+      return;
+    }
+    if (!playerHasKit(player)) {
+      return;
     }
 
-    @Override
-    public String getName() {
-        return "cactus";
+    if (Math.random() < 0.6) {
+      return;
     }
 
-    @EventHandler
-    public void onEntityDamagedByEntity(EntityDamageByEntityEvent event)  {
-        if (!(event.getEntity() instanceof Player player) || !(event.getDamager() instanceof Damageable damager)) {
-            return;
-        }
-        if (!playerHasKit(player)) {
-            return;
-        }
+    Location location = player.getLocation();
+    location.getWorld().playSound(location, Sound.ENCHANT_THORNS_HIT, 1, 1);
 
-        if (Math.random() < 0.6) {
-            return;
-        }
-
-
-        Location location = player.getLocation();
-        location.getWorld().playSound(location, Sound.ENCHANT_THORNS_HIT, 1, 1);
-
-        int damage = 1 + (int) (Math.round(Math.random() * 3));
-        damager.damage(damage, player);
-    }
+    int damage = 1 + (int) (Math.round(Math.random() * 3));
+    damager.damage(damage, player);
+  }
 }
