@@ -1,6 +1,6 @@
 package io.github.mal32.endergames.phases;
 
-import io.github.mal32.endergames.GameManager;
+import io.github.mal32.endergames.EnderGames;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -17,8 +17,8 @@ import org.bukkit.scheduler.BukkitScheduler;
 import java.time.Duration;
 
 public class StartPhase extends AbstractPhase {
-  public StartPhase(JavaPlugin plugin, GameManager manager, Location spawn) {
-    super(plugin, manager, spawn);
+  public StartPhase(EnderGames plugin, Location spawn) {
+    super(plugin, spawn);
 
     BukkitScheduler scheduler = plugin.getServer().getScheduler();
 
@@ -60,7 +60,7 @@ public class StartPhase extends AbstractPhase {
           5 * 20);
     }
 
-    scheduler.runTaskLater(plugin, manager::nextPhase, 5 * 20);
+    scheduler.runTaskLater(plugin, plugin::nextPhase, 5 * 20);
   }
 
   @Override
