@@ -8,6 +8,8 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,7 +17,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -359,8 +360,17 @@ class EnderChest implements InventoryHolder {
   }
 
   private void place() {
-    Block block = location.getWorld().getBlockAt(location);
+    World world = location.getWorld();
+
+    Location blockSpawnLocation = this.location.clone();
+    blockSpawnLocation.setY(300);
+    FallingBlock fallingBlock = (FallingBlock) world.spawnEntity(blockSpawnLocation, EntityType.FALLING_BLOCK);
+    fallingBlock.setDropItem(false);
+    fallingBlock.setBlockData(Bukkit.createBlockData(Material.OBSIDIAN));
+
+    Block block = world.getBlockAt(location);
     block.setType(Material.ENDER_CHEST);
+
     effects();
   }
 
