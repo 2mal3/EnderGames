@@ -50,7 +50,7 @@ public class LobbyPhase extends AbstractPhase {
     BlockVector structureSize = structure.getSize();
     int posX = (int) (spawnLocation.x() - (structureSize.getBlockX() / 2.0));
     int posZ = (int) (spawnLocation.z() - (structureSize.getBlockZ() / 2.0));
-    Location location = new Location(spawnLocation.getWorld(), (int) posX, 100, posZ);
+    Location location = new Location(spawnLocation.getWorld(), (int) posX, spawnLocation.getY(), posZ);
     structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
   }
 
