@@ -8,19 +8,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class AbstractPhase implements Listener {
-    public JavaPlugin plugin;
-    public Location spawnLocation;
-    public GameManager manager;
+  public JavaPlugin plugin;
+  public Location spawnLocation;
+  public GameManager manager;
 
-    public AbstractPhase(JavaPlugin plugin, GameManager manager, Location spawn) {
-        this.plugin = plugin;
-        this.spawnLocation = spawn;
-        this.manager = manager;
+  public AbstractPhase(JavaPlugin plugin, GameManager manager, Location spawn) {
+    this.plugin = plugin;
+    this.spawnLocation = spawn;
+    this.manager = manager;
 
-        Bukkit.getPluginManager().registerEvents(this, plugin);
-    }
+    Bukkit.getPluginManager().registerEvents(this, plugin);
+  }
 
-    public void stop() {
-        HandlerList.unregisterAll(this);
-    }
+  public void stop() {
+    HandlerList.unregisterAll(this);
+  }
 }

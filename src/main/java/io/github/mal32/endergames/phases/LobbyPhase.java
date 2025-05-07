@@ -20,86 +20,88 @@ import org.bukkit.util.BlockVector;
 import java.util.Random;
 
 public class LobbyPhase extends AbstractPhase {
-    public Location playerSpawnLocation;
+  public Location playerSpawnLocation;
 
-    public LobbyPhase(JavaPlugin plugin, GameManager manager, Location spawn) {
-        super(plugin, manager, spawn);
-        this.playerSpawnLocation = new Location(spawn.getWorld(), spawn.getX() + 0.5, spawn.getY() + 5, spawn.getZ() + 0.5);
+  public LobbyPhase(JavaPlugin plugin, GameManager manager, Location spawn) {
+    super(plugin, manager, spawn);
+    this.playerSpawnLocation =
+        new Location(spawn.getWorld(), spawn.getX() + 0.5, spawn.getY() + 5, spawn.getZ() + 0.5);
 
-        placeSpawnPlatform();
+    placeSpawnPlatform();
 
-        World world = spawn.getWorld();
+    World world = spawn.getWorld();
 
-        world.setSpawnLocation(playerSpawnLocation);
-        world.setGameRule(GameRule.SPAWN_RADIUS, 6);
+    world.setSpawnLocation(playerSpawnLocation);
+    world.setGameRule(GameRule.SPAWN_RADIUS, 6);
 
-        WorldBorder border = world.getWorldBorder();
-        border.setCenter(spawnLocation);
-        border.setSize(600);
+    WorldBorder border = world.getWorldBorder();
+    border.setCenter(spawnLocation);
+    border.setSize(600);
 
-        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-            intiPlayer(player);
-        }
+    for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+      intiPlayer(player);
+    }
+  }
+
+  private void placeSpawnPlatform() {
+    StructureManager manager = Bukkit.getServer().getStructureManager();
+    Structure structure = manager.loadStructure(new NamespacedKey("enga", "spawn_platform"));
+
+    BlockVector structureSize = structure.getSize();
+    int posX = (int) (spawnLocation.x() - (structureSize.getBlockX() / 2.0));
+    int posZ = (int) (spawnLocation.z() - (structureSize.getBlockZ() / 2.0));
+    Location location = new Location(spawnLocation.getWorld(), (int) posX, spawnLocation.getY(), posZ);
+    structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
+  }
+
+  private void intiPlayer(Player player) {
+    player.teleport(playerSpawnLocation);
+
+    player.getInventory().clear();
+    player.setGameMode(GameMode.ADVENTURE);
+    player.addPotionEffect(
+        new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 1, true, false));
+  }
+
+  @Override
+  public void stop() {
+    super.stop();
+
+    for (Player player : plugin.getServer().getOnlinePlayers()) {
+      player.clearActivePotionEffects();
+    }
+  }
+
+  @EventHandler
+  public void onPlayerJoin(PlayerJoinEvent event) {
+    intiPlayer(event.getPlayer());
+  }
+
+  @EventHandler
+  public void onPlayerMove(PlayerMoveEvent event) {
+    Player player = event.getPlayer();
+
+    if (player.getGameMode() != GameMode.ADVENTURE) {
+      return;
+    }
+    if (!event.hasChangedBlock()) {
+      return;
     }
 
-    private void placeSpawnPlatform() {
-        StructureManager manager = Bukkit.getServer().getStructureManager();
-        Structure structure = manager.loadStructure(new NamespacedKey("enga", "spawn_platform"));
+    if (player.getLocation().distance(spawnLocation) > 20) {
+      player.teleport(playerSpawnLocation);
+    }
+  }
 
-        BlockVector structureSize = structure.getSize();
-        int posX = (int) (spawnLocation.x() - (structureSize.getBlockX() / 2.0));
-        int posZ = (int) (spawnLocation.z() - (structureSize.getBlockZ() / 2.0));
-        Location location = new Location(spawnLocation.getWorld(), (int) posX, 100, posZ);
-        structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
+  @EventHandler
+  public void onPlayerDamage(EntityDamageEvent event) {
+    if (!(event.getEntity() instanceof Player)) {
+      return;
+    }
+    if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+      return;
     }
 
-    private void intiPlayer(Player player) {
-        player.teleport(playerSpawnLocation);
-
-        player.getInventory().clear();
-        player.setGameMode(GameMode.ADVENTURE);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 1, true, false));
-    }
-
-    @Override
-    public void stop() {
-        super.stop();
-
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
-            player.clearActivePotionEffects();
-        }
-    }
-
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        intiPlayer(event.getPlayer());
-    }
-
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-
-        if (player.getGameMode() != GameMode.ADVENTURE) {
-            return;
-        }
-        if (!event.hasChangedBlock()) {
-            return;
-        }
-
-        if (player.getLocation().distance(spawnLocation) > 20) {
-            player.teleport(playerSpawnLocation);
-        }
-    }
-
-    @EventHandler
-    public void onPlayerDamage(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
-            return;
-        }
-        if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-            return;
-        }
-
-        event.setCancelled(true);
-    }
+    event.setCancelled(true);
+  }
 }

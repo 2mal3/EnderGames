@@ -17,76 +17,80 @@ import org.bukkit.scheduler.BukkitScheduler;
 import java.time.Duration;
 
 public class StartPhase extends AbstractPhase {
-    public StartPhase(JavaPlugin plugin, GameManager manager, Location spawn) {
-        super(plugin, manager, spawn);
+  public StartPhase(JavaPlugin plugin, GameManager manager, Location spawn) {
+    super(plugin, manager, spawn);
 
-        BukkitScheduler scheduler = plugin.getServer().getScheduler();
+    BukkitScheduler scheduler = plugin.getServer().getScheduler();
 
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
-            player.getInventory().clear();
+    for (Player player : plugin.getServer().getOnlinePlayers()) {
+      player.getInventory().clear();
 
-            for (int i = 0; i <= 4; i++) {
-                int finalI = 5-i;
-                scheduler.runTaskLater(plugin, () -> {
-                    Title title = Title.title(
-                            Component.text(Integer.toString(finalI)).color(NamedTextColor.YELLOW),
-                            Component.text(""),
-                            Title.Times.times(
-                                    Duration.ofMillis(5 * 50),
-                                    Duration.ofMillis(10 * 50),
-                                    Duration.ofMillis(5 * 50)
-                            )
-                    );
-                    player.showTitle(title);
-                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1, 1);
-                }, i*20);
-            }
-            scheduler.runTaskLater(plugin, () -> {
-                Title title = Title.title(
-                        Component.text("Start").color(NamedTextColor.GOLD),
-                        Component.text(""),
-                        Title.Times.times(
-                                Duration.ofMillis(5 * 50),
-                                Duration.ofMillis(10 * 50),
-                                Duration.ofMillis(5 * 50)
-                        )
-                );
-                player.showTitle(title);
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_FLUTE, 1, 1);
-            }, 5*20);
-        }
-
-        scheduler.runTaskLater(plugin, manager::nextPhase, 5*20);
+      for (int i = 0; i <= 4; i++) {
+        int finalI = 5 - i;
+        scheduler.runTaskLater(
+            plugin,
+            () -> {
+              Title title =
+                  Title.title(
+                      Component.text(Integer.toString(finalI)).color(NamedTextColor.YELLOW),
+                      Component.text(""),
+                      Title.Times.times(
+                          Duration.ofMillis(5 * 50),
+                          Duration.ofMillis(10 * 50),
+                          Duration.ofMillis(5 * 50)));
+              player.showTitle(title);
+              player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1, 1);
+            },
+            i * 20);
+      }
+      scheduler.runTaskLater(
+          plugin,
+          () -> {
+            Title title =
+                Title.title(
+                    Component.text("Start").color(NamedTextColor.GOLD),
+                    Component.text(""),
+                    Title.Times.times(
+                        Duration.ofMillis(5 * 50),
+                        Duration.ofMillis(10 * 50),
+                        Duration.ofMillis(5 * 50)));
+            player.showTitle(title);
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_FLUTE, 1, 1);
+          },
+          5 * 20);
     }
 
-    @Override
-    public void stop() {
-        super.stop();
+    scheduler.runTaskLater(plugin, manager::nextPhase, 5 * 20);
+  }
 
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
-            player.clearActivePotionEffects();
-        }
+  @Override
+  public void stop() {
+    super.stop();
+
+    for (Player player : plugin.getServer().getOnlinePlayers()) {
+      player.clearActivePotionEffects();
     }
+  }
 
-    @EventHandler
-    private void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
+  @EventHandler
+  private void onPlayerMove(PlayerMoveEvent event) {
+    Player player = event.getPlayer();
 
-        Location startLocation = event.getFrom();
-        Location startLocationBlock = startLocation.getBlock().getLocation();
-        Location endLocation = event.getTo();
-        Location endLocationBlock = endLocation.getBlock().getLocation();
+    Location startLocation = event.getFrom();
+    Location startLocationBlock = startLocation.getBlock().getLocation();
+    Location endLocation = event.getTo();
+    Location endLocationBlock = endLocation.getBlock().getLocation();
 
-        if (startLocationBlock.getX() != endLocationBlock.getX() || startLocationBlock.getZ() != endLocationBlock.getZ()) {
-            event.getTo().setX(startLocation.getX());
-            event.getTo().setZ(startLocation.getZ());
-        }
+    if (startLocationBlock.getX() != endLocationBlock.getX()
+        || startLocationBlock.getZ() != endLocationBlock.getZ()) {
+      event.getTo().setX(startLocation.getX());
+      event.getTo().setZ(startLocation.getZ());
     }
+  }
 
-    @EventHandler
-    private void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        player.setGameMode(GameMode.SPECTATOR);
-    }
+  @EventHandler
+  private void onPlayerJoin(PlayerJoinEvent event) {
+    Player player = event.getPlayer();
+    player.setGameMode(GameMode.SPECTATOR);
+  }
 }
-
