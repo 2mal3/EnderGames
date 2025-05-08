@@ -45,7 +45,8 @@ public class GamePhase extends AbstractPhase implements Listener {
           new Cat(plugin),
           new Cactus(plugin),
           new Barbarian(plugin),
-          new Blaze(plugin));
+          new Blaze(plugin),
+          new Slime(plugin));
   private List<EnderChest> enderChests = new ArrayList<>();
   private final BukkitTask playerSwapTask;
   private final BukkitTask enderChestTeleportTask;
