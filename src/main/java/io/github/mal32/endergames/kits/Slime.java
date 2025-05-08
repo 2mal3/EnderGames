@@ -1,13 +1,16 @@
 package io.github.mal32.endergames.kits;
 
 import java.util.Random;
+import net.kyori.adventure.text.Component;
 import org.bukkit.*;
-import org.bukkit.entity.EnderPearl;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootTables;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -29,10 +32,9 @@ public class Slime extends AbstractKit {
 
   @EventHandler
   public void onEntityDamage(EntityDamageByEntityEvent event) {
-    if (!(event.getEntity() instanceof Player)) {
+    if (!(event.getEntity() instanceof Player player)) {
       return;
     }
-    Player player = (Player) event.getEntity();
     if (!playerHasKit(player)) {
       return;
     }
@@ -79,5 +81,50 @@ public class Slime extends AbstractKit {
         event.setDroppedExp(0);
       }
     }
+  }
+
+  @EventHandler
+  public void onSlimeballClick(PlayerInteractEvent event) {
+    Player player = event.getPlayer();
+    ItemStack item = event.getItem();
+
+    if (item != null && item.getType() == Material.SLIME_BALL) {
+      if (event.getAction() == Action.RIGHT_CLICK_AIR
+          || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        throwSlimeball(player);
+        if (player.getGameMode() != GameMode.CREATIVE) {
+          item.setAmount(item.getAmount() - 1);
+        }
+      }
+    }
+  }
+
+  public void throwSlimeball(Player player) {
+    Snowball snowball = player.launchProjectile(Snowball.class);
+    snowball.setItem(new ItemStack(Material.SLIME_BALL));
+  }
+
+  @EventHandler
+  public void onProjectileHit(ProjectileHitEvent event) {
+    if (!(event.getEntity() instanceof Snowball snowball)) {
+      return;
+    }
+    if (!(event.getEntity() instanceof Player)) {
+      return;
+    }
+    plugin.getComponentLogger().debug(Component.text("Applying Slowness"));
+    LivingEntity hitEntity = (LivingEntity) event.getEntity();
+    if (hitEntity.getPotionEffect(PotionEffectType.SLOWNESS) != null) {
+      int s_amp = hitEntity.getPotionEffect(PotionEffectType.SLOWNESS).getAmplifier();
+      hitEntity.addPotionEffect(
+          new PotionEffect(PotionEffectType.SLOWNESS, 7, s_amp + 1, true, false));
+    }
+    hitEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 7, 0, true, false));
+    // Play sound and particles on hit
+    Location location = hitEntity.getLocation();
+    location.getWorld().playSound(location, Sound.ENTITY_SLIME_HURT, 1, 1);
+    location
+        .getWorld()
+        .spawnParticle(Particle.ITEM_SLIME, location.clone().add(0, 1, 0), 30, 0.5, 0.5, 0.5, 0.1);
   }
 }
