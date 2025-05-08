@@ -18,6 +18,7 @@ select a kit with `/endergames kit <kit name>`.
 ## Vanilla Modifications
 
 - TNT automatically ignites when placed
+- more expensive shield recipe
 
 ## Contributing
 
