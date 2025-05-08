@@ -138,6 +138,7 @@ public class GamePhase extends AbstractPhase implements Listener {
   }
 
   private void enderChestTeleportTask() {
+    if (enderChests.isEmpty()) return;
     EnderChest enderChest = enderChests.get(new Random().nextInt(enderChests.size()));
 
     // get a random location near a player unobstructed by blocks
