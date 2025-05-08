@@ -41,7 +41,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class GamePhase extends AbstractPhase implements Listener {
   private List<AbstractKit> kits =
-      List.of(new Lumberjack(plugin), new Cat(plugin), new Cactus(plugin), new Barbarian(plugin));
+      List.of(
+          new Lumberjack(plugin),
+          new Cat(plugin),
+          new Cactus(plugin),
+          new Barbarian(plugin),
+          new Blaze(plugin));
   private List<EnderChest> enderChests = new ArrayList<>();
   private final BukkitTask playerSwapTask;
   private final BukkitTask enderChestTeleportTask;
@@ -219,6 +224,11 @@ public class GamePhase extends AbstractPhase implements Listener {
       player.getWorld().dropItem(player.getLocation(), item);
     }
     player.getInventory().clear();
+
+    // clear the player's effects
+    for (PotionEffect effect : player.getActivePotionEffects()) {
+      player.removePotionEffect(effect.getType());
+    }
 
     for (Player p : Bukkit.getOnlinePlayers()) {
       player.playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);

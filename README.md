@@ -8,6 +8,7 @@ Work in progress Paper plugin that brings back the discontinued EnderGames game 
 - Cat
 - Cactus
 - Barbarian
+- Blaze
 
 ## Using the Plugin
 

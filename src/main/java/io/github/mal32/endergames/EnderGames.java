@@ -74,7 +74,7 @@ public class EnderGames extends JavaPlugin implements Listener {
   }
 
   private LiteralCommandNode<CommandSourceStack> endergamesCommand() {
-    final List<String> kits = List.of("lumberjack", "cat", "cactus", "barbarian");
+    final List<String> kits = List.of("lumberjack", "cat", "cactus", "barbarian", "blaze");
 
     return Commands.literal("endergames")
         .then(
