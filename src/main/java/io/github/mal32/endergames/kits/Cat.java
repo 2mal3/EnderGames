@@ -15,11 +15,6 @@ public class Cat extends AbstractKit {
     super(plugin);
   }
 
-  @Override
-  public String getName() {
-    return "cat";
-  }
-
   @EventHandler
   private void onFallDamage(EntityDamageEvent event) {
     if (!(event.getEntity() instanceof Player)) {

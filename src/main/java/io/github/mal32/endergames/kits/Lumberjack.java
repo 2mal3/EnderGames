@@ -15,11 +15,6 @@ public class Lumberjack extends AbstractKit {
     super(plugin);
   }
 
-  @Override
-  public String getName() {
-    return "lumberjack";
-  }
-
   @EventHandler
   private void onBlockBreak(BlockBreakEvent event) {
     if (!Tag.LOGS.isTagged(event.getBlock().getType())) {

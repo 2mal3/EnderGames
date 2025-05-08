@@ -18,11 +18,6 @@ public class Cactus extends AbstractKit {
     super(plugin);
   }
 
-  @Override
-  public String getName() {
-    return "cactus";
-  }
-
   @EventHandler
   public void onEntityDamagedByEntity(EntityDamageByEntityEvent event) {
     if (!(event.getEntity() instanceof Player player)
@@ -64,7 +59,7 @@ public class Cactus extends AbstractKit {
   private void enterCactus(Player player) {
     UUID uuid = player.getUniqueId();
 
-    for (Player p: Bukkit.getOnlinePlayers()) {
+    for (Player p : Bukkit.getOnlinePlayers()) {
       p.hidePlayer(plugin, player);
     }
 
@@ -90,7 +85,7 @@ public class Cactus extends AbstractKit {
   private void leaveCactus(Player player) {
     cactusPlayerLocked.put(player.getUniqueId(), false);
 
-    for (Player p: Bukkit.getOnlinePlayers()) {
+    for (Player p : Bukkit.getOnlinePlayers()) {
       p.showPlayer(plugin, player);
     }
 
@@ -130,7 +125,8 @@ public class Cactus extends AbstractKit {
       return;
     }
 
-    if (cactusPlayerLocked.get(player.getUniqueId()) == null || !cactusPlayerLocked.get(player.getUniqueId())) {
+    if (cactusPlayerLocked.get(player.getUniqueId()) == null
+        || !cactusPlayerLocked.get(player.getUniqueId())) {
       return;
     }
 

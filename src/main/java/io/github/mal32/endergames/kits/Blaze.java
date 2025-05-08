@@ -24,11 +24,6 @@ public class Blaze extends AbstractKit {
   }
 
   @Override
-  public String getName() {
-    return "blaze";
-  }
-
-  @Override
   public void start(Player player) {
     super.start(player);
     player.addPotionEffect(
