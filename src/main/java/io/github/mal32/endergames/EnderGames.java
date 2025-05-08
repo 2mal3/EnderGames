@@ -52,9 +52,10 @@ public class EnderGames extends JavaPlugin implements Listener {
       phase = new GamePhase(this, spawn);
     } else if (phase instanceof GamePhase) {
       phase = new EndPhase(this, spawn);
-    } else if (phase instanceof EndPhase) {
+
       spawn.add(1000, 0, 0);
       updateSpawn();
+    } else if (phase instanceof EndPhase) {
       phase = new LobbyPhase(this, spawn);
     }
   }
