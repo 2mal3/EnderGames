@@ -112,7 +112,7 @@ public class Slime extends AbstractKit {
     if (!(event.getEntity() instanceof Player)) {
       return;
     }
-    plugin.getComponentLogger().debug(Component.text("Applying Slowness"));
+    plugin.getComponentLogger().info(Component.text("Applying Slowness"));
     LivingEntity hitEntity = (LivingEntity) event.getEntity();
     if (hitEntity.getPotionEffect(PotionEffectType.SLOWNESS) != null) {
       int s_amp = hitEntity.getPotionEffect(PotionEffectType.SLOWNESS).getAmplifier();
