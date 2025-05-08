@@ -11,10 +11,6 @@ public class Barbarian extends AbstractKit {
     super(plugin);
   }
 
-  public String getName() {
-    return "barbarian";
-  }
-
   @EventHandler
   public void onHit(EntityDamageByEntityEvent event) {
     if (!(event.getDamager() instanceof Player damager)) {

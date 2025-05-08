@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -7,8 +8,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.Objects;
 
 public abstract class AbstractKit implements Listener {
   JavaPlugin plugin;
@@ -36,7 +35,8 @@ public abstract class AbstractKit implements Listener {
         Bukkit.getConsoleSender(),
         "loot give " + player.getName() + " loot enga:kits/" + getName());
   }
-  ;
 
-  public abstract String getName();
+  public String getName() {
+    return this.getClass().getSimpleName().toLowerCase();
+  }
 }

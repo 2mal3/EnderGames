@@ -80,9 +80,4 @@ public class Slime extends AbstractKit {
       }
     }
   }
-
-  @Override
-  public String getName() {
-    return "slime";
-  }
 }
