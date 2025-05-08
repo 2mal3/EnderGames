@@ -18,7 +18,6 @@ import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -165,10 +164,11 @@ public class GamePhase extends AbstractPhase implements Listener {
 
   @Override
   public void stop() {
+    super.stop();
+
     playerSwapTask.cancel();
     enderChestTeleportTask.cancel();
 
-    HandlerList.unregisterAll(this);
     for (AbstractKit kit : kits) {
       kit.stop();
     }
