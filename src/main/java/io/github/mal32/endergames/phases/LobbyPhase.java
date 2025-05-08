@@ -76,14 +76,11 @@ public class LobbyPhase extends AbstractPhase {
 
   @EventHandler
   public void onPlayerMove(PlayerMoveEvent event) {
+    if (!event.hasChangedBlock()) return;
+
     Player player = event.getPlayer();
 
-    if (player.getGameMode() != GameMode.ADVENTURE) {
-      return;
-    }
-    if (!event.hasChangedBlock()) {
-      return;
-    }
+    if (player.getGameMode() != GameMode.ADVENTURE) return;
 
     if (player.getLocation().distance(spawnLocation) > 20) {
       player.teleport(playerSpawnLocation);
