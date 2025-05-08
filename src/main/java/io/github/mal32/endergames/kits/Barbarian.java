@@ -30,7 +30,7 @@ public class Barbarian extends AbstractKit {
     // +2.5% damage per lost food level
     int foodLevel = damager.getFoodLevel();
     final int maxFoodLevel = 20;
-    double damageMultiplier = 1 + ((maxFoodLevel - foodLevel) * 0.025);
+    double damageMultiplier = 1 + ((maxFoodLevel - foodLevel) * 0.05);
     event.setDamage(event.getDamage() * damageMultiplier);
   }
 }
