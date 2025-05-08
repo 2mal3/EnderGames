@@ -7,6 +7,7 @@ Work in progress Paper plugin that brings back the discontinued EnderGames game 
 - Lumberjack
 - Cat
 - Cactus
+- Barbarian
 
 ## Using the Plugin
 
