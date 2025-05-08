@@ -41,7 +41,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class GamePhase extends AbstractPhase implements Listener {
   private List<AbstractKit> kits =
-      List.of(new Lumberjack(plugin), new Cat(plugin), new Cactus(plugin));
+      List.of(new Lumberjack(plugin), new Cat(plugin), new Cactus(plugin), new Barbarian(plugin));
   private List<EnderChest> enderChests = new ArrayList<>();
   private final BukkitTask playerSwapTask;
   private final BukkitTask enderChestTeleportTask;
