@@ -1,8 +1,13 @@
 package io.github.mal32.endergames.phases;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.kits.*;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
+import java.time.Duration;
+import java.util.*;
+import java.util.stream.Collectors;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.title.Title;
@@ -29,15 +34,9 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import net.kyori.adventure.text.Component;
 import org.bukkit.scheduler.BukkitScheduler;
-import io.github.mal32.endergames.kits.*;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-
-import java.time.Duration;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class GamePhase extends AbstractPhase implements Listener {
   private List<AbstractKit> kits = List.of(new Lumberjack(plugin), new Cat(plugin), new Cactus(plugin));
@@ -72,7 +71,6 @@ public class GamePhase extends AbstractPhase implements Listener {
     world.getClearWeatherDuration();
 
     WorldBorder worldBorder = world.getWorldBorder();
-    worldBorder.setCenter(spawnLocation);
     worldBorder.setSize(600);
     worldBorder.setSize(50, 20 * 60);
     worldBorder.setWarningDistance(10);

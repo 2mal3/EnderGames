@@ -31,9 +31,7 @@ public class LobbyPhase extends AbstractPhase {
     world.setSpawnLocation(playerSpawnLocation);
     world.setGameRule(GameRule.SPAWN_RADIUS, 6);
 
-    WorldBorder border = world.getWorldBorder();
-    border.setCenter(spawnLocation);
-    border.setSize(600);
+    world.getWorldBorder().setSize(600);
 
     for (Player player : Bukkit.getServer().getOnlinePlayers()) {
       intiPlayer(player);
@@ -47,7 +45,8 @@ public class LobbyPhase extends AbstractPhase {
     BlockVector structureSize = structure.getSize();
     int posX = (int) (spawnLocation.x() - (structureSize.getBlockX() / 2.0));
     int posZ = (int) (spawnLocation.z() - (structureSize.getBlockZ() / 2.0));
-    Location location = new Location(spawnLocation.getWorld(), (int) posX, spawnLocation.getY(), posZ);
+    Location location =
+        new Location(spawnLocation.getWorld(), (int) posX, spawnLocation.getY(), posZ);
     structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
   }
 
