@@ -1,5 +1,8 @@
 package io.github.mal32.endergames.kits;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -9,10 +12,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
 
 public class Cactus extends AbstractKit {
   public Cactus(JavaPlugin plugin) {
@@ -34,7 +33,7 @@ public class Cactus extends AbstractKit {
       return;
     }
 
-    if (Math.random() < 0.8) {
+    if (Math.random() > 0.8) {
       return;
     }
 
