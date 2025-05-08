@@ -7,17 +7,18 @@ import io.github.mal32.endergames.phases.*;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import java.util.List;
+import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.List;
-
 public class EnderGames extends JavaPlugin implements Listener {
   private Location spawn;
   private AbstractPhase phase;
+  private final NamespacedKey spawnKey = new NamespacedKey(this, "spawn");
 
   @Override
   public void onEnable() {
@@ -27,8 +28,20 @@ public class EnderGames extends JavaPlugin implements Listener {
             commands -> commands.registrar().register(endergamesCommand()));
 
     World world = Bukkit.getWorlds().getFirst();
-    spawn = new Location(world, 0, 150, 0);
-    phase = new LobbyPhase(this,  spawn);
+
+    if (!world.getPersistentDataContainer().has(spawnKey)) {
+      Bukkit.getServer().sendMessage(Component.text("First EnderGames server start"));
+      spawn = new Location(world, 0, 150, 0);
+      updateSpawn();
+    }
+
+    List<Integer> rawSpawn =
+        world
+            .getPersistentDataContainer()
+            .get(spawnKey, PersistentDataType.LIST.listTypeFrom(PersistentDataType.INTEGER));
+    spawn = new Location(world, rawSpawn.get(0), 150, rawSpawn.get(1));
+
+    phase = new LobbyPhase(this, spawn);
   }
 
   public void nextPhase() {
@@ -40,8 +53,24 @@ public class EnderGames extends JavaPlugin implements Listener {
     } else if (phase instanceof GamePhase) {
       phase = new EndPhase(this, spawn);
     } else if (phase instanceof EndPhase) {
+      spawn.add(1000, 0, 0);
+      updateSpawn();
       phase = new LobbyPhase(this, spawn);
     }
+  }
+
+  private void updateSpawn() {
+    World world = spawn.getWorld();
+
+    world
+        .getPersistentDataContainer()
+        .set(
+            spawnKey,
+            PersistentDataType.LIST.listTypeFrom(PersistentDataType.INTEGER),
+            List.of((int) spawn.getX(), (int) spawn.getZ()));
+
+    world.setSpawnLocation(spawn);
+    world.getWorldBorder().setCenter(spawn);
   }
 
   private LiteralCommandNode<CommandSourceStack> endergamesCommand() {
