@@ -194,7 +194,7 @@ public class GamePhase extends AbstractPhase implements Listener {
       return;
     }
 
-    Player nearestPlayer = getNearestPlayer(player);
+    Player nearestPlayer = getNearestSurvivalPlayer(player);
 
     Location targetLocation = nearestPlayer.getLocation();
     Location currentLocation = player.getLocation();
@@ -243,15 +243,15 @@ public class GamePhase extends AbstractPhase implements Listener {
     }
   }
 
-  public Player getNearestPlayer(Player executor) {
+  public Player getNearestSurvivalPlayer(Player executor) {
     Player nearest = null;
     double nearestDistance = Double.MAX_VALUE;
     Location executorLocation = executor.getLocation();
 
     for (Player other : executor.getServer().getOnlinePlayers()) {
-      if (other.equals(executor)) {
-        continue;
-      }
+      if (other.equals(executor)) continue;
+      if (other.getGameMode() == GameMode.SPECTATOR) continue;
+
       double distance = executorLocation.distance(other.getLocation());
       if (distance < nearestDistance) {
         nearestDistance = distance;
