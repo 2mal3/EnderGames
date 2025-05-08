@@ -21,6 +21,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -39,7 +40,8 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 public class GamePhase extends AbstractPhase implements Listener {
-  private List<AbstractKit> kits = List.of(new Lumberjack(plugin), new Cat(plugin), new Cactus(plugin));
+  private List<AbstractKit> kits =
+      List.of(new Lumberjack(plugin), new Cat(plugin), new Cactus(plugin));
   private List<EnderChest> enderChests = new ArrayList<>();
   private final BukkitTask playerSwapTask;
   private final BukkitTask enderChestTeleportTask;
@@ -324,6 +326,19 @@ public class GamePhase extends AbstractPhase implements Listener {
     Player player = event.getPlayer();
     player.setGameMode(GameMode.SPECTATOR);
   }
+
+  @EventHandler
+  private void onPlayerPlaceTNT(BlockPlaceEvent event) {
+    if (event.getBlock().getType() != Material.TNT) {
+      return;
+    }
+
+    Block block = event.getBlock();
+
+    block.setType(Material.AIR);
+
+    block.getWorld().spawnEntity(block.getLocation().clone().add(0.5, 0, 0.5), EntityType.TNT);
+  }
 }
 
 class EnderChest implements InventoryHolder {
@@ -362,7 +377,8 @@ class EnderChest implements InventoryHolder {
 
     Location blockSpawnLocation = this.location.clone();
     blockSpawnLocation.setY(300);
-    FallingBlock fallingBlock = (FallingBlock) world.spawnEntity(blockSpawnLocation, EntityType.FALLING_BLOCK);
+    FallingBlock fallingBlock =
+        (FallingBlock) world.spawnEntity(blockSpawnLocation, EntityType.FALLING_BLOCK);
     fallingBlock.setDropItem(false);
     fallingBlock.setBlockData(Bukkit.createBlockData(Material.OBSIDIAN));
 
