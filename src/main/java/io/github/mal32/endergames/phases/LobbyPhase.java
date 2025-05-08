@@ -56,7 +56,8 @@ public class LobbyPhase extends AbstractPhase {
     player.getInventory().clear();
     player.setGameMode(GameMode.ADVENTURE);
     player.addPotionEffect(
-        new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 1, true, false));
+        new PotionEffect(
+            PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, true, false));
   }
 
   @Override
