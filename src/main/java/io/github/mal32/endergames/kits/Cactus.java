@@ -42,12 +42,15 @@ public class Cactus extends AbstractKit {
   @EventHandler
   public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) {
-      return;
-    }
+    if (!playerHasKit(player)) return;
 
     if (event.isSneaking()) {
-      enterCactus(player);
+      boolean currentBlockEmpty = player.getLocation().getBlock().isEmpty();
+      boolean standingBlockSolid = player.getLocation().clone().add(0, -1, 0).getBlock().isSolid();
+
+      if (currentBlockEmpty && standingBlockSolid) {
+        enterCactus(player);
+      }
     } else {
       leaveCactus(player);
     }
