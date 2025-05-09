@@ -12,7 +12,7 @@ public abstract class AbstractTask {
     this.plugin = plugin;
 
     BukkitScheduler scheduler = plugin.getServer().getScheduler();
-    task = scheduler.runTaskTimer(plugin, this::run, this.getDelay(), this.getDelay());
+    task = scheduler.runTaskTimer(plugin, this::run, this.getDelayTicks(), this.getDelayTicks());
   }
 
   public abstract void run();
@@ -22,5 +22,5 @@ public abstract class AbstractTask {
     task.cancel();
   }
 
-  protected abstract int getDelay();
+  protected abstract int getDelayTicks();
 }

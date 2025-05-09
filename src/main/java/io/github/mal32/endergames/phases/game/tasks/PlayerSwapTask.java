@@ -15,7 +15,7 @@ public class PlayerSwapTask extends AbstractTask {
   }
 
   @Override
-  public int getDelay() {
+  public int getDelayTicks() {
     return 20 * 60;
   }
 
