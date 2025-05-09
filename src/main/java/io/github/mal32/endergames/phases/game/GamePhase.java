@@ -18,6 +18,9 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -54,7 +57,6 @@ public class GamePhase extends AbstractPhase implements Listener {
     super(plugin, spawn);
 
     for (Player player : plugin.getServer().getOnlinePlayers()) {
-      player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 20 * 60 * 3, 4, true));
       player.setGameMode(GameMode.SURVIVAL);
 
       Bukkit.dispatchCommand(
@@ -96,6 +98,33 @@ public class GamePhase extends AbstractPhase implements Listener {
           }
         },
         30 * 20);
+
+    initProtectionTime();
+  }
+
+  private void initProtectionTime() {
+    final int protectionTimeDurationSeconds = 60 * 3;
+
+    final BossBar protectionTimeBar =
+        Bukkit.createBossBar("Protection Time", BarColor.GREEN, BarStyle.SEGMENTED_20);
+    protectionTimeBar.setProgress(0.0);
+
+    for (int i = 0; i < protectionTimeDurationSeconds; i += 10) {
+      final double progress = 1 - ((double) i / protectionTimeDurationSeconds);
+      Bukkit.getScheduler()
+          .runTaskLater(plugin, () -> protectionTimeBar.setProgress(progress), (int) (i * 20));
+    }
+
+    Bukkit.getScheduler()
+        .runTaskLater(plugin, protectionTimeBar::removeAll, 20 * protectionTimeDurationSeconds);
+
+    for (Player player : plugin.getServer().getOnlinePlayers()) {
+      protectionTimeBar.addPlayer(player);
+
+      player.addPotionEffect(
+          new PotionEffect(
+              PotionEffectType.RESISTANCE, 20 * protectionTimeDurationSeconds, 4, true, false));
+    }
   }
 
   @Override
