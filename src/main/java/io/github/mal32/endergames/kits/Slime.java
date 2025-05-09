@@ -1,7 +1,6 @@
 package io.github.mal32.endergames.kits;
 
 import java.util.Random;
-import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -102,6 +101,7 @@ public class Slime extends AbstractKit {
   public void throwSlimeball(Player player) {
     Snowball snowball = player.launchProjectile(Snowball.class);
     snowball.setItem(new ItemStack(Material.SLIME_BALL));
+    snowball.setShooter(player);
   }
 
   @EventHandler
@@ -109,22 +109,27 @@ public class Slime extends AbstractKit {
     if (!(event.getEntity() instanceof Snowball snowball)) {
       return;
     }
-    if (!(event.getEntity() instanceof Player)) {
+    if (!(event.getHitEntity() instanceof Player)) {
       return;
     }
-    plugin.getComponentLogger().info(Component.text("Applying Slowness"));
-    LivingEntity hitEntity = (LivingEntity) event.getEntity();
+    LivingEntity hitEntity = (LivingEntity) event.getHitEntity();
     if (hitEntity.getPotionEffect(PotionEffectType.SLOWNESS) != null) {
       int s_amp = hitEntity.getPotionEffect(PotionEffectType.SLOWNESS).getAmplifier();
       hitEntity.addPotionEffect(
-          new PotionEffect(PotionEffectType.SLOWNESS, 7, s_amp + 1, true, false));
+          new PotionEffect(PotionEffectType.SLOWNESS, 7 * 20, s_amp + 1, true, false));
     }
-    hitEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 7, 0, true, false));
+    hitEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 7 * 20, 0, true, false));
     // Play sound and particles on hit
     Location location = hitEntity.getLocation();
     location.getWorld().playSound(location, Sound.ENTITY_SLIME_HURT, 1, 1);
     location
         .getWorld()
         .spawnParticle(Particle.ITEM_SLIME, location.clone().add(0, 1, 0), 30, 0.5, 0.5, 0.5, 0.1);
+    // play Hit sound for Shooter
+    Player shooterPlayer = (Player) event.getEntity().getShooter();
+    if (shooterPlayer != null) {
+      Location shooterLocation = shooterPlayer.getLocation();
+      shooterLocation.getWorld().playSound(shooterLocation, Sound.ENTITY_SLIME_SQUISH_SMALL, 1, 2);
+    }
   }
 }
