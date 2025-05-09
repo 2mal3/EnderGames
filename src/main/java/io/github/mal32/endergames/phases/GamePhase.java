@@ -47,9 +47,8 @@ public class GamePhase extends AbstractPhase implements Listener {
           new Barbarian(plugin),
           new Blaze(plugin),
           new Slime(plugin));
-  private List<EnderChest> enderChests = new ArrayList<>();
-  private final BukkitTask playerSwapTask;
-  private final BukkitTask enderChestTeleportTask;
+  private List<AbstractTask> tasks = List.of(new PlayerSwapTask(this), new EnderChestTask(this));
+  public List<EnderChest> enderChests = new ArrayList<>();
 
   public GamePhase(EnderGames plugin, Location spawn) {
     super(plugin, spawn);
@@ -97,81 +96,17 @@ public class GamePhase extends AbstractPhase implements Listener {
           }
         },
         30 * 20);
-
-    playerSwapTask =
-        Bukkit.getScheduler().runTaskTimer(plugin, this::playerSwapTask, 20 * 60, 20 * 60);
-    enderChestTeleportTask =
-        Bukkit.getScheduler().runTaskTimer(plugin, this::enderChestTeleportTask, 20 * 10, 20 * 10);
-  }
-
-  private void playerSwapTask() {
-    // get two distinct players
-    List<Player> players =
-        Bukkit.getOnlinePlayers().stream()
-            .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
-            .collect(Collectors.toList());
-    if (players.size() < 2) {
-      return;
-    }
-
-    Player player1 = players.get(new Random().nextInt(players.size()));
-    players.remove(player1);
-    Player player2 = players.get(new Random().nextInt(players.size()));
-
-    // swap their locations
-    Location player1Location = player1.getLocation().clone();
-    Location player2Location = player2.getLocation().clone();
-
-    player1.teleport(player2Location);
-    player2.teleport(player1Location);
-
-    playerSwapEffects(player1);
-    playerSwapEffects(player2);
-  }
-
-  private void playerSwapEffects(Player player) {
-    Location location = player.getLocation();
-    location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.5f);
-    location.getWorld().spawnParticle(Particle.PORTAL, location, 50, 0, 0, 0);
-
-    player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 0, true));
-  }
-
-  private void enderChestTeleportTask() {
-    if (enderChests.isEmpty()) return;
-    EnderChest enderChest = enderChests.get(new Random().nextInt(enderChests.size()));
-
-    // get a random location near a player unobstructed by blocks
-    List<Player> players =
-        Bukkit.getOnlinePlayers().stream()
-            .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
-            .collect(Collectors.toList());
-    if (players.isEmpty()) {
-      return;
-    }
-    Player player = players.get(new Random().nextInt(players.size()));
-
-    Location location = player.getLocation().getBlock().getLocation().clone();
-    // get a random location near the player
-    final int range = 64;
-    int xOffset = new Random().nextInt(range * 2) - range;
-    int zOffset = new Random().nextInt(range * 2) - range;
-    location.add(xOffset, 0, zOffset);
-    location.setY(location.getWorld().getHighestBlockYAt(location));
-    location.add(0, 1, 0);
-
-    enderChest.teleport(location);
   }
 
   @Override
   public void stop() {
     super.stop();
 
-    playerSwapTask.cancel();
-    enderChestTeleportTask.cancel();
-
     for (AbstractKit kit : kits) {
       kit.stop();
+    }
+    for (AbstractTask task : tasks) {
+      task.stop();
     }
 
     WorldBorder worldBorder = spawnLocation.getWorld().getWorldBorder();
@@ -422,5 +357,112 @@ class EnderChest implements InventoryHolder {
 
   public Location getLocation() {
     return location;
+  }
+}
+
+abstract class AbstractTask {
+  protected final GamePhase gamePhase;
+  protected final JavaPlugin plugin;
+  protected final BukkitTask task;
+
+  public AbstractTask(JavaPlugin plugin, GamePhase gamePhase) {
+    this.gamePhase = gamePhase;
+    this.plugin = plugin;
+
+    BukkitScheduler scheduler = plugin.getServer().getScheduler();
+    task = scheduler.runTaskTimer(plugin, this::run, this.getDelay(), this.getDelay());
+  }
+
+  public abstract void run();
+
+  public void stop() {
+    if (task == null) return;
+    task.cancel();
+  }
+
+  protected abstract int getDelay();
+}
+
+class PlayerSwapTask extends AbstractTask {
+  public PlayerSwapTask(GamePhase gamePhase) {
+    super(gamePhase.plugin, gamePhase);
+  }
+
+  @Override
+  public int getDelay() {
+    return 20 * 60;
+  }
+
+  @Override
+  public void run() {
+    // get two distinct players
+    List<Player> players =
+        Bukkit.getOnlinePlayers().stream()
+            .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
+            .collect(Collectors.toList());
+    if (players.size() < 2) {
+      return;
+    }
+
+    Player player1 = players.get(new Random().nextInt(players.size()));
+    players.remove(player1);
+    Player player2 = players.get(new Random().nextInt(players.size()));
+
+    // swap their locations
+    Location player1Location = player1.getLocation().clone();
+    Location player2Location = player2.getLocation().clone();
+
+    player1.teleport(player2Location);
+    player2.teleport(player1Location);
+
+    playerSwapEffects(player1);
+    playerSwapEffects(player2);
+  }
+
+  private void playerSwapEffects(Player player) {
+    Location location = player.getLocation();
+    location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.5f);
+    location.getWorld().spawnParticle(Particle.PORTAL, location, 50, 0, 0, 0);
+
+    player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 0, true));
+  }
+}
+
+class EnderChestTask extends AbstractTask {
+  public EnderChestTask(GamePhase gamePhase) {
+    super(gamePhase.plugin, gamePhase);
+  }
+
+  @Override
+  public int getDelay() {
+    return 20 * 10;
+  }
+
+  @Override
+  public void run() {
+    if (gamePhase.enderChests.isEmpty()) return;
+    EnderChest enderChest =
+        gamePhase.enderChests.get(new Random().nextInt(gamePhase.enderChests.size()));
+
+    // get a random location near a player unobstructed by blocks
+    List<Player> players =
+        Bukkit.getOnlinePlayers().stream()
+            .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
+            .collect(Collectors.toList());
+    if (players.isEmpty()) {
+      return;
+    }
+    Player player = players.get(new Random().nextInt(players.size()));
+
+    Location location = player.getLocation().getBlock().getLocation().clone();
+    // get a random location near the player
+    final int range = 64;
+    int xOffset = new Random().nextInt(range * 2) - range;
+    int zOffset = new Random().nextInt(range * 2) - range;
+    location.add(xOffset, 0, zOffset);
+    location.setY(location.getWorld().getHighestBlockYAt(location));
+    location.add(0, 1, 0);
+
+    enderChest.teleport(location);
   }
 }

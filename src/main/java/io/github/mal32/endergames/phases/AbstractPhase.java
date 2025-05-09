@@ -7,7 +7,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
 public class AbstractPhase implements Listener {
-  public EnderGames plugin;
+  protected final EnderGames plugin;
   public Location spawnLocation;
 
   public AbstractPhase(EnderGames plugin, Location spawn) {
