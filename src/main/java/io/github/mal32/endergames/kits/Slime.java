@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import java.util.Random;
 import org.bukkit.*;
 import org.bukkit.entity.*;
@@ -115,8 +116,11 @@ public class Slime extends AbstractKit {
     LivingEntity hitEntity = (LivingEntity) event.getHitEntity();
     if (hitEntity.getPotionEffect(PotionEffectType.SLOWNESS) != null) {
       int s_amp = hitEntity.getPotionEffect(PotionEffectType.SLOWNESS).getAmplifier();
+      if (s_amp <= 2) {
+        s_amp += 1;
+      }
       hitEntity.addPotionEffect(
-          new PotionEffect(PotionEffectType.SLOWNESS, 7 * 20, s_amp + 1, true, false));
+          new PotionEffect(PotionEffectType.SLOWNESS, 7 * 20, s_amp, true, false));
     }
     hitEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 7 * 20, 0, true, false));
     // Play sound and particles on hit
@@ -130,6 +134,19 @@ public class Slime extends AbstractKit {
     if (shooterPlayer != null) {
       Location shooterLocation = shooterPlayer.getLocation();
       shooterLocation.getWorld().playSound(shooterLocation, Sound.ENTITY_SLIME_SQUISH_SMALL, 1, 2);
+    }
+  }
+
+  // Get Slimeballs while Jumping
+  @EventHandler
+  public void onPlayerJump(PlayerJumpEvent event) {
+    if (!playerHasKit(event.getPlayer())) {
+      return;
+    }
+    Random random = new Random();
+    ItemStack slimeball = new ItemStack(Material.SLIME_BALL, 1);
+    if (random.nextInt(5) == 0) {
+      event.getPlayer().getInventory().addItem(slimeball);
     }
   }
 }
