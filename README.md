@@ -56,6 +56,7 @@ select a kit with `/endergames kit <kit name>`.
 
 - TNT automatically ignites when placed
 - more expensive Shield recipe
+- slow natural regeneration, even when having low food level
 
 ## Contributing
 
