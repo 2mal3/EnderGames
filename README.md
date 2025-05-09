@@ -13,22 +13,43 @@ select a kit with `/endergames kit <kit name>`.
 
 - <details>
   <summary>Barbarian</summary>
+
+  - deals 5% more damage per empty food level with swords
+  - equipment: wooden sword and full Leather armor with Unbreaking I 
+  
 </details>
 
 - <details>
   <summary>Blaze</summary>
+
+  - equipment: golden sword and Blaze Powder to activate Burn ability
+  
 </details>
 
 - <details>
   <summary>Cactus</summary>
+
+  - equipment: green leather helmet and leggings
+  
 </details>
 
 - <details>
   <summary>Cat</summary>
+
+  - eating fish gives Speed III for 30 seconds
+  - the empty hand deals +2 extra Damage
+  - fall damage is reduced by 50%
+  - equipment: 20 raw fish
+
 </details>
 
 - <details>
   <summary>Lumberjack</summary>
+
+  - mining a log directly destroys its entire tree
+  - all axes get enchanted with Sharpness I
+  - equipment: wooden axe with Sharpness I, red leather chestplate and blue leather leggings
+  
 </details>
 
 ## Vanilla Modifications
