@@ -1,7 +1,11 @@
-package io.github.mal32.endergames.phases;
+package io.github.mal32.endergames.phases.game;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.*;
+import io.github.mal32.endergames.phases.AbstractPhase;
+import io.github.mal32.endergames.phases.game.tasks.AbstractTask;
+import io.github.mal32.endergames.phases.game.tasks.EnderChestTask;
+import io.github.mal32.endergames.phases.game.tasks.PlayerSwapTask;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
 import java.time.Duration;
@@ -14,8 +18,6 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.FallingBlock;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,18 +27,11 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.loot.LootContext;
-import org.bukkit.loot.LootTable;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
 
 public class GamePhase extends AbstractPhase implements Listener {
   private List<AbstractKit> kits =
@@ -47,8 +42,9 @@ public class GamePhase extends AbstractPhase implements Listener {
           new Barbarian(plugin),
           new Blaze(plugin),
           new Slime(plugin));
-  private List<AbstractTask> tasks = List.of(new PlayerSwapTask(this), new EnderChestTask(this));
-  public List<EnderChest> enderChests = new ArrayList<>();
+  private List<EnderChest> enderChests = new ArrayList<>();
+  private final List<AbstractTask> tasks =
+      List.of(new PlayerSwapTask(plugin), new EnderChestTask(plugin, enderChests));
 
   public GamePhase(EnderGames plugin, Location spawn) {
     super(plugin, spawn);
@@ -285,184 +281,5 @@ public class GamePhase extends AbstractPhase implements Listener {
     block.setType(Material.AIR);
 
     block.getWorld().spawnEntity(block.getLocation().clone().add(0.5, 0, 0.5), EntityType.TNT);
-  }
-}
-
-class EnderChest implements InventoryHolder {
-  private final Inventory inventory;
-  private Location location;
-
-  public EnderChest(JavaPlugin plugin, Location location) {
-    this.inventory = plugin.getServer().createInventory(this, 27);
-    this.location = location;
-
-    fill();
-  }
-
-  public void teleport(Location location) {
-    new ArrayList<>(inventory.getViewers()).forEach(HumanEntity::closeInventory);
-
-    destroy();
-    this.location = location;
-    place();
-    fill();
-  }
-
-  public void destroy() {
-    Block block = this.location.getBlock();
-
-    if (!location.getChunk().isLoaded()) {
-      location.getChunk().load();
-    }
-
-    block.setType(Material.AIR);
-    effects();
-  }
-
-  private void place() {
-    World world = location.getWorld();
-
-    Location blockSpawnLocation = this.location.clone();
-    blockSpawnLocation.setY(300);
-    FallingBlock fallingBlock =
-        (FallingBlock) world.spawnEntity(blockSpawnLocation, EntityType.FALLING_BLOCK);
-    fallingBlock.setDropItem(false);
-    fallingBlock.setBlockData(Bukkit.createBlockData(Material.OBSIDIAN));
-
-    Block block = world.getBlockAt(location);
-    block.setType(Material.ENDER_CHEST);
-
-    effects();
-  }
-
-  private void effects() {
-    location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.5f);
-    location.getWorld().spawnParticle(Particle.PORTAL, location, 50, 0, 0, 0);
-  }
-
-  private void fill() {
-    inventory.clear();
-
-    LootTable lootTable = Bukkit.getLootTable(new NamespacedKey("enga", "ender_chest"));
-    LootContext.Builder lootContextBuilder = new LootContext.Builder(location);
-    LootContext lootContext = lootContextBuilder.build();
-    lootTable.fillInventory(this.inventory, new Random(), lootContext);
-  }
-
-  @Override
-  @NotNull
-  public Inventory getInventory() {
-    return inventory;
-  }
-
-  public Location getLocation() {
-    return location;
-  }
-}
-
-abstract class AbstractTask {
-  protected final GamePhase gamePhase;
-  protected final JavaPlugin plugin;
-  protected final BukkitTask task;
-
-  public AbstractTask(JavaPlugin plugin, GamePhase gamePhase) {
-    this.gamePhase = gamePhase;
-    this.plugin = plugin;
-
-    BukkitScheduler scheduler = plugin.getServer().getScheduler();
-    task = scheduler.runTaskTimer(plugin, this::run, this.getDelay(), this.getDelay());
-  }
-
-  public abstract void run();
-
-  public void stop() {
-    if (task == null) return;
-    task.cancel();
-  }
-
-  protected abstract int getDelay();
-}
-
-class PlayerSwapTask extends AbstractTask {
-  public PlayerSwapTask(GamePhase gamePhase) {
-    super(gamePhase.plugin, gamePhase);
-  }
-
-  @Override
-  public int getDelay() {
-    return 20 * 60;
-  }
-
-  @Override
-  public void run() {
-    // get two distinct players
-    List<Player> players =
-        Bukkit.getOnlinePlayers().stream()
-            .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
-            .collect(Collectors.toList());
-    if (players.size() < 2) {
-      return;
-    }
-
-    Player player1 = players.get(new Random().nextInt(players.size()));
-    players.remove(player1);
-    Player player2 = players.get(new Random().nextInt(players.size()));
-
-    // swap their locations
-    Location player1Location = player1.getLocation().clone();
-    Location player2Location = player2.getLocation().clone();
-
-    player1.teleport(player2Location);
-    player2.teleport(player1Location);
-
-    playerSwapEffects(player1);
-    playerSwapEffects(player2);
-  }
-
-  private void playerSwapEffects(Player player) {
-    Location location = player.getLocation();
-    location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.5f);
-    location.getWorld().spawnParticle(Particle.PORTAL, location, 50, 0, 0, 0);
-
-    player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 0, true));
-  }
-}
-
-class EnderChestTask extends AbstractTask {
-  public EnderChestTask(GamePhase gamePhase) {
-    super(gamePhase.plugin, gamePhase);
-  }
-
-  @Override
-  public int getDelay() {
-    return 20 * 10;
-  }
-
-  @Override
-  public void run() {
-    if (gamePhase.enderChests.isEmpty()) return;
-    EnderChest enderChest =
-        gamePhase.enderChests.get(new Random().nextInt(gamePhase.enderChests.size()));
-
-    // get a random location near a player unobstructed by blocks
-    List<Player> players =
-        Bukkit.getOnlinePlayers().stream()
-            .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
-            .collect(Collectors.toList());
-    if (players.isEmpty()) {
-      return;
-    }
-    Player player = players.get(new Random().nextInt(players.size()));
-
-    Location location = player.getLocation().getBlock().getLocation().clone();
-    // get a random location near the player
-    final int range = 64;
-    int xOffset = new Random().nextInt(range * 2) - range;
-    int zOffset = new Random().nextInt(range * 2) - range;
-    location.add(xOffset, 0, zOffset);
-    location.setY(location.getWorld().getHighestBlockYAt(location));
-    location.add(0, 1, 0);
-
-    enderChest.teleport(location);
   }
 }
