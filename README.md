@@ -9,6 +9,13 @@ as this can be damaged by the game.
 The game can only be started by server operators with the command `/endergames start`, for which all players must first
 select a kit with `/endergames kit <kit name>`.
 
+### Recommended Server Settings
+
+- `spawn-protection=0`
+- `simulation-distance` at least 6
+- `force-gamemode=false`
+- `allow-nether=false` optional, to have the original EnderGames experience
+
 ## Kits
 
 - <details>
