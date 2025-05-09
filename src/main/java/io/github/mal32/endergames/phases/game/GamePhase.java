@@ -5,6 +5,7 @@ import io.github.mal32.endergames.kits.*;
 import io.github.mal32.endergames.phases.AbstractPhase;
 import io.github.mal32.endergames.phases.game.tasks.AbstractTask;
 import io.github.mal32.endergames.phases.game.tasks.EnderChestTask;
+import io.github.mal32.endergames.phases.game.tasks.PlayerRegenerationTask;
 import io.github.mal32.endergames.phases.game.tasks.PlayerSwapTask;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
@@ -44,7 +45,10 @@ public class GamePhase extends AbstractPhase implements Listener {
           new Slime(plugin));
   private List<EnderChest> enderChests = new ArrayList<>();
   private final List<AbstractTask> tasks =
-      List.of(new PlayerSwapTask(plugin), new EnderChestTask(plugin, enderChests));
+      List.of(
+          new PlayerSwapTask(plugin),
+          new EnderChestTask(plugin, enderChests),
+          new PlayerRegenerationTask(plugin));
 
   public GamePhase(EnderGames plugin, Location spawn) {
     super(plugin, spawn);
