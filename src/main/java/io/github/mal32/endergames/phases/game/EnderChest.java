@@ -48,11 +48,11 @@ public class EnderChest implements InventoryHolder {
   private void place() {
     World world = location.getWorld();
 
-    Location blockSpawnLocation = this.location.clone();
-    blockSpawnLocation.setY(300);
+    Location blockSpawnLocation = this.location.getBlock().getLocation().clone();
+    blockSpawnLocation.setY(256);
     FallingBlock fallingBlock =
         (FallingBlock) world.spawnEntity(blockSpawnLocation, EntityType.FALLING_BLOCK);
-    fallingBlock.setDropItem(false);
+    fallingBlock.setCancelDrop(true);
     fallingBlock.setBlockData(Bukkit.createBlockData(Material.OBSIDIAN));
 
     Block block = world.getBlockAt(location);
