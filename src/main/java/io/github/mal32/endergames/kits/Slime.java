@@ -116,7 +116,7 @@ public class Slime extends AbstractKit {
     LivingEntity hitEntity = (LivingEntity) event.getHitEntity();
     if (hitEntity.getPotionEffect(PotionEffectType.SLOWNESS) != null) {
       int s_amp = hitEntity.getPotionEffect(PotionEffectType.SLOWNESS).getAmplifier();
-      if (s_amp <= 2) {
+      if (s_amp < 2) {
         s_amp += 1;
       }
       hitEntity.addPotionEffect(
@@ -131,9 +131,10 @@ public class Slime extends AbstractKit {
         .spawnParticle(Particle.ITEM_SLIME, location.clone().add(0, 1, 0), 30, 0.5, 0.5, 0.5, 0.1);
     // play Hit sound for Shooter
     Player shooterPlayer = (Player) event.getEntity().getShooter();
+    plugin.getLogger().info("Shooter: " + shooterPlayer.getName());
     if (shooterPlayer != null) {
       Location shooterLocation = shooterPlayer.getLocation();
-      shooterLocation.getWorld().playSound(shooterLocation, Sound.ENTITY_SLIME_SQUISH_SMALL, 1, 2);
+      shooterLocation.getWorld().playSound(shooterLocation, Sound.ENTITY_SLIME_SQUISH_SMALL, 1, 1);
     }
   }
 
