@@ -4,11 +4,25 @@ Work in progress Paper plugin that brings back the discontinued EnderGames game 
 
 ## Kits
 
-- Lumberjack
-- Cat
-- Cactus
-- Barbarian
-- Blaze
+- <details>
+  <summary>Barbarian</summary>
+</details>
+
+- <details>
+  <summary>Blaze</summary>
+</details>
+
+- <details>
+  <summary>Cactus</summary>
+</details>
+
+- <details>
+  <summary>Cat</summary>
+</details>
+
+- <details>
+  <summary>Lumberjack</summary>
+</details>
 
 ## Using the Plugin
 
