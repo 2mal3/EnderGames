@@ -14,42 +14,42 @@ select a kit with `/endergames kit <kit name>`.
 - <details>
   <summary>Barbarian</summary>
 
-  - deals 5% more damage per empty food level with swords
-  - equipment: wooden sword and full Leather armor with Unbreaking I 
-  
+    - deals 5% more damage per empty food level with swords
+    - equipment: wooden sword and full Leather armor with Unbreaking I
+
 </details>
 
 - <details>
   <summary>Blaze</summary>
 
-  - equipment: golden sword and Blaze Powder to activate Burn ability
-  
+    - equipment: golden sword and Blaze Powder to activate Burn ability
+
 </details>
 
 - <details>
   <summary>Cactus</summary>
 
-  - equipment: green leather helmet and leggings
-  
+    - equipment: green leather helmet and leggings
+
 </details>
 
 - <details>
   <summary>Cat</summary>
 
-  - eating fish gives Speed III for 30 seconds
-  - the empty hand deals +2 extra Damage
-  - fall damage is reduced by 50%
-  - equipment: 20 raw fish
+    - eating fish gives Speed III for 30 seconds
+    - the empty hand deals +2 extra Damage
+    - fall damage is reduced by 50%
+    - equipment: 20 raw fish
 
 </details>
 
 - <details>
   <summary>Lumberjack</summary>
 
-  - mining a log directly destroys its entire tree
-  - all axes get enchanted with Sharpness I
-  - equipment: wooden axe with Sharpness I, red leather chestplate and blue leather leggings
-  
+    - mining a log directly destroys its entire tree
+    - all axes get enchanted with Sharpness I
+    - equipment: wooden axe with Sharpness I, red leather chestplate and blue leather leggings
+
 </details>
 
 ## Vanilla Modifications
@@ -57,6 +57,26 @@ select a kit with `/endergames kit <kit name>`.
 - TNT automatically ignites when placed
 - more expensive Shield recipe
 - slow natural regeneration, even when having low food level
+
+## Contributors ✨
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/2mal3"><img src="https://avatars.githubusercontent.com/u/56305732?v=4?s=100" width="100px;" alt="2mal3"/><br /><sub><b>2mal3</b></sub></a><br /><a href="https://github.com/2mal3/EnderGames/commits?author=2mal3" title="Code">💻</a> <a href="https://github.com/2mal3/EnderGames/commits?author=2mal3" title="Documentation">📖</a> <a href="#ideas-2mal3" title="Ideas, Planning, & Feedback">🤔</a> <a href="#userTesting-2mal3" title="User Testing">📓</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/MCsharerGIT"><img src="https://avatars.githubusercontent.com/u/98043315?v=4?s=100" width="100px;" alt="Mathis Jänisch"/><br /><sub><b>Mathis Jänisch</b></sub></a><br /><a href="https://github.com/2mal3/EnderGames/commits?author=MCsharerGIT" title="Code">💻</a> <a href="#ideas-MCsharerGIT" title="Ideas, Planning, & Feedback">🤔</a> <a href="#userTesting-MCsharerGIT" title="User Testing">📓</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/EisnerCode"><img src="https://avatars.githubusercontent.com/u/100302756?v=4?s=100" width="100px;" alt="Eisner"/><br /><sub><b>Eisner</b></sub></a><br /><a href="#ideas-EisnerCode" title="Ideas, Planning, & Feedback">🤔</a> <a href="#mentoring-EisnerCode" title="Mentoring">🧑‍🏫</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 ## Contributing
 

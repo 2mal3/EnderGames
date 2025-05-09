@@ -1,0 +1,49 @@
+{
+  "projectName": "EnderGames",
+  "projectOwner": "2mal3",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitConvention": "none",
+  "contributors": [
+    {
+      "login": "2mal3",
+      "name": "2mal3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/56305732?v=4",
+      "profile": "https://github.com/2mal3",
+      "contributions": [
+        "code",
+        "doc",
+        "ideas",
+        "userTesting"
+      ]
+    },
+    {
+      "login": "MCsharerGIT",
+      "name": "Mathis Jänisch",
+      "avatar_url": "https://avatars.githubusercontent.com/u/98043315?v=4",
+      "profile": "https://github.com/MCsharerGIT",
+      "contributions": [
+        "code",
+        "ideas",
+        "userTesting"
+      ]
+    },
+    {
+      "login": "EisnerCode",
+      "name": "Eisner",
+      "avatar_url": "https://avatars.githubusercontent.com/u/100302756?v=4",
+      "profile": "https://github.com/EisnerCode",
+      "contributions": [
+        "ideas",
+        "mentoring"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "linkToUsage": false
+}
