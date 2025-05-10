@@ -3,6 +3,7 @@ package io.github.mal32.endergames.kits;
 import java.util.Arrays;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -62,16 +63,44 @@ public class Lumberjack extends AbstractKit {
 
   @Override
   public ItemStack getDescriptionItem() {
-    ItemStack item = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
+    ItemStack item = new ItemStack(Material.WOODEN_AXE, 1);
     ItemMeta meta = item.getItemMeta();
-    meta.displayName(Component.text("Barbarian"));
+    meta.displayName(
+        Component.text("Lumberjack")
+            .color(NamedTextColor.GOLD)
+            .decoration(TextDecoration.ITALIC, false));
     meta.lore(
         Arrays.asList(
-            Component.text("deals 5% more damage per empty food level with swords")
-                .color(NamedTextColor.GOLD),
-            Component.text("Equipment: Wooden Sword and full Leather armor")
-                .color(NamedTextColor.GOLD)));
+            Component.text("Abilities:")
+                .decorate(TextDecoration.UNDERLINED)
+                .color(NamedTextColor.GRAY)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("The lumberjack can fell entire trees")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("with a single axe swing.")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("Every axe he crafts automatically")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("gains Sharpness I.")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text(" "),
+            Component.text("Equipment:")
+                .decorate(TextDecoration.UNDERLINED)
+                .color(NamedTextColor.GRAY)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("Wooden axe, red leather chestplate,")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("blue leather pants, black boots.")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false)));
+
     item.setItemMeta(meta);
+
     return item;
   }
 }

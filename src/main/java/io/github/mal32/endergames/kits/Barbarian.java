@@ -3,6 +3,7 @@ package io.github.mal32.endergames.kits;
 import java.util.Arrays;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.entity.Player;
@@ -40,14 +41,44 @@ public class Barbarian extends AbstractKit {
   public ItemStack getDescriptionItem() {
     ItemStack item = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
     ItemMeta meta = item.getItemMeta();
-    meta.displayName(Component.text("Barbarian"));
+    meta.displayName(
+        Component.text("Barbarian")
+            .color(NamedTextColor.GOLD)
+            .decoration(TextDecoration.ITALIC, false));
     meta.lore(
         Arrays.asList(
-            Component.text("deals 5% more damage per empty food level with swords")
-                .color(NamedTextColor.GOLD),
-            Component.text("Equipment: Wooden Sword and full Leather armor")
-                .color(NamedTextColor.GOLD)));
+            Component.text("Abilities:")
+                .decorate(TextDecoration.UNDERLINED)
+                .color(NamedTextColor.GRAY)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("Deals more attack damage")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("the hungrier he is")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("(+2.5% attack damage per")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("half hunger bar missing)")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text(" "), // Empty line — no styling needed
+            Component.text("Equipment:")
+                .decorate(TextDecoration.UNDERLINED)
+                .color(NamedTextColor.GRAY)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("A wooden sword and")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("a full set of leather")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("armor with Unbreaking I")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false)));
     item.setItemMeta(meta);
+
     return item;
   }
 }

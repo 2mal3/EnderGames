@@ -3,6 +3,7 @@ package io.github.mal32.endergames.kits;
 import java.util.Arrays;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.entity.Player;
@@ -68,16 +69,38 @@ public class Cat extends AbstractKit {
 
   @Override
   public ItemStack getDescriptionItem() {
-    ItemStack item = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
+    ItemStack item = new ItemStack(Material.COD, 1);
     ItemMeta meta = item.getItemMeta();
-    meta.displayName(Component.text("Barbarian"));
+    meta.displayName(
+        Component.text("Cat").color(NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
     meta.lore(
         Arrays.asList(
-            Component.text("deals 5% more damage per empty food level with swords")
-                .color(NamedTextColor.GOLD),
-            Component.text("Equipment: Wooden Sword and full Leather armor")
-                .color(NamedTextColor.GOLD)));
+            Component.text("Abilities:")
+                .decorate(TextDecoration.UNDERLINED)
+                .color(NamedTextColor.GRAY)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("Gains Speed III for 30 seconds when")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("eating raw fish.")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("It deals +1 damage with bare hands")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("and takes 50% less fall damage.")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text(" "),
+            Component.text("Equipment:")
+                .decorate(TextDecoration.UNDERLINED)
+                .color(NamedTextColor.GRAY)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("20 raw fish.")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false)));
     item.setItemMeta(meta);
+
     return item;
   }
 }

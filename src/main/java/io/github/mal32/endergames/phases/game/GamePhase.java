@@ -62,6 +62,10 @@ public class GamePhase extends AbstractPhase implements Listener {
         }
       }
     }
+    // Enable the event listener for all kits
+    for (AbstractKit kit : kits) {
+      kit.enable();
+    }
 
     World world = spawnLocation.getWorld();
 

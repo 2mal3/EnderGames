@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -120,16 +121,43 @@ public class Blaze extends AbstractKit {
 
   @Override
   public ItemStack getDescriptionItem() {
-    ItemStack item = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
+    ItemStack item = new ItemStack(Material.BLAZE_POWDER, 1);
     ItemMeta meta = item.getItemMeta();
-    meta.displayName(Component.text("Barbarian"));
+    meta.displayName(
+        Component.text("Blaze")
+            .color(NamedTextColor.GOLD)
+            .decoration(TextDecoration.ITALIC, false));
     meta.lore(
         Arrays.asList(
-            Component.text("deals 5% more damage per empty food level with swords")
-                .color(NamedTextColor.GOLD),
-            Component.text("Equipment: Wooden Sword and full Leather armor")
-                .color(NamedTextColor.GOLD)));
+            Component.text("Abilities:")
+                .decorate(TextDecoration.UNDERLINED)
+                .color(NamedTextColor.GRAY)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("Can leave a fire trail for a short time.")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("It is immune to fire damage,")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("but gains Weakness I in water.")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("Sword or Bow hits have a")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("20% chance to ignite enemies")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text(" "), // Empty line — no styling needed
+            Component.text("Equipment:")
+                .decorate(TextDecoration.UNDERLINED)
+                .color(NamedTextColor.GRAY)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("Golden Sword and Burn Power")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false)));
     item.setItemMeta(meta);
+
     return item;
   }
 }

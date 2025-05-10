@@ -15,7 +15,9 @@ public abstract class AbstractKit implements Listener {
 
   public AbstractKit(JavaPlugin plugin) {
     this.plugin = plugin;
+  }
 
+  public void enable() {
     Bukkit.getPluginManager().registerEvents(this, plugin);
   }
 
