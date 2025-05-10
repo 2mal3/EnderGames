@@ -177,13 +177,25 @@ public class GamePhase extends AbstractPhase implements Listener {
     event.setCancelled(true);
 
     Player player = event.getEntity();
+
+    Player damager = null;
+    if (event.getDamageSource().getCausingEntity() instanceof Player d) {
+      damager = d;
+      player.sendMessage(
+          Component.text("")
+              .append(Component.text(damager.getName()).color(NamedTextColor.DARK_RED))
+              .append(Component.text(" has ").color(NamedTextColor.RED))
+              .append(Component.text(damager.getHealth() + "❤").color(NamedTextColor.DARK_RED))
+              .append(Component.text(" left").color(NamedTextColor.RED)));
+    }
+
     player.setGameMode(GameMode.SPECTATOR);
     player.setHealth(20);
 
-    abstractPlayerDeath(player);
+    abstractPlayerDeath(player, damager);
   }
 
-  private void abstractPlayerDeath(Player player) {
+  private void abstractPlayerDeath(Player player, Player damager) {
     for (ItemStack item : player.getInventory().getContents()) {
       if (item == null) {
         continue;
@@ -201,8 +213,21 @@ public class GamePhase extends AbstractPhase implements Listener {
       player.playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);
     }
 
-    Bukkit.getServer()
-        .sendMessage(Component.text("☠ " + player.getName()).color(NamedTextColor.RED));
+    if (damager == null) {
+      Bukkit.getServer()
+          .sendMessage(
+              Component.text("")
+                  .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
+                  .append(Component.text(player.getName()).color(NamedTextColor.RED)));
+    } else {
+      Bukkit.getServer()
+          .sendMessage(
+              Component.text("")
+                  .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
+                  .append(Component.text(player.getName()).color(NamedTextColor.RED))
+                  .append(Component.text(" was killed by ").color(NamedTextColor.DARK_RED))
+                  .append(Component.text(damager.getName()).color(NamedTextColor.RED)));
+    }
 
     if (!moreThanOnePlayersAlive()) {
       plugin.getServer().getScheduler().runTask(plugin, this::win);
@@ -231,7 +256,7 @@ public class GamePhase extends AbstractPhase implements Listener {
   private void onPlayerQuit(PlayerQuitEvent event) {
     if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) return;
 
-    abstractPlayerDeath(event.getPlayer());
+    abstractPlayerDeath(event.getPlayer(), null);
   }
 
   private void win() {
