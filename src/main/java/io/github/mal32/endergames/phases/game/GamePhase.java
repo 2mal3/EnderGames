@@ -82,8 +82,8 @@ public class GamePhase extends AbstractPhase implements Listener {
     WorldBorder worldBorder = world.getWorldBorder();
     worldBorder.setSize(600);
     worldBorder.setSize(50, 20 * 60);
-    worldBorder.setWarningDistance(10);
-    worldBorder.setWarningTime(30);
+    worldBorder.setWarningDistance(32);
+    worldBorder.setWarningTime(60);
     worldBorder.setDamageBuffer(1);
 
     BukkitScheduler scheduler = plugin.getServer().getScheduler();
