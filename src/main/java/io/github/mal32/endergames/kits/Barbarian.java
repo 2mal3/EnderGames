@@ -29,7 +29,7 @@ public class Barbarian extends AbstractKit {
     // +2.5% damage per lost food level
     int foodLevel = damager.getFoodLevel();
     final int maxFoodLevel = 20;
-    double damageMultiplier = 1 + ((maxFoodLevel - foodLevel) * 0.05);
+    double damageMultiplier = 1 + ((maxFoodLevel - foodLevel) * 0.025);
     event.setDamage(event.getDamage() * damageMultiplier);
 
     if (damageMultiplier > 1.30) {
@@ -37,7 +37,7 @@ public class Barbarian extends AbstractKit {
       location.getWorld().playSound(location, Sound.BLOCK_MANGROVE_ROOTS_BREAK, 1, 0.5f);
       location
           .getWorld()
-          .spawnParticle(Particle.INFESTED, location.clone().add(0, 1, 0), 20, 0.2, 0.6, 0.2, 2);
+          .spawnParticle(Particle.HEART, location.clone().add(0, 1, 0), 10, 0.2, 0.6, 0.2, 2);
     }
   }
 }
