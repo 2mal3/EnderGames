@@ -1,7 +1,10 @@
 package io.github.mal32.endergames.kits;
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
+import java.util.Arrays;
 import java.util.Random;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -11,6 +14,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.loot.LootTables;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -149,5 +153,20 @@ public class Slime extends AbstractKit {
     if (random.nextInt(5) == 0) {
       event.getPlayer().getInventory().addItem(slimeball);
     }
+  }
+
+  @Override
+  public ItemStack getDescriptionItem() {
+    ItemStack item = new ItemStack(Material.SLIME_BALL, 1);
+    ItemMeta meta = item.getItemMeta();
+    meta.displayName(Component.text("Slime"));
+    meta.lore(
+        Arrays.asList(
+            Component.text("deals 5% more damage per empty food level with swords")
+                .color(NamedTextColor.GOLD),
+            Component.text("Equipment: Wooden Sword and full Leather armor")
+                .color(NamedTextColor.GOLD)));
+    item.setItemMeta(meta);
+    return item;
   }
 }

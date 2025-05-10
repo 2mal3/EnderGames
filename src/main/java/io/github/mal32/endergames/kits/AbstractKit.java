@@ -6,6 +6,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -39,4 +40,6 @@ public abstract class AbstractKit implements Listener {
   public String getName() {
     return this.getClass().getSimpleName().toLowerCase();
   }
+
+  public abstract ItemStack getDescriptionItem();
 }

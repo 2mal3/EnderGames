@@ -35,14 +35,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 
 public class GamePhase extends AbstractPhase implements Listener {
-  private List<AbstractKit> kits =
-      List.of(
-          new Lumberjack(plugin),
-          new Cat(plugin),
-          new Cactus(plugin),
-          new Barbarian(plugin),
-          new Blaze(plugin),
-          new Slime(plugin));
   private List<EnderChest> enderChests = new ArrayList<>();
   private final List<AbstractTask> tasks =
       List.of(

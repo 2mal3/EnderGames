@@ -1,5 +1,8 @@
 package io.github.mal32.endergames.kits;
 
+import java.util.Arrays;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -8,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Lumberjack extends AbstractKit {
@@ -54,5 +58,20 @@ public class Lumberjack extends AbstractKit {
     }
     result.addEnchantment(Enchantment.SHARPNESS, 1);
     event.getInventory().setResult(result);
+  }
+
+  @Override
+  public ItemStack getDescriptionItem() {
+    ItemStack item = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
+    ItemMeta meta = item.getItemMeta();
+    meta.displayName(Component.text("Barbarian"));
+    meta.lore(
+        Arrays.asList(
+            Component.text("deals 5% more damage per empty food level with swords")
+                .color(NamedTextColor.GOLD),
+            Component.text("Equipment: Wooden Sword and full Leather armor")
+                .color(NamedTextColor.GOLD)));
+    item.setItemMeta(meta);
+    return item;
   }
 }

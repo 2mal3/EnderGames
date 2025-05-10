@@ -1,8 +1,11 @@
 package io.github.mal32.endergames.kits;
 
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -14,6 +17,7 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -112,5 +116,20 @@ public class Blaze extends AbstractKit {
     if (burnTime.get(player.getUniqueId()).isBefore(LocalTime.now())) return;
 
     player.getLocation().getBlock().setType(Material.FIRE);
+  }
+
+  @Override
+  public ItemStack getDescriptionItem() {
+    ItemStack item = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
+    ItemMeta meta = item.getItemMeta();
+    meta.displayName(Component.text("Barbarian"));
+    meta.lore(
+        Arrays.asList(
+            Component.text("deals 5% more damage per empty food level with swords")
+                .color(NamedTextColor.GOLD),
+            Component.text("Equipment: Wooden Sword and full Leather armor")
+                .color(NamedTextColor.GOLD)));
+    item.setItemMeta(meta);
+    return item;
   }
 }

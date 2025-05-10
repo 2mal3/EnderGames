@@ -1,8 +1,11 @@
 package io.github.mal32.endergames.kits;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -11,6 +14,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Cactus extends AbstractKit {
@@ -134,5 +139,20 @@ public class Cactus extends AbstractKit {
     }
 
     event.setCancelled(true);
+  }
+
+  @Override
+  public ItemStack getDescriptionItem() {
+    ItemStack item = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
+    ItemMeta meta = item.getItemMeta();
+    meta.displayName(Component.text("Barbarian"));
+    meta.lore(
+        Arrays.asList(
+            Component.text("deals 5% more damage per empty food level with swords")
+                .color(NamedTextColor.GOLD),
+            Component.text("Equipment: Wooden Sword and full Leather armor")
+                .color(NamedTextColor.GOLD)));
+    item.setItemMeta(meta);
+    return item;
   }
 }
