@@ -98,7 +98,7 @@ public class Cactus extends AbstractKit {
     }
   }
 
-  @EventHandler
+  @EventHandler(ignoreCancelled = true)
   public void onPlayerDeath(PlayerDeathEvent event) {
     if (!(playerHasKit(event.getPlayer()))) {
       return;
