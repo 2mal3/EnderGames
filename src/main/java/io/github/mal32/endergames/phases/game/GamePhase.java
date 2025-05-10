@@ -229,6 +229,8 @@ public class GamePhase extends AbstractPhase implements Listener {
 
   @EventHandler
   private void onPlayerQuit(PlayerQuitEvent event) {
+    if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) return;
+
     abstractPlayerDeath(event.getPlayer());
   }
 
