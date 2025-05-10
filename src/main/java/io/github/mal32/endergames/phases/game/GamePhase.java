@@ -23,6 +23,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -313,6 +314,11 @@ public class GamePhase extends AbstractPhase implements Listener {
 
     block.setType(Material.AIR);
 
-    block.getWorld().spawnEntity(block.getLocation().clone().add(0.5, 0, 0.5), EntityType.TNT);
+    TNTPrimed tnt =
+        (TNTPrimed)
+            block
+                .getWorld()
+                .spawnEntity(block.getLocation().clone().add(0.5, 0, 0.5), EntityType.TNT);
+    tnt.setFuseTicks(30);
   }
 }
