@@ -53,9 +53,12 @@ public class GamePhase extends AbstractPhase implements Listener {
           new PlayerSwapTask(plugin),
           new EnderChestTask(plugin, enderChests),
           new PlayerRegenerationTask(plugin));
+  private final EnchanterManager enchanterManager;
 
   public GamePhase(EnderGames plugin, Location spawn) {
     super(plugin, spawn);
+
+    this.enchanterManager = new EnchanterManager(plugin, spawn);
 
     for (Player player : plugin.getServer().getOnlinePlayers()) {
       player.setGameMode(GameMode.SURVIVAL);
@@ -138,6 +141,8 @@ public class GamePhase extends AbstractPhase implements Listener {
     for (AbstractTask task : tasks) {
       task.stop();
     }
+
+    enchanterManager.stop();
 
     WorldBorder worldBorder = spawnLocation.getWorld().getWorldBorder();
     worldBorder.setSize(600);
