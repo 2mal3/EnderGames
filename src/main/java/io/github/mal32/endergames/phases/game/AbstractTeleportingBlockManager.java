@@ -7,6 +7,10 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/*
+ * This class is an abstract representation of a teleporting block manager.
+ * It handles the teleportation and switching of moving blocks like ender chests in specific time intervals.
+ */
 public abstract class AbstractTeleportingBlockManager extends AbstractTask {
 
   public AbstractTeleportingBlockManager(JavaPlugin plugin) {

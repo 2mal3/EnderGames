@@ -4,6 +4,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
+/*
+ * This class is an abstract representation of a task that runs at a specified interval.
+ */
 public abstract class AbstractTask extends AbstractModule {
   private BukkitTask task;
 
