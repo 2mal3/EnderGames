@@ -1,40 +1,29 @@
-package io.github.mal32.endergames.phases.game.tasks;
+package io.github.mal32.endergames.phases.game;
 
-import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.phases.game.EnderChest;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
-public class EnderChestTask extends AbstractTask {
-  private final List<EnderChest> enderChests;
+/*
+ * This class is an abstract representation of a teleporting block manager.
+ * It handles the teleportation and switching of moving blocks like ender chests in specific time intervals.
+ */
+public abstract class AbstractTeleportingBlockManager extends AbstractTask {
 
-  public EnderChestTask(EnderGames plugin, List<EnderChest> enderChests) {
+  public AbstractTeleportingBlockManager(JavaPlugin plugin) {
     super(plugin);
-    this.enderChests = enderChests;
   }
 
-  @Override
-  public int getDelayTicks() {
-    return 20 * 10;
-  }
-
-  @Override
-  public void run() {
-    if (enderChests.isEmpty()) return;
-    EnderChest enderChest = enderChests.get(new Random().nextInt(enderChests.size()));
-
-    // get a random location near a player unobstructed by blocks
+  protected Location getRandomLocationNearPlayer() {
     List<Player> players =
         Bukkit.getOnlinePlayers().stream()
             .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
             .collect(Collectors.toList());
     if (players.isEmpty()) {
-      return;
+      return null;
     }
     Player player = players.get(new Random().nextInt(players.size()));
 
@@ -47,6 +36,11 @@ public class EnderChestTask extends AbstractTask {
     location.setY(location.getWorld().getHighestBlockYAt(location));
     location.add(0, 1, 0);
 
-    enderChest.teleport(location);
+    return location;
+  }
+
+  protected static void playTeleportEffects(Location location) {
+    location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.5f);
+    location.getWorld().spawnParticle(Particle.PORTAL, location, 50, 0, 0, 0);
   }
 }

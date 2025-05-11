@@ -1,26 +1,26 @@
-package io.github.mal32.endergames.phases.game.tasks;
+package io.github.mal32.endergames.phases.game;
 
-import io.github.mal32.endergames.EnderGames;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class PlayerSwapTask extends AbstractTask {
-  public PlayerSwapTask(EnderGames plugin) {
+public class PlayerSwapManager extends AbstractTask {
+  public PlayerSwapManager(JavaPlugin plugin) {
     super(plugin);
   }
 
   @Override
-  public int getDelayTicks() {
+  public int getDelay() {
     return 20 * 60;
   }
 
   @Override
-  public void run() {
+  public void task() {
     // get two distinct players
     List<Player> players =
         Bukkit.getOnlinePlayers().stream()
