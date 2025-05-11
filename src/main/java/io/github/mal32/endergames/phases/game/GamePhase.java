@@ -3,10 +3,6 @@ package io.github.mal32.endergames.phases.game;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.*;
 import io.github.mal32.endergames.phases.AbstractPhase;
-import io.github.mal32.endergames.phases.game.tasks.AbstractTask;
-import io.github.mal32.endergames.phases.game.tasks.EnderChestTask;
-import io.github.mal32.endergames.phases.game.tasks.PlayerRegenerationTask;
-import io.github.mal32.endergames.phases.game.tasks.PlayerSwapTask;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
 import java.time.Duration;
@@ -26,7 +22,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -47,18 +42,15 @@ public class GamePhase extends AbstractPhase implements Listener {
           new Barbarian(plugin),
           new Blaze(plugin),
           new Slime(plugin));
-  private List<EnderChest> enderChests = new ArrayList<>();
-  private final List<AbstractTask> tasks =
+  private final List<AbstractModule> modules =
       List.of(
-          new PlayerSwapTask(plugin),
-          new EnderChestTask(plugin, enderChests),
-          new PlayerRegenerationTask(plugin));
-  private final EnchanterManager enchanterManager;
+          new EnchanterManager(plugin, spawnLocation),
+          new EnderChestManager(plugin),
+          new PlayerRegenerationManager(plugin),
+          new PlayerSwapManager(plugin));
 
   public GamePhase(EnderGames plugin, Location spawn) {
     super(plugin, spawn);
-
-    this.enchanterManager = new EnchanterManager(plugin, spawn);
 
     for (Player player : plugin.getServer().getOnlinePlayers()) {
       player.setGameMode(GameMode.SURVIVAL);
@@ -104,6 +96,10 @@ public class GamePhase extends AbstractPhase implements Listener {
         30 * 20);
 
     initProtectionTime();
+
+    for (AbstractModule module : modules) {
+      module.enable();
+    }
   }
 
   private void initProtectionTime() {
@@ -138,11 +134,9 @@ public class GamePhase extends AbstractPhase implements Listener {
     for (AbstractKit kit : kits) {
       kit.stop();
     }
-    for (AbstractTask task : tasks) {
-      task.stop();
+    for (AbstractModule module : modules) {
+      module.disable();
     }
-
-    enchanterManager.stop();
 
     WorldBorder worldBorder = spawnLocation.getWorld().getWorldBorder();
     worldBorder.setSize(600);
@@ -297,37 +291,6 @@ public class GamePhase extends AbstractPhase implements Listener {
       }
     }
     return playersAlive > 1;
-  }
-
-  @EventHandler
-  private void onEnderChestInteract(PlayerInteractEvent event) {
-    if (event.getAction() != Action.RIGHT_CLICK_BLOCK
-        || event.getClickedBlock() == null
-        || event.getClickedBlock().getType() != Material.ENDER_CHEST) {
-      return;
-    }
-
-    Location blockLocation = event.getClickedBlock().getLocation().clone();
-    EnderChest enderChest = null;
-    for (EnderChest e : enderChests) {
-      if (e.getLocation().getX() == blockLocation.getX()
-          && e.getLocation().getZ() == blockLocation.getZ()) {
-        enderChest = e;
-        break;
-      }
-    }
-    if (enderChest == null) {
-      enderChest = new EnderChest(plugin, blockLocation);
-      enderChests.add(enderChest);
-    }
-
-    EnderChest finalEnderChest = enderChest;
-    Bukkit.getScheduler()
-        .runTask(
-            plugin,
-            () -> {
-              event.getPlayer().openInventory(finalEnderChest.getInventory());
-            });
   }
 
   @EventHandler

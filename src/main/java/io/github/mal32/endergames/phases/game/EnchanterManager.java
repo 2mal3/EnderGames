@@ -9,8 +9,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.EnchantingInventory;
@@ -19,24 +17,31 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
-public class EnchanterManager implements Listener {
+public class EnchanterManager extends AbstractModule {
   private final ArrayList<Location> enchanterLocations = new ArrayList<>();
-  protected final BukkitTask task;
+  protected BukkitTask task;
 
   public EnchanterManager(JavaPlugin plugin, Location spwanLocation) {
-    Bukkit.getPluginManager().registerEvents(this, plugin);
-
-    BukkitScheduler scheduler = plugin.getServer().getScheduler();
-    task = scheduler.runTaskTimer(plugin, this::task, 20 * 10, 20 * 10);
+    super(plugin);
 
     for (int i = 0; i < 4; i++) {
       enchanterLocations.add(spwanLocation.clone().add(0, 0, 0));
     }
   }
 
-  public void stop() {
+  @Override
+  public void enable() {
+    super.enable();
+
+    BukkitScheduler scheduler = plugin.getServer().getScheduler();
+    task = scheduler.runTaskTimer(plugin, this::task, 20 * 10, 20 * 10);
+  }
+
+  @Override
+  public void disable() {
+    super.disable();
+
     task.cancel();
-    HandlerList.unregisterAll(this);
   }
 
   private void task() {
