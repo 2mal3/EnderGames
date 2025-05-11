@@ -36,6 +36,7 @@ import org.bukkit.util.BlockVector;
 
 public class LobbyPhase extends AbstractPhase {
   public Location playerSpawnLocation;
+  KitSelector kitSel = new KitSelector(plugin, this.kits);
 
   public LobbyPhase(EnderGames plugin, Location spawn) {
     super(plugin, spawn);
@@ -76,7 +77,6 @@ public class LobbyPhase extends AbstractPhase {
     player.addPotionEffect(
         new PotionEffect(
             PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, true, false));
-    KitSelector kitSel = new KitSelector(plugin, this.kits);
     kitSel.giveKitSelector(player);
   }
 
