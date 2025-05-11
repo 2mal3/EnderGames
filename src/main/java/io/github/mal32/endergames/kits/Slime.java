@@ -112,22 +112,21 @@ public class Slime extends AbstractKit {
 
   @EventHandler
   public void onProjectileHit(ProjectileHitEvent event) {
-    if (!(event.getEntity() instanceof Snowball snowball)) {
-      return;
-    }
-    if (!(event.getHitEntity() instanceof Player)) {
-      return;
-    }
-    LivingEntity hitEntity = (LivingEntity) event.getHitEntity();
+    if (!(event.getEntity() instanceof Snowball snowball)) return;
+    if (!(event.getHitEntity() instanceof Player hitEntity)) return;
+
+    if (hitEntity.isBlocking()) return;
+
     if (hitEntity.getPotionEffect(PotionEffectType.SLOWNESS) != null) {
-      int s_amp = hitEntity.getPotionEffect(PotionEffectType.SLOWNESS).getAmplifier();
-      if (s_amp < 2) {
-        s_amp += 1;
+      int amplifier = hitEntity.getPotionEffect(PotionEffectType.SLOWNESS).getAmplifier();
+      if (amplifier < 2) {
+        amplifier += 1;
       }
       hitEntity.addPotionEffect(
-          new PotionEffect(PotionEffectType.SLOWNESS, 7 * 20, s_amp, true, false));
+          new PotionEffect(PotionEffectType.SLOWNESS, 7 * 20, amplifier, true, false));
     }
     hitEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 7 * 20, 0, true, false));
+
     // Play sound and particles on hit
     Location location = hitEntity.getLocation();
     location.getWorld().playSound(location, Sound.ENTITY_SLIME_HURT, 1, 1);

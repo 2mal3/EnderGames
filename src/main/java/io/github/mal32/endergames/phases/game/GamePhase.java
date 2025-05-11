@@ -3,10 +3,6 @@ package io.github.mal32.endergames.phases.game;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.*;
 import io.github.mal32.endergames.phases.AbstractPhase;
-import io.github.mal32.endergames.phases.game.tasks.AbstractTask;
-import io.github.mal32.endergames.phases.game.tasks.EnderChestTask;
-import io.github.mal32.endergames.phases.game.tasks.PlayerRegenerationTask;
-import io.github.mal32.endergames.phases.game.tasks.PlayerSwapTask;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
 import java.time.Duration;
@@ -18,11 +14,15 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -35,18 +35,17 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 
 public class GamePhase extends AbstractPhase implements Listener {
-  private List<EnderChest> enderChests = new ArrayList<>();
-  private final List<AbstractTask> tasks =
+  private final List<AbstractModule> modules =
       List.of(
-          new PlayerSwapTask(plugin),
-          new EnderChestTask(plugin, enderChests),
-          new PlayerRegenerationTask(plugin));
+          new EnchanterManager(plugin, spawnLocation),
+          new EnderChestManager(plugin),
+          new PlayerRegenerationManager(plugin),
+          new PlayerSwapManager(plugin));
 
   public GamePhase(EnderGames plugin, Location spawn) {
     super(plugin, spawn);
 
     for (Player player : plugin.getServer().getOnlinePlayers()) {
-      player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 20 * 60 * 3, 4, true));
       player.setGameMode(GameMode.SURVIVAL);
 
       Bukkit.dispatchCommand(
@@ -75,8 +74,8 @@ public class GamePhase extends AbstractPhase implements Listener {
     WorldBorder worldBorder = world.getWorldBorder();
     worldBorder.setSize(600);
     worldBorder.setSize(50, 20 * 60);
-    worldBorder.setWarningDistance(10);
-    worldBorder.setWarningTime(30);
+    worldBorder.setWarningDistance(32);
+    worldBorder.setWarningTime(60);
     worldBorder.setDamageBuffer(1);
 
     BukkitScheduler scheduler = plugin.getServer().getScheduler();
@@ -92,6 +91,37 @@ public class GamePhase extends AbstractPhase implements Listener {
           }
         },
         30 * 20);
+
+    initProtectionTime();
+
+    for (AbstractModule module : modules) {
+      module.enable();
+    }
+  }
+
+  private void initProtectionTime() {
+    final int protectionTimeDurationSeconds = 60 * 3;
+
+    final BossBar protectionTimeBar =
+        Bukkit.createBossBar("Protection Time", BarColor.GREEN, BarStyle.SEGMENTED_20);
+    protectionTimeBar.setProgress(0.0);
+
+    for (int i = 0; i < protectionTimeDurationSeconds; i += 10) {
+      final double progress = 1 - ((double) i / protectionTimeDurationSeconds);
+      Bukkit.getScheduler()
+          .runTaskLater(plugin, () -> protectionTimeBar.setProgress(progress), (int) (i * 20));
+    }
+
+    Bukkit.getScheduler()
+        .runTaskLater(plugin, protectionTimeBar::removeAll, 20 * protectionTimeDurationSeconds);
+
+    for (Player player : plugin.getServer().getOnlinePlayers()) {
+      protectionTimeBar.addPlayer(player);
+
+      player.addPotionEffect(
+          new PotionEffect(
+              PotionEffectType.RESISTANCE, 20 * protectionTimeDurationSeconds, 4, true, false));
+    }
   }
 
   @Override
@@ -101,8 +131,8 @@ public class GamePhase extends AbstractPhase implements Listener {
     for (AbstractKit kit : kits) {
       kit.stop();
     }
-    for (AbstractTask task : tasks) {
-      task.stop();
+    for (AbstractModule module : modules) {
+      module.disable();
     }
 
     WorldBorder worldBorder = spawnLocation.getWorld().getWorldBorder();
@@ -143,20 +173,41 @@ public class GamePhase extends AbstractPhase implements Listener {
     event.setCancelled(true);
 
     Player player = event.getEntity();
+
+    Player damager = null;
+    if (event.getDamageSource().getCausingEntity() instanceof Player d) {
+      damager = d;
+      player.sendMessage(
+          Component.text("")
+              .append(Component.text(damager.getName()).color(NamedTextColor.DARK_RED))
+              .append(Component.text(" has ").color(NamedTextColor.RED))
+              .append(Component.text(damager.getHealth() + "❤").color(NamedTextColor.DARK_RED))
+              .append(Component.text(" left").color(NamedTextColor.RED)));
+    }
+
     player.setGameMode(GameMode.SPECTATOR);
     player.setHealth(20);
 
-    abstractPlayerDeath(player);
+    abstractPlayerDeath(player, damager);
   }
 
-  private void abstractPlayerDeath(Player player) {
+  private void abstractPlayerDeath(Player player, Player damager) {
+    World world = player.getWorld();
+
     for (ItemStack item : player.getInventory().getContents()) {
       if (item == null) {
         continue;
       }
-      player.getWorld().dropItem(player.getLocation(), item);
+      world.dropItem(player.getLocation(), item);
     }
     player.getInventory().clear();
+
+    while (player.getLevel() > 0) {
+      ExperienceOrb orb =
+          (ExperienceOrb) world.spawnEntity(player.getLocation(), EntityType.EXPERIENCE_ORB);
+      orb.setExperience(player.getExpToLevel());
+      player.setLevel(player.getLevel() - 1);
+    }
 
     // clear the player's effects
     for (PotionEffect effect : player.getActivePotionEffects()) {
@@ -167,8 +218,21 @@ public class GamePhase extends AbstractPhase implements Listener {
       player.playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);
     }
 
-    Bukkit.getServer()
-        .sendMessage(Component.text("☠ " + player.getName()).color(NamedTextColor.RED));
+    if (damager == null) {
+      Bukkit.getServer()
+          .sendMessage(
+              Component.text("")
+                  .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
+                  .append(Component.text(player.getName()).color(NamedTextColor.RED)));
+    } else {
+      Bukkit.getServer()
+          .sendMessage(
+              Component.text("")
+                  .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
+                  .append(Component.text(player.getName()).color(NamedTextColor.RED))
+                  .append(Component.text(" was killed by ").color(NamedTextColor.DARK_RED))
+                  .append(Component.text(damager.getName()).color(NamedTextColor.RED)));
+    }
 
     if (!moreThanOnePlayersAlive()) {
       plugin.getServer().getScheduler().runTask(plugin, this::win);
@@ -195,7 +259,9 @@ public class GamePhase extends AbstractPhase implements Listener {
 
   @EventHandler
   private void onPlayerQuit(PlayerQuitEvent event) {
-    abstractPlayerDeath(event.getPlayer());
+    if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) return;
+
+    abstractPlayerDeath(event.getPlayer(), null);
   }
 
   private void win() {
@@ -234,37 +300,6 @@ public class GamePhase extends AbstractPhase implements Listener {
   }
 
   @EventHandler
-  private void onEnderChestInteract(PlayerInteractEvent event) {
-    if (event.getAction() != Action.RIGHT_CLICK_BLOCK
-        || event.getClickedBlock() == null
-        || event.getClickedBlock().getType() != Material.ENDER_CHEST) {
-      return;
-    }
-
-    Location blockLocation = event.getClickedBlock().getLocation().clone();
-    EnderChest enderChest = null;
-    for (EnderChest e : enderChests) {
-      if (e.getLocation().getX() == blockLocation.getX()
-          && e.getLocation().getZ() == blockLocation.getZ()) {
-        enderChest = e;
-        break;
-      }
-    }
-    if (enderChest == null) {
-      enderChest = new EnderChest(plugin, blockLocation);
-      enderChests.add(enderChest);
-    }
-
-    EnderChest finalEnderChest = enderChest;
-    Bukkit.getScheduler()
-        .runTask(
-            plugin,
-            () -> {
-              event.getPlayer().openInventory(finalEnderChest.getInventory());
-            });
-  }
-
-  @EventHandler
   private void onPlayerJoin(PlayerJoinEvent event) {
     Player player = event.getPlayer();
     player.setGameMode(GameMode.SPECTATOR);
@@ -280,6 +315,11 @@ public class GamePhase extends AbstractPhase implements Listener {
 
     block.setType(Material.AIR);
 
-    block.getWorld().spawnEntity(block.getLocation().clone().add(0.5, 0, 0.5), EntityType.TNT);
+    TNTPrimed tnt =
+        (TNTPrimed)
+            block
+                .getWorld()
+                .spawnEntity(block.getLocation().clone().add(0.5, 0, 0.5), EntityType.TNT);
+    tnt.setFuseTicks(30);
   }
 }
