@@ -8,32 +8,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 
-public class PlayerSwapManager extends AbstractModule {
-  private BukkitTask task;
-
+public class PlayerSwapManager extends AbstractTask {
   public PlayerSwapManager(JavaPlugin plugin) {
     super(plugin);
   }
 
   @Override
-  public void enable() {
-    super.enable();
-
-    BukkitScheduler scheduler = plugin.getServer().getScheduler();
-    task = scheduler.runTaskTimer(plugin, this::task, 20 * 60, 20 * 60);
+  public int getDelay() {
+    return 20 * 60;
   }
 
   @Override
-  public void disable() {
-    super.disable();
-
-    task.cancel();
-  }
-
-  private void task() {
+  public void task() {
     // get two distinct players
     List<Player> players =
         Bukkit.getOnlinePlayers().stream()
