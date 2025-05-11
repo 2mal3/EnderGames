@@ -18,6 +18,7 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
@@ -195,13 +196,22 @@ public class GamePhase extends AbstractPhase implements Listener {
   }
 
   private void abstractPlayerDeath(Player player, Player damager) {
+    World world = player.getWorld();
+
     for (ItemStack item : player.getInventory().getContents()) {
       if (item == null) {
         continue;
       }
-      player.getWorld().dropItem(player.getLocation(), item);
+      world.dropItem(player.getLocation(), item);
     }
     player.getInventory().clear();
+
+    while (player.getLevel() > 0) {
+      ExperienceOrb orb =
+          (ExperienceOrb) world.spawnEntity(player.getLocation(), EntityType.EXPERIENCE_ORB);
+      orb.setExperience(player.getExpToLevel());
+      player.setLevel(player.getLevel() - 1);
+    }
 
     // clear the player's effects
     for (PotionEffect effect : player.getActivePotionEffects()) {
