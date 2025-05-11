@@ -20,6 +20,8 @@ public class EnderGames extends JavaPlugin implements Listener {
   private Location spawn;
   private AbstractPhase phase;
   private final NamespacedKey spawnKey = new NamespacedKey(this, "spawn");
+  public final List<String> kits =
+      List.of("lumberjack", "cat", "cactus", "barbarian", "blaze", "slime");
 
   @Override
   public void onEnable() {
@@ -76,7 +78,6 @@ public class EnderGames extends JavaPlugin implements Listener {
   }
 
   private LiteralCommandNode<CommandSourceStack> endergamesCommand() {
-    final List<String> kits = List.of("lumberjack", "cat", "cactus", "barbarian", "blaze", "slime");
 
     return Commands.literal("endergames")
         .then(
@@ -93,7 +94,7 @@ public class EnderGames extends JavaPlugin implements Listener {
                     Commands.argument("kit", StringArgumentType.word())
                         .suggests(
                             (ctx, builder) -> {
-                              kits.stream()
+                              this.kits.stream()
                                   .filter(
                                       entry ->
                                           entry

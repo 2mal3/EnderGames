@@ -1,8 +1,12 @@
 package io.github.mal32.endergames.kits;
 
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -14,6 +18,7 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -112,5 +117,47 @@ public class Blaze extends AbstractKit {
     if (burnTime.get(player.getUniqueId()).isBefore(LocalTime.now())) return;
 
     player.getLocation().getBlock().setType(Material.FIRE);
+  }
+
+  @Override
+  public ItemStack getDescriptionItem() {
+    ItemStack item = new ItemStack(Material.BLAZE_POWDER, 1);
+    ItemMeta meta = item.getItemMeta();
+    meta.displayName(
+        Component.text("Blaze")
+            .color(NamedTextColor.GOLD)
+            .decoration(TextDecoration.ITALIC, false));
+    meta.lore(
+        Arrays.asList(
+            Component.text("Abilities:")
+                .decorate(TextDecoration.UNDERLINED)
+                .color(NamedTextColor.GRAY)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("Can leave a fire trail for a short time.")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("It is immune to fire damage,")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("but gains Weakness I in water.")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("Sword or Bow hits have a")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("20% chance to ignite enemies")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text(" "), // Empty line — no styling needed
+            Component.text("Equipment:")
+                .decorate(TextDecoration.UNDERLINED)
+                .color(NamedTextColor.GRAY)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("Golden Sword and Burn Power")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false)));
+    item.setItemMeta(meta);
+
+    return item;
   }
 }
