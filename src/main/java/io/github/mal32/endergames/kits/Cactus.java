@@ -1,8 +1,12 @@
 package io.github.mal32.endergames.kits;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -11,6 +15,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Cactus extends AbstractKit {
@@ -134,5 +140,38 @@ public class Cactus extends AbstractKit {
     }
 
     event.setCancelled(true);
+  }
+
+  @Override
+  public ItemStack getDescriptionItem() {
+    ItemStack item = new ItemStack(Material.CACTUS, 1);
+    ItemMeta meta = item.getItemMeta();
+    meta.displayName(
+        Component.text("Cactus")
+            .color(NamedTextColor.GOLD)
+            .decoration(TextDecoration.ITALIC, false));
+    meta.lore(
+        Arrays.asList(
+            Component.text("Abilities:")
+                .decorate(TextDecoration.UNDERLINED)
+                .color(NamedTextColor.GRAY)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("Deals thorns damage to attackers.")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("It can sneak to disguise itself as a cactus.")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text(" "), // Empty line — no styling needed
+            Component.text("Equipment:")
+                .decorate(TextDecoration.UNDERLINED)
+                .color(NamedTextColor.GRAY)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("Green leather helmet and leggings.")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false)));
+    item.setItemMeta(meta);
+
+    return item;
   }
 }

@@ -35,14 +35,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 
 public class GamePhase extends AbstractPhase implements Listener {
-  private List<AbstractKit> kits =
-      List.of(
-          new Lumberjack(plugin),
-          new Cat(plugin),
-          new Cactus(plugin),
-          new Barbarian(plugin),
-          new Blaze(plugin),
-          new Slime(plugin));
   private final List<AbstractModule> modules =
       List.of(
           new EnchanterManager(plugin, spawnLocation),
@@ -68,6 +60,10 @@ public class GamePhase extends AbstractPhase implements Listener {
           kit.start(player);
         }
       }
+    }
+    // Enable the event listener for all kits
+    for (AbstractKit kit : kits) {
+      kit.enable();
     }
 
     World world = spawnLocation.getWorld();

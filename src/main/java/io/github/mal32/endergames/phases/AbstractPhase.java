@@ -1,18 +1,30 @@
 package io.github.mal32.endergames.phases;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.kits.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
+import java.util.List;
+
 public class AbstractPhase implements Listener {
   protected final EnderGames plugin;
   public Location spawnLocation;
+  public List<AbstractKit> kits;
 
   public AbstractPhase(EnderGames plugin, Location spawn) {
     this.plugin = plugin;
     this.spawnLocation = spawn;
+    this.kits =
+        List.of(
+            new Lumberjack(plugin),
+            new Cat(plugin),
+            new Cactus(plugin),
+            new Barbarian(plugin),
+            new Blaze(plugin),
+            new Slime(plugin));
 
     Bukkit.getPluginManager().registerEvents(this, plugin);
   }
