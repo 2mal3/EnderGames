@@ -1,12 +1,16 @@
 package io.github.mal32.endergames.phases.game;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.loot.LootContext;
@@ -14,7 +18,59 @@ import org.bukkit.loot.LootTable;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-public class EnderChest implements InventoryHolder {
+public class EnderChestManager extends AbstractTeleportingBlockManager {
+  private List<EnderChest> enderChests = new ArrayList<>();
+
+  public EnderChestManager(JavaPlugin plugin) {
+    super(plugin);
+  }
+
+  @Override
+  public int getDelay() {
+    return 20 * 10;
+  }
+
+  @EventHandler
+  private void onEnderChestInteract(PlayerInteractEvent event) {
+    if (event.getAction() != Action.RIGHT_CLICK_BLOCK
+        || event.getClickedBlock() == null
+        || event.getClickedBlock().getType() != Material.ENDER_CHEST) {
+      return;
+    }
+
+    Location blockLocation = event.getClickedBlock().getLocation().clone();
+    EnderChest enderChest = null;
+    for (EnderChest e : enderChests) {
+      if (e.getLocation().getX() == blockLocation.getX()
+          && e.getLocation().getZ() == blockLocation.getZ()) {
+        enderChest = e;
+        break;
+      }
+    }
+    if (enderChest == null) {
+      enderChest = new EnderChest(plugin, blockLocation);
+      enderChests.add(enderChest);
+    }
+
+    EnderChest finalEnderChest = enderChest;
+    Bukkit.getScheduler()
+        .runTask(
+            plugin,
+            () -> {
+              event.getPlayer().openInventory(finalEnderChest.getInventory());
+            });
+  }
+
+  public void task() {
+    if (enderChests.isEmpty()) return;
+
+    EnderChest enderChest = enderChests.get(new Random().nextInt(enderChests.size()));
+    Location location = getRandomLocationNearPlayer();
+    enderChest.teleport(location);
+  }
+}
+
+class EnderChest implements InventoryHolder {
   private final Inventory inventory;
   private Location location;
 
