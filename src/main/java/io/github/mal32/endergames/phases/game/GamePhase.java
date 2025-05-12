@@ -61,10 +61,6 @@ public class GamePhase extends AbstractPhase implements Listener {
         }
       }
     }
-    // Enable the event listener for all kits
-    for (AbstractKit kit : kits) {
-      kit.enable();
-    }
 
     World world = spawnLocation.getWorld();
 
@@ -97,6 +93,9 @@ public class GamePhase extends AbstractPhase implements Listener {
     for (AbstractModule module : modules) {
       module.enable();
     }
+    for (AbstractKit kit : kits) {
+      kit.enable();
+    }
   }
 
   private void initProtectionTime() {
@@ -128,11 +127,11 @@ public class GamePhase extends AbstractPhase implements Listener {
   public void stop() {
     super.stop();
 
-    for (AbstractKit kit : kits) {
-      kit.stop();
-    }
     for (AbstractModule module : modules) {
       module.disable();
+    }
+    for (AbstractKit kit : kits) {
+      kit.disable();
     }
 
     WorldBorder worldBorder = spawnLocation.getWorld().getWorldBorder();
