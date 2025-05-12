@@ -51,6 +51,17 @@ select a kit with `/endergames kit <kit name>`.
 </details>
 
 - <details>
+  <summary>Dolphin</summary>
+
+    - has permanent Water Breathing and Dolphins Grace
+    - gets Night Vision, Regeneration and Resistance in water
+    - has Weakness on Land
+    - swimming gives fish
+    - equipment: blue leather boots, water bucket
+
+</details>
+
+- <details>
   <summary>Lumberjack</summary>
 
     - mining a log directly destroys its entire tree
