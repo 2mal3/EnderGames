@@ -4,8 +4,7 @@ import static org.apache.commons.lang3.StringUtils.capitalize;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -51,6 +50,7 @@ public class LobbyPhase extends AbstractPhase {
     world.setGameRule(GameRule.SPAWN_RADIUS, 6);
 
     world.getWorldBorder().setSize(600);
+    teleportToPlayerSpawns();
 
     for (Player player : Bukkit.getServer().getOnlinePlayers()) {
       intiPlayer(player);
@@ -69,8 +69,70 @@ public class LobbyPhase extends AbstractPhase {
     structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
   }
 
+  private void teleportToPlayerSpawns() {
+    List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+    int totalPlayers = players.size();
+    totalPlayers = 24;
+    if (totalPlayers == 0) return;
+
+    List<BlockVector> offsets = makeSpawnOffsets();
+    plugin
+        .getLogger()
+        .info(
+            "SpawnLocation: "
+                + spawnLocation.x()
+                + " "
+                + spawnLocation.y()
+                + " "
+                + spawnLocation.z());
+    for (int i = 0; i < offsets.size(); i++) {
+      plugin.getLogger().info("offset[" + i + "] = " + offsets.get(i));
+    }
+
+    int centerX = spawnLocation.getBlockX();
+    int centerY = spawnLocation.getBlockY() + 1;
+    int centerZ = spawnLocation.getBlockZ();
+
+    for (int i = 0; i < offsets.size(); i++) {
+      BlockVector off = offsets.get(i);
+      int bx = centerX + off.getBlockX();
+      int by = centerY + off.getBlockY(); // always 1
+      int bz = centerZ + off.getBlockZ();
+      spawnLocation.getWorld().getBlockAt(bx, by, bz).setType(Material.GREEN_CONCRETE);
+    }
+  }
+
+  public List<BlockVector> makeSpawnOffsets() {
+    // not correct yet
+    return List.of(
+        new BlockVector(0, 0, -9),
+        new BlockVector(2, 0, -9),
+        new BlockVector(4, 0, -8),
+        new BlockVector(6, 0, -6),
+        new BlockVector(8, 0, -4),
+        new BlockVector(9, 0, -1),
+        new BlockVector(9, 0, 0),
+        new BlockVector(9, 0, 2),
+        new BlockVector(8, 0, 4),
+        new BlockVector(6, 0, 6),
+        new BlockVector(4, 0, 8),
+        new BlockVector(2, 0, 9),
+        new BlockVector(0, 0, 9),
+        new BlockVector(-2, 0, 9),
+        new BlockVector(-4, 0, 8),
+        new BlockVector(-6, 0, 6),
+        new BlockVector(-8, 0, 4),
+        new BlockVector(-9, 0, 2),
+        new BlockVector(-9, 0, 0),
+        new BlockVector(-9, 0, -1),
+        new BlockVector(-8, 0, -3),
+        new BlockVector(-6, 0, -5),
+        new BlockVector(-4, 0, -7),
+        new BlockVector(-2, 0, -8));
+  }
+
   private void intiPlayer(Player player) {
-    player.teleport(playerSpawnLocation);
+    // player.teleport(playerSpawnLocation);
 
     player.getInventory().clear();
     player.setGameMode(GameMode.ADVENTURE);
