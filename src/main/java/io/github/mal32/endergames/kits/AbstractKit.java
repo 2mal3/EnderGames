@@ -1,24 +1,17 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.mal32.endergames.phases.game.AbstractModule;
 import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public abstract class AbstractKit implements Listener {
-  JavaPlugin plugin;
-
+public abstract class AbstractKit extends AbstractModule {
   public AbstractKit(JavaPlugin plugin) {
-    this.plugin = plugin;
-  }
-
-  public void enable() {
-    Bukkit.getPluginManager().registerEvents(this, plugin);
+    super(plugin);
   }
 
   protected boolean playerHasKit(Player player) {
@@ -27,10 +20,6 @@ public abstract class AbstractKit implements Listener {
             .getPersistentDataContainer()
             .get(new NamespacedKey(plugin, "kit"), PersistentDataType.STRING),
         getName());
-  }
-
-  public void stop() {
-    HandlerList.unregisterAll(this);
   }
 
   public void start(Player player) {
