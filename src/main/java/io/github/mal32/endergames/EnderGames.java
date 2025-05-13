@@ -11,13 +11,14 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class EnderGames extends JavaPlugin implements Listener {
-  private Location spawn;
+  private Location spawnLocation;
   private AbstractPhase phase;
   private final NamespacedKey spawnKey = new NamespacedKey(this, "spawn");
   public final List<String> kits =
@@ -34,7 +35,7 @@ public class EnderGames extends JavaPlugin implements Listener {
 
     if (!world.getPersistentDataContainer().has(spawnKey)) {
       Bukkit.getServer().sendMessage(Component.text("First EnderGames server start"));
-      spawn = new Location(world, 0, 150, 0);
+      spawnLocation = new Location(world, 0, 150, 0);
       updateSpawn();
     }
 
@@ -42,39 +43,71 @@ public class EnderGames extends JavaPlugin implements Listener {
         world
             .getPersistentDataContainer()
             .get(spawnKey, PersistentDataType.LIST.listTypeFrom(PersistentDataType.INTEGER));
-    spawn = new Location(world, rawSpawn.get(0), 150, rawSpawn.get(1));
+    spawnLocation = new Location(world, rawSpawn.get(0), 150, rawSpawn.get(1));
 
-    phase = new LobbyPhase(this, spawn);
+    phase = new LobbyPhase(this, spawnLocation);
   }
 
   public void nextPhase() {
     phase.stop();
     if (phase instanceof LobbyPhase) {
-      phase = new StartPhase(this, spawn);
+      phase = new StartPhase(this, spawnLocation);
     } else if (phase instanceof StartPhase) {
-      phase = new GamePhase(this, spawn);
+      phase = new GamePhase(this, spawnLocation);
     } else if (phase instanceof GamePhase) {
-      phase = new EndPhase(this, spawn);
+      phase = new EndPhase(this, spawnLocation);
 
-      spawn.add(1000, 0, 0);
+      findNewSpawnLocation();
       updateSpawn();
     } else if (phase instanceof EndPhase) {
-      phase = new LobbyPhase(this, spawn);
+      phase = new LobbyPhase(this, spawnLocation);
     }
   }
 
+  private void findNewSpawnLocation() {
+    boolean found = false;
+    Location spawnLocationCandidate = spawnLocation.clone();
+
+    while (!found) {
+      spawnLocationCandidate.add(1000, 0, 0);
+      spawnLocationCandidate.getChunk().load(true);
+
+      if (!isOcean(spawnLocationCandidate.getBlock().getBiome())) {
+        found = true;
+      }
+    }
+
+    spawnLocation = spawnLocationCandidate;
+  }
+
+  // Why doesnt BiomeTagKeys.IS_OCEAN work?
+  // using
+  // https://github.com/misode/mcmeta/blob/data/data/minecraft/tags/worldgen/biome/is_ocean.json
+  // directly
+  private boolean isOcean(Biome biome) {
+    return biome.equals(Biome.DEEP_FROZEN_OCEAN)
+        || biome.equals(Biome.DEEP_COLD_OCEAN)
+        || biome.equals(Biome.DEEP_OCEAN)
+        || biome.equals(Biome.DEEP_LUKEWARM_OCEAN)
+        || biome.equals(Biome.FROZEN_OCEAN)
+        || biome.equals(Biome.OCEAN)
+        || biome.equals(Biome.COLD_OCEAN)
+        || biome.equals(Biome.LUKEWARM_OCEAN)
+        || biome.equals(Biome.WARM_OCEAN);
+  }
+
   private void updateSpawn() {
-    World world = spawn.getWorld();
+    World world = spawnLocation.getWorld();
 
     world
         .getPersistentDataContainer()
         .set(
             spawnKey,
             PersistentDataType.LIST.listTypeFrom(PersistentDataType.INTEGER),
-            List.of((int) spawn.getX(), (int) spawn.getZ()));
+            List.of((int) spawnLocation.getX(), (int) spawnLocation.getZ()));
 
-    world.setSpawnLocation(spawn);
-    world.getWorldBorder().setCenter(spawn);
+    world.setSpawnLocation(spawnLocation);
+    world.getWorldBorder().setCenter(spawnLocation);
   }
 
   private LiteralCommandNode<CommandSourceStack> endergamesCommand() {
