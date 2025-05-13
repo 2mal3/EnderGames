@@ -22,6 +22,8 @@ public class Dolphin extends AbstractKit {
 
   @Override
   public void start(Player player) {
+    super.start(player);
+
     player.addPotionEffect(
         new PotionEffect(
             PotionEffectType.WATER_BREATHING, PotionEffect.INFINITE_DURATION, 0, true, false));
