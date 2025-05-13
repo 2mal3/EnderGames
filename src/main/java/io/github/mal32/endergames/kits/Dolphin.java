@@ -39,7 +39,6 @@ public class Dolphin extends AbstractKit {
     Player player = event.getPlayer();
     if (!playerHasKit(player)) return;
 
-    boolean playerIsInWater = player.isInWater();
     boolean hasRegeneration =
         player.hasPotionEffect(PotionEffectType.REGENERATION)
             && player.getPotionEffect(PotionEffectType.REGENERATION).getDuration()
@@ -54,7 +53,7 @@ public class Dolphin extends AbstractKit {
                 == PotionEffect.INFINITE_DURATION;
 
     // Effects in Water
-    if (playerIsInWater) {
+    if (player.isInWater()) {
       if (!hasRegeneration) {
         player.addPotionEffect(
             new PotionEffect(

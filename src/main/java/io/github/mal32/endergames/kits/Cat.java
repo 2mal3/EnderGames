@@ -24,12 +24,8 @@ public class Cat extends AbstractKit {
 
   @EventHandler
   private void onFallDamage(EntityDamageEvent event) {
-    if (!(event.getEntity() instanceof Player)) {
-      return;
-    }
-    if (!playerHasKit((Player) event.getEntity())) {
-      return;
-    }
+    if (!(event.getEntity() instanceof Player) || !playerHasKit((Player) event.getEntity())) return;
+
     if (event.getCause() != EntityDamageEvent.DamageCause.FALL) {
       return;
     }
@@ -39,30 +35,19 @@ public class Cat extends AbstractKit {
 
   @EventHandler
   private void onPlayerEatFish(PlayerItemConsumeEvent event) {
-    if (!playerHasKit((Player) event.getPlayer())) {
-      return;
-    }
-    if (!Tag.ITEMS_FISHES.isTagged(event.getItem().getType())) {
-      return;
-    }
+    if (!playerHasKit(event.getPlayer())) return;
+
+    if (!Tag.ITEMS_FISHES.isTagged(event.getItem().getType())) return;
 
     event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 30, 2, true));
   }
 
   @EventHandler
   private void onPlayerHit(EntityDamageByEntityEvent event) {
-    if (!(event.getDamager() instanceof Player)) {
-      return;
-    }
-    Player damager = (Player) event.getDamager();
-    if (!playerHasKit(damager)) {
-      return;
-    }
+    if (!(event.getDamager() instanceof Player damager) || !playerHasKit(damager)) return;
 
     // skip if damage is not with bare hands
-    if (!damager.getInventory().getItemInMainHand().getType().isAir()) {
-      return;
-    }
+    if (!damager.getInventory().getItemInMainHand().getType().isAir()) return;
 
     event.setDamage(event.getDamage() + 2);
   }
