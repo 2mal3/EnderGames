@@ -103,7 +103,8 @@ public class Dolphin extends AbstractKit {
 
     if (!player.isSwimming()) return;
 
-    if (Math.random() > 0.05) return;
+    final double FISHING_LOOT_PROBABILITY = 0.05;
+    if (Math.random() > FISHING_LOOT_PROBABILITY) return;
 
     Bukkit.dispatchCommand(
         Bukkit.getConsoleSender(),
