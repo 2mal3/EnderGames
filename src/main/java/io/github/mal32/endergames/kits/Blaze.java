@@ -43,28 +43,22 @@ public class Blaze extends AbstractKit {
     Player player = event.getPlayer();
     if (!playerHasKit(player)) return;
 
-    boolean playerIsInWater = player.isInWater();
-    boolean playerHasWeakness = player.hasPotionEffect(PotionEffectType.WEAKNESS);
+    PotionEffect effect = player.getPotionEffect(PotionEffectType.WEAKNESS);
 
-    if (playerIsInWater && !playerHasWeakness) {
-      player.addPotionEffect(
-          new PotionEffect(
-              PotionEffectType.WEAKNESS, PotionEffect.INFINITE_DURATION, 0, true, false));
-    }
-
-    if (!playerIsInWater && playerHasWeakness) {
-      PotionEffect weaknessEffect = player.getPotionEffect(PotionEffectType.WEAKNESS);
-      if (weaknessEffect != null
-          && weaknessEffect.getDuration() == PotionEffect.INFINITE_DURATION) {
-        player.removePotionEffect(PotionEffectType.WEAKNESS);
+    if (player.isInWater()) {
+      if (effect == null) {
+        player.addPotionEffect(
+                new PotionEffect(
+                        PotionEffectType.WEAKNESS, PotionEffect.INFINITE_DURATION, 0, true, false));
       }
+    } else if (effect.getDuration() == PotionEffect.INFINITE_DURATION) {
+      player.removePotionEffect(PotionEffectType.WEAKNESS);
     }
   }
 
   @EventHandler
   public void onHit(EntityDamageByEntityEvent event) {
-    if (!(event.getDamager() instanceof Player damager)) return;
-    if (!playerHasKit(damager)) return;
+    if (!(event.getDamager() instanceof Player damager) || !playerHasKit(damager)) return;
 
     if (Math.random() > 0.2) return;
 
@@ -81,7 +75,7 @@ public class Blaze extends AbstractKit {
     event.getProjectile().setFireTicks(20 * 3);
   }
 
-  private final HashMap<UUID, LocalTime> burnTime = new HashMap<UUID, LocalTime>();
+  private final HashMap<UUID, LocalTime> burnTime = new HashMap<>();
 
   @EventHandler
   public void onPowderClick(PlayerInteractEvent event) {

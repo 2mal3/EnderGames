@@ -23,15 +23,9 @@ public class Barbarian extends AbstractKit {
 
   @EventHandler
   public void onHit(EntityDamageByEntityEvent event) {
-    if (!(event.getDamager() instanceof Player damager)) {
-      return;
-    }
-    if (!playerHasKit(damager)) {
-      return;
-    }
-    if (!Tag.ITEMS_SWORDS.isTagged(damager.getInventory().getItemInMainHand().getType())) {
-      return;
-    }
+    if (!(event.getDamager() instanceof Player damager) || !playerHasKit(damager)) return;
+
+    if (!Tag.ITEMS_SWORDS.isTagged(damager.getInventory().getItemInMainHand().getType())) return;
 
     // +2.5% damage per lost food level
     int foodLevel = damager.getFoodLevel();

@@ -22,12 +22,9 @@ public class Lumberjack extends AbstractKit {
 
   @EventHandler
   private void onBlockBreak(BlockBreakEvent event) {
-    if (!Tag.LOGS.isTagged(event.getBlock().getType())) {
-      return;
-    }
-    if (!playerHasKit(event.getPlayer())) {
-      return;
-    }
+    if (!Tag.LOGS.isTagged(event.getBlock().getType())) return;
+
+    if (!playerHasKit(event.getPlayer())) return;
 
     Location location = event.getBlock().getLocation().add(0, 1, 0);
     breakTree(location);
@@ -35,9 +32,7 @@ public class Lumberjack extends AbstractKit {
 
   private void breakTree(Location location) {
     Block block = location.getBlock();
-    if (!Tag.LOGS.isTagged(block.getType()) && !Tag.LEAVES.isTagged(block.getType())) {
-      return;
-    }
+    if (!Tag.LOGS.isTagged(block.getType()) && !Tag.LEAVES.isTagged(block.getType())) return;
 
     block.breakNaturally();
     breakTree(location.clone().add(1, 0, 0));
@@ -49,14 +44,11 @@ public class Lumberjack extends AbstractKit {
 
   @EventHandler
   private void onCraftItem(CraftItemEvent event) {
-    if (!playerHasKit((Player) event.getWhoClicked())) {
-      return;
-    }
+    if (!playerHasKit((Player) event.getWhoClicked())) return;
 
     ItemStack result = event.getRecipe().getResult();
-    if (!Tag.ITEMS_AXES.isTagged(result.getType())) {
-      return;
-    }
+    if (!Tag.ITEMS_AXES.isTagged(result.getType())) return;
+
     result.addEnchantment(Enchantment.SHARPNESS, 1);
     event.getInventory().setResult(result);
   }
