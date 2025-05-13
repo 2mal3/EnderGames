@@ -10,8 +10,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.*;
-import org.bukkit.block.structure.Mirror;
-import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,7 +18,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemFlag;
@@ -29,9 +26,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.structure.Structure;
-import org.bukkit.structure.StructureManager;
-import org.bukkit.util.BlockVector;
 
 public class LobbyPhase extends AbstractPhase {
   public Location playerSpawnLocation;
@@ -42,93 +36,16 @@ public class LobbyPhase extends AbstractPhase {
     this.playerSpawnLocation =
         new Location(spawn.getWorld(), spawn.getX() + 0.5, spawn.getY() + 5, spawn.getZ() + 0.5);
 
-    placeSpawnPlatform();
-
     World world = spawn.getWorld();
 
     world.setSpawnLocation(playerSpawnLocation);
     world.setGameRule(GameRule.SPAWN_RADIUS, 6);
 
     world.getWorldBorder().setSize(600);
-    teleportToPlayerSpawns();
 
     for (Player player : Bukkit.getServer().getOnlinePlayers()) {
       intiPlayer(player);
     }
-  }
-
-  private void placeSpawnPlatform() {
-    StructureManager manager = Bukkit.getServer().getStructureManager();
-    Structure structure = manager.loadStructure(new NamespacedKey("enga", "spawn_platform"));
-
-    BlockVector structureSize = structure.getSize();
-    int posX = (int) (spawnLocation.x() - (structureSize.getBlockX() / 2.0));
-    int posZ = (int) (spawnLocation.z() - (structureSize.getBlockZ() / 2.0));
-    Location location =
-        new Location(spawnLocation.getWorld(), (int) posX, spawnLocation.getY(), posZ);
-    structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
-  }
-
-  private void teleportToPlayerSpawns() {
-    List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
-    int totalPlayers = players.size();
-    totalPlayers = 24;
-    if (totalPlayers == 0) return;
-
-    List<BlockVector> offsets = makeSpawnOffsets();
-    plugin
-        .getLogger()
-        .info(
-            "SpawnLocation: "
-                + spawnLocation.x()
-                + " "
-                + spawnLocation.y()
-                + " "
-                + spawnLocation.z());
-    for (int i = 0; i < offsets.size(); i++) {
-      plugin.getLogger().info("offset[" + i + "] = " + offsets.get(i));
-    }
-
-    int centerX = spawnLocation.getBlockX();
-    int centerY = spawnLocation.getBlockY() + 1;
-    int centerZ = spawnLocation.getBlockZ();
-
-    for (int i = 0; i < offsets.size(); i++) {
-      BlockVector off = offsets.get(i);
-      int bx = centerX + off.getBlockX();
-      int by = centerY + off.getBlockY(); // always 1
-      int bz = centerZ + off.getBlockZ();
-      spawnLocation.getWorld().getBlockAt(bx, by, bz).setType(Material.GREEN_CONCRETE);
-    }
-  }
-
-  public List<BlockVector> makeSpawnOffsets() {
-    // not correct yet
-    return List.of(
-        new BlockVector(0, 0, -9),
-        new BlockVector(2, 0, -9),
-        new BlockVector(4, 0, -8),
-        new BlockVector(6, 0, -6),
-        new BlockVector(8, 0, -4),
-        new BlockVector(9, 0, -1),
-        new BlockVector(9, 0, 0),
-        new BlockVector(9, 0, 2),
-        new BlockVector(8, 0, 4),
-        new BlockVector(6, 0, 6),
-        new BlockVector(4, 0, 8),
-        new BlockVector(2, 0, 9),
-        new BlockVector(0, 0, 9),
-        new BlockVector(-2, 0, 9),
-        new BlockVector(-4, 0, 8),
-        new BlockVector(-6, 0, 6),
-        new BlockVector(-8, 0, 4),
-        new BlockVector(-9, 0, 2),
-        new BlockVector(-9, 0, 0),
-        new BlockVector(-9, 0, -1),
-        new BlockVector(-8, 0, -3),
-        new BlockVector(-6, 0, -5),
-        new BlockVector(-4, 0, -7),
-        new BlockVector(-2, 0, -8));
   }
 
   private void intiPlayer(Player player) {
@@ -155,19 +72,7 @@ public class LobbyPhase extends AbstractPhase {
   public void onPlayerJoin(PlayerJoinEvent event) {
     intiPlayer(event.getPlayer());
   }
-
-  @EventHandler
-  public void onPlayerMove(PlayerMoveEvent event) {
-    if (!event.hasChangedBlock()) return;
-
-    Player player = event.getPlayer();
-
-    if (player.getGameMode() != GameMode.ADVENTURE) return;
-
-    if (player.getLocation().distance(spawnLocation) > 20) {
-      player.teleport(playerSpawnLocation);
-    }
-  }
+  
 
   @EventHandler
   public void onPlayerDamage(EntityDamageEvent event) {
