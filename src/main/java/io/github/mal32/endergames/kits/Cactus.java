@@ -24,6 +24,11 @@ public class Cactus extends AbstractKit {
     super(plugin);
   }
 
+  @Override
+  public void start(Player player) {
+
+  }
+
   @EventHandler
   public void onEntityDamagedByEntity(EntityDamageByEntityEvent event) {
     if (!(event.getEntity() instanceof Player player) || !(event.getDamager() instanceof Damageable damager)) return;

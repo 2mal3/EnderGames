@@ -29,7 +29,6 @@ public class Slime extends AbstractKit {
 
   @Override
   public void start(Player player) {
-    super.start(player);
     player.addPotionEffect(
         new PotionEffect(
             PotionEffectType.JUMP_BOOST, PotionEffect.INFINITE_DURATION, 1, true, false));

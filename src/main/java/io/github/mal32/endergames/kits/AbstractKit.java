@@ -2,7 +2,6 @@ package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.phases.game.AbstractModule;
 import java.util.Objects;
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -22,11 +21,7 @@ public abstract class AbstractKit extends AbstractModule {
         getName());
   }
 
-  public void start(Player player) {
-    Bukkit.dispatchCommand(
-        Bukkit.getConsoleSender(),
-        "loot give " + player.getName() + " loot enga:kits/" + getName());
-  }
+  public abstract void start(Player player);
 
   public String getName() {
     return this.getClass().getSimpleName().toLowerCase();

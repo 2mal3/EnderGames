@@ -20,6 +20,11 @@ public class Lumberjack extends AbstractKit {
     super(plugin);
   }
 
+  @Override
+  public void start(Player player) {
+
+  }
+
   @EventHandler
   private void onBlockBreak(BlockBreakEvent event) {
     if (!Tag.LOGS.isTagged(event.getBlock().getType())) return;

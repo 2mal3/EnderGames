@@ -22,6 +22,11 @@ public class Cat extends AbstractKit {
     super(plugin);
   }
 
+  @Override
+  public void start(Player player) {
+
+  }
+
   @EventHandler
   private void onFallDamage(EntityDamageEvent event) {
     if (!(event.getEntity() instanceof Player) || !playerHasKit((Player) event.getEntity())) return;

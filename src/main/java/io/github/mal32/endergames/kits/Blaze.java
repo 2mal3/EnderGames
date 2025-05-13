@@ -30,7 +30,6 @@ public class Blaze extends AbstractKit {
 
   @Override
   public void start(Player player) {
-    super.start(player);
     player.addPotionEffect(
         new PotionEffect(
             PotionEffectType.FIRE_RESISTANCE, PotionEffect.INFINITE_DURATION, 0, true, false));
