@@ -26,7 +26,7 @@ public class Dolphin extends AbstractKit {
 
     player.addPotionEffect(
         new PotionEffect(
-            PotionEffectType.WATER_BREATHING, PotionEffect.INFINITE_DURATION, 0, true, false));
+            PotionEffectType.CONDUIT_POWER, PotionEffect.INFINITE_DURATION, 0, true, false));
     player.addPotionEffect(
         new PotionEffect(
             PotionEffectType.DOLPHINS_GRACE, PotionEffect.INFINITE_DURATION, 0, true, false));
@@ -40,7 +40,6 @@ public class Dolphin extends AbstractKit {
     if (!playerHasKit(player)) return;
 
     boolean playerIsInWater = player.isInWater();
-    boolean hasNightVision = player.hasPotionEffect(PotionEffectType.NIGHT_VISION);
     boolean hasRegeneration =
         player.hasPotionEffect(PotionEffectType.REGENERATION)
             && player.getPotionEffect(PotionEffectType.REGENERATION).getDuration()
@@ -56,11 +55,6 @@ public class Dolphin extends AbstractKit {
 
     // Effects in Water
     if (playerIsInWater) {
-      if (!hasNightVision) {
-        player.addPotionEffect(
-            new PotionEffect(
-                PotionEffectType.NIGHT_VISION, PotionEffect.INFINITE_DURATION, 0, true, false));
-      }
       if (!hasRegeneration) {
         player.addPotionEffect(
             new PotionEffect(
@@ -77,9 +71,6 @@ public class Dolphin extends AbstractKit {
 
       // Effects out of Water
     } else {
-      if (hasNightVision) {
-        player.removePotionEffect(PotionEffectType.NIGHT_VISION);
-      }
       if (hasRegeneration) {
         player.removePotionEffect(PotionEffectType.REGENERATION);
       }
@@ -126,16 +117,16 @@ public class Dolphin extends AbstractKit {
                 .decorate(TextDecoration.UNDERLINED)
                 .color(NamedTextColor.GRAY)
                 .decoration(TextDecoration.ITALIC, false),
-            Component.text("Has permanent Water Breathing")
+            Component.text("Has permanent Conduit Power")
                 .color(NamedTextColor.WHITE)
                 .decoration(TextDecoration.ITALIC, false),
             Component.text("and Dolphins Grace.")
                 .color(NamedTextColor.WHITE)
                 .decoration(TextDecoration.ITALIC, false),
-            Component.text("Gets Night Vision, Regeneration ")
+            Component.text("Gets Regeneration and Resistance")
                 .color(NamedTextColor.WHITE)
                 .decoration(TextDecoration.ITALIC, false),
-            Component.text("and Resistance in Water.")
+            Component.text("in Water.")
                 .color(NamedTextColor.WHITE)
                 .decoration(TextDecoration.ITALIC, false),
             Component.text("Has Weakness on Land.")
