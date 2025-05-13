@@ -22,6 +22,9 @@ public class EnderGames extends JavaPlugin implements Listener {
 
   @Override
   public void onEnable() {
+    final int PLUGIN_ID = 25844;
+    Metrics metrics = new Metrics(this, PLUGIN_ID);
+
     this.getLifecycleManager()
         .registerEventHandler(
             LifecycleEvents.COMMANDS,
