@@ -121,10 +121,11 @@ public class StartPhase extends AbstractPhase {
     double z = spawnLocation.getZ() + offset.getBlockZ();
     Location dest =
         new Location(
-            world, x - 0.5, y + 1.5,
-            z
-                + 0.5); // Add 0.5 on y and z to center player. Substract one from z because
-                        // spawnLocation is not the middle
+            world,
+            x - 0.5,
+            y + 1.5,
+            z + 0.5); // Add 0.5 on y and z to center player. Substract one from z because
+    // spawnLocation is not the middle
 
     double dx = spawnLocation.getX() - x;
     double dz = spawnLocation.getZ() - z;
