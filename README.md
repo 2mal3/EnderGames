@@ -22,14 +22,17 @@ select a kit with `/endergames kit <kit name>`.
 - <details>
   <summary>Barbarian</summary>
 
-    - deals 5% more damage per empty food level with swords
-    - equipment: wooden sword and full Leather armor with Unbreaking I
+    - deals more attack damage the hungriere he is (+2,5% damage per half hunger missing)
+    - equipment: wooden sword and full Llather armor with Unbreaking I
 
 </details>
 
 - <details>
   <summary>Blaze</summary>
 
+    - can leave a fire trail for a short time
+    - is immune to fire damage, but gains Weakness I in water
+    - sword or bow hits have a 20% chance of igniting enemies
     - equipment: golden sword and Blaze Powder to activate Burn ability
 
 </details>
@@ -37,6 +40,8 @@ select a kit with `/endergames kit <kit name>`.
 - <details>
   <summary>Cactus</summary>
 
+    - dealths thorns damage to attackers
+    - can sneak to disguise itself as cactus
     - equipment: green leather helmet and leggings
 
 </details>
@@ -68,6 +73,17 @@ select a kit with `/endergames kit <kit name>`.
     - mining a log directly destroys its entire tree
     - all axes get enchanted with Sharpness I
     - equipment: wooden axe with Sharpness I, red leather chestplate and blue leather leggings
+
+</details>
+
+- <details>
+  <summary>Slime</summary>
+
+    - occasionally gains slimeballs when jumping
+    - slimeballs can be thrown at enemies, giving them slowness
+    - has Jump Boos II
+    - spawns small slimes when hit
+    - equipment: 10 slimeballs, green leather chestplate and boots
 
 </details>
 
