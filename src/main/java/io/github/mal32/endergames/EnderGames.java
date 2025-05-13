@@ -65,17 +65,12 @@ public class EnderGames extends JavaPlugin implements Listener {
   }
 
   private void findNewSpawnLocation() {
-    boolean found = false;
     Location spawnLocationCandidate = spawnLocation.clone();
 
-    while (!found) {
+    do {
       spawnLocationCandidate.add(1000, 0, 0);
       spawnLocationCandidate.getChunk().load(true);
-
-      if (!isOcean(spawnLocationCandidate.getBlock().getBiome())) {
-        found = true;
-      }
-    }
+    } while(isOcean(spawnLocationCandidate.getBlock().getBiome()));
 
     spawnLocation = spawnLocationCandidate;
   }
