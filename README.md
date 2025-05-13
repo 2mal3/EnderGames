@@ -1,6 +1,7 @@
 # EnderGames
 
-Work in progress Paper plugin that brings back the discontinued EnderGames game mode from the GommeHD server.
+A Paper plugin that revives GommeHD’s discontinued EnderGames mode - reimagined and optimized for the newer Minecraft
+versions.
 
 ## Using the Plugin
 
