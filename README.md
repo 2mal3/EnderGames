@@ -54,8 +54,8 @@ select a kit with `/endergames kit <kit name>`.
 - <details>
   <summary>Dolphin</summary>
 
-    - has permanent Water Breathing and Dolphins Grace
-    - gets Night Vision, Regeneration and Resistance in water
+    - has permanent Conduit Power and Dolphins Grace
+    - gets Regeneration and Resistance in water
     - has Weakness on Land
     - swimming gives fish
     - equipment: blue leather boots, water bucket
