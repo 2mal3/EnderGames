@@ -125,16 +125,22 @@ public class Dolphin extends AbstractKit {
                 .decorate(TextDecoration.UNDERLINED)
                 .color(NamedTextColor.GRAY)
                 .decoration(TextDecoration.ITALIC, false),
-            Component.text("Has permanent Water Breathing and Dolphins Grace")
+            Component.text("Has permanent Water Breathing")
                 .color(NamedTextColor.WHITE)
                 .decoration(TextDecoration.ITALIC, false),
-            Component.text("Gets Night Vision, Regeneration and Resistance in Water")
+            Component.text("and Dolphins Grace.")
                 .color(NamedTextColor.WHITE)
                 .decoration(TextDecoration.ITALIC, false),
-            Component.text("Has Weakness on Land")
+            Component.text("Gets Night Vision, Regeneration ")
                 .color(NamedTextColor.WHITE)
                 .decoration(TextDecoration.ITALIC, false),
-            Component.text("Swimming gives Fish")
+            Component.text("and Resistance in Water.")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("Has Weakness on Land.")
+                .color(NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false),
+            Component.text("Swimming gives Fish.")
                 .color(NamedTextColor.WHITE)
                 .decoration(TextDecoration.ITALIC, false),
             Component.text(" "),
