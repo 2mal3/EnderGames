@@ -1,7 +1,6 @@
 package io.github.mal32.endergames;
 
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.mal32.endergames.phases.*;
 import io.github.mal32.endergames.phases.game.GamePhase;
@@ -12,7 +11,6 @@ import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,8 +19,6 @@ public class EnderGames extends JavaPlugin implements Listener {
   private Location spawnLocation;
   private AbstractPhase phase;
   private final NamespacedKey spawnKey = new NamespacedKey(this, "spawn");
-  public final List<String> kits =
-      List.of("lumberjack", "cat", "cactus", "barbarian", "blaze", "slime");
 
   @Override
   public void onEnable() {
@@ -70,7 +66,7 @@ public class EnderGames extends JavaPlugin implements Listener {
     do {
       spawnLocationCandidate.add(1000, 0, 0);
       spawnLocationCandidate.getChunk().load(true);
-    } while(isOcean(spawnLocationCandidate.getBlock().getBiome()));
+    } while (isOcean(spawnLocationCandidate.getBlock().getBiome()));
 
     spawnLocation = spawnLocationCandidate;
   }
@@ -116,37 +112,6 @@ public class EnderGames extends JavaPlugin implements Listener {
                       nextPhase();
                       return Command.SINGLE_SUCCESS;
                     }))
-        .then(
-            Commands.literal("kit")
-                .then(
-                    Commands.argument("kit", StringArgumentType.word())
-                        .suggests(
-                            (ctx, builder) -> {
-                              this.kits.stream()
-                                  .filter(
-                                      entry ->
-                                          entry
-                                              .toLowerCase()
-                                              .startsWith(builder.getRemainingLowerCase()))
-                                  .forEach(builder::suggest);
-                              return builder.buildFuture();
-                            })
-                        .executes(
-                            ctx -> {
-                              Player sender = (Player) ctx.getSource().getSender();
-
-                              String selectedKit = StringArgumentType.getString(ctx, "kit");
-                              sender.sendPlainMessage("You selected the " + selectedKit + " kit");
-                              sender.playSound(
-                                  sender.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1, 1);
-
-                              NamespacedKey key = new NamespacedKey(this, "kit");
-                              sender
-                                  .getPersistentDataContainer()
-                                  .set(key, PersistentDataType.STRING, selectedKit);
-
-                              return Command.SINGLE_SUCCESS;
-                            })))
         .build();
   }
 }
