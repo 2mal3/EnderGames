@@ -30,7 +30,8 @@
       "contributions": [
         "code",
         "ideas",
-        "userTesting"
+        "userTesting",
+        "doc"
       ]
     },
     {
@@ -39,8 +40,17 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/100302756?v=4",
       "profile": "https://github.com/EisnerCode",
       "contributions": [
-        "ideas",
         "mentoring"
+      ]
+    },
+    {
+      "login": "6mal7",
+      "name": "Julian",
+      "avatar_url": "https://avatars.githubusercontent.com/u/184911647?v=4",
+      "profile": "https://github.com/6mal7",
+      "contributions": [
+        "code",
+        "ideas"
       ]
     }
   ],

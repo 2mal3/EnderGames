@@ -13,6 +13,7 @@ import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -29,7 +30,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class LobbyPhase extends AbstractPhase {
   public Location playerSpawnLocation;
-  KitSelector kitSel = new KitSelector(plugin, this.kits);
+  KitSelector kitSelector = new KitSelector(plugin, this.kits);
 
   public LobbyPhase(EnderGames plugin, Location spawn) {
     super(plugin, spawn);
@@ -56,7 +57,7 @@ public class LobbyPhase extends AbstractPhase {
     player.addPotionEffect(
         new PotionEffect(
             PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, true, false));
-    kitSel.giveKitSelector(player);
+    kitSelector.giveKitSelector(player);
   }
 
   @Override
@@ -66,6 +67,8 @@ public class LobbyPhase extends AbstractPhase {
     for (Player player : plugin.getServer().getOnlinePlayers()) {
       player.clearActivePotionEffects();
     }
+
+    kitSelector.disable();
   }
 
   @EventHandler
@@ -95,6 +98,10 @@ class KitSelector implements Listener {
     this.plugin = plugin;
     this.availablekits = kits;
     Bukkit.getPluginManager().registerEvents(this, plugin);
+  }
+
+  public void disable() {
+    HandlerList.unregisterAll(this);
   }
 
   public void giveKitSelector(Player player) {
