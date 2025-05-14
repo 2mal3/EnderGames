@@ -4,7 +4,6 @@ import io.github.mal32.endergames.phases.game.AbstractModule;
 
 import java.util.Collection;
 import java.util.Objects;
-import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -31,7 +30,9 @@ public abstract class AbstractKit extends AbstractModule {
   public void start(Player player) {
     LootTable lootTable = Bukkit.getLootTable(new NamespacedKey("enga", "kits/" + getName()));
 
-    Collection<ItemStack> loot = lootTable != null ? lootTable.populateLoot(new Random(), new LootContext.Builder(player.getLocation()).build()) : null;
+    LootContext context = new LootContext.Builder(player.getLocation()).build();
+
+    Collection<ItemStack> loot = (lootTable == null) ? null : lootTable.populateLoot(null, context);
 
     if (loot == null) return;
 
