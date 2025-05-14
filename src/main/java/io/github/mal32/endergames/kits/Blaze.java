@@ -30,6 +30,15 @@ public class Blaze extends AbstractKit {
 
   @Override
   public void start(Player player) {
+    {
+      ItemStack blazePowder = new ItemStack(Material.BLAZE_POWDER);
+      ItemMeta meta = blazePowder.getItemMeta();
+      meta.displayName(Component.text("Burn").color(NamedTextColor.GOLD));
+      blazePowder.setItemMeta(meta);
+      player.getInventory().addItem(blazePowder);
+    }
+    player.getInventory().addItem(new ItemStack(Material.GOLDEN_SWORD));
+
     player.addPotionEffect(
         new PotionEffect(
             PotionEffectType.FIRE_RESISTANCE, PotionEffect.INFINITE_DURATION, 0, true, false));

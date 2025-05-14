@@ -24,7 +24,7 @@ public class Cat extends AbstractKit {
 
   @Override
   public void start(Player player) {
-
+    player.getInventory().addItem(new ItemStack(Material.COD, 20));
   }
 
   @EventHandler

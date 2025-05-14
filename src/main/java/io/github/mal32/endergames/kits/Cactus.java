@@ -26,7 +26,8 @@ public class Cactus extends AbstractKit {
 
   @Override
   public void start(Player player) {
-
+    player.getInventory().setLeggings(colorLeatherArmor(new ItemStack(Material.LEATHER_LEGGINGS), Color.fromRGB(3064446)));
+    player.getInventory().setBoots(colorLeatherArmor(new ItemStack(Material.LEATHER_BOOTS), Color.fromRGB(3064446)));
   }
 
   @EventHandler
