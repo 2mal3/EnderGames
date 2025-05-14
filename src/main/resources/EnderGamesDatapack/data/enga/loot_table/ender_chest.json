@@ -120,31 +120,6 @@
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:snowball",
-          "weight": 2,
-          "functions": [
-            {
-              "function": "minecraft:set_components",
-              "components": {
-                "minecraft:rarity": "rare"
-              }
-            },
-            {
-              "function": "minecraft:set_name",
-              "name": "Swapper",
-              "target": "item_name"
-            },
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 1,
-                "max": 2
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
           "name": "minecraft:chorus_fruit",
           "weight": 2,
           "functions": [
