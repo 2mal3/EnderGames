@@ -30,7 +30,7 @@ public class EnderGames extends JavaPlugin implements Listener {
             LifecycleEvents.COMMANDS,
             commands -> commands.registrar().register(endergamesCommand()));
 
-    World world = Bukkit.getWorlds().getFirst();
+    World world = Bukkit.getWorld("world_enga_world");
 
     if (!world.getPersistentDataContainer().has(spawnKey)) {
       Bukkit.getServer().sendMessage(Component.text("First EnderGames server start"));
