@@ -1,6 +1,10 @@
 package io.github.mal32.endergames.kits;
 
 import java.util.Arrays;
+import java.util.List;
+
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.FoodProperties;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -24,7 +28,19 @@ public class Cat extends AbstractKit {
 
   @Override
   public void start(Player player) {
-    player.getInventory().addItem(new ItemStack(Material.COD, 20));
+    ItemStack fish = new ItemStack(Material.COD, 20);
+    FoodProperties fishProperties = FoodProperties.food().canAlwaysEat(true).nutrition(3).saturation(0.6f).build();
+    fish.setData(DataComponentTypes.FOOD, fishProperties);
+    ItemMeta fishMeta = fish.getItemMeta();
+    fishMeta.displayName(Component.text("Fish").decoration(TextDecoration.ITALIC, false));
+    fishMeta.lore(
+            List.of(
+                    Component.text("Can always be eaten")
+                            .color(NamedTextColor.GRAY)
+            )
+    );
+    fish.setItemMeta(fishMeta);
+    player.getInventory().addItem(fish);
   }
 
   @EventHandler
