@@ -78,7 +78,7 @@ public class EnderGames extends JavaPlugin implements Listener {
   // using
   // https://github.com/misode/mcmeta/blob/data/data/minecraft/tags/worldgen/biome/is_ocean.json
   // directly
-  private boolean IsOcean(Biome biome) {
+  private boolean isOcean(Biome biome) {
     return biome.equals(Biome.DEEP_FROZEN_OCEAN)
         || biome.equals(Biome.DEEP_COLD_OCEAN)
         || biome.equals(Biome.DEEP_OCEAN)
