@@ -4,11 +4,8 @@ import java.util.Arrays;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Material;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
-import org.bukkit.Tag;
+import org.bukkit.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -19,6 +16,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Barbarian extends AbstractKit {
   public Barbarian(JavaPlugin plugin) {
     super(plugin);
+  }
+
+  @Override
+  public void start(Player player) {
+    player.getInventory().setHelmet(enchantItem(new ItemStack(Material.LEATHER_HELMET), Enchantment.UNBREAKING));
+    player.getInventory().setChestplate(enchantItem(new ItemStack(Material.LEATHER_CHESTPLATE), Enchantment.UNBREAKING));
+    player.getInventory().setLeggings(enchantItem(new ItemStack(Material.LEATHER_LEGGINGS), Enchantment.UNBREAKING));
+    player.getInventory().setBoots(enchantItem(new ItemStack(Material.LEATHER_BOOTS), Enchantment.UNBREAKING));
+    player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
   }
 
   @EventHandler
