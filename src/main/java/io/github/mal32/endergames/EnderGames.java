@@ -2,119 +2,175 @@ package io.github.mal32.endergames;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import io.github.mal32.endergames.phases.*;
+import io.github.mal32.endergames.kits.AbstractKit;
+import io.github.mal32.endergames.phases.AbstractPhase;
+import io.github.mal32.endergames.phases.EndPhase;
+import io.github.mal32.endergames.phases.LobbyPhase;
+import io.github.mal32.endergames.phases.StartPhase;
 import io.github.mal32.endergames.phases.game.GamePhase;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
-import java.util.List;
-import net.kyori.adventure.text.Component;
-import org.bukkit.*;
-import org.bukkit.block.Biome;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class EnderGames extends JavaPlugin implements Listener {
-  private Location spawnLocation;
-  private AbstractPhase phase;
-  private final NamespacedKey spawnKey = new NamespacedKey(this, "spawn");
+    public enum Phase {
+        IDLE {
+            @Override
+            public Phase next() { return STARTING; }
+        },
+        STARTING {
+            @Override
+            public Phase next() { return RUNNING; }
+        },
+        RUNNING {
+            @Override
+            public Phase next() { return STOPPING; }
+        },
+        STOPPING {
+            @Override
+            public Phase next() { return IDLE; }
+        };
 
-  @Override
-  public void onEnable() {
-    final int PLUGIN_ID = 25844;
-    Metrics metrics = new Metrics(this, PLUGIN_ID);
-
-    this.getLifecycleManager()
-        .registerEventHandler(
-            LifecycleEvents.COMMANDS,
-            commands -> commands.registrar().register(endergamesCommand()));
-
-    World world = Bukkit.getWorld("world_enga_world");
-
-    if (!world.getPersistentDataContainer().has(spawnKey)) {
-      Bukkit.getServer().sendMessage(Component.text("First EnderGames server start"));
-      spawnLocation = new Location(world, 0, 150, 0);
-      updateSpawn();
+        protected abstract Phase next();
     }
 
-    List<Integer> rawSpawn =
-        world
-            .getPersistentDataContainer()
-            .get(spawnKey, PersistentDataType.LIST.listTypeFrom(PersistentDataType.INTEGER));
-    spawnLocation = new Location(world, rawSpawn.get(0), 150, rawSpawn.get(1));
+    private Phase currentPhase;
+    private final Map<Phase, AbstractPhase> phases = new HashMap<>();
 
-    phase = new LobbyPhase(this, spawnLocation);
-  }
+    private List<AbstractKit> kits;
 
-  public void nextPhase() {
-    phase.stop();
-    if (phase instanceof LobbyPhase) {
-      phase = new StartPhase(this, spawnLocation);
-    } else if (phase instanceof StartPhase) {
-      phase = new GamePhase(this, spawnLocation);
-    } else if (phase instanceof GamePhase) {
-      phase = new EndPhase(this, spawnLocation);
+    @Override
+    public void onEnable() {
+        final int PLUGIN_ID = 25844;
+        Metrics metrics = new Metrics(this, PLUGIN_ID);
 
-      findNewSpawnLocation();
-      updateSpawn();
-    } else if (phase instanceof EndPhase) {
-      phase = new LobbyPhase(this, spawnLocation);
+        this.getLifecycleManager()
+                .registerEventHandler(
+                        LifecycleEvents.COMMANDS,
+                        commands -> commands.registrar().register(endergamesCommand()));
+
+        this.kits = AbstractKit.getKits(this);
+
+        this.phases.put(Phase.IDLE, new LobbyPhase(this));
+        this.phases.put(Phase.RUNNING, new GamePhase(this));
+        this.phases.put(Phase.STARTING, new StartPhase(this));
+        this.phases.put(Phase.STOPPING, new EndPhase(this));
+
+        this.currentPhase = Phase.IDLE;
+
+        Bukkit.getPluginManager().registerEvents(this, this);
+
+//    World world = Bukkit.getWorld("world_enga_world");
+//
+//    if (!world.getPersistentDataContainer().has(spawnKey)) {
+//      Bukkit.getServer().sendMessage(Component.text("First EnderGames server start"));
+//      spawnLocation = new Location(world, 0, 150, 0);
+//      updateSpawn();
+//    }
+//
+//    List<Integer> rawSpawn =
+//        world
+//            .getPersistentDataContainer()
+//            .get(spawnKey, PersistentDataType.LIST.listTypeFrom(PersistentDataType.INTEGER));
+//    spawnLocation = new Location(world, rawSpawn.get(0), 150, rawSpawn.get(1));
+//
+//    phase = new LobbyPhase(this, spawnLocation);
     }
-  }
 
-  private void findNewSpawnLocation() {
-    Location spawnLocationCandidate = spawnLocation.clone();
+    public void nextPhase() {
+        getCurrentPhase().stop();
+        this.currentPhase = this.currentPhase.next();
+        System.out.println("Next Phase:" + this.currentPhase.toString());
+        getCurrentPhase().start();
+    }
 
-    do {
-      spawnLocationCandidate.add(1000, 0, 0);
-      spawnLocationCandidate.getChunk().load(true);
-    } while (isOcean(spawnLocationCandidate.getBlock().getBiome()));
+    public List<AbstractKit> getKits() {
+        return this.kits;
+    }
 
-    spawnLocation = spawnLocationCandidate;
-  }
+    public Phase getCurrentPhaseName() {
+        return this.currentPhase;
+    }
 
-  // Why doesnt BiomeTagKeys.IS_OCEAN work?
-  // using
-  // https://github.com/misode/mcmeta/blob/data/data/minecraft/tags/worldgen/biome/is_ocean.json
-  // directly
-  private boolean isOcean(Biome biome) {
-    return biome.equals(Biome.DEEP_FROZEN_OCEAN)
-        || biome.equals(Biome.DEEP_COLD_OCEAN)
-        || biome.equals(Biome.DEEP_OCEAN)
-        || biome.equals(Biome.DEEP_LUKEWARM_OCEAN)
-        || biome.equals(Biome.FROZEN_OCEAN)
-        || biome.equals(Biome.OCEAN)
-        || biome.equals(Biome.COLD_OCEAN)
-        || biome.equals(Biome.LUKEWARM_OCEAN)
-        || biome.equals(Biome.WARM_OCEAN);
-  }
+    public AbstractPhase getPhase(Phase phase) {
+        return this.phases.get(phase);
+    }
 
-  private void updateSpawn() {
-    World world = spawnLocation.getWorld();
+    public AbstractPhase getCurrentPhase() {
+        return this.phases.get(this.currentPhase);
+    }
 
-    world
-        .getPersistentDataContainer()
-        .set(
-            spawnKey,
-            PersistentDataType.LIST.listTypeFrom(PersistentDataType.INTEGER),
-            List.of((int) spawnLocation.getX(), (int) spawnLocation.getZ()));
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        World lobbyWorld = Bukkit.getWorlds().getFirst();
+        if (lobbyWorld != event.getPlayer().getWorld()) {
+            event.getPlayer().teleport(lobbyWorld.getSpawnLocation());
+        }
+        ((LobbyPhase) this.phases.get(Phase.IDLE)).initPlayer(event.getPlayer());
+    }
 
-    world.setSpawnLocation(spawnLocation);
-    world.getWorldBorder().setCenter(spawnLocation);
-  }
+    //  private void findNewSpawnLocation() {           // TODO
+//    Location spawnLocationCandidate = spawnLocation.clone();
+//
+//    do {
+//      spawnLocationCandidate.add(1000, 0, 0);
+//      spawnLocationCandidate.getChunk().load(true);
+//    } while (isOcean(spawnLocationCandidate.getBlock().getBiome()));
+//
+//    spawnLocation = spawnLocationCandidate;
+//  }
 
-  private LiteralCommandNode<CommandSourceStack> endergamesCommand() {
+    // Why doesnt BiomeTagKeys.IS_OCEAN work?
+    // using
+    // https://github.com/misode/mcmeta/blob/data/data/minecraft/tags/worldgen/biome/is_ocean.json
+    // directly
+//  private boolean isOcean(Biome biome) {
+//    return biome.equals(Biome.DEEP_FROZEN_OCEAN)
+//        || biome.equals(Biome.DEEP_COLD_OCEAN)
+//        || biome.equals(Biome.DEEP_OCEAN)
+//        || biome.equals(Biome.DEEP_LUKEWARM_OCEAN)
+//        || biome.equals(Biome.FROZEN_OCEAN)
+//        || biome.equals(Biome.OCEAN)
+//        || biome.equals(Biome.COLD_OCEAN)
+//        || biome.equals(Biome.LUKEWARM_OCEAN)
+//        || biome.equals(Biome.WARM_OCEAN);
+//  }
 
-    return Commands.literal("endergames")
-        .then(
-            Commands.literal("start")
-                .requires(sender -> sender.getSender().isOp())
-                .executes(
-                    ctx -> {
-                      nextPhase();
-                      return Command.SINGLE_SUCCESS;
-                    }))
-        .build();
-  }
+//  private void updateSpawn() {
+//    World world = spawnLocation.getWorld();
+//
+//    world
+//        .getPersistentDataContainer()
+//        .set(
+//            spawnKey,
+//            PersistentDataType.LIST.listTypeFrom(PersistentDataType.INTEGER),
+//            List.of((int) spawnLocation.getX(), (int) spawnLocation.getZ()));
+//
+//    world.setSpawnLocation(spawnLocation);
+//    world.getWorldBorder().setCenter(spawnLocation);
+//  }
+
+    private LiteralCommandNode<CommandSourceStack> endergamesCommand() {
+
+        return Commands.literal("endergames")
+                .then(
+                        Commands.literal("start")
+                                .requires(sender -> sender.getSender().isOp())
+                                .executes(
+                                        ctx -> {
+                                            nextPhase();
+                                            return Command.SINGLE_SUCCESS;
+                                        }))
+                .build();
+    }
 }

@@ -1,15 +1,14 @@
 package io.github.mal32.endergames.phases;
 
-import static org.apache.commons.lang3.StringUtils.capitalize;
-
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
-import java.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.*;
+import org.bukkit.block.structure.Mirror;
+import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,7 +17,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemFlag;
@@ -27,66 +25,97 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.structure.Structure;
+import org.bukkit.structure.StructureManager;
+
+import java.util.List;
+import java.util.Random;
+
+import static org.apache.commons.lang3.StringUtils.capitalize;
 
 public class LobbyPhase extends AbstractPhase {
-  public Location playerSpawnLocation;
-  KitSelector kitSelector = new KitSelector(plugin, this.kits);
+//  public Location playerSpawnLocation;
+  KitSelector kitSelector;
 
-  public LobbyPhase(EnderGames plugin, Location spawn) {
-    super(plugin, spawn);
-    this.playerSpawnLocation =
-        new Location(spawn.getWorld(), spawn.getX() + 0.5, spawn.getY() + 5, spawn.getZ() + 0.5);
+  private final NamespacedKey lobbyKey;
 
-    World world = spawn.getWorld();
+  public LobbyPhase(EnderGames plugin) {
+    super(plugin);
 
-    world.setSpawnLocation(playerSpawnLocation);
-    world.setGameRule(GameRule.SPAWN_RADIUS, 6);
+    Bukkit.getPluginManager().registerEvents(this, plugin);
 
-    world.getWorldBorder().setSize(600);
+    this.lobbyKey = new NamespacedKey(this.plugin, "lobby");
+    this.kitSelector = new KitSelector(this.plugin);
 
-    for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-      intiPlayer(player);
+    World lobby = Bukkit.getWorlds().get(0);
+
+    if (!lobby.getPersistentDataContainer().has(this.lobbyKey, PersistentDataType.STRING)) {
+      lobby.getPersistentDataContainer().set(lobbyKey, PersistentDataType.BOOLEAN,true);
+      lobby.setSpawnLocation(new Location(lobby, 0, 151, 0));
+      lobby.setGameRule(GameRule.SPAWN_RADIUS, 6);
+//      lobby.getWorldBorder().setSize(600);
+      this.placeLobby(lobby);
     }
+
+//    for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+//      intiPlayer(player);
+//    }
   }
 
-  private void intiPlayer(Player player) {
-    // player.teleport(playerSpawnLocation);
+  private void placeLobby(World lobby) {
+    StructureManager manager = Bukkit.getServer().getStructureManager();
+    Structure structure = manager.loadStructure(new NamespacedKey("enga", "lobby"));
 
+    Location location = new Location(lobby, -5, 140, -5);
+    structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
+  }
+
+  public void initPlayer(Player player) {
     player.getInventory().clear();
     player.setGameMode(GameMode.ADVENTURE);
     player.addPotionEffect(
         new PotionEffect(
             PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, true, false));
-    kitSelector.giveKitSelector(player);
+
+    if (this.plugin.getCurrentPhaseName() == EnderGames.Phase.IDLE) kitSelector.giveKitSelector(player);
+    else {
+      // TODO: jump in as spectator
+    }
+  }
+
+  @Override
+  public void start() {
+    this.kitSelector.enable();
+    // TODO: tp all player from world to lobby
+    for (Player player : plugin.getServer().getOnlinePlayers()) { // TODO: playing players
+      player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation());
+      initPlayer(player);
+    }
+
+    ((StartPhase) this.plugin.getPhase(EnderGames.Phase.STARTING)).replaceSpawn();
+
+    // TODO: load new spawn?
   }
 
   @Override
   public void stop() {
-    super.stop();
-
-    for (Player player : plugin.getServer().getOnlinePlayers()) {
+    for (Player player : plugin.getServer().getOnlinePlayers()) { // TODO: playing players
       player.clearActivePotionEffects();
     }
-
     kitSelector.disable();
   }
 
-  @EventHandler
-  public void onPlayerJoin(PlayerJoinEvent event) {
-    intiPlayer(event.getPlayer());
-  }
-  
+//  @EventHandler
+//  public void onPlayerJoin(PlayerJoinEvent event) {
+//    intiPlayer(event.getPlayer());
+//  }
 
   @EventHandler
   public void onPlayerDamage(EntityDamageEvent event) {
-    if (!(event.getEntity() instanceof Player)) {
-      return;
-    }
-    if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-      return;
-    }
+    if (!(event.getEntity() instanceof Player)) return;   // TODO: playing players
+    if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) return;
 
-    event.setCancelled(true);
+//    event.setCancelled(true); // TODO: temp disabled
   }
 }
 
@@ -94,10 +123,14 @@ class KitSelector implements Listener {
   private final EnderGames plugin;
   private final List<AbstractKit> availablekits;
 
-  public KitSelector(EnderGames plugin, List<AbstractKit> kits) {
+  public KitSelector(EnderGames plugin) {
     this.plugin = plugin;
-    this.availablekits = kits;
+    this.availablekits = plugin.getKits();
     Bukkit.getPluginManager().registerEvents(this, plugin);
+  }
+
+  public void enable() {
+    Bukkit.getPluginManager().registerEvents(this, this.plugin);
   }
 
   public void disable() {

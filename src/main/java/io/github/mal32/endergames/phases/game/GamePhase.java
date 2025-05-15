@@ -1,18 +1,16 @@
 package io.github.mal32.endergames.phases.game;
 
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.kits.*;
+import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.phases.AbstractPhase;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
-import java.time.Duration;
-import java.util.*;
-import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -26,7 +24,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
@@ -34,18 +31,108 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import java.time.Duration;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 public class GamePhase extends AbstractPhase implements Listener {
-  private final List<AbstractModule> modules =
-      List.of(
-          new EnchanterManager(plugin, spawnLocation),
-          new EnderChestManager(plugin),
-          new PlayerRegenerationManager(plugin),
-          new PlayerSwapManager(plugin));
+  private final NamespacedKey spawnLocationKey;
+  private final List<AbstractModule> modules;
 
-  public GamePhase(EnderGames plugin, Location spawn) {
-    super(plugin, spawn);
+  private final Location center;
 
-    for (Player player : plugin.getServer().getOnlinePlayers()) {
+  public Location getCenter() {
+    return this.center;
+  }
+
+  public GamePhase(EnderGames plugin) {
+    super(plugin);
+
+    this.spawnLocationKey = new NamespacedKey(plugin, "spawn");
+
+    World world = Bukkit.getWorlds().get(1);
+    this.center = new Location(world, -1000, 151, 0);
+    this.reloadSpawnPosition();
+    this.findNewSpawnLocation();
+    this.updateSpawn();
+
+
+    this.modules =  List.of(
+            new EnchanterManager(plugin, this.center),
+            new EnderChestManager(plugin),
+            new PlayerRegenerationManager(plugin),
+            new PlayerSwapManager(plugin));
+  }
+
+  public void newSpawn() {
+    this.findNewSpawnLocation();
+    this.updateSpawn();
+  }
+
+  private void reloadSpawnPosition(){
+    World world = this.center.getWorld();
+
+    if (!world.getPersistentDataContainer().has(this.spawnLocationKey)) {
+      Bukkit.getServer().sendMessage(Component.text("First EnderGames server start"));
+      updateSpawn();
+    }
+
+    List<Integer> rawSpawn =
+            world
+                    .getPersistentDataContainer()
+                    .get(this.spawnLocationKey, PersistentDataType.LIST.listTypeFrom(PersistentDataType.INTEGER));
+    this.center.setX(rawSpawn.get(0));
+    this.center.setZ(rawSpawn.get(1));
+  }
+
+  private void findNewSpawnLocation() {           // TODO
+    Location spawnLocationCandidate = this.center.clone();
+
+    do {
+      spawnLocationCandidate.add(1000, 0, 0);
+      spawnLocationCandidate.getChunk().load(true);
+    } while (isOcean(spawnLocationCandidate.getBlock().getBiome()));
+
+    this.center.setX(spawnLocationCandidate.getX());
+  }
+
+//  Why doesnt BiomeTagKeys.IS_OCEAN work?
+  // using
+  // https://github.com/misode/mcmeta/blob/data/data/minecraft/tags/worldgen/biome/is_ocean.json
+  // directly
+  private boolean isOcean(Biome biome) {
+    return biome.equals(Biome.DEEP_FROZEN_OCEAN)
+        || biome.equals(Biome.DEEP_COLD_OCEAN)
+        || biome.equals(Biome.DEEP_OCEAN)
+        || biome.equals(Biome.DEEP_LUKEWARM_OCEAN)
+        || biome.equals(Biome.FROZEN_OCEAN)
+        || biome.equals(Biome.OCEAN)
+        || biome.equals(Biome.COLD_OCEAN)
+        || biome.equals(Biome.LUKEWARM_OCEAN)
+        || biome.equals(Biome.WARM_OCEAN);
+  }
+
+  private void updateSpawn() {
+    World world = this.center.getWorld();
+
+    world
+        .getPersistentDataContainer()
+        .set(
+            this.spawnLocationKey,
+            PersistentDataType.LIST.listTypeFrom(PersistentDataType.INTEGER),
+            List.of((int) this.center.getX(), (int) this.center.getZ()));
+
+    world.setSpawnLocation(this.center);
+    world.getWorldBorder().setCenter(this.center);
+  }
+
+  @Override
+  public void start() {
+    Bukkit.getPluginManager().registerEvents(this, plugin);
+
+    for (Player player : plugin.getServer().getOnlinePlayers()) { // TODO: playing players
       player.setGameMode(GameMode.SURVIVAL);
 
       Bukkit.dispatchCommand(
@@ -55,20 +142,20 @@ public class GamePhase extends AbstractPhase implements Listener {
           player
               .getPersistentDataContainer()
               .get(new NamespacedKey(plugin, "kit"), PersistentDataType.STRING);
-      for (AbstractKit kit : kits) {
+      for (AbstractKit kit : this.plugin.getKits()) {
         if (Objects.equals(kit.getName(), playerKit)) {
           kit.start(player);
         }
       }
     }
 
-    World world = spawnLocation.getWorld();
+    World world = this.center.getWorld();
 
     world.setTime(0);
-    world.getClearWeatherDuration();
+    world.getClearWeatherDuration();      // TODO: get?
 
     WorldBorder worldBorder = world.getWorldBorder();
-    worldBorder.setSize(600);
+    worldBorder.setSize(600);             // TODO: necessary?
     worldBorder.setSize(50, 20 * 60);
     worldBorder.setWarningDistance(32);
     worldBorder.setWarningTime(60);
@@ -78,9 +165,9 @@ public class GamePhase extends AbstractPhase implements Listener {
     scheduler.runTaskLater(
         plugin,
         () -> {
-          for (int x = spawn.blockX() - 20; x <= spawn.blockX() + 20; x++) {
-            for (int z = spawn.blockZ() - 20; z <= spawn.blockZ() + 20; z++) {
-              for (int y = spawn.blockY() - 20; y <= spawn.blockY() + 20; y++) {
+          for (int x = this.center.blockX() - 20; x <= this.center.blockX() + 20; x++) {
+            for (int z = this.center.blockZ() - 20; z <= this.center.blockZ() + 20; z++) {
+              for (int y = this.center.blockY() - 20; y <= this.center.blockY() + 20; y++) {
                 world.getBlockAt(x, y, z).setType(Material.AIR);
               }
             }
@@ -93,7 +180,7 @@ public class GamePhase extends AbstractPhase implements Listener {
     for (AbstractModule module : modules) {
       module.enable();
     }
-    for (AbstractKit kit : kits) {
+    for (AbstractKit kit : this.plugin.getKits()) {
       kit.enable();
     }
   }
@@ -114,8 +201,8 @@ public class GamePhase extends AbstractPhase implements Listener {
     Bukkit.getScheduler()
         .runTaskLater(plugin, protectionTimeBar::removeAll, 20 * protectionTimeDurationSeconds);
 
-    for (Player player : plugin.getServer().getOnlinePlayers()) {
-      protectionTimeBar.addPlayer(player);
+    for (Player player : plugin.getServer().getOnlinePlayers()) {   // TODO: playing players
+      protectionTimeBar.addPlayer(player);    // TODO: disable when leaving?
 
       player.addPotionEffect(
           new PotionEffect(
@@ -125,19 +212,17 @@ public class GamePhase extends AbstractPhase implements Listener {
 
   @Override
   public void stop() {
-    super.stop();
-
     for (AbstractModule module : modules) {
       module.disable();
     }
-    for (AbstractKit kit : kits) {
+    for (AbstractKit kit : this.plugin.getKits()) {
       kit.disable();
     }
 
-    WorldBorder worldBorder = spawnLocation.getWorld().getWorldBorder();
-    worldBorder.setSize(600);
+//    WorldBorder worldBorder = spawnLocation.getWorld().getWorldBorder();    // TODO: why?
+//    worldBorder.setSize(600);
 
-    for (Player player : plugin.getServer().getOnlinePlayers()) {
+    for (Player player : plugin.getServer().getOnlinePlayers()) {   // TODO: playing players
       player.getInventory().clear();
       player.setGameMode(GameMode.SPECTATOR);
 
@@ -149,7 +234,7 @@ public class GamePhase extends AbstractPhase implements Listener {
 
   @EventHandler
   private void onTrackerClick(PlayerInteractEvent event) {
-    Player player = event.getPlayer();
+    Player player = event.getPlayer();      // TODO: playing players
     ItemStack item = event.getItem();
     if (item == null || item.getType() != Material.COMPASS) {
       return;
@@ -194,7 +279,7 @@ public class GamePhase extends AbstractPhase implements Listener {
     World world = player.getWorld();
 
     for (ItemStack item : player.getInventory().getContents()) {
-      if (item == null) {
+      if (item == null) {     // TODO: not the Tracker
         continue;
       }
       world.dropItem(player.getLocation(), item);
@@ -243,7 +328,7 @@ public class GamePhase extends AbstractPhase implements Listener {
     double nearestDistance = Double.MAX_VALUE;
     Location executorLocation = executor.getLocation();
 
-    for (Player other : executor.getServer().getOnlinePlayers()) {
+    for (Player other : executor.getServer().getOnlinePlayers()) {       // TODO: playing players
       if (other.equals(executor)) continue;
       if (other.getGameMode() == GameMode.SPECTATOR) continue;
 
@@ -258,7 +343,7 @@ public class GamePhase extends AbstractPhase implements Listener {
 
   @EventHandler
   private void onPlayerQuit(PlayerQuitEvent event) {
-    if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) return;
+    if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) return;    // TODO: playing players
 
     abstractPlayerDeath(event.getPlayer(), null);
   }
@@ -266,7 +351,7 @@ public class GamePhase extends AbstractPhase implements Listener {
   private void win() {
     try {
       List<Player> survivalPlayers =
-          Bukkit.getOnlinePlayers().stream()
+          Bukkit.getOnlinePlayers().stream()       // TODO: playing players
               .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
               .collect(Collectors.toList());
       Player lastPlayer = survivalPlayers.getFirst();
@@ -277,7 +362,7 @@ public class GamePhase extends AbstractPhase implements Listener {
               Component.text(""),
               Title.Times.times(
                   Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
-      for (Player player : Bukkit.getOnlinePlayers()) {
+      for (Player player : Bukkit.getOnlinePlayers()) {        // TODO: playing players
         player.showTitle(title);
       }
 
@@ -290,23 +375,23 @@ public class GamePhase extends AbstractPhase implements Listener {
 
   private boolean moreThanOnePlayersAlive() {
     int playersAlive = 0;
-    for (Player player : Bukkit.getOnlinePlayers()) {
+    for (Player player : Bukkit.getOnlinePlayers()) {      // TODO: playing players
       if (player.getGameMode() == GameMode.SURVIVAL) {
-        playersAlive++;
+        playersAlive++;     // maybe count down with every death?
       }
     }
     return playersAlive > 1;
   }
 
-  @EventHandler
-  private void onPlayerJoin(PlayerJoinEvent event) {
-    Player player = event.getPlayer();
-    player.setGameMode(GameMode.SPECTATOR);
-  }
+//  @EventHandler
+//  private void onPlayerJoin(PlayerJoinEvent event) {
+//    Player player = event.getPlayer();
+//    player.setGameMode(GameMode.SPECTATOR);
+//  }
 
   @EventHandler
   private void onPlayerPlaceTNT(BlockPlaceEvent event) {
-    if (event.getBlock().getType() != Material.TNT) {
+    if (event.getBlock().getType() != Material.TNT) {          // TODO: playing players
       return;
     }
 

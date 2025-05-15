@@ -1,6 +1,8 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.phases.game.AbstractModule;
+
+import java.util.List;
 import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -33,4 +35,15 @@ public abstract class AbstractKit extends AbstractModule {
   }
 
   public abstract ItemStack getDescriptionItem();
+
+  public static List<AbstractKit> getKits(JavaPlugin plugin) {
+    return List.of(
+            new Lumberjack(plugin),
+            new Cat(plugin),
+            new Cactus(plugin),
+            new Barbarian(plugin),
+            new Blaze(plugin),
+            new Slime(plugin),
+            new Dolphin(plugin));
+  }
 }
