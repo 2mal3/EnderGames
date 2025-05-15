@@ -2,9 +2,6 @@ name: CodeQL
 
 on: [ "push", "pull_request", "workflow_dispatch" ]
 
-permissions:
-  actions: write
-
 jobs:
   google-java-format:
     name: Checkstyle
