@@ -24,6 +24,12 @@ public class Cactus extends AbstractKit {
     super(plugin);
   }
 
+  @Override
+  public void start(Player player) {
+    player.getInventory().setLeggings(colorLeatherArmor(new ItemStack(Material.LEATHER_LEGGINGS), Color.fromRGB(3064446)));
+    player.getInventory().setBoots(colorLeatherArmor(new ItemStack(Material.LEATHER_BOOTS), Color.fromRGB(3064446)));
+  }
+
   @EventHandler
   public void onEntityDamagedByEntity(EntityDamageByEntityEvent event) {
     if (!(event.getEntity() instanceof Player player) || !(event.getDamager() instanceof Damageable damager)) return;
