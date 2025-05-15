@@ -16,7 +16,7 @@ The game can only be started by server operators with the command `/endergames s
 - `force-gamemode=false`
 - `allow-nether=false` optional, to have the original EnderGames experience
 
-## Kitss
+## Kits
 
 - <details>
   <summary>Barbarian</summary>
