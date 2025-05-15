@@ -22,9 +22,17 @@ public class Lumberjack extends AbstractKit {
 
   @Override
   public void start(Player player) {
-    player.getInventory().setChestplate(colorLeatherArmor(new ItemStack(Material.LEATHER_CHESTPLATE), Color.fromRGB(10820909)));
-    player.getInventory().setLeggings(colorLeatherArmor(new ItemStack(Material.LEATHER_LEGGINGS), Color.fromRGB(1728436)));
-    player.getInventory().addItem(enchantItem(new ItemStack(Material.WOODEN_AXE), Enchantment.SHARPNESS));
+    player
+        .getInventory()
+        .setChestplate(
+            colorLeatherArmor(new ItemStack(Material.LEATHER_CHESTPLATE), Color.fromRGB(10820909)));
+    player
+        .getInventory()
+        .setLeggings(
+            colorLeatherArmor(new ItemStack(Material.LEATHER_LEGGINGS), Color.fromRGB(1728436)));
+    player
+        .getInventory()
+        .addItem(enchantItem(new ItemStack(Material.WOODEN_AXE), Enchantment.SHARPNESS));
   }
 
   @EventHandler
