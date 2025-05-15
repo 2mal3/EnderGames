@@ -26,7 +26,8 @@ public class Cactus extends AbstractKit {
 
   @EventHandler
   public void onEntityDamagedByEntity(EntityDamageByEntityEvent event) {
-    if (!(event.getEntity() instanceof Player player) || !(event.getDamager() instanceof Damageable damager)) return;
+    if (!(event.getEntity() instanceof Player player)
+        || !(event.getDamager() instanceof Damageable damager)) return;
     if (!playerHasKit(player)) return;
 
     if (Math.random() > 0.8) return;
