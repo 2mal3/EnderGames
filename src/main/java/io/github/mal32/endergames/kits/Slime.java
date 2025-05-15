@@ -1,13 +1,14 @@
 package io.github.mal32.endergames.kits;
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
-import java.util.Arrays;
-import java.util.Random;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
-import org.bukkit.entity.*;
+import org.bukkit.entity.EnderPearl;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -21,6 +22,9 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import java.util.Arrays;
+import java.util.Random;
 
 public class Slime extends AbstractKit {
   public Slime(JavaPlugin plugin) {

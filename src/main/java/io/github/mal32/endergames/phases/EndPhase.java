@@ -11,19 +11,13 @@ public class EndPhase extends AbstractPhase {
   }
 
   @Override
-  public void start() {   // TODO: Lobby not new Game // TODO: bossbar?
+  public void start() {   // TODO: bossbar?
     Bukkit.getServer()
             .sendMessage(
-                    Component.text("Game will restart in 30 seconds").color(NamedTextColor.YELLOW));
+                    Component.text("Game will restart in 30 seconds").color(NamedTextColor.YELLOW)); // TODO: Lobby not new Game
     Bukkit.getScheduler().runTaskLater(plugin, plugin::nextPhase, 20 * 30);
   }
 
   @Override
   public void stop() {}
-
-//  @EventHandler
-//  private void onPlayerJoin(PlayerJoinEvent event) {
-//    Player player = event.getPlayer();
-//    player.setGameMode(GameMode.SPECTATOR);
-//  }
 }

@@ -1,9 +1,5 @@
 package io.github.mal32.endergames.kits;
 
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -22,6 +18,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class Blaze extends AbstractKit {
   public Blaze(JavaPlugin plugin) {

@@ -12,7 +12,9 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -69,28 +71,12 @@ public class EnderGames extends JavaPlugin implements Listener {
         this.currentPhase = Phase.IDLE;
 
         Bukkit.getPluginManager().registerEvents(this, this);
-
-//    World world = Bukkit.getWorld("world_enga_world");
-//
-//    if (!world.getPersistentDataContainer().has(spawnKey)) {
-//      Bukkit.getServer().sendMessage(Component.text("First EnderGames server start"));
-//      spawnLocation = new Location(world, 0, 150, 0);
-//      updateSpawn();
-//    }
-//
-//    List<Integer> rawSpawn =
-//        world
-//            .getPersistentDataContainer()
-//            .get(spawnKey, PersistentDataType.LIST.listTypeFrom(PersistentDataType.INTEGER));
-//    spawnLocation = new Location(world, rawSpawn.get(0), 150, rawSpawn.get(1));
-//
-//    phase = new LobbyPhase(this, spawnLocation);
     }
 
     public void nextPhase() {
         getCurrentPhase().stop();
         this.currentPhase = this.currentPhase.next();
-        System.out.println("Next Phase:" + this.currentPhase.toString());
+        Bukkit.getLogger().info("Next phase: " + this.currentPhase.toString());
         getCurrentPhase().start();
     }
 
@@ -119,49 +105,7 @@ public class EnderGames extends JavaPlugin implements Listener {
         ((LobbyPhase) this.phases.get(Phase.IDLE)).initPlayer(event.getPlayer());
     }
 
-    //  private void findNewSpawnLocation() {           // TODO
-//    Location spawnLocationCandidate = spawnLocation.clone();
-//
-//    do {
-//      spawnLocationCandidate.add(1000, 0, 0);
-//      spawnLocationCandidate.getChunk().load(true);
-//    } while (isOcean(spawnLocationCandidate.getBlock().getBiome()));
-//
-//    spawnLocation = spawnLocationCandidate;
-//  }
-
-    // Why doesnt BiomeTagKeys.IS_OCEAN work?
-    // using
-    // https://github.com/misode/mcmeta/blob/data/data/minecraft/tags/worldgen/biome/is_ocean.json
-    // directly
-//  private boolean isOcean(Biome biome) {
-//    return biome.equals(Biome.DEEP_FROZEN_OCEAN)
-//        || biome.equals(Biome.DEEP_COLD_OCEAN)
-//        || biome.equals(Biome.DEEP_OCEAN)
-//        || biome.equals(Biome.DEEP_LUKEWARM_OCEAN)
-//        || biome.equals(Biome.FROZEN_OCEAN)
-//        || biome.equals(Biome.OCEAN)
-//        || biome.equals(Biome.COLD_OCEAN)
-//        || biome.equals(Biome.LUKEWARM_OCEAN)
-//        || biome.equals(Biome.WARM_OCEAN);
-//  }
-
-//  private void updateSpawn() {
-//    World world = spawnLocation.getWorld();
-//
-//    world
-//        .getPersistentDataContainer()
-//        .set(
-//            spawnKey,
-//            PersistentDataType.LIST.listTypeFrom(PersistentDataType.INTEGER),
-//            List.of((int) spawnLocation.getX(), (int) spawnLocation.getZ()));
-//
-//    world.setSpawnLocation(spawnLocation);
-//    world.getWorldBorder().setCenter(spawnLocation);
-//  }
-
     private LiteralCommandNode<CommandSourceStack> endergamesCommand() {
-
         return Commands.literal("endergames")
                 .then(
                         Commands.literal("start")
@@ -172,5 +116,17 @@ public class EnderGames extends JavaPlugin implements Listener {
                                             return Command.SINGLE_SUCCESS;
                                         }))
                 .build();
+    }
+
+    public static boolean playerIsIdeling(Player player) {
+        return player.getGameMode() == GameMode.ADVENTURE;
+    }
+
+    public static boolean playerIsPlaying(Player player) {
+        return player.getGameMode() == GameMode.SURVIVAL;
+    }
+
+    public static boolean playerIsObserving(Player player) {
+        return player.getGameMode() == GameMode.SPECTATOR;
     }
 }

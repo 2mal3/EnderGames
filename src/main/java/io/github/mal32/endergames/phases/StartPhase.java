@@ -35,6 +35,7 @@ public class StartPhase extends AbstractPhase {
     int playerindex = 0;
     int totalPlayers = Bukkit.getServer().getOnlinePlayers().size();
     for (Player player : Bukkit.getServer().getOnlinePlayers()) {   // TODO: playing players
+      player.setGameMode(GameMode.SURVIVAL);
       teleportToPlayerSpawns(player, playerindex, totalPlayers);
       playerindex += 1;
     }
@@ -44,7 +45,8 @@ public class StartPhase extends AbstractPhase {
   public void stop() {
     HandlerList.unregisterAll(this);
 
-    for (Player player : plugin.getServer().getOnlinePlayers()) {     // TODO: playing players
+    for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+      if (!EnderGames.playerIsPlaying(player)) return;
       player.clearActivePotionEffects();
     }
   }
@@ -56,7 +58,8 @@ public class StartPhase extends AbstractPhase {
     scheduler.runTaskLater(
         plugin,
         () -> {
-          for (Player player : plugin.getServer().getOnlinePlayers()) { // TODO: playing players
+          for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            if (EnderGames.playerIsIdeling(player)) continue;
             player.getInventory().clear();
 
             for (int i = 0; i <= 9; i++) {
@@ -96,7 +99,7 @@ public class StartPhase extends AbstractPhase {
 
           scheduler.runTaskLater(plugin, plugin::nextPhase, 10 * 20);
         },
-        1 * 20);
+            20);
   }
 
   private void placeSpawnPlatform() {
@@ -125,10 +128,6 @@ public class StartPhase extends AbstractPhase {
     BlockVector offset = offsets.get(offsetIndex);
 
     Location spawnLocation = ((GamePhase) this.plugin.getPhase(EnderGames.Phase.RUNNING)).getCenter();
-
-    int centerX = spawnLocation.getBlockX() - 1;
-    int centerY = spawnLocation.getBlockY();
-    int centerZ = spawnLocation.getBlockZ();
 
     World world = spawnLocation.getWorld();
     double x = spawnLocation.getX() + offset.getBlockX();
@@ -183,8 +182,9 @@ public class StartPhase extends AbstractPhase {
   }
 
   @EventHandler
-  private void onPlayerMove(PlayerMoveEvent event) { // TODO: playing players
+  private void onPlayerMove(PlayerMoveEvent event) {
     Player player = event.getPlayer();
+    if (!EnderGames.playerIsPlaying(player)) return;
 
     Location startLocation = event.getFrom();
     Location startLocationBlock = startLocation.getBlock().getLocation();
@@ -197,10 +197,4 @@ public class StartPhase extends AbstractPhase {
       event.getTo().setZ(startLocation.getZ());
     }
   }
-
-//  @EventHandler
-//  private void onPlayerJoin(PlayerJoinEvent event) {
-//    Player player = event.getPlayer();
-//    player.setGameMode(GameMode.SPECTATOR);
-//  }
 }

@@ -8,8 +8,6 @@ public abstract class AbstractPhase implements Listener {
 
   public AbstractPhase(EnderGames plugin) {
     this.plugin = plugin;
-
-//    Bukkit.getPluginManager().registerEvents(this, plugin);
   }
 
   public abstract void start();

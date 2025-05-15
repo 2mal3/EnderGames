@@ -27,6 +27,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Random;
@@ -34,32 +35,27 @@ import java.util.Random;
 import static org.apache.commons.lang3.StringUtils.capitalize;
 
 public class LobbyPhase extends AbstractPhase {
-//  public Location playerSpawnLocation;
-  KitSelector kitSelector;
+  private final KitSelector kitSelector;
 
-  private final NamespacedKey lobbyKey;
-
-  public LobbyPhase(EnderGames plugin) {
+    public LobbyPhase(EnderGames plugin) {
     super(plugin);
 
     Bukkit.getPluginManager().registerEvents(this, plugin);
 
-    this.lobbyKey = new NamespacedKey(this.plugin, "lobby");
+        NamespacedKey lobbyKey = new NamespacedKey(this.plugin, "lobby");
     this.kitSelector = new KitSelector(this.plugin);
 
-    World lobby = Bukkit.getWorlds().get(0);
+    World lobby = Bukkit.getWorlds().getFirst();
 
-    if (!lobby.getPersistentDataContainer().has(this.lobbyKey, PersistentDataType.STRING)) {
+    if (!lobby.getPersistentDataContainer().has(lobbyKey, PersistentDataType.STRING)) {
       lobby.getPersistentDataContainer().set(lobbyKey, PersistentDataType.BOOLEAN,true);
       lobby.setSpawnLocation(new Location(lobby, 0, 151, 0));
       lobby.setGameRule(GameRule.SPAWN_RADIUS, 6);
-//      lobby.getWorldBorder().setSize(600);
+      lobby.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+      lobby.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+      lobby.getWorldBorder().setSize(500);
       this.placeLobby(lobby);
     }
-
-//    for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-//      intiPlayer(player);
-//    }
   }
 
   private void placeLobby(World lobby) {
@@ -86,36 +82,31 @@ public class LobbyPhase extends AbstractPhase {
   @Override
   public void start() {
     this.kitSelector.enable();
-    // TODO: tp all player from world to lobby
-    for (Player player : plugin.getServer().getOnlinePlayers()) { // TODO: playing players
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      if (EnderGames.playerIsIdeling(player)) continue;
       player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation());
       initPlayer(player);
     }
 
     ((StartPhase) this.plugin.getPhase(EnderGames.Phase.STARTING)).replaceSpawn();
-
-    // TODO: load new spawn?
   }
 
   @Override
   public void stop() {
-    for (Player player : plugin.getServer().getOnlinePlayers()) { // TODO: playing players
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      if (!EnderGames.playerIsPlaying(player)) continue;
       player.clearActivePotionEffects();
     }
     kitSelector.disable();
   }
 
-//  @EventHandler
-//  public void onPlayerJoin(PlayerJoinEvent event) {
-//    intiPlayer(event.getPlayer());
-//  }
-
   @EventHandler
   public void onPlayerDamage(EntityDamageEvent event) {
-    if (!(event.getEntity() instanceof Player)) return;   // TODO: playing players
+    if (!(event.getEntity() instanceof Player player)) return;
+    if (!EnderGames.playerIsIdeling(player)) return;
     if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) return;
 
-//    event.setCancelled(true); // TODO: temp disabled
+    event.setCancelled(true);
   }
 }
 
@@ -254,7 +245,7 @@ class KitInventory implements InventoryHolder {
   }
 
   @Override
-  public Inventory getInventory() {
+  public @NotNull Inventory getInventory() {
     return this.inventory;
   }
 

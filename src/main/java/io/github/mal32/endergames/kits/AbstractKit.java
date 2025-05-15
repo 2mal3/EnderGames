@@ -1,15 +1,15 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.phases.game.AbstractModule;
-
-import java.util.List;
-import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.List;
+import java.util.Objects;
 
 public abstract class AbstractKit extends AbstractModule {
   public AbstractKit(JavaPlugin plugin) {
