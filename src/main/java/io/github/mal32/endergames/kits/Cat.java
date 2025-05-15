@@ -29,16 +29,12 @@ public class Cat extends AbstractKit {
   @Override
   public void start(Player player) {
     ItemStack fish = new ItemStack(Material.COD, 20);
-    FoodProperties fishProperties = FoodProperties.food().canAlwaysEat(true).nutrition(3).saturation(0.6f).build();
+    FoodProperties fishProperties =
+        FoodProperties.food().canAlwaysEat(true).nutrition(3).saturation(0.6f).build();
     fish.setData(DataComponentTypes.FOOD, fishProperties);
     ItemMeta fishMeta = fish.getItemMeta();
     fishMeta.displayName(Component.text("Fish").decoration(TextDecoration.ITALIC, false));
-    fishMeta.lore(
-            List.of(
-                    Component.text("Can always be eaten")
-                            .color(NamedTextColor.GRAY)
-            )
-    );
+    fishMeta.lore(List.of(Component.text("Can always be eaten").color(NamedTextColor.GRAY)));
     fish.setItemMeta(fishMeta);
     player.getInventory().addItem(fish);
   }

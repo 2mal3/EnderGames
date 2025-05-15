@@ -33,7 +33,10 @@ public class Blaze extends AbstractKit {
     {
       ItemStack blazePowder = new ItemStack(Material.BLAZE_POWDER);
       ItemMeta meta = blazePowder.getItemMeta();
-      meta.displayName(Component.text("Burn").color(NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
+      meta.displayName(
+          Component.text("Burn")
+              .color(NamedTextColor.GOLD)
+              .decoration(TextDecoration.ITALIC, false));
       blazePowder.setItemMeta(meta);
       player.getInventory().addItem(blazePowder);
     }

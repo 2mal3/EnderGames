@@ -29,8 +29,13 @@ public class Slime extends AbstractKit {
 
   @Override
   public void start(Player player) {
-    player.getInventory().setChestplate(colorLeatherArmor(new ItemStack(Material.LEATHER_CHESTPLATE), Color.fromRGB(3144049)));
-    player.getInventory().setBoots(colorLeatherArmor(new ItemStack(Material.LEATHER_BOOTS), Color.fromRGB(3144049)));
+    player
+        .getInventory()
+        .setChestplate(
+            colorLeatherArmor(new ItemStack(Material.LEATHER_CHESTPLATE), Color.fromRGB(3144049)));
+    player
+        .getInventory()
+        .setBoots(colorLeatherArmor(new ItemStack(Material.LEATHER_BOOTS), Color.fromRGB(3144049)));
     player.getInventory().addItem(new ItemStack(Material.SLIME_BALL, 20));
 
     player.addPotionEffect(
