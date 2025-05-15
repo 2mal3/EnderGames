@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,7 +23,8 @@ public class Dolphin extends AbstractKit {
 
   @Override
   public void start(Player player) {
-    super.start(player);
+    player.getInventory().setLeggings(colorLeatherArmor(new ItemStack(Material.LEATHER_BOOTS), Color.fromRGB(3507428)));
+    player.getInventory().addItem(new ItemStack(Material.WATER_BUCKET));
 
     player.addPotionEffect(
         new PotionEffect(
@@ -39,7 +41,6 @@ public class Dolphin extends AbstractKit {
     Player player = event.getPlayer();
     if (!playerHasKit(player)) return;
 
-    boolean playerIsInWater = player.isInWater();
     boolean hasRegeneration =
         player.hasPotionEffect(PotionEffectType.REGENERATION)
             && player.getPotionEffect(PotionEffectType.REGENERATION).getDuration()
@@ -54,7 +55,7 @@ public class Dolphin extends AbstractKit {
                 == PotionEffect.INFINITE_DURATION;
 
     // Effects in Water
-    if (playerIsInWater) {
+    if (player.isInWater()) {
       if (!hasRegeneration) {
         player.addPotionEffect(
             new PotionEffect(

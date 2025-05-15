@@ -24,19 +24,18 @@ public class Cactus extends AbstractKit {
     super(plugin);
   }
 
+  @Override
+  public void start(Player player) {
+    player.getInventory().setLeggings(colorLeatherArmor(new ItemStack(Material.LEATHER_LEGGINGS), Color.fromRGB(3064446)));
+    player.getInventory().setBoots(colorLeatherArmor(new ItemStack(Material.LEATHER_BOOTS), Color.fromRGB(3064446)));
+  }
+
   @EventHandler
   public void onEntityDamagedByEntity(EntityDamageByEntityEvent event) {
-    if (!(event.getEntity() instanceof Player player)
-        || !(event.getDamager() instanceof Damageable damager)) {
-      return;
-    }
-    if (!playerHasKit(player)) {
-      return;
-    }
+    if (!(event.getEntity() instanceof Player player) || !(event.getDamager() instanceof Damageable damager)) return;
+    if (!playerHasKit(player)) return;
 
-    if (Math.random() > 0.8) {
-      return;
-    }
+    if (Math.random() > 0.8) return;
 
     Location location = player.getLocation();
     location.getWorld().playSound(location, Sound.ENCHANT_THORNS_HIT, 1, 1);
@@ -62,8 +61,8 @@ public class Cactus extends AbstractKit {
     }
   }
 
-  private HashMap<UUID, ArrayList<BlockDisplay>> cactusPlayerMapping = new HashMap<>();
-  private HashMap<UUID, Boolean> cactusPlayerLocked = new HashMap<>();
+  private final HashMap<UUID, ArrayList<BlockDisplay>> cactusPlayerMapping = new HashMap<>();
+  private final HashMap<UUID, Boolean> cactusPlayerLocked = new HashMap<>();
 
   private void enterCactus(Player player) {
     UUID uuid = player.getUniqueId();
@@ -77,7 +76,7 @@ public class Cactus extends AbstractKit {
     cactusPlayerLocked.put(uuid, true);
 
     if (!cactusPlayerMapping.containsKey(uuid)) {
-      cactusPlayerMapping.put(uuid, new ArrayList<BlockDisplay>());
+      cactusPlayerMapping.put(uuid, new ArrayList<>());
     }
 
     Location blockLocation = player.getLocation().getBlock().getLocation();
@@ -106,9 +105,7 @@ public class Cactus extends AbstractKit {
 
   @EventHandler(ignoreCancelled = true)
   public void onPlayerDeath(PlayerDeathEvent event) {
-    if (!(playerHasKit(event.getPlayer()))) {
-      return;
-    }
+    if (!(playerHasKit(event.getPlayer()))) return;
 
     leaveCactus(event.getPlayer());
   }
@@ -116,28 +113,20 @@ public class Cactus extends AbstractKit {
   @EventHandler
   public void onPlayerLeave(PlayerQuitEvent event) {
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) {
-      return;
-    }
+    if (!playerHasKit(player)) return;
 
     leaveCactus(player);
   }
 
   @EventHandler
   public void onPlayerMove(PlayerMoveEvent event) {
-    if (!event.hasChangedBlock()) {
-      return;
-    }
+    if (!event.hasChangedBlock()) return;
 
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) {
-      return;
-    }
+    if (!playerHasKit(player)) return;
 
     if (cactusPlayerLocked.get(player.getUniqueId()) == null
-        || !cactusPlayerLocked.get(player.getUniqueId())) {
-      return;
-    }
+        || !cactusPlayerLocked.get(player.getUniqueId())) return;
 
     event.setCancelled(true);
   }

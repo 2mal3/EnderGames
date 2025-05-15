@@ -4,11 +4,8 @@ import java.util.Arrays;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Material;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
-import org.bukkit.Tag;
+import org.bukkit.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -21,17 +18,20 @@ public class Barbarian extends AbstractKit {
     super(plugin);
   }
 
+  @Override
+  public void start(Player player) {
+    player.getInventory().setHelmet(enchantItem(new ItemStack(Material.LEATHER_HELMET), Enchantment.UNBREAKING));
+    player.getInventory().setChestplate(enchantItem(new ItemStack(Material.LEATHER_CHESTPLATE), Enchantment.UNBREAKING));
+    player.getInventory().setLeggings(enchantItem(new ItemStack(Material.LEATHER_LEGGINGS), Enchantment.UNBREAKING));
+    player.getInventory().setBoots(enchantItem(new ItemStack(Material.LEATHER_BOOTS), Enchantment.UNBREAKING));
+    player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
+  }
+
   @EventHandler
   public void onHit(EntityDamageByEntityEvent event) {
-    if (!(event.getDamager() instanceof Player damager)) {
-      return;
-    }
-    if (!playerHasKit(damager)) {
-      return;
-    }
-    if (!Tag.ITEMS_SWORDS.isTagged(damager.getInventory().getItemInMainHand().getType())) {
-      return;
-    }
+    if (!(event.getDamager() instanceof Player damager) || !playerHasKit(damager)) return;
+
+    if (!Tag.ITEMS_SWORDS.isTagged(damager.getInventory().getItemInMainHand().getType())) return;
 
     // +2.5% damage per lost food level
     int foodLevel = damager.getFoodLevel();

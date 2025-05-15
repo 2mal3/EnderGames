@@ -1,6 +1,10 @@
 package io.github.mal32.endergames.kits;
 
 import java.util.Arrays;
+import java.util.List;
+
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.FoodProperties;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -22,14 +26,27 @@ public class Cat extends AbstractKit {
     super(plugin);
   }
 
+  @Override
+  public void start(Player player) {
+    ItemStack fish = new ItemStack(Material.COD, 20);
+    FoodProperties fishProperties = FoodProperties.food().canAlwaysEat(true).nutrition(3).saturation(0.6f).build();
+    fish.setData(DataComponentTypes.FOOD, fishProperties);
+    ItemMeta fishMeta = fish.getItemMeta();
+    fishMeta.displayName(Component.text("Fish").decoration(TextDecoration.ITALIC, false));
+    fishMeta.lore(
+            List.of(
+                    Component.text("Can always be eaten")
+                            .color(NamedTextColor.GRAY)
+            )
+    );
+    fish.setItemMeta(fishMeta);
+    player.getInventory().addItem(fish);
+  }
+
   @EventHandler
   private void onFallDamage(EntityDamageEvent event) {
-    if (!(event.getEntity() instanceof Player)) {
-      return;
-    }
-    if (!playerHasKit((Player) event.getEntity())) {
-      return;
-    }
+    if (!(event.getEntity() instanceof Player) || !playerHasKit((Player) event.getEntity())) return;
+
     if (event.getCause() != EntityDamageEvent.DamageCause.FALL) {
       return;
     }
@@ -39,30 +56,19 @@ public class Cat extends AbstractKit {
 
   @EventHandler
   private void onPlayerEatFish(PlayerItemConsumeEvent event) {
-    if (!playerHasKit((Player) event.getPlayer())) {
-      return;
-    }
-    if (!Tag.ITEMS_FISHES.isTagged(event.getItem().getType())) {
-      return;
-    }
+    if (!playerHasKit(event.getPlayer())) return;
+
+    if (!Tag.ITEMS_FISHES.isTagged(event.getItem().getType())) return;
 
     event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 30, 2, true));
   }
 
   @EventHandler
   private void onPlayerHit(EntityDamageByEntityEvent event) {
-    if (!(event.getDamager() instanceof Player)) {
-      return;
-    }
-    Player damager = (Player) event.getDamager();
-    if (!playerHasKit(damager)) {
-      return;
-    }
+    if (!(event.getDamager() instanceof Player damager) || !playerHasKit(damager)) return;
 
     // skip if damage is not with bare hands
-    if (!damager.getInventory().getItemInMainHand().getType().isAir()) {
-      return;
-    }
+    if (!damager.getInventory().getItemInMainHand().getType().isAir()) return;
 
     event.setDamage(event.getDamage() + 2);
   }
