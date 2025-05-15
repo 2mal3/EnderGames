@@ -1,14 +1,18 @@
 name: CodeQL
 
-on: [ "push", "pull_request" ]
+on: [ "push", "pull_request", "workflow_dispatch" ]
 
 jobs:
-  codacy-analysis-cli:
-    name: Codacy Analysis CLI
+  checkstyle:
+    name: Checkstyle
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run Codacy Analysis CLI
-        uses: codacy/codacy-analysis-cli-action@v4
+      - name: Run Checkstyle
+        uses: dbelyaev/action-checkstyle@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          checkstyle_config: "google_checks.xml"
+          fail_level: "error"
