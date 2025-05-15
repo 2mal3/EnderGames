@@ -2,17 +2,24 @@ name: CodeQL
 
 on: [ "push", "pull_request", "workflow_dispatch" ]
 
+permissions:
+  actions: write
+
 jobs:
-  checkstyle:
+  google-java-format:
     name: Checkstyle
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run Checkstyle
-        uses: dbelyaev/action-checkstyle@v1
+      - uses: cachix/install-nix-action@v31
         with:
-          github_token: ${{ secrets.github_token }}
-          checkstyle_config: "google_checks.xml"
-          fail_level: "error"
+          nix_path: nixpkgs=channel:nixos-24.11
+
+      - name: Cache Nix Store
+        uses: nix-community/cache-nix-action@v6
+        with:
+          primary-key: key
+
+      - run: nix-shell -p google-java-format --run "find . -name '*.java' -exec google-java-format --dry-run --set-exit-if-changed --skip-sorting-imports {} +"
