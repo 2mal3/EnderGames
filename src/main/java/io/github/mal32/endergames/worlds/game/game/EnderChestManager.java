@@ -1,4 +1,4 @@
-package io.github.mal32.endergames.phases.game;
+package io.github.mal32.endergames.worlds.game.game;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package io.github.mal32.endergames.phases.lobby;
+package io.github.mal32.endergames.worlds.lobby;
 
 import io.github.mal32.endergames.EnderGames;
 import java.util.Random;

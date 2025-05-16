@@ -1,6 +1,6 @@
 package io.github.mal32.endergames.kits;
 
-import io.github.mal32.endergames.phases.game.AbstractModule;
+import io.github.mal32.endergames.worlds.game.game.AbstractModule;
 import java.util.List;
 import java.util.Objects;
 import org.bukkit.Color;

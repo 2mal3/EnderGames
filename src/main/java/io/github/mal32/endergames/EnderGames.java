@@ -1,7 +1,7 @@
 package io.github.mal32.endergames;
 
-import io.github.mal32.endergames.phases.game.GamePhase;
-import io.github.mal32.endergames.phases.lobby.LobbyPhase;
+import io.github.mal32.endergames.worlds.game.GameManager;
+import io.github.mal32.endergames.worlds.lobby.LobbyPhase;
 import java.util.Objects;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -10,7 +10,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class EnderGames extends JavaPlugin implements Listener {
-  private final GamePhase gameWorld = new GamePhase(this);
+  private final GameManager gameWorld = new GameManager(this);
   private final LobbyPhase lobbyWorld = new LobbyPhase(this);
 
   public static boolean playerIsInLobbyWorld(Player player) {

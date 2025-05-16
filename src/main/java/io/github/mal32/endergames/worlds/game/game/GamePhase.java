@@ -1,7 +1,9 @@
-package io.github.mal32.endergames.phases.game;
+package io.github.mal32.endergames.worlds.game.game;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
+import io.github.mal32.endergames.worlds.game.AbstractPhase;
+import io.github.mal32.endergames.worlds.game.GameManager;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
 import java.time.Duration;
@@ -23,7 +25,6 @@ import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -32,21 +33,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
 
-public class GamePhase implements Listener {
+public class GamePhase extends AbstractPhase {
   private final List<AbstractModule> modules;
-  private Location spawnLocation;
-  private final World world = Bukkit.getWorld("world_enga_world");
-  private final EnderGames plugin;
 
-  public GamePhase(EnderGames plugin) {
-    this.plugin = plugin;
-
-    WorldBorder border = world.getWorldBorder();
-    border.setWarningDistance(32);
-    border.setWarningTime(60);
-    border.setDamageBuffer(1);
+  public GamePhase(EnderGames plugin, GameManager manager, Location spawnLocation) {
+    super(plugin, manager, spawnLocation);
 
     this.modules =
         List.of(
@@ -54,9 +46,7 @@ public class GamePhase implements Listener {
             new EnderChestManager(plugin),
             new PlayerRegenerationManager(plugin),
             new PlayerSwapManager(plugin));
-  }
 
-  public void startGame() {
     for (Player player : plugin.getServer().getOnlinePlayers()) {
       if (!EnderGames.playerIsInGameWorld(player)) continue;
 
@@ -74,28 +64,10 @@ public class GamePhase implements Listener {
       }
     }
 
-    world.setTime(0);
-    world.setStorm(false);
-    world.setThundering(false);
-    world.setWeatherDuration(20 * 60 * 10);
-
-    WorldBorder worldBorder = world.getWorldBorder();
-    worldBorder.setSize(600);
+    var worldBorder = world.getWorldBorder();
     worldBorder.setSize(50, 20 * 60);
 
-    BukkitScheduler scheduler = plugin.getServer().getScheduler();
-    scheduler.runTaskLater(
-        plugin,
-        () -> {
-          for (int x = spawnLocation.blockX() - 20; x <= spawnLocation.blockX() + 20; x++) {
-            for (int z = spawnLocation.blockZ() - 20; z <= spawnLocation.blockZ() + 20; z++) {
-              for (int y = spawnLocation.blockY() - 20; y <= spawnLocation.blockY() + 20; y++) {
-                world.getBlockAt(x, y, z).setType(Material.AIR);
-              }
-            }
-          }
-        },
-        30 * 20);
+    plugin.getServer().getScheduler().runTaskLater(plugin, this::removeSpawnPlatform, 30 * 20);
 
     initProtectionTime();
 
@@ -104,6 +76,16 @@ public class GamePhase implements Listener {
     }
     for (AbstractKit kit : AbstractKit.getKits(plugin)) {
       kit.enable();
+    }
+  }
+
+  private void removeSpawnPlatform() {
+    for (int x = spawnLocation.blockX() - 20; x <= spawnLocation.blockX() + 20; x++) {
+      for (int z = spawnLocation.blockZ() - 20; z <= spawnLocation.blockZ() + 20; z++) {
+        for (int y = spawnLocation.blockY() - 20; y <= spawnLocation.blockY() + 20; y++) {
+          world.getBlockAt(x, y, z).setType(Material.AIR);
+        }
+      }
     }
   }
 
@@ -133,7 +115,10 @@ public class GamePhase implements Listener {
     }
   }
 
-  public void stop() {
+  @Override
+  public void disable() {
+    super.disable();
+
     for (AbstractModule module : modules) {
       module.disable();
     }

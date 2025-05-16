@@ -1,4 +1,4 @@
-package io.github.mal32.endergames.phases.game;
+package io.github.mal32.endergames.worlds.game.game;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
