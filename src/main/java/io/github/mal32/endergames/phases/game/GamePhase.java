@@ -136,7 +136,7 @@ public class GamePhase extends AbstractPhase implements Listener {
         .runTaskLater(plugin, protectionTimeBar::removeAll, 20 * protectionTimeDurationSeconds);
 
     for (Player player : plugin.getServer().getOnlinePlayers()) {
-      if (EnderGames.playerIsIdeling(player)) continue;
+      if (EnderGames.playerIsIdling(player)) continue;
       protectionTimeBar.addPlayer(player); // TODO: disable when leaving?
 
       player.addPotionEffect(
@@ -235,7 +235,7 @@ public class GamePhase extends AbstractPhase implements Listener {
     }
 
     for (Player p : Bukkit.getOnlinePlayers()) {
-      if (EnderGames.playerIsIdeling(p)) continue;
+      if (EnderGames.playerIsIdling(p)) continue;
       player.playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);
     }
 
@@ -301,7 +301,7 @@ public class GamePhase extends AbstractPhase implements Listener {
                   Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
 
       for (Player player : Bukkit.getOnlinePlayers()) {
-        if (!EnderGames.playerIsIdeling(player)) {
+        if (!EnderGames.playerIsIdling(player)) {
           player.showTitle(title);
         }
       }

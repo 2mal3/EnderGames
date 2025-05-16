@@ -40,7 +40,7 @@ public class StartPhase extends AbstractPhase {
     return this.center;
   }
 
-  //  Why doesnt BiomeTagKeys.IS_OCEAN work?
+  // Why doesn't BiomeTagKeys.IS_OCEAN work?
   // using directly:
   // https://github.com/misode/mcmeta/blob/data/data/minecraft/tags/worldgen/biome/is_ocean.json
   private boolean isOcean(Biome biome) {
@@ -138,7 +138,7 @@ public class StartPhase extends AbstractPhase {
           plugin,
           () -> {
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-              if (EnderGames.playerIsIdeling(player)) continue;
+              if (EnderGames.playerIsIdling(player)) continue;
 
               showTitleToPlayerWithSound(
                   player,
@@ -154,7 +154,7 @@ public class StartPhase extends AbstractPhase {
         plugin,
         () -> {
           for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-            if (EnderGames.playerIsIdeling(player)) continue;
+            if (EnderGames.playerIsIdling(player)) continue;
             showTitleToPlayerWithSound(
                 player,
                 Component.text("Start").color(NamedTextColor.GOLD),

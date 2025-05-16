@@ -83,7 +83,7 @@ public class LobbyPhase extends AbstractPhase {
   public void start() {
     this.kitSelector.enable();
     for (Player player : Bukkit.getOnlinePlayers()) {
-      if (EnderGames.playerIsIdeling(player)) continue;
+      if (EnderGames.playerIsIdling(player)) continue;
       player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation());
       initPlayer(player);
     }
@@ -103,7 +103,7 @@ public class LobbyPhase extends AbstractPhase {
   @EventHandler
   public void onPlayerDamage(EntityDamageEvent event) {
     if (!(event.getEntity() instanceof Player player)) return;
-    if (!EnderGames.playerIsIdeling(player)) return;
+    if (!EnderGames.playerIsIdling(player)) return;
     if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) return;
 
     event.setCancelled(true);

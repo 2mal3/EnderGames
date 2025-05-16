@@ -28,7 +28,7 @@ public class EnderGames extends JavaPlugin implements Listener {
   private Phase currentPhase;
   private List<AbstractKit> kits;
 
-  public static boolean playerIsIdeling(Player player) {
+  public static boolean playerIsIdling(Player player) {
     return player.getGameMode() == GameMode.ADVENTURE;
   }
 
