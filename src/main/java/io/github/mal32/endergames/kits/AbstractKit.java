@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.phases.game.AbstractModule;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -17,7 +18,7 @@ public abstract class AbstractKit extends AbstractModule {
   }
 
   protected boolean playerHasKit(Player player) {
-    return Objects.equals(
+    return EnderGames.playerIsPlaying(player) && Objects.equals(
         player
             .getPersistentDataContainer()
             .get(new NamespacedKey(plugin, "kit"), PersistentDataType.STRING),
