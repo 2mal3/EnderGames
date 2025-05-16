@@ -42,7 +42,7 @@ public class Dolphin extends AbstractKit {
     if (!event.hasChangedBlock()) return;
 
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     boolean hasRegeneration =
         player.hasPotionEffect(PotionEffectType.REGENERATION)
@@ -94,7 +94,7 @@ public class Dolphin extends AbstractKit {
     if (!event.hasChangedBlock()) return;
 
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     if (!player.isSwimming()) return;
 

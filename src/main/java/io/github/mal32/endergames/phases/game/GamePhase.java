@@ -2,8 +2,6 @@ package io.github.mal32.endergames.phases.game;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
-import io.github.mal32.endergames.phases.AbstractPhase;
-import io.github.mal32.endergames.phases.StartPhase;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
 import java.time.Duration;
@@ -36,13 +34,15 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 
-public class GamePhase extends AbstractPhase implements Listener {
+public class GamePhase implements Listener {
   private final List<AbstractModule> modules;
+  private Location spawnLocation;
+  private final World world = Bukkit.getWorld("world_enga_world");
+  private final EnderGames plugin;
 
   public GamePhase(EnderGames plugin) {
-    super(plugin);
+    this.plugin = plugin;
 
-    World world = Bukkit.getWorld("world_enga_world");
     WorldBorder border = world.getWorldBorder();
     border.setWarningDistance(32);
     border.setWarningTime(60);
@@ -50,24 +50,15 @@ public class GamePhase extends AbstractPhase implements Listener {
 
     this.modules =
         List.of(
-            new EnchanterManager(
-                plugin, ((StartPhase) this.plugin.getPhase(EnderGames.Phase.STARTING)).getCenter()),
+            new EnchanterManager(plugin, spawnLocation),
             new EnderChestManager(plugin),
             new PlayerRegenerationManager(plugin),
             new PlayerSwapManager(plugin));
   }
 
-  //  public void newSpawn() {
-  //    this.findNewSpawnLocation();
-  //    this.updateSpawn();
-  //  }
-
-  @Override
-  public void start() {
-    Bukkit.getPluginManager().registerEvents(this, plugin);
-
+  public void startGame() {
     for (Player player : plugin.getServer().getOnlinePlayers()) {
-      if (!EnderGames.playerIsPlaying(player)) continue;
+      if (!EnderGames.playerIsInGameWorld(player)) continue;
 
       Bukkit.dispatchCommand(
           Bukkit.getConsoleSender(), "loot give " + player.getName() + " loot enga:tracker");
@@ -83,9 +74,6 @@ public class GamePhase extends AbstractPhase implements Listener {
       }
     }
 
-    Location center = ((StartPhase) this.plugin.getPhase(EnderGames.Phase.STARTING)).getCenter();
-    World world = center.getWorld();
-
     world.setTime(0);
     world.setStorm(false);
     world.setThundering(false);
@@ -99,9 +87,9 @@ public class GamePhase extends AbstractPhase implements Listener {
     scheduler.runTaskLater(
         plugin,
         () -> {
-          for (int x = center.blockX() - 20; x <= center.blockX() + 20; x++) {
-            for (int z = center.blockZ() - 20; z <= center.blockZ() + 20; z++) {
-              for (int y = center.blockY() - 20; y <= center.blockY() + 20; y++) {
+          for (int x = spawnLocation.blockX() - 20; x <= spawnLocation.blockX() + 20; x++) {
+            for (int z = spawnLocation.blockZ() - 20; z <= spawnLocation.blockZ() + 20; z++) {
+              for (int y = spawnLocation.blockY() - 20; y <= spawnLocation.blockY() + 20; y++) {
                 world.getBlockAt(x, y, z).setType(Material.AIR);
               }
             }
@@ -136,7 +124,7 @@ public class GamePhase extends AbstractPhase implements Listener {
         .runTaskLater(plugin, protectionTimeBar::removeAll, 20 * protectionTimeDurationSeconds);
 
     for (Player player : plugin.getServer().getOnlinePlayers()) {
-      if (EnderGames.playerIsIdling(player)) continue;
+      if (EnderGames.playerIsInLobbyWorld(player)) continue;
       protectionTimeBar.addPlayer(player); // TODO: disable when leaving?
 
       player.addPotionEffect(
@@ -145,7 +133,6 @@ public class GamePhase extends AbstractPhase implements Listener {
     }
   }
 
-  @Override
   public void stop() {
     for (AbstractModule module : modules) {
       module.disable();
@@ -155,7 +142,7 @@ public class GamePhase extends AbstractPhase implements Listener {
     }
 
     for (Player player : plugin.getServer().getOnlinePlayers()) {
-      if (!EnderGames.playerIsPlaying(player)) continue;
+      if (!EnderGames.playerIsInGameWorld(player)) continue;
 
       player.getInventory().clear();
       player.setGameMode(GameMode.SPECTATOR);
@@ -169,7 +156,7 @@ public class GamePhase extends AbstractPhase implements Listener {
   @EventHandler
   private void onTrackerClick(PlayerInteractEvent event) {
     Player player = event.getPlayer();
-    if (!EnderGames.playerIsPlaying(player)) return;
+    if (!EnderGames.playerIsInGameWorld(player)) return;
     ItemStack item = event.getItem();
     if (item == null || item.getType() != Material.COMPASS) {
       return;
@@ -189,7 +176,7 @@ public class GamePhase extends AbstractPhase implements Listener {
 
   @EventHandler
   private void onPlayerDeath(PlayerDeathEvent event) {
-    if (!EnderGames.playerIsPlaying(event.getEntity())) return;
+    if (!EnderGames.playerIsInGameWorld(event.getEntity())) return;
     event.setCancelled(true);
 
     Player player = event.getEntity();
@@ -235,7 +222,7 @@ public class GamePhase extends AbstractPhase implements Listener {
     }
 
     for (Player p : Bukkit.getOnlinePlayers()) {
-      if (EnderGames.playerIsIdling(p)) continue;
+      if (EnderGames.playerIsInLobbyWorld(p)) continue;
       player.playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);
     }
 
@@ -267,7 +254,7 @@ public class GamePhase extends AbstractPhase implements Listener {
 
     for (Player other : executor.getServer().getOnlinePlayers()) {
       if (other.equals(executor)) continue;
-      if (!EnderGames.playerIsPlaying(other)) continue;
+      if (!EnderGames.playerIsInGameWorld(other)) continue;
 
       double distance = executorLocation.distance(other.getLocation());
       if (distance < nearestDistance) {
@@ -280,7 +267,7 @@ public class GamePhase extends AbstractPhase implements Listener {
 
   @EventHandler
   private void onPlayerQuit(PlayerQuitEvent event) {
-    if (!EnderGames.playerIsPlaying(event.getPlayer())) return;
+    if (!EnderGames.playerIsInGameWorld(event.getPlayer())) return;
 
     abstractPlayerDeath(event.getPlayer(), null);
   }
@@ -289,7 +276,7 @@ public class GamePhase extends AbstractPhase implements Listener {
     try {
       List<Player> survivalPlayers =
           Bukkit.getOnlinePlayers().stream()
-              .filter(EnderGames::playerIsPlaying)
+              .filter(EnderGames::playerIsInGameWorld)
               .collect(Collectors.toList());
       Player lastPlayer = survivalPlayers.getFirst();
 
@@ -301,7 +288,7 @@ public class GamePhase extends AbstractPhase implements Listener {
                   Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
 
       for (Player player : Bukkit.getOnlinePlayers()) {
-        if (!EnderGames.playerIsIdling(player)) {
+        if (!EnderGames.playerIsInLobbyWorld(player)) {
           player.showTitle(title);
         }
       }
@@ -309,14 +296,12 @@ public class GamePhase extends AbstractPhase implements Listener {
       lastPlayer.playSound(lastPlayer.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
     } catch (NoSuchElementException ignored) {
     }
-
-    plugin.nextPhase();
   }
 
   private boolean moreThanOnePlayersAlive() {
     int playersAlive = 0;
     for (Player player : Bukkit.getOnlinePlayers()) {
-      if (EnderGames.playerIsPlaying(player))
+      if (EnderGames.playerIsInGameWorld(player))
         playersAlive++; // TODO: maybe count down with every death?
     }
     return playersAlive > 1;
@@ -324,7 +309,7 @@ public class GamePhase extends AbstractPhase implements Listener {
 
   @EventHandler
   private void onPlayerPlaceTNT(BlockPlaceEvent event) {
-    if (!EnderGames.playerIsPlaying(event.getPlayer())) return;
+    if (!EnderGames.playerIsInGameWorld(event.getPlayer())) return;
     if (event.getBlock().getType() != Material.TNT) return;
 
     Block block = event.getBlock();

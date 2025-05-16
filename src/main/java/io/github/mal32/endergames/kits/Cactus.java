@@ -45,7 +45,7 @@ public class Cactus extends AbstractKit {
   public void onEntityDamagedByEntity(EntityDamageByEntityEvent event) {
     if (!(event.getEntity() instanceof Player player)
         || !(event.getDamager() instanceof Damageable damager)) return;
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     if (Math.random() > 0.8) return;
 
@@ -59,7 +59,7 @@ public class Cactus extends AbstractKit {
   @EventHandler
   public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     if (event.isSneaking()) {
       boolean currentBlockEmpty = player.getLocation().getBlock().isEmpty();
@@ -114,7 +114,7 @@ public class Cactus extends AbstractKit {
 
   @EventHandler(ignoreCancelled = true)
   public void onPlayerDeath(PlayerDeathEvent event) {
-    if (!(playerHasKit(event.getPlayer()))) return;
+    if (!(playerCanUseThisKit(event.getPlayer()))) return;
 
     leaveCactus(event.getPlayer());
   }
@@ -122,7 +122,7 @@ public class Cactus extends AbstractKit {
   @EventHandler
   public void onPlayerLeave(PlayerQuitEvent event) {
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     leaveCactus(player);
   }
@@ -132,7 +132,7 @@ public class Cactus extends AbstractKit {
     if (!event.hasChangedBlock()) return;
 
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     if (cactusPlayerLocked.get(player.getUniqueId()) == null
         || !cactusPlayerLocked.get(player.getUniqueId())) return;

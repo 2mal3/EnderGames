@@ -48,7 +48,7 @@ public class Slime extends AbstractKit {
 
   @EventHandler
   public void onEntityDamage(EntityDamageByEntityEvent event) {
-    if (!(event.getEntity() instanceof Player player) || !playerHasKit(player)) return;
+    if (!(event.getEntity() instanceof Player player) || !playerCanUseThisKit(player)) return;
 
     if (event.getDamager() instanceof EnderPearl) return;
 
@@ -97,7 +97,7 @@ public class Slime extends AbstractKit {
   @EventHandler
   public void onSlimeballClick(PlayerInteractEvent event) {
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     ItemStack item = event.getItem();
 
@@ -152,7 +152,7 @@ public class Slime extends AbstractKit {
   // Get Slimeballs while Jumping
   @EventHandler
   public void onPlayerJump(PlayerJumpEvent event) {
-    if (!playerHasKit(event.getPlayer())) return;
+    if (!playerCanUseThisKit(event.getPlayer())) return;
 
     Random random = new Random();
     ItemStack slimeball = new ItemStack(Material.SLIME_BALL, 1);

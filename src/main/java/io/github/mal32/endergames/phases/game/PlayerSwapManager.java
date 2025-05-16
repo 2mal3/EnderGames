@@ -25,7 +25,7 @@ public class PlayerSwapManager extends AbstractTask {
     // get two distinct players
     List<Player> players =
         Bukkit.getOnlinePlayers().stream()
-            .filter(EnderGames::playerIsPlaying)
+            .filter(EnderGames::playerIsInGameWorld)
             .collect(Collectors.toList());
     if (players.size() < 2) {
       return;

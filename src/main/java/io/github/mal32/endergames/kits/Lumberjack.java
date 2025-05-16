@@ -42,7 +42,7 @@ public class Lumberjack extends AbstractKit {
   private void onBlockBreak(BlockBreakEvent event) {
     if (!Tag.LOGS.isTagged(event.getBlock().getType())) return;
 
-    if (!playerHasKit(event.getPlayer())) return;
+    if (!playerCanUseThisKit(event.getPlayer())) return;
 
     Location location = event.getBlock().getLocation().add(0, 1, 0);
     breakTree(location);
@@ -62,7 +62,7 @@ public class Lumberjack extends AbstractKit {
 
   @EventHandler
   private void onCraftItem(CraftItemEvent event) {
-    if (!playerHasKit((Player) event.getWhoClicked())) return;
+    if (!playerCanUseThisKit((Player) event.getWhoClicked())) return;
 
     ItemStack result = event.getRecipe().getResult();
     if (!Tag.ITEMS_AXES.isTagged(result.getType())) return;

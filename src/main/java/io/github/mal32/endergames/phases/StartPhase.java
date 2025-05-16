@@ -121,7 +121,7 @@ public class StartPhase extends AbstractPhase {
     HandlerList.unregisterAll(this);
 
     for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-      if (!EnderGames.playerIsPlaying(player)) return;
+      if (!EnderGames.playerIsInGameWorld(player)) return;
       player.clearActivePotionEffects();
     }
   }
@@ -138,7 +138,7 @@ public class StartPhase extends AbstractPhase {
           plugin,
           () -> {
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-              if (EnderGames.playerIsIdling(player)) continue;
+              if (EnderGames.playerIsInLobbyWorld(player)) continue;
 
               showTitleToPlayerWithSound(
                   player,
@@ -154,7 +154,7 @@ public class StartPhase extends AbstractPhase {
         plugin,
         () -> {
           for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-            if (EnderGames.playerIsIdling(player)) continue;
+            if (EnderGames.playerIsInLobbyWorld(player)) continue;
             showTitleToPlayerWithSound(
                 player,
                 Component.text("Start").color(NamedTextColor.GOLD),
@@ -253,7 +253,7 @@ public class StartPhase extends AbstractPhase {
   @EventHandler
   private void onPlayerMove(PlayerMoveEvent event) {
     Player player = event.getPlayer();
-    if (!EnderGames.playerIsPlaying(player)) return;
+    if (!EnderGames.playerIsInGameWorld(player)) return;
 
     Location startLocation = event.getFrom();
     Location startLocationBlock = startLocation.getBlock().getLocation();

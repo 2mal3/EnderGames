@@ -1,6 +1,5 @@
 package io.github.mal32.endergames.kits;
 
-import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.phases.game.AbstractModule;
 import java.util.List;
 import java.util.Objects;
@@ -48,8 +47,13 @@ public abstract class AbstractKit extends AbstractModule {
     return item;
   }
 
-  protected boolean playerHasKit(Player player) {
-    return EnderGames.playerIsPlaying(player)
+  protected boolean playerCanUseThisKit(Player player) {
+    var phase =
+        player
+            .getPersistentDataContainer()
+            .get(new NamespacedKey(plugin, "phase"), PersistentDataType.STRING);
+
+    return Objects.equals(phase, "game")
         && Objects.equals(
             player
                 .getPersistentDataContainer()

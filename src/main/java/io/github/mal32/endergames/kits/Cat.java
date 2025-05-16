@@ -40,7 +40,8 @@ public class Cat extends AbstractKit {
 
   @EventHandler
   private void onFallDamage(EntityDamageEvent event) {
-    if (!(event.getEntity() instanceof Player) || !playerHasKit((Player) event.getEntity())) return;
+    if (!(event.getEntity() instanceof Player) || !playerCanUseThisKit((Player) event.getEntity()))
+      return;
 
     if (event.getCause() != EntityDamageEvent.DamageCause.FALL) {
       return;
@@ -51,7 +52,7 @@ public class Cat extends AbstractKit {
 
   @EventHandler
   private void onPlayerEatFish(PlayerItemConsumeEvent event) {
-    if (!playerHasKit(event.getPlayer())) return;
+    if (!playerCanUseThisKit(event.getPlayer())) return;
 
     if (!Tag.ITEMS_FISHES.isTagged(event.getItem().getType())) return;
 
@@ -60,7 +61,7 @@ public class Cat extends AbstractKit {
 
   @EventHandler
   private void onPlayerHit(EntityDamageByEntityEvent event) {
-    if (!(event.getDamager() instanceof Player damager) || !playerHasKit(damager)) return;
+    if (!(event.getDamager() instanceof Player damager) || !playerCanUseThisKit(damager)) return;
 
     // skip if damage is not with bare hands
     if (!damager.getInventory().getItemInMainHand().getType().isAir()) return;

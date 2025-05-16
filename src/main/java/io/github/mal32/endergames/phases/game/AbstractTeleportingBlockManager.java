@@ -26,7 +26,7 @@ public abstract class AbstractTeleportingBlockManager extends AbstractTask {
   protected Location getRandomLocationNearPlayer() {
     List<Player> players =
         Bukkit.getOnlinePlayers().stream()
-            .filter(EnderGames::playerIsPlaying)
+            .filter(EnderGames::playerIsInGameWorld)
             .collect(Collectors.toList());
     if (players.isEmpty()) {
       return null;
