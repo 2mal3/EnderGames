@@ -3,6 +3,7 @@ package io.github.mal32.endergames.phases.game;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.phases.AbstractPhase;
+import io.github.mal32.endergames.phases.StartPhase;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
 import java.time.Duration;
@@ -15,7 +16,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
-import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -37,15 +37,10 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 
 public class GamePhase extends AbstractPhase implements Listener {
-  private final NamespacedKey spawnLocationKey;
   private final List<AbstractModule> modules;
-
-  private final Location center;
 
   public GamePhase(EnderGames plugin) {
     super(plugin);
-
-    this.spawnLocationKey = new NamespacedKey(plugin, "spawn");
 
     World world = Bukkit.getWorlds().get(1);
     WorldBorder border = world.getWorldBorder();
@@ -53,86 +48,19 @@ public class GamePhase extends AbstractPhase implements Listener {
     border.setWarningTime(60);
     border.setDamageBuffer(1);
 
-    this.center = new Location(world, -1000, 151, 0);
-    this.reloadSpawnPosition();
-    this.findNewSpawnLocation();
-    this.updateSpawn();
-
     this.modules =
         List.of(
-            new EnchanterManager(plugin, this.center),
+            new EnchanterManager(
+                plugin, ((StartPhase) this.plugin.getPhase(EnderGames.Phase.STARTING)).getCenter()),
             new EnderChestManager(plugin),
             new PlayerRegenerationManager(plugin),
             new PlayerSwapManager(plugin));
   }
 
-  public Location getCenter() {
-    return this.center;
-  }
-
-  public void newSpawn() {
-    this.findNewSpawnLocation();
-    this.updateSpawn();
-  }
-
-  private void reloadSpawnPosition() {
-    World world = this.center.getWorld();
-
-    if (!world.getPersistentDataContainer().has(this.spawnLocationKey)) {
-      Bukkit.getServer().sendMessage(Component.text("First EnderGames server start"));
-      updateSpawn();
-    }
-
-    List<Integer> rawSpawn =
-        world
-            .getPersistentDataContainer()
-            .get(
-                this.spawnLocationKey,
-                PersistentDataType.LIST.listTypeFrom(PersistentDataType.INTEGER));
-    this.center.setX(rawSpawn.get(0));
-    this.center.setZ(rawSpawn.get(1));
-  }
-
-  private void findNewSpawnLocation() {
-    Location spawnLocationCandidate = this.center.clone();
-
-    do {
-      spawnLocationCandidate.add(1000, 0, 0);
-      spawnLocationCandidate.getChunk().load(true);
-    } while (isOcean(spawnLocationCandidate.getBlock().getBiome()));
-
-    this.center.setX(spawnLocationCandidate.getX());
-  }
-
-  //  Why doesnt BiomeTagKeys.IS_OCEAN work?
-  // using
-  // https://github.com/misode/mcmeta/blob/data/data/minecraft/tags/worldgen/biome/is_ocean.json
-  // directly
-  private boolean isOcean(Biome biome) {
-    return biome.equals(Biome.DEEP_FROZEN_OCEAN)
-        || biome.equals(Biome.DEEP_COLD_OCEAN)
-        || biome.equals(Biome.DEEP_OCEAN)
-        || biome.equals(Biome.DEEP_LUKEWARM_OCEAN)
-        || biome.equals(Biome.FROZEN_OCEAN)
-        || biome.equals(Biome.OCEAN)
-        || biome.equals(Biome.COLD_OCEAN)
-        || biome.equals(Biome.LUKEWARM_OCEAN)
-        || biome.equals(Biome.WARM_OCEAN);
-  }
-
-  private void updateSpawn() {
-    World world = this.center.getWorld();
-
-    world
-        .getPersistentDataContainer()
-        .set(
-            this.spawnLocationKey,
-            PersistentDataType.LIST.listTypeFrom(PersistentDataType.INTEGER),
-            List.of((int) this.center.getX(), (int) this.center.getZ()));
-
-    world.setSpawnLocation(this.center);
-    world.getWorldBorder().setCenter(this.center);
-  }
+  //  public void newSpawn() {
+  //    this.findNewSpawnLocation();
+  //    this.updateSpawn();
+  //  }
 
   @Override
   public void start() {
@@ -155,7 +83,8 @@ public class GamePhase extends AbstractPhase implements Listener {
       }
     }
 
-    World world = this.center.getWorld();
+    Location center = ((StartPhase) this.plugin.getPhase(EnderGames.Phase.STARTING)).getCenter();
+    World world = center.getWorld();
 
     world.setTime(0);
     world.setStorm(false);
@@ -170,9 +99,9 @@ public class GamePhase extends AbstractPhase implements Listener {
     scheduler.runTaskLater(
         plugin,
         () -> {
-          for (int x = this.center.blockX() - 20; x <= this.center.blockX() + 20; x++) {
-            for (int z = this.center.blockZ() - 20; z <= this.center.blockZ() + 20; z++) {
-              for (int y = this.center.blockY() - 20; y <= this.center.blockY() + 20; y++) {
+          for (int x = center.blockX() - 20; x <= center.blockX() + 20; x++) {
+            for (int z = center.blockZ() - 20; z <= center.blockZ() + 20; z++) {
+              for (int y = center.blockY() - 20; y <= center.blockY() + 20; y++) {
                 world.getBlockAt(x, y, z).setType(Material.AIR);
               }
             }
