@@ -54,11 +54,7 @@ public class EnderChestManager extends AbstractTeleportingBlockManager {
 
     EnderChest finalEnderChest = enderChest;
     Bukkit.getScheduler()
-        .runTask(
-            plugin,
-            () -> {
-              event.getPlayer().openInventory(finalEnderChest.getInventory());
-            });
+        .runTask(plugin, () -> event.getPlayer().openInventory(finalEnderChest.getInventory()));
   }
 
   public void task() {
