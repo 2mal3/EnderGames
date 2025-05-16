@@ -2,6 +2,9 @@ package io.github.mal32.endergames.phases;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.phases.game.GamePhase;
+import java.time.Duration;
+import java.util.List;
+import java.util.Random;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -17,10 +20,6 @@ import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
 import org.bukkit.util.BlockVector;
 
-import java.time.Duration;
-import java.util.List;
-import java.util.Random;
-
 public class StartPhase extends AbstractPhase {
 
   public StartPhase(EnderGames plugin) {
@@ -34,7 +33,7 @@ public class StartPhase extends AbstractPhase {
     runCountdown();
     int playerindex = 0;
     int totalPlayers = Bukkit.getServer().getOnlinePlayers().size();
-    for (Player player : Bukkit.getServer().getOnlinePlayers()) {   // TODO: playing players
+    for (Player player : Bukkit.getServer().getOnlinePlayers()) { // TODO: playing players
       player.setGameMode(GameMode.SURVIVAL);
       teleportToPlayerSpawns(player, playerindex, totalPlayers);
       playerindex += 1;
@@ -99,7 +98,7 @@ public class StartPhase extends AbstractPhase {
 
           scheduler.runTaskLater(plugin, plugin::nextPhase, 10 * 20);
         },
-            20);
+        20);
   }
 
   private void placeSpawnPlatform() {
@@ -107,11 +106,11 @@ public class StartPhase extends AbstractPhase {
     Structure structure = manager.loadStructure(new NamespacedKey("enga", "spawn_platform"));
 
     BlockVector structureSize = structure.getSize();
-    Location spawnLocation = ((GamePhase) this.plugin.getPhase(EnderGames.Phase.RUNNING)).getCenter();
+    Location spawnLocation =
+        ((GamePhase) this.plugin.getPhase(EnderGames.Phase.RUNNING)).getCenter();
     int posX = (int) (spawnLocation.x() - (structureSize.getBlockX() / 2.0));
     int posZ = (int) (spawnLocation.z() - (structureSize.getBlockZ() / 2.0));
-    Location location =
-        new Location(spawnLocation.getWorld(), posX, spawnLocation.getY(), posZ);
+    Location location = new Location(spawnLocation.getWorld(), posX, spawnLocation.getY(), posZ);
     structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
   }
 
@@ -120,14 +119,16 @@ public class StartPhase extends AbstractPhase {
     this.placeSpawnPlatform();
   }
 
-  private void teleportToPlayerSpawns(Player player, int playerIndex, int totalPlayers) {  // TODO: calculate with sin, cos
+  private void teleportToPlayerSpawns(
+      Player player, int playerIndex, int totalPlayers) { // TODO: calculate with sin, cos
     if (totalPlayers == 0) return;
 
     List<BlockVector> offsets = makeSpawnOffsets();
     int offsetIndex = (playerIndex * offsets.size()) / totalPlayers;
     BlockVector offset = offsets.get(offsetIndex);
 
-    Location spawnLocation = ((GamePhase) this.plugin.getPhase(EnderGames.Phase.RUNNING)).getCenter();
+    Location spawnLocation =
+        ((GamePhase) this.plugin.getPhase(EnderGames.Phase.RUNNING)).getCenter();
 
     World world = spawnLocation.getWorld();
     double x = spawnLocation.getX() + offset.getBlockX();
@@ -135,9 +136,7 @@ public class StartPhase extends AbstractPhase {
     double z = spawnLocation.getZ() + offset.getBlockZ();
     Location dest =
         new Location(
-            world,
-            x - 0.5,
-            y + 1.5,
+            world, x - 0.5, y + 1.5,
             z + 0.5); // Add 0.5 on y and z to center player. Substract one from z because
     // spawnLocation is not the middle    TODO: fix spawnLocation is not the middle
 

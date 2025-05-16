@@ -5,6 +5,11 @@ import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.phases.AbstractPhase;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
+import java.time.Duration;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
@@ -31,21 +36,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import java.time.Duration;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 public class GamePhase extends AbstractPhase implements Listener {
   private final NamespacedKey spawnLocationKey;
   private final List<AbstractModule> modules;
 
   private final Location center;
-
-  public Location getCenter() {
-    return this.center;
-  }
 
   public GamePhase(EnderGames plugin) {
     super(plugin);
@@ -63,12 +58,16 @@ public class GamePhase extends AbstractPhase implements Listener {
     this.findNewSpawnLocation();
     this.updateSpawn();
 
-
-    this.modules =  List.of(
+    this.modules =
+        List.of(
             new EnchanterManager(plugin, this.center),
             new EnderChestManager(plugin),
             new PlayerRegenerationManager(plugin),
             new PlayerSwapManager(plugin));
+  }
+
+  public Location getCenter() {
+    return this.center;
   }
 
   public void newSpawn() {
@@ -76,7 +75,7 @@ public class GamePhase extends AbstractPhase implements Listener {
     this.updateSpawn();
   }
 
-  private void reloadSpawnPosition(){
+  private void reloadSpawnPosition() {
     World world = this.center.getWorld();
 
     if (!world.getPersistentDataContainer().has(this.spawnLocationKey)) {
@@ -85,9 +84,11 @@ public class GamePhase extends AbstractPhase implements Listener {
     }
 
     List<Integer> rawSpawn =
-            world
-                    .getPersistentDataContainer()
-                    .get(this.spawnLocationKey, PersistentDataType.LIST.listTypeFrom(PersistentDataType.INTEGER));
+        world
+            .getPersistentDataContainer()
+            .get(
+                this.spawnLocationKey,
+                PersistentDataType.LIST.listTypeFrom(PersistentDataType.INTEGER));
     this.center.setX(rawSpawn.get(0));
     this.center.setZ(rawSpawn.get(1));
   }
@@ -103,7 +104,7 @@ public class GamePhase extends AbstractPhase implements Listener {
     this.center.setX(spawnLocationCandidate.getX());
   }
 
-//  Why doesnt BiomeTagKeys.IS_OCEAN work?
+  //  Why doesnt BiomeTagKeys.IS_OCEAN work?
   // using
   // https://github.com/misode/mcmeta/blob/data/data/minecraft/tags/worldgen/biome/is_ocean.json
   // directly
@@ -199,7 +200,7 @@ public class GamePhase extends AbstractPhase implements Listener {
     for (int i = 0; i < protectionTimeDurationSeconds; i += 10) {
       final double progress = 1 - ((double) i / protectionTimeDurationSeconds);
       Bukkit.getScheduler()
-          .runTaskLater(plugin, () -> protectionTimeBar.setProgress(progress), i * 20);
+          .runTaskLater(plugin, () -> protectionTimeBar.setProgress(progress), i * 20L);
     }
 
     Bukkit.getScheduler()
@@ -207,7 +208,7 @@ public class GamePhase extends AbstractPhase implements Listener {
 
     for (Player player : plugin.getServer().getOnlinePlayers()) {
       if (EnderGames.playerIsIdeling(player)) continue;
-      protectionTimeBar.addPlayer(player);    // TODO: disable when leaving?
+      protectionTimeBar.addPlayer(player); // TODO: disable when leaving?
 
       player.addPotionEffect(
           new PotionEffect(
@@ -285,7 +286,7 @@ public class GamePhase extends AbstractPhase implements Listener {
     World world = player.getWorld();
 
     for (ItemStack item : player.getInventory().getContents()) {
-      if (item == null) {     // TODO: not the Tracker
+      if (item == null) { // TODO: not the Tracker
         continue;
       }
       world.dropItem(player.getLocation(), item);
@@ -335,7 +336,6 @@ public class GamePhase extends AbstractPhase implements Listener {
     double nearestDistance = Double.MAX_VALUE;
     Location executorLocation = executor.getLocation();
 
-
     for (Player other : executor.getServer().getOnlinePlayers()) {
       if (other.equals(executor)) continue;
       if (!EnderGames.playerIsPlaying(other)) continue;
@@ -351,7 +351,7 @@ public class GamePhase extends AbstractPhase implements Listener {
 
   @EventHandler
   private void onPlayerQuit(PlayerQuitEvent event) {
-    if(!EnderGames.playerIsPlaying(event.getPlayer())) return;
+    if (!EnderGames.playerIsPlaying(event.getPlayer())) return;
 
     abstractPlayerDeath(event.getPlayer(), null);
   }
@@ -387,7 +387,8 @@ public class GamePhase extends AbstractPhase implements Listener {
   private boolean moreThanOnePlayersAlive() {
     int playersAlive = 0;
     for (Player player : Bukkit.getOnlinePlayers()) {
-      if (EnderGames.playerIsPlaying(player)) playersAlive++; // TODO: maybe count down with every death?
+      if (EnderGames.playerIsPlaying(player))
+        playersAlive++; // TODO: maybe count down with every death?
     }
     return playersAlive > 1;
   }

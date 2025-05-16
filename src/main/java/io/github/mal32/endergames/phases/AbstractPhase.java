@@ -11,5 +11,6 @@ public abstract class AbstractPhase implements Listener {
   }
 
   public abstract void start();
+
   public abstract void stop();
 }

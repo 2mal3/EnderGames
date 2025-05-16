@@ -1,7 +1,11 @@
 package io.github.mal32.endergames.phases;
 
+import static org.apache.commons.lang3.StringUtils.capitalize;
+
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
+import java.util.List;
+import java.util.Random;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -29,26 +33,21 @@ import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Random;
-
-import static org.apache.commons.lang3.StringUtils.capitalize;
-
 public class LobbyPhase extends AbstractPhase {
   private final KitSelector kitSelector;
 
-    public LobbyPhase(EnderGames plugin) {
+  public LobbyPhase(EnderGames plugin) {
     super(plugin);
 
     Bukkit.getPluginManager().registerEvents(this, plugin);
 
-        NamespacedKey lobbyKey = new NamespacedKey(this.plugin, "lobby");
+    NamespacedKey lobbyKey = new NamespacedKey(this.plugin, "lobby");
     this.kitSelector = new KitSelector(this.plugin);
 
     World lobby = Bukkit.getWorlds().getFirst();
 
     if (!lobby.getPersistentDataContainer().has(lobbyKey, PersistentDataType.STRING)) {
-      lobby.getPersistentDataContainer().set(lobbyKey, PersistentDataType.BOOLEAN,true);
+      lobby.getPersistentDataContainer().set(lobbyKey, PersistentDataType.BOOLEAN, true);
       lobby.setSpawnLocation(new Location(lobby, 0, 151, 0));
       lobby.setGameRule(GameRule.SPAWN_RADIUS, 6);
       lobby.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
@@ -73,7 +72,8 @@ public class LobbyPhase extends AbstractPhase {
         new PotionEffect(
             PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, true, false));
 
-    if (this.plugin.getCurrentPhaseName() == EnderGames.Phase.IDLE) kitSelector.giveKitSelector(player);
+    if (this.plugin.getCurrentPhaseName() == EnderGames.Phase.IDLE)
+      kitSelector.giveKitSelector(player);
     else {
       // TODO: jump in as spectator
     }

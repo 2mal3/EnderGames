@@ -11,6 +11,9 @@ import io.github.mal32.endergames.phases.game.GamePhase;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.World;
@@ -20,36 +23,22 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class EnderGames extends JavaPlugin implements Listener {
-    public enum Phase {
-        IDLE {
-            @Override
-            public Phase next() { return STARTING; }
-        },
-        STARTING {
-            @Override
-            public Phase next() { return RUNNING; }
-        },
-        RUNNING {
-            @Override
-            public Phase next() { return STOPPING; }
-        },
-        STOPPING {
-            @Override
-            public Phase next() { return IDLE; }
-        };
+    private final Map<Phase, AbstractPhase> phases = new HashMap<>();
+    private Phase currentPhase;
+    private List<AbstractKit> kits;
 
-        protected abstract Phase next();
+    public static boolean playerIsIdeling(Player player) {
+        return player.getGameMode() == GameMode.ADVENTURE;
     }
 
-    private Phase currentPhase;
-    private final Map<Phase, AbstractPhase> phases = new HashMap<>();
+    public static boolean playerIsPlaying(Player player) {
+        return player.getGameMode() == GameMode.SURVIVAL;
+    }
 
-    private List<AbstractKit> kits;
+    public static boolean playerIsObserving(Player player) {
+        return player.getGameMode() == GameMode.SPECTATOR;
+    }
 
     @Override
     public void onEnable() {
@@ -118,15 +107,24 @@ public class EnderGames extends JavaPlugin implements Listener {
                 .build();
     }
 
-    public static boolean playerIsIdeling(Player player) {
-        return player.getGameMode() == GameMode.ADVENTURE;
-    }
+    public enum Phase {
+        IDLE {
+            @Override
+            public Phase next() { return STARTING; }
+        },
+        STARTING {
+            @Override
+            public Phase next() { return RUNNING; }
+        },
+        RUNNING {
+            @Override
+            public Phase next() { return STOPPING; }
+        },
+        STOPPING {
+            @Override
+            public Phase next() { return IDLE; }
+        };
 
-    public static boolean playerIsPlaying(Player player) {
-        return player.getGameMode() == GameMode.SURVIVAL;
-    }
-
-    public static boolean playerIsObserving(Player player) {
-        return player.getGameMode() == GameMode.SPECTATOR;
+        protected abstract Phase next();
     }
 }
