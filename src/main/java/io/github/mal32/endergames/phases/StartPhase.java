@@ -41,9 +41,8 @@ public class StartPhase extends AbstractPhase {
   }
 
   //  Why doesnt BiomeTagKeys.IS_OCEAN work?
-  // using
+  // using directly:
   // https://github.com/misode/mcmeta/blob/data/data/minecraft/tags/worldgen/biome/is_ocean.json
-  // directly
   private boolean isOcean(Biome biome) {
     return biome.equals(Biome.DEEP_FROZEN_OCEAN)
         || biome.equals(Biome.DEEP_COLD_OCEAN)
@@ -103,11 +102,15 @@ public class StartPhase extends AbstractPhase {
   @Override
   public void start() {
     Bukkit.getPluginManager().registerEvents(this, plugin);
+
     runCountdown();
+
     int playerindex = 0;
-    int totalPlayers = Bukkit.getServer().getOnlinePlayers().size();
+    final int totalPlayers = Bukkit.getServer().getOnlinePlayers().size();
     for (Player player : Bukkit.getServer().getOnlinePlayers()) { // TODO: playing players
       player.setGameMode(GameMode.SURVIVAL);
+      player.getInventory().clear();
+
       teleportToPlayerSpawns(player, playerindex, totalPlayers);
       playerindex += 1;
     }
@@ -126,52 +129,50 @@ public class StartPhase extends AbstractPhase {
   private void runCountdown() {
     BukkitScheduler scheduler = plugin.getServer().getScheduler();
 
-    // Wait 1 second before the countdown starts
+    final int totalCountdownTimeSeconds = 30;
+    var titleTimes = new Integer[] {1, 2, 3, 4, 5, 10, 15, 20, 25, 30};
+
+    for (Integer titleTime : titleTimes) {
+      final int scheduleTicks = (totalCountdownTimeSeconds - titleTime) * 20;
+      scheduler.runTaskLater(
+          plugin,
+          () -> {
+            for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+              if (EnderGames.playerIsIdeling(player)) continue;
+
+              showTitleToPlayerWithSound(
+                  player,
+                  Component.text(titleTime + "").color(NamedTextColor.YELLOW),
+                  Sound.BLOCK_NOTE_BLOCK_HARP);
+            }
+          },
+          scheduleTicks);
+    }
+
+    // Game Start
     scheduler.runTaskLater(
         plugin,
         () -> {
           for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             if (EnderGames.playerIsIdeling(player)) continue;
-            player.getInventory().clear();
-
-            for (int i = 0; i <= 9; i++) {
-              int finalI = 10 - i;
-              scheduler.runTaskLater(
-                  plugin,
-                  () -> {
-                    Title title =
-                        Title.title(
-                            Component.text(Integer.toString(finalI)).color(NamedTextColor.YELLOW),
-                            Component.text(""),
-                            Title.Times.times(
-                                Duration.ofMillis(5 * 50),
-                                Duration.ofMillis(10 * 50),
-                                Duration.ofMillis(5 * 50)));
-                    player.showTitle(title);
-                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1, 1);
-                  },
-                  i * 20);
-            }
-            scheduler.runTaskLater(
-                plugin,
-                () -> {
-                  Title title =
-                      Title.title(
-                          Component.text("Start").color(NamedTextColor.GOLD),
-                          Component.text(""),
-                          Title.Times.times(
-                              Duration.ofMillis(5 * 50),
-                              Duration.ofMillis(10 * 50),
-                              Duration.ofMillis(5 * 50)));
-                  player.showTitle(title);
-                  player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_FLUTE, 1, 1);
-                },
-                10 * 20);
+            showTitleToPlayerWithSound(
+                player,
+                Component.text("Start").color(NamedTextColor.GOLD),
+                Sound.BLOCK_NOTE_BLOCK_FLUTE);
           }
-
-          scheduler.runTaskLater(plugin, plugin::nextPhase, 10 * 20);
         },
-        20);
+        totalCountdownTimeSeconds * 20);
+    scheduler.runTaskLater(plugin, plugin::nextPhase, totalCountdownTimeSeconds * 20);
+  }
+
+  private void showTitleToPlayerWithSound(Player player, Component text, Sound sound) {
+    final Title.Times titleTime =
+        Title.Times.times(
+            Duration.ofMillis(5 * 50), Duration.ofMillis(10 * 50), Duration.ofMillis(5 * 50));
+
+    Title title = Title.title(text, Component.text(""), titleTime);
+    player.showTitle(title);
+    player.playSound(player.getLocation(), sound, 1, 1);
   }
 
   private void placeSpawnPlatform() {
