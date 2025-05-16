@@ -76,7 +76,7 @@ public class GamePhase extends AbstractPhase implements Listener {
           player
               .getPersistentDataContainer()
               .get(new NamespacedKey(plugin, "kit"), PersistentDataType.STRING);
-      for (AbstractKit kit : this.plugin.getKits()) {
+      for (AbstractKit kit : AbstractKit.getKits(plugin)) {
         if (Objects.equals(kit.getName(), playerKit)) {
           kit.start(player);
         }
@@ -114,7 +114,7 @@ public class GamePhase extends AbstractPhase implements Listener {
     for (AbstractModule module : modules) {
       module.enable();
     }
-    for (AbstractKit kit : this.plugin.getKits()) {
+    for (AbstractKit kit : AbstractKit.getKits(plugin)) {
       kit.enable();
     }
   }
@@ -150,7 +150,7 @@ public class GamePhase extends AbstractPhase implements Listener {
     for (AbstractModule module : modules) {
       module.disable();
     }
-    for (AbstractKit kit : this.plugin.getKits()) {
+    for (AbstractKit kit : AbstractKit.getKits(plugin)) {
       kit.disable();
     }
 

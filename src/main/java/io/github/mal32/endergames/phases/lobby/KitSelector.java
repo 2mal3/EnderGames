@@ -34,7 +34,7 @@ class KitSelector implements Listener {
 
   public KitSelector(EnderGames plugin) {
     this.plugin = plugin;
-    this.availablekits = plugin.getKits();
+    this.availablekits = AbstractKit.getKits(plugin);
     Bukkit.getPluginManager().registerEvents(this, plugin);
   }
 

@@ -2,7 +2,6 @@ package io.github.mal32.endergames;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.phases.AbstractPhase;
 import io.github.mal32.endergames.phases.EndPhase;
 import io.github.mal32.endergames.phases.StartPhase;
@@ -12,7 +11,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -26,7 +24,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class EnderGames extends JavaPlugin implements Listener {
   private final Map<Phase, AbstractPhase> phases = new HashMap<>();
   private Phase currentPhase;
-  private List<AbstractKit> kits;
 
   public static boolean playerIsIdling(Player player) {
     return player.getGameMode() == GameMode.ADVENTURE;
@@ -50,8 +47,6 @@ public class EnderGames extends JavaPlugin implements Listener {
             LifecycleEvents.COMMANDS,
             commands -> commands.registrar().register(endergamesCommand()));
 
-    this.kits = AbstractKit.getKits(this);
-
     this.phases.put(Phase.IDLE, new LobbyPhase(this));
     this.phases.put(Phase.STARTING, new StartPhase(this));
     this.phases.put(Phase.RUNNING, new GamePhase(this));
@@ -67,10 +62,6 @@ public class EnderGames extends JavaPlugin implements Listener {
     this.currentPhase = this.currentPhase.next();
     this.getComponentLogger().info("Next phase: {}", this.currentPhase.toString());
     getCurrentPhase().start();
-  }
-
-  public List<AbstractKit> getKits() {
-    return this.kits;
   }
 
   public Phase getCurrentPhaseName() {
