@@ -186,7 +186,7 @@ public class StartPhase extends AbstractPhase {
     structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
   }
 
-  protected void replaceSpawn() {
+  public void replaceSpawn() {
     this.findNewSpawnLocation();
     this.updateSpawn();
     this.placeSpawnPlatform();
