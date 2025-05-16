@@ -30,7 +30,7 @@ public class StartPhase extends AbstractPhase {
 
     this.spawnLocationKey = new NamespacedKey(plugin, "spawn");
 
-    World world = Bukkit.getWorlds().get(1);
+    World world = Bukkit.getWorld("world_enga_world");
     this.center = new Location(world, -1000, 151, 0);
     this.reloadSpawnPosition();
     this.placeSpawnPlatform();

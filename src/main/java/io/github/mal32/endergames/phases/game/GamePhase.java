@@ -42,7 +42,7 @@ public class GamePhase extends AbstractPhase implements Listener {
   public GamePhase(EnderGames plugin) {
     super(plugin);
 
-    World world = Bukkit.getWorlds().get(1);
+    World world = Bukkit.getWorld("world_enga_world");
     WorldBorder border = world.getWorldBorder();
     border.setWarningDistance(32);
     border.setWarningTime(60);
