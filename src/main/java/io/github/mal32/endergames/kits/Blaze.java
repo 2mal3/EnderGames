@@ -64,12 +64,8 @@ public class Blaze extends AbstractKit {
             new PotionEffect(
                 PotionEffectType.WEAKNESS, PotionEffect.INFINITE_DURATION, 0, true, false));
       }
-    } else if (effect.getDuration() == PotionEffect.INFINITE_DURATION) {
+    } else if (effect != null && effect.getDuration() == PotionEffect.INFINITE_DURATION) {
       player.removePotionEffect(PotionEffectType.WEAKNESS);
-      if (player.isInWater()) {
-      } else if (effect.getDuration() == PotionEffect.INFINITE_DURATION) {
-        player.removePotionEffect(PotionEffectType.WEAKNESS);
-      }
     }
   }
 

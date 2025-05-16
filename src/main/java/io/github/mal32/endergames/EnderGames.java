@@ -77,33 +77,6 @@ public class EnderGames extends JavaPlugin implements Listener {
     return this.currentPhase;
   }
 
-  private void findNewSpawnLocation() {
-    Location spawnLocationCandidate = spawnLocation.clone();
-
-    do {
-      spawnLocationCandidate.add(1000, 0, 0);
-      spawnLocationCandidate.getChunk().load(true);
-    } while (isOcean(spawnLocationCandidate.getBlock().getBiome()));
-
-    spawnLocation = spawnLocationCandidate;
-  }
-
-  // Why doesnt BiomeTagKeys.IS_OCEAN work?
-  // using
-  // https://github.com/misode/mcmeta/blob/data/data/minecraft/tags/worldgen/biome/is_ocean.json
-  // directly
-  private boolean isOcean(Biome biome) {
-    return biome.equals(Biome.DEEP_FROZEN_OCEAN)
-        || biome.equals(Biome.DEEP_COLD_OCEAN)
-        || biome.equals(Biome.DEEP_OCEAN)
-        || biome.equals(Biome.DEEP_LUKEWARM_OCEAN)
-        || biome.equals(Biome.FROZEN_OCEAN)
-        || biome.equals(Biome.OCEAN)
-        || biome.equals(Biome.COLD_OCEAN)
-        || biome.equals(Biome.LUKEWARM_OCEAN)
-        || biome.equals(Biome.WARM_OCEAN);
-  }
-
   public AbstractPhase getPhase(Phase phase) {
     return this.phases.get(phase);
   }

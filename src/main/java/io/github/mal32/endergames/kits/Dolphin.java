@@ -26,7 +26,7 @@ public class Dolphin extends AbstractKit {
     player
         .getInventory()
         .setLeggings(
-            colorLeatherArmor(new ItemStack(Material.LEATHER_BOOTS), Color.fromRGB(3507428)));
+            colorLeatherArmor(new ItemStack(Material.LEATHER_LEGGINGS), Color.fromRGB(3507428)));
     player.getInventory().addItem(new ItemStack(Material.WATER_BUCKET));
 
     player.addPotionEffect(
