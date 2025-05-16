@@ -2,23 +2,43 @@ package io.github.mal32.endergames;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import io.github.mal32.endergames.phases.*;
+import io.github.mal32.endergames.kits.AbstractKit;
+import io.github.mal32.endergames.phases.AbstractPhase;
+import io.github.mal32.endergames.phases.EndPhase;
+import io.github.mal32.endergames.phases.LobbyPhase;
+import io.github.mal32.endergames.phases.StartPhase;
 import io.github.mal32.endergames.phases.game.GamePhase;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import java.util.HashMap;
 import java.util.List;
-import net.kyori.adventure.text.Component;
-import org.bukkit.*;
-import org.bukkit.block.Biome;
+import java.util.Map;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class EnderGames extends JavaPlugin implements Listener {
-  private Location spawnLocation;
-  private AbstractPhase phase;
-  private final NamespacedKey spawnKey = new NamespacedKey(this, "spawn");
+  private final Map<Phase, AbstractPhase> phases = new HashMap<>();
+  private Phase currentPhase;
+  private List<AbstractKit> kits;
+
+  public static boolean playerIsIdeling(Player player) {
+    return player.getGameMode() == GameMode.ADVENTURE;
+  }
+
+  public static boolean playerIsPlaying(Player player) {
+    return player.getGameMode() == GameMode.SURVIVAL;
+  }
+
+  public static boolean playerIsObserving(Player player) {
+    return player.getGameMode() == GameMode.SPECTATOR;
+  }
 
   @Override
   public void onEnable() {
@@ -30,37 +50,31 @@ public class EnderGames extends JavaPlugin implements Listener {
             LifecycleEvents.COMMANDS,
             commands -> commands.registrar().register(endergamesCommand()));
 
-    World world = Bukkit.getWorlds().getFirst();
+    this.kits = AbstractKit.getKits(this);
 
-    if (!world.getPersistentDataContainer().has(spawnKey)) {
-      Bukkit.getServer().sendMessage(Component.text("First EnderGames server start"));
-      spawnLocation = new Location(world, 0, 150, 0);
-      updateSpawn();
-    }
+    this.phases.put(Phase.IDLE, new LobbyPhase(this));
+    this.phases.put(Phase.STARTING, new StartPhase(this));
+    this.phases.put(Phase.RUNNING, new GamePhase(this));
+    this.phases.put(Phase.STOPPING, new EndPhase(this));
 
-    List<Integer> rawSpawn =
-        world
-            .getPersistentDataContainer()
-            .get(spawnKey, PersistentDataType.LIST.listTypeFrom(PersistentDataType.INTEGER));
-    spawnLocation = new Location(world, rawSpawn.get(0), 150, rawSpawn.get(1));
+    this.currentPhase = Phase.IDLE;
 
-    phase = new LobbyPhase(this, spawnLocation);
+    Bukkit.getPluginManager().registerEvents(this, this);
   }
 
   public void nextPhase() {
-    phase.stop();
-    if (phase instanceof LobbyPhase) {
-      phase = new StartPhase(this, spawnLocation);
-    } else if (phase instanceof StartPhase) {
-      phase = new GamePhase(this, spawnLocation);
-    } else if (phase instanceof GamePhase) {
-      phase = new EndPhase(this, spawnLocation);
+    getCurrentPhase().stop();
+    this.currentPhase = this.currentPhase.next();
+    this.getComponentLogger().info("Next phase: {}", this.currentPhase.toString());
+    getCurrentPhase().start();
+  }
 
-      findNewSpawnLocation();
-      updateSpawn();
-    } else if (phase instanceof EndPhase) {
-      phase = new LobbyPhase(this, spawnLocation);
-    }
+  public List<AbstractKit> getKits() {
+    return this.kits;
+  }
+
+  public Phase getCurrentPhaseName() {
+    return this.currentPhase;
   }
 
   private void findNewSpawnLocation() {
@@ -90,22 +104,24 @@ public class EnderGames extends JavaPlugin implements Listener {
         || biome.equals(Biome.WARM_OCEAN);
   }
 
-  private void updateSpawn() {
-    World world = spawnLocation.getWorld();
+  public AbstractPhase getPhase(Phase phase) {
+    return this.phases.get(phase);
+  }
 
-    world
-        .getPersistentDataContainer()
-        .set(
-            spawnKey,
-            PersistentDataType.LIST.listTypeFrom(PersistentDataType.INTEGER),
-            List.of((int) spawnLocation.getX(), (int) spawnLocation.getZ()));
+  public AbstractPhase getCurrentPhase() {
+    return this.phases.get(this.currentPhase);
+  }
 
-    world.setSpawnLocation(spawnLocation);
-    world.getWorldBorder().setCenter(spawnLocation);
+  @EventHandler
+  public void onPlayerJoin(PlayerJoinEvent event) {
+    World lobbyWorld = Bukkit.getWorlds().getFirst();
+    if (lobbyWorld != event.getPlayer().getWorld()) {
+      event.getPlayer().teleport(lobbyWorld.getSpawnLocation());
+    }
+    ((LobbyPhase) this.phases.get(Phase.IDLE)).initPlayer(event.getPlayer());
   }
 
   private LiteralCommandNode<CommandSourceStack> endergamesCommand() {
-
     return Commands.literal("endergames")
         .then(
             Commands.literal("start")
@@ -116,5 +132,34 @@ public class EnderGames extends JavaPlugin implements Listener {
                       return Command.SINGLE_SUCCESS;
                     }))
         .build();
+  }
+
+  public enum Phase {
+    IDLE {
+      @Override
+      public Phase next() {
+        return STARTING;
+      }
+    },
+    STARTING {
+      @Override
+      public Phase next() {
+        return RUNNING;
+      }
+    },
+    RUNNING {
+      @Override
+      public Phase next() {
+        return STOPPING;
+      }
+    },
+    STOPPING {
+      @Override
+      public Phase next() {
+        return IDLE;
+      }
+    };
+
+    protected abstract Phase next();
   }
 }

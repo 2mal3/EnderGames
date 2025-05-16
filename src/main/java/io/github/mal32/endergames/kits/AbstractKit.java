@@ -1,6 +1,8 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.phases.game.AbstractModule;
+import java.util.List;
 import java.util.Objects;
 
 import org.bukkit.Color;
@@ -18,12 +20,24 @@ public abstract class AbstractKit extends AbstractModule {
     super(plugin);
   }
 
+  public static List<AbstractKit> getKits(JavaPlugin plugin) {
+    return List.of(
+        new Lumberjack(plugin),
+        new Cat(plugin),
+        new Cactus(plugin),
+        new Barbarian(plugin),
+        new Blaze(plugin),
+        new Slime(plugin),
+        new Dolphin(plugin));
+  }
+
   protected boolean playerHasKit(Player player) {
-    return Objects.equals(
-        player
-            .getPersistentDataContainer()
-            .get(new NamespacedKey(plugin, "kit"), PersistentDataType.STRING),
-        getName());
+    return EnderGames.playerIsPlaying(player)
+        && Objects.equals(
+            player
+                .getPersistentDataContainer()
+                .get(new NamespacedKey(plugin, "kit"), PersistentDataType.STRING),
+            getName());
   }
 
   public abstract void start(Player player);

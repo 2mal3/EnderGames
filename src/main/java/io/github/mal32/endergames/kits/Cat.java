@@ -21,6 +21,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Arrays;
+
 public class Cat extends AbstractKit {
   public Cat(JavaPlugin plugin) {
     super(plugin);

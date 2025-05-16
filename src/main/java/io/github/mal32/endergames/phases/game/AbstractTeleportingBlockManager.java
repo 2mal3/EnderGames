@@ -1,11 +1,13 @@
 package io.github.mal32.endergames.phases.game;
 
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
+import io.github.mal32.endergames.EnderGames;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 /*
  * This class is an abstract representation of a teleporting block manager.
@@ -20,7 +22,7 @@ public abstract class AbstractTeleportingBlockManager extends AbstractTask {
   protected Location getRandomLocationNearPlayer() {
     List<Player> players =
         Bukkit.getOnlinePlayers().stream()
-            .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
+            .filter(EnderGames::playerIsPlaying)
             .collect(Collectors.toList());
     if (players.isEmpty()) {
       return null;

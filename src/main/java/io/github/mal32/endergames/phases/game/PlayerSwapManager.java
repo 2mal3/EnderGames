@@ -1,13 +1,15 @@
 package io.github.mal32.endergames.phases.game;
 
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
+import io.github.mal32.endergames.EnderGames;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 public class PlayerSwapManager extends AbstractTask {
   public PlayerSwapManager(JavaPlugin plugin) {
@@ -24,7 +26,7 @@ public class PlayerSwapManager extends AbstractTask {
     // get two distinct players
     List<Player> players =
         Bukkit.getOnlinePlayers().stream()
-            .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
+            .filter(EnderGames::playerIsPlaying)
             .collect(Collectors.toList());
     if (players.size() < 2) {
       return;
@@ -47,8 +49,7 @@ public class PlayerSwapManager extends AbstractTask {
 
   private void playerSwapEffects(Player player) {
     Location location = player.getLocation();
-    location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.5f);
-    location.getWorld().spawnParticle(Particle.PORTAL, location, 50, 0, 0, 0);
+    AbstractTeleportingBlockManager.playTeleportEffects(location);
 
     player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 0, true));
   }

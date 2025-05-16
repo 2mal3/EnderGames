@@ -21,8 +21,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemFlag;
@@ -33,91 +31,80 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
-import org.bukkit.util.BlockVector;
+import org.jetbrains.annotations.NotNull;
 
 public class LobbyPhase extends AbstractPhase {
-  public Location playerSpawnLocation;
-  KitSelector kitSelector = new KitSelector(plugin, this.kits);
+  private final KitSelector kitSelector;
 
-  public LobbyPhase(EnderGames plugin, Location spawn) {
-    super(plugin, spawn);
-    this.playerSpawnLocation =
-        new Location(spawn.getWorld(), spawn.getX() + 0.5, spawn.getY() + 5, spawn.getZ() + 0.5);
+  public LobbyPhase(EnderGames plugin) {
+    super(plugin);
 
-    placeSpawnPlatform();
+    Bukkit.getPluginManager().registerEvents(this, plugin);
 
-    World world = spawn.getWorld();
+    NamespacedKey lobbyKey = new NamespacedKey(this.plugin, "lobby");
+    this.kitSelector = new KitSelector(this.plugin);
 
-    world.setSpawnLocation(playerSpawnLocation);
-    world.setGameRule(GameRule.SPAWN_RADIUS, 6);
+    World lobby = Bukkit.getWorlds().getFirst();
 
-    world.getWorldBorder().setSize(600);
-
-    for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-      intiPlayer(player);
+    if (!lobby.getPersistentDataContainer().has(lobbyKey, PersistentDataType.STRING)) {
+      lobby.getPersistentDataContainer().set(lobbyKey, PersistentDataType.BOOLEAN, true);
+      lobby.setSpawnLocation(new Location(lobby, 0, 151, 0));
+      lobby.setGameRule(GameRule.SPAWN_RADIUS, 6);
+      lobby.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+      lobby.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+      lobby.getWorldBorder().setSize(500);
+      this.placeLobby(lobby);
     }
   }
 
-  private void placeSpawnPlatform() {
+  private void placeLobby(World lobby) {
     StructureManager manager = Bukkit.getServer().getStructureManager();
-    Structure structure = manager.loadStructure(new NamespacedKey("enga", "spawn_platform"));
+    Structure structure = manager.loadStructure(new NamespacedKey("enga", "lobby"));
 
-    BlockVector structureSize = structure.getSize();
-    int posX = (int) (spawnLocation.x() - (structureSize.getBlockX() / 2.0));
-    int posZ = (int) (spawnLocation.z() - (structureSize.getBlockZ() / 2.0));
-    Location location =
-        new Location(spawnLocation.getWorld(), (int) posX, spawnLocation.getY(), posZ);
+    Location location = new Location(lobby, -5, 140, -5);
     structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
   }
 
-  private void intiPlayer(Player player) {
-    player.teleport(playerSpawnLocation);
-
+  public void initPlayer(Player player) {
     player.getInventory().clear();
     player.setGameMode(GameMode.ADVENTURE);
     player.addPotionEffect(
         new PotionEffect(
             PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, true, false));
-    kitSelector.giveKitSelector(player);
+
+    if (this.plugin.getCurrentPhaseName() == EnderGames.Phase.IDLE)
+      kitSelector.giveKitSelector(player);
+    else {
+      // TODO: jump in as spectator
+    }
+  }
+
+  @Override
+  public void start() {
+    this.kitSelector.enable();
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      if (EnderGames.playerIsIdeling(player)) continue;
+      player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation());
+      initPlayer(player);
+    }
+
+    ((StartPhase) this.plugin.getPhase(EnderGames.Phase.STARTING)).replaceSpawn();
   }
 
   @Override
   public void stop() {
-    super.stop();
-
-    for (Player player : plugin.getServer().getOnlinePlayers()) {
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      if (!EnderGames.playerIsPlaying(player)) continue;
       player.clearActivePotionEffects();
     }
-
     kitSelector.disable();
   }
 
   @EventHandler
-  public void onPlayerJoin(PlayerJoinEvent event) {
-    intiPlayer(event.getPlayer());
-  }
-
-  @EventHandler
-  public void onPlayerMove(PlayerMoveEvent event) {
-    if (!event.hasChangedBlock()) return;
-
-    Player player = event.getPlayer();
-
-    if (player.getGameMode() != GameMode.ADVENTURE) return;
-
-    if (player.getLocation().distance(spawnLocation) > 20) {
-      player.teleport(playerSpawnLocation);
-    }
-  }
-
-  @EventHandler
   public void onPlayerDamage(EntityDamageEvent event) {
-    if (!(event.getEntity() instanceof Player)) {
-      return;
-    }
-    if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-      return;
-    }
+    if (!(event.getEntity() instanceof Player player)) return;
+    if (!EnderGames.playerIsIdeling(player)) return;
+    if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) return;
 
     event.setCancelled(true);
   }
@@ -127,10 +114,14 @@ class KitSelector implements Listener {
   private final EnderGames plugin;
   private final List<AbstractKit> availablekits;
 
-  public KitSelector(EnderGames plugin, List<AbstractKit> kits) {
+  public KitSelector(EnderGames plugin) {
     this.plugin = plugin;
-    this.availablekits = kits;
+    this.availablekits = plugin.getKits();
     Bukkit.getPluginManager().registerEvents(this, plugin);
+  }
+
+  public void enable() {
+    Bukkit.getPluginManager().registerEvents(this, this.plugin);
   }
 
   public void disable() {
@@ -254,7 +245,7 @@ class KitInventory implements InventoryHolder {
   }
 
   @Override
-  public Inventory getInventory() {
+  public @NotNull Inventory getInventory() {
     return this.inventory;
   }
 

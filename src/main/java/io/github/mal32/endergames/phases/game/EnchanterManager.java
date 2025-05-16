@@ -1,8 +1,9 @@
 package io.github.mal32.endergames.phases.game;
 
-import java.util.ArrayList;
-import java.util.Random;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.event.EventHandler;
@@ -12,6 +13,9 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.EnchantingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 public class EnchanterManager extends AbstractTeleportingBlockManager {
   private final ArrayList<Location> enchanterLocations = new ArrayList<>();
