@@ -1,5 +1,8 @@
 package io.github.mal32.endergames.phases.game;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
@@ -14,10 +17,6 @@ import org.bukkit.loot.LootContext;
 import org.bukkit.loot.LootTable;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 public class EnderChestManager extends AbstractTeleportingBlockManager {
   private final List<EnderChest> enderChests = new ArrayList<>();

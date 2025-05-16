@@ -1,15 +1,14 @@
 package io.github.mal32.endergames.phases.game;
 
 import io.github.mal32.endergames.EnderGames;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
 
 public class PlayerSwapManager extends AbstractTask {
   public PlayerSwapManager(JavaPlugin plugin) {

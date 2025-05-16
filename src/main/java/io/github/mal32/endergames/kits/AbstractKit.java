@@ -4,7 +4,6 @@ import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.phases.game.AbstractModule;
 import java.util.List;
 import java.util.Objects;
-
 import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -31,23 +30,6 @@ public abstract class AbstractKit extends AbstractModule {
         new Dolphin(plugin));
   }
 
-  protected boolean playerHasKit(Player player) {
-    return EnderGames.playerIsPlaying(player)
-        && Objects.equals(
-            player
-                .getPersistentDataContainer()
-                .get(new NamespacedKey(plugin, "kit"), PersistentDataType.STRING),
-            getName());
-  }
-
-  public abstract void start(Player player);
-
-  public String getName() {
-    return this.getClass().getSimpleName().toLowerCase();
-  }
-
-  public abstract ItemStack getDescriptionItem();
-
   protected static ItemStack enchantItem(ItemStack item, Enchantment enchantment, int level) {
     ItemMeta meta = item.getItemMeta();
     meta.addEnchant(enchantment, level, true);
@@ -65,4 +47,21 @@ public abstract class AbstractKit extends AbstractModule {
     item.setItemMeta(meta);
     return item;
   }
+
+  protected boolean playerHasKit(Player player) {
+    return EnderGames.playerIsPlaying(player)
+        && Objects.equals(
+            player
+                .getPersistentDataContainer()
+                .get(new NamespacedKey(plugin, "kit"), PersistentDataType.STRING),
+            getName());
+  }
+
+  public abstract void start(Player player);
+
+  public String getName() {
+    return this.getClass().getSimpleName().toLowerCase();
+  }
+
+  public abstract ItemStack getDescriptionItem();
 }

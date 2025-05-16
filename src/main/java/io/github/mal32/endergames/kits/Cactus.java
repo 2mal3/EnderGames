@@ -1,5 +1,9 @@
 package io.github.mal32.endergames.kits;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -18,12 +22,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.UUID;
-
 public class Cactus extends AbstractKit {
+  private final HashMap<UUID, ArrayList<BlockDisplay>> cactusPlayerMapping = new HashMap<>();
+  private final HashMap<UUID, Boolean> cactusPlayerLocked = new HashMap<>();
+
   public Cactus(JavaPlugin plugin) {
     super(plugin);
   }
@@ -69,9 +71,6 @@ public class Cactus extends AbstractKit {
       leaveCactus(player);
     }
   }
-
-  private final HashMap<UUID, ArrayList<BlockDisplay>> cactusPlayerMapping = new HashMap<>();
-  private final HashMap<UUID, Boolean> cactusPlayerLocked = new HashMap<>();
 
   private void enterCactus(Player player) {
     UUID uuid = player.getUniqueId();

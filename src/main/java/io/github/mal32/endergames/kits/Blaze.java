@@ -1,5 +1,9 @@
 package io.github.mal32.endergames.kits;
 
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -19,12 +23,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.UUID;
-
 public class Blaze extends AbstractKit {
+  private final HashMap<UUID, LocalTime> burnTime = new HashMap<>();
+
   public Blaze(JavaPlugin plugin) {
     super(plugin);
   }
@@ -65,14 +66,15 @@ public class Blaze extends AbstractKit {
       }
     } else if (effect.getDuration() == PotionEffect.INFINITE_DURATION) {
       player.removePotionEffect(PotionEffectType.WEAKNESS);
-    if (player.isInWater()) {
-      if (effect == null) {
-        player.addPotionEffect(
-                new PotionEffect(
-                        PotionEffectType.WEAKNESS, PotionEffect.INFINITE_DURATION, 0, true, false));
+      if (player.isInWater()) {
+        if (effect == null) {
+          player.addPotionEffect(
+                  new PotionEffect(
+                          PotionEffectType.WEAKNESS, PotionEffect.INFINITE_DURATION, 0, true, false));
+        }
+      } else if (effect.getDuration() == PotionEffect.INFINITE_DURATION) {
+        player.removePotionEffect(PotionEffectType.WEAKNESS);
       }
-    } else if (effect.getDuration() == PotionEffect.INFINITE_DURATION) {
-      player.removePotionEffect(PotionEffectType.WEAKNESS);
     }
   }
 
@@ -94,8 +96,6 @@ public class Blaze extends AbstractKit {
 
     event.getProjectile().setFireTicks(20 * 3);
   }
-
-  private final HashMap<UUID, LocalTime> burnTime = new HashMap<>();
 
   @EventHandler
   public void onPowderClick(PlayerInteractEvent event) {
