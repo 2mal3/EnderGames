@@ -18,11 +18,9 @@ import org.bukkit.block.Block;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.ExperienceOrb;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -31,6 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 public class GamePhase extends AbstractPhase {
   private final List<AbstractModule> modules;
@@ -295,5 +294,26 @@ public class GamePhase extends AbstractPhase {
                 .getWorld()
                 .spawnEntity(block.getLocation().clone().add(0.5, 0, 0.5), EntityType.TNT);
     tnt.setFuseTicks(30);
+  }
+
+  @EventHandler
+  public void onPlayerArrowClick(PlayerInteractEvent event) {
+    Player player = event.getPlayer();
+
+    if (event.getAction() != Action.RIGHT_CLICK_AIR) return;
+    if (!GameManager.playerIsInGame(player)) return;
+
+    ItemStack item = event.getItem();
+    if (item == null || item.getType() != Material.ARROW) return;
+
+    item.setAmount(item.getAmount() - 1);
+
+    final double speedMultiplier = 1;
+    Vector direction = player.getEyeLocation().getDirection();
+    Vector customVelocity = direction.normalize().multiply(speedMultiplier);
+
+    Arrow arrow = event.getPlayer().launchProjectile(Arrow.class, customVelocity);
+    arrow.setShooter(event.getPlayer());
+    arrow.setDamage(1);
   }
 }
