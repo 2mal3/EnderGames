@@ -93,6 +93,10 @@ The game can only be started by server operators with the command `/endergames s
 - slow natural regeneration, even when having low food level
 - players drop all their experience on death
 
+## Disclaimer
+
+This plugin is an unofficial, fan-made project and is not approved by, associated with, or supported by Mojang Studios, Microsoft, or GommeHD.net. “Minecraft” and related names are trademarks of Mojang Studios and Microsoft. “EnderGames” and references to GommeHD are used for descriptive purposes only and do not imply any official connection. The creators of this plugin are solely responsible for its content and maintenance.
+
 ## Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
