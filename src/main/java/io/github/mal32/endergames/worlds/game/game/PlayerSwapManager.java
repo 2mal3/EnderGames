@@ -6,12 +6,11 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class PlayerSwapManager extends AbstractTask {
-  public PlayerSwapManager(JavaPlugin plugin) {
+  public PlayerSwapManager(EnderGames plugin) {
     super(plugin);
   }
 
@@ -25,7 +24,7 @@ public class PlayerSwapManager extends AbstractTask {
     // get two distinct players
     List<Player> players =
         Bukkit.getOnlinePlayers().stream()
-            .filter(EnderGames::playerIsInGameWorld)
+            .filter(plugin::playerIsInGameWorld)
             .collect(Collectors.toList());
     if (players.size() < 2) {
       return;

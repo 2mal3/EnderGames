@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.mal32.endergames.EnderGames;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,14 +20,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Blaze extends AbstractKit {
   private final HashMap<UUID, LocalTime> burnTime = new HashMap<>();
 
-  public Blaze(JavaPlugin plugin) {
+  public Blaze(EnderGames plugin) {
     super(plugin);
   }
 

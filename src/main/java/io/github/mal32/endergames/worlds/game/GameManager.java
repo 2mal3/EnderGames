@@ -1,25 +1,27 @@
 package io.github.mal32.endergames.worlds.game;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.worlds.AbstractWorld;
 import io.github.mal32.endergames.worlds.game.game.GamePhase;
 import java.util.List;
 import java.util.Objects;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
+import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 
-public class GameManager {
+public class GameManager extends AbstractWorld {
   private Location spawnLocation;
   private final World world = Objects.requireNonNull(Bukkit.getWorld("world_enga_world"));
-  private final EnderGames plugin;
   private AbstractPhase currentPhase;
   private final NamespacedKey spawnLocationKey;
 
   public GameManager(EnderGames plugin) {
-    this.plugin = plugin;
+    super(plugin);
     spawnLocationKey = new NamespacedKey(plugin, "spawnLocation");
 
     loadSpawnLocation();
+    updateSpawn();
 
     WorldBorder border = spawnLocation.getWorld().getWorldBorder();
     border.setWarningDistance(32);
@@ -33,7 +35,7 @@ public class GameManager {
     if (!world.getPersistentDataContainer().has(spawnLocationKey)) {
       plugin.getComponentLogger().info("Creating spawn location");
       spawnLocation = new Location(world, 0, 150, 0);
-      updateSpawn();
+      return;
     }
 
     List<Integer> rawSpawn =
@@ -45,8 +47,6 @@ public class GameManager {
   }
 
   private void updateSpawn() {
-    World world = spawnLocation.getWorld();
-
     world
         .getPersistentDataContainer()
         .set(
@@ -55,6 +55,36 @@ public class GameManager {
             List.of((int) spawnLocation.getX(), (int) spawnLocation.getZ()));
 
     world.getWorldBorder().setCenter(spawnLocation);
+
+    loadSpawnChunks();
+  }
+
+  private void loadSpawnChunks() {
+
+    for (Chunk chunk : world.getLoadedChunks()) {
+      chunk.removePluginChunkTicket(plugin);
+    }
+    for (int x = (int) (spawnLocation.getX() - (2 * 16));
+        x < spawnLocation.getX() + (2 * 16);
+        x += 16) {
+      for (int z = (int) (spawnLocation.getZ() - (2 * 16));
+          z < spawnLocation.getZ() + (2 * 16);
+          z += 16) {
+        world
+            .getChunkAt(new Location(world, x, spawnLocation.getY(), z))
+            .addPluginChunkTicket(plugin);
+      }
+    }
+  }
+
+  public void startGame() {
+    if (!(currentPhase instanceof EmptyPhase)) return;
+
+    nextPhase();
+
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      plugin.teleportPlayerToGame(player);
+    }
   }
 
   protected void nextPhase() {
@@ -68,6 +98,7 @@ public class GameManager {
       currentPhase = new EndPhase(plugin, this, spawnLocation);
     } else if (currentPhase instanceof EndPhase) {
       findNewSpawnLocation();
+      updateSpawn();
 
       currentPhase = new EmptyPhase(plugin, this, spawnLocation);
     }
@@ -87,7 +118,7 @@ public class GameManager {
   // Why doesn't BiomeTagKeys.IS_OCEAN work?
   // using directly:
   // https://github.com/misode/mcmeta/blob/data/data/minecraft/tags/worldgen/biome/is_ocean.json
-  private boolean isOcean(Biome biome) {
+  private static boolean isOcean(Biome biome) {
     return biome.equals(Biome.DEEP_FROZEN_OCEAN)
         || biome.equals(Biome.DEEP_COLD_OCEAN)
         || biome.equals(Biome.DEEP_OCEAN)
@@ -97,5 +128,16 @@ public class GameManager {
         || biome.equals(Biome.COLD_OCEAN)
         || biome.equals(Biome.LUKEWARM_OCEAN)
         || biome.equals(Biome.WARM_OCEAN);
+  }
+
+  @Override
+  public void initPlayer(Player player) {
+    player.teleport(spawnLocation.clone().add(0, 5, 0));
+
+    if (currentPhase instanceof StartPhase) {
+      player.setGameMode(GameMode.ADVENTURE);
+    } else {
+      player.setGameMode(GameMode.SPECTATOR);
+    }
   }
 }

@@ -1,6 +1,6 @@
 package io.github.mal32.endergames.worlds.game.game;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import io.github.mal32.endergames.EnderGames;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -10,7 +10,7 @@ import org.bukkit.scheduler.BukkitTask;
 public abstract class AbstractTask extends AbstractModule {
   private BukkitTask task;
 
-  public AbstractTask(JavaPlugin plugin) {
+  public AbstractTask(EnderGames plugin) {
     super(plugin);
   }
 

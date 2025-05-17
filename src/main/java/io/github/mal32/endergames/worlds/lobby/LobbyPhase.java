@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.worlds.lobby;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.worlds.AbstractWorld;
 import java.util.Random;
 import org.bukkit.*;
 import org.bukkit.block.structure.Mirror;
@@ -9,21 +10,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
 
-public class LobbyPhase implements Listener {
+public class LobbyPhase extends AbstractWorld implements Listener {
   private final KitSelector kitSelector;
-  private final EnderGames plugin;
   private final World lobbyWorld = Bukkit.getWorlds().getFirst();
   private final Location spawnLocation = new Location(lobbyWorld, 0, 0, 0);
 
   public LobbyPhase(EnderGames plugin) {
+    super(plugin);
+
     Bukkit.getPluginManager().registerEvents(this, plugin);
-    this.plugin = plugin;
 
     this.kitSelector = new KitSelector(this.plugin);
 
@@ -44,10 +44,8 @@ public class LobbyPhase implements Listener {
     structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
   }
 
-  @EventHandler
-  public void onPlayerJoin(PlayerJoinEvent event) {
-    var player = event.getPlayer();
-
+  @Override
+  public void initPlayer(Player player) {
     player.getInventory().clear();
     kitSelector.giveKitSelector(player);
 
@@ -63,9 +61,11 @@ public class LobbyPhase implements Listener {
   @EventHandler
   public void onPlayerDamage(EntityDamageEvent event) {
     if (!(event.getEntity() instanceof Player player)) return;
-    if (!EnderGames.playerIsInLobbyWorld(player)) return;
+    if (!plugin.playerIsInLobbyWorld(player)) return;
     if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) return;
 
     event.setCancelled(true);
   }
+
+  public void startGame() {}
 }

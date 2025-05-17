@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.game.AbstractModule;
 import java.util.List;
 import java.util.Objects;
@@ -11,14 +12,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class AbstractKit extends AbstractModule {
-  public AbstractKit(JavaPlugin plugin) {
+  public AbstractKit(EnderGames plugin) {
     super(plugin);
   }
 
-  public static List<AbstractKit> getKits(JavaPlugin plugin) {
+  public static List<AbstractKit> getKits(EnderGames plugin) {
     return List.of(
         new Lumberjack(plugin),
         new Cat(plugin),
