@@ -77,6 +77,12 @@ public class GameManager extends AbstractWorld {
     } else if (currentPhase instanceof GamePhase) {
       currentPhase = new EndPhase(plugin, this, spawnLocation);
     } else if (currentPhase instanceof EndPhase) {
+      for (Player p : Bukkit.getOnlinePlayers()) {
+        if (!EnderGames.playerIsInGameWorld(p)) return;
+
+        plugin.teleportPlayerToLobby(p);
+      }
+
       findNewSpawnLocation();
       updateSpawn();
 
