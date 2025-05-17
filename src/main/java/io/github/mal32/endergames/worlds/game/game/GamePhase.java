@@ -260,7 +260,7 @@ public class GamePhase extends AbstractPhase {
     List<Player> survivalPlayers =
         Bukkit.getOnlinePlayers().stream()
             .filter(plugin::playerIsInGameWorld)
-            .filter(p -> p.getGameMode() == GameMode.SURVIVAL)
+            //            .filter(p -> p.getGameMode() == GameMode.SURVIVAL)
             .collect(Collectors.toList());
     Player lastPlayer = survivalPlayers.getFirst();
 
@@ -277,12 +277,14 @@ public class GamePhase extends AbstractPhase {
     }
 
     lastPlayer.playSound(lastPlayer.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
+
+    manager.nextPhase();
   }
 
   private boolean moreThanOnePlayersAlive() {
     int playersAlive = 0;
     for (Player player : Bukkit.getOnlinePlayers()) {
-      if (plugin.playerIsInGameWorld(player))
+      if (plugin.playerIsInGameWorld(player) && player.getGameMode() == GameMode.SURVIVAL)
         playersAlive++; // TODO: maybe count down with every death?
     }
     return playersAlive > 1;

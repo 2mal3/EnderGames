@@ -40,7 +40,10 @@ public class LobbyPhase extends AbstractWorld implements Listener {
     StructureManager manager = Bukkit.getServer().getStructureManager();
     Structure structure = manager.loadStructure(new NamespacedKey("enga", "lobby"));
 
-    Location location = new Location(lobbyWorld, -5, 140, -5);
+    Location location =
+        spawnLocation
+            .clone()
+            .add(-structure.getSize().getX() / 2, 0, -structure.getSize().getZ() / 2);
     structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
   }
 

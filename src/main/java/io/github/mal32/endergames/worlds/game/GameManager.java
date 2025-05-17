@@ -87,7 +87,7 @@ public class GameManager extends AbstractWorld {
     }
   }
 
-  protected void nextPhase() {
+  public void nextPhase() {
     currentPhase.disable();
 
     if (currentPhase instanceof EmptyPhase) {
@@ -99,6 +99,10 @@ public class GameManager extends AbstractWorld {
     } else if (currentPhase instanceof EndPhase) {
       findNewSpawnLocation();
       updateSpawn();
+
+      for (Player player : Bukkit.getOnlinePlayers()) {
+        plugin.teleportPlayerToLobby(player);
+      }
 
       currentPhase = new EmptyPhase(plugin, this, spawnLocation);
     }
