@@ -259,14 +259,16 @@ public class GamePhase extends AbstractPhase {
           Title.title(
               Component.text(lastPlayer.getName() + " has Won!").color(NamedTextColor.GOLD),
               Component.text(""),
-              Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
+              Title.Times.times(
+                  Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
       lastPlayer.playSound(lastPlayer.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
     } else {
       title =
           Title.title(
               Component.text("Draw").color(NamedTextColor.GOLD),
               Component.text(""),
-              Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
+              Title.Times.times(
+                  Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
     }
 
     for (Player player : GameManager.getPlayersInGameWorld()) {
@@ -275,7 +277,6 @@ public class GamePhase extends AbstractPhase {
 
     manager.nextPhase();
   }
-
 
   @EventHandler
   private void onPlayerPlaceTNT(BlockPlaceEvent event) {
