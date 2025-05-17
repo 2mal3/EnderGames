@@ -8,6 +8,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.Objects;
+
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -25,7 +26,6 @@ public class EnderGames extends JavaPlugin implements Listener {
   @Override
   public void onEnable() {
     final int PLUGIN_ID = 25844;
-    Metrics metrics = new Metrics(this, PLUGIN_ID);
 
     gameWorld = new GameManager(this);
     lobbyWorld = new LobbyPhase(this);
