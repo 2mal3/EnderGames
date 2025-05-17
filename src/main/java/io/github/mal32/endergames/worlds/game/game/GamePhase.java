@@ -34,9 +34,12 @@ import org.bukkit.potion.PotionEffectType;
 
 public class GamePhase extends AbstractPhase {
   private final List<AbstractModule> modules;
+  private final World world;
 
   public GamePhase(EnderGames plugin, GameManager manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
+
+    world = spawnLocation.getWorld();
 
     this.modules =
         List.of(
