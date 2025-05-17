@@ -58,6 +58,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                             <!-- Prevents creation of "original" plugin file -->
                             <outputFile>${project.build.directory}/${project.build.finalName}.jar</outputFile>
                             <!-- Prevents waring about duplicated files -->
