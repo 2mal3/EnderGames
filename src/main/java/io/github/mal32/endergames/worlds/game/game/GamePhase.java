@@ -192,7 +192,7 @@ public class GamePhase extends AbstractPhase {
       player.removePotionEffect(effect.getType());
     }
 
-    for (Player p : GameManager.getPlayersInGame()) {
+    for (Player p : GameManager.getPlayersInGameWorld()) {
       player.playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);
     }
 
@@ -250,22 +250,28 @@ public class GamePhase extends AbstractPhase {
   }
 
   private void gameEnd() {
+    Title title;
+
     Player[] survivalPlayers = GameManager.getPlayersInGame();
-    Player lastPlayer = survivalPlayers[0];
-
-    Title title =
-        Title.title(
-            Component.text(lastPlayer.getName() + " has Won!").color(NamedTextColor.GOLD),
-            Component.text(""),
-            Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
-
-    for (Player player : Bukkit.getOnlinePlayers()) {
-      if (!EnderGames.playerIsInGameWorld(player)) continue;
-
-      player.showTitle(title);
+    if (survivalPlayers.length >= 1) {
+      Player lastPlayer = survivalPlayers[0];
+      title =
+          Title.title(
+              Component.text(lastPlayer.getName() + " has Won!").color(NamedTextColor.GOLD),
+              Component.text(""),
+              Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
+      lastPlayer.playSound(lastPlayer.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
+    } else {
+      title =
+          Title.title(
+              Component.text("Draw").color(NamedTextColor.GOLD),
+              Component.text(""),
+              Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
     }
 
-    lastPlayer.playSound(lastPlayer.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
+    for (Player player : GameManager.getPlayersInGameWorld()) {
+      player.showTitle(title);
+    }
 
     manager.nextPhase();
   }

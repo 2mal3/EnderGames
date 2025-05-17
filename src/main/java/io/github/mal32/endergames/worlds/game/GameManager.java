@@ -77,9 +77,7 @@ public class GameManager extends AbstractWorld {
     } else if (currentPhase instanceof GamePhase) {
       currentPhase = new EndPhase(plugin, this, spawnLocation);
     } else if (currentPhase instanceof EndPhase) {
-      for (Player p : Bukkit.getOnlinePlayers()) {
-        if (!EnderGames.playerIsInGameWorld(p)) return;
-
+      for (Player p : GameManager.getPlayersInGameWorld()) {
         plugin.teleportPlayerToLobby(p);
       }
 
@@ -138,6 +136,12 @@ public class GameManager extends AbstractWorld {
   public static Player[] getPlayersInGame() {
     return Bukkit.getOnlinePlayers().stream()
         .filter(GameManager::playerIsInGame)
+        .toArray(Player[]::new);
+  }
+
+  public static Player[] getPlayersInGameWorld() {
+    return Bukkit.getOnlinePlayers().stream()
+        .filter(EnderGames::playerIsInGameWorld)
         .toArray(Player[]::new);
   }
 }
