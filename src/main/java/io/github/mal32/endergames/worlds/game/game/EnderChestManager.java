@@ -1,5 +1,6 @@
-package io.github.mal32.endergames.phases.game;
+package io.github.mal32.endergames.worlds.game.game;
 
+import io.github.mal32.endergames.EnderGames;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -19,9 +20,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 public class EnderChestManager extends AbstractTeleportingBlockManager {
-  private List<EnderChest> enderChests = new ArrayList<>();
+  private final List<EnderChest> enderChests = new ArrayList<>();
 
-  public EnderChestManager(JavaPlugin plugin) {
+  public EnderChestManager(EnderGames plugin) {
     super(plugin);
   }
 
@@ -54,11 +55,7 @@ public class EnderChestManager extends AbstractTeleportingBlockManager {
 
     EnderChest finalEnderChest = enderChest;
     Bukkit.getScheduler()
-        .runTask(
-            plugin,
-            () -> {
-              event.getPlayer().openInventory(finalEnderChest.getInventory());
-            });
+        .runTask(plugin, () -> event.getPlayer().openInventory(finalEnderChest.getInventory()));
   }
 
   public void task() {
@@ -118,8 +115,7 @@ class EnderChest implements InventoryHolder {
   }
 
   private void effects() {
-    location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.5f);
-    location.getWorld().spawnParticle(Particle.PORTAL, location, 50, 0, 0, 0);
+    AbstractTeleportingBlockManager.playTeleportEffects(location);
   }
 
   private void fill() {

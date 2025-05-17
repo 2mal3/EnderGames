@@ -1,13 +1,12 @@
-package io.github.mal32.endergames.phases.game;
+package io.github.mal32.endergames.worlds.game.game;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
+import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.worlds.game.GameManager;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class PlayerRegenerationManager extends AbstractTask {
-  public PlayerRegenerationManager(JavaPlugin plugin) {
+  public PlayerRegenerationManager(EnderGames plugin) {
     super(plugin);
   }
 
@@ -18,8 +17,7 @@ public class PlayerRegenerationManager extends AbstractTask {
 
   @Override
   public void task() {
-    for (Player player : Bukkit.getOnlinePlayers()) {
-      if (player.getGameMode() != GameMode.SURVIVAL) continue;
+    for (Player player : GameManager.getPlayersInGame()) {
       if (player.getFoodLevel() < 6 || player.getFoodLevel() > 18) continue;
 
       player.setHealth(

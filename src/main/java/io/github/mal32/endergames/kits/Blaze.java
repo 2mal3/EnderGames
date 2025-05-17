@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.mal32.endergames.EnderGames;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,12 +20,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Blaze extends AbstractKit {
-  public Blaze(JavaPlugin plugin) {
+  private final HashMap<UUID, LocalTime> burnTime = new HashMap<>();
+
+  public Blaze(EnderGames plugin) {
     super(plugin);
   }
 
@@ -52,7 +54,7 @@ public class Blaze extends AbstractKit {
     if (!event.hasChangedBlock()) return;
 
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     PotionEffect effect = player.getPotionEffect(PotionEffectType.WEAKNESS);
 
@@ -62,14 +64,14 @@ public class Blaze extends AbstractKit {
             new PotionEffect(
                 PotionEffectType.WEAKNESS, PotionEffect.INFINITE_DURATION, 0, true, false));
       }
-    } else if (effect.getDuration() == PotionEffect.INFINITE_DURATION) {
+    } else if (effect != null && effect.getDuration() == PotionEffect.INFINITE_DURATION) {
       player.removePotionEffect(PotionEffectType.WEAKNESS);
     }
   }
 
   @EventHandler
   public void onHit(EntityDamageByEntityEvent event) {
-    if (!(event.getDamager() instanceof Player damager) || !playerHasKit(damager)) return;
+    if (!(event.getDamager() instanceof Player damager) || !playerCanUseThisKit(damager)) return;
 
     if (Math.random() > 0.2) return;
 
@@ -79,14 +81,12 @@ public class Blaze extends AbstractKit {
   @EventHandler
   public void onBowShot(EntityShootBowEvent event) {
     if (!(event.getEntity() instanceof Player player)) return;
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     if (Math.random() > 0.25) return;
 
     event.getProjectile().setFireTicks(20 * 3);
   }
-
-  private final HashMap<UUID, LocalTime> burnTime = new HashMap<>();
 
   @EventHandler
   public void onPowderClick(PlayerInteractEvent event) {
@@ -95,7 +95,7 @@ public class Blaze extends AbstractKit {
 
     Player player = event.getPlayer();
 
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
     ItemStack item = event.getItem();
     if (item == null || item.getType() != Material.BLAZE_POWDER) return;
     if (player.hasCooldown(Material.BLAZE_POWDER)) return;
@@ -116,7 +116,7 @@ public class Blaze extends AbstractKit {
     if (!event.hasChangedBlock()) return;
 
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     if (!burnTime.containsKey(player.getUniqueId())) return;
     if (burnTime.get(player.getUniqueId()).isBefore(LocalTime.now())) return;

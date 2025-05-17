@@ -1,136 +1,45 @@
-package io.github.mal32.endergames.phases;
+package io.github.mal32.endergames.worlds.lobby;
 
 import static org.apache.commons.lang3.StringUtils.capitalize;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
 import java.util.List;
-import java.util.Random;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.*;
-import org.bukkit.block.structure.Mirror;
-import org.bukkit.block.structure.StructureRotation;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.structure.Structure;
-import org.bukkit.structure.StructureManager;
-import org.bukkit.util.BlockVector;
-
-public class LobbyPhase extends AbstractPhase {
-  public Location playerSpawnLocation;
-  KitSelector kitSelector = new KitSelector(plugin, this.kits);
-
-  public LobbyPhase(EnderGames plugin, Location spawn) {
-    super(plugin, spawn);
-    this.playerSpawnLocation =
-        new Location(spawn.getWorld(), spawn.getX() + 0.5, spawn.getY() + 5, spawn.getZ() + 0.5);
-
-    placeSpawnPlatform();
-
-    World world = spawn.getWorld();
-
-    world.setSpawnLocation(playerSpawnLocation);
-    world.setGameRule(GameRule.SPAWN_RADIUS, 6);
-
-    world.getWorldBorder().setSize(600);
-
-    for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-      intiPlayer(player);
-    }
-  }
-
-  private void placeSpawnPlatform() {
-    StructureManager manager = Bukkit.getServer().getStructureManager();
-    Structure structure = manager.loadStructure(new NamespacedKey("enga", "spawn_platform"));
-
-    BlockVector structureSize = structure.getSize();
-    int posX = (int) (spawnLocation.x() - (structureSize.getBlockX() / 2.0));
-    int posZ = (int) (spawnLocation.z() - (structureSize.getBlockZ() / 2.0));
-    Location location =
-        new Location(spawnLocation.getWorld(), (int) posX, spawnLocation.getY(), posZ);
-    structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
-  }
-
-  private void intiPlayer(Player player) {
-    player.teleport(playerSpawnLocation);
-
-    player.getInventory().clear();
-    player.setGameMode(GameMode.ADVENTURE);
-    player.addPotionEffect(
-        new PotionEffect(
-            PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, true, false));
-    kitSelector.giveKitSelector(player);
-  }
-
-  @Override
-  public void stop() {
-    super.stop();
-
-    for (Player player : plugin.getServer().getOnlinePlayers()) {
-      player.clearActivePotionEffects();
-    }
-
-    kitSelector.disable();
-  }
-
-  @EventHandler
-  public void onPlayerJoin(PlayerJoinEvent event) {
-    intiPlayer(event.getPlayer());
-  }
-
-  @EventHandler
-  public void onPlayerMove(PlayerMoveEvent event) {
-    if (!event.hasChangedBlock()) return;
-
-    Player player = event.getPlayer();
-
-    if (player.getGameMode() != GameMode.ADVENTURE) return;
-
-    if (player.getLocation().distance(spawnLocation) > 20) {
-      player.teleport(playerSpawnLocation);
-    }
-  }
-
-  @EventHandler
-  public void onPlayerDamage(EntityDamageEvent event) {
-    if (!(event.getEntity() instanceof Player)) {
-      return;
-    }
-    if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-      return;
-    }
-
-    event.setCancelled(true);
-  }
-}
+import org.jetbrains.annotations.NotNull;
 
 class KitSelector implements Listener {
   private final EnderGames plugin;
   private final List<AbstractKit> availablekits;
 
-  public KitSelector(EnderGames plugin, List<AbstractKit> kits) {
+  public KitSelector(EnderGames plugin) {
     this.plugin = plugin;
-    this.availablekits = kits;
+    this.availablekits = AbstractKit.getKits(plugin);
     Bukkit.getPluginManager().registerEvents(this, plugin);
+  }
+
+  public void enable() {
+    Bukkit.getPluginManager().registerEvents(this, this.plugin);
   }
 
   public void disable() {
@@ -237,44 +146,44 @@ class KitSelector implements Listener {
     KitInventory kitinv = new KitInventory(plugin, availablekits, player);
     player.openInventory(kitinv.getInventory());
   }
-}
 
-class KitInventory implements InventoryHolder {
-  private final EnderGames plugin;
-  private final List<AbstractKit> availablekits;
-  private final Inventory inventory;
-  private final Player player;
+  static class KitInventory implements InventoryHolder {
+    private final EnderGames plugin;
+    private final List<AbstractKit> availablekits;
+    private final Inventory inventory;
+    private final Player player;
 
-  public KitInventory(EnderGames plugin, List<AbstractKit> availablekits, Player player) {
-    this.plugin = plugin;
-    this.availablekits = availablekits;
-    this.player = player;
-    this.inventory = plugin.getServer().createInventory(this, 27, Component.text("§0Select Kit"));
-    fill_chest_with_kits();
-  }
+    public KitInventory(EnderGames plugin, List<AbstractKit> availablekits, Player player) {
+      this.plugin = plugin;
+      this.availablekits = availablekits;
+      this.player = player;
+      this.inventory = plugin.getServer().createInventory(this, 27, Component.text("§0Select Kit"));
+      fill_chest_with_kits();
+    }
 
-  @Override
-  public Inventory getInventory() {
-    return this.inventory;
-  }
+    @Override
+    public @NotNull Inventory getInventory() {
+      return this.inventory;
+    }
 
-  public void fill_chest_with_kits() {
-    for (int i = 0; i < this.availablekits.size(); i++) {
-      ItemStack descItem = availablekits.get(i).getDescriptionItem();
-      Component displayNameComponent = descItem.getItemMeta().displayName();
-      // Convert Component to plain string and strip formatting
-      String displayName =
-          LegacyComponentSerializer.legacySection().serialize(displayNameComponent);
-      String kitName = displayName.length() > 2 ? displayName.substring(2).toLowerCase() : "";
-      NamespacedKey key = new NamespacedKey(plugin, "kit");
-      String selected = player.getPersistentDataContainer().get(key, PersistentDataType.STRING);
-      if (kitName.equals(selected)) {
-        ItemMeta clickedMeta = descItem.getItemMeta();
-        clickedMeta.addEnchant(Enchantment.INFINITY, 1, true); // dummy enchantment for glow
-        clickedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        descItem.setItemMeta(clickedMeta);
+    public void fill_chest_with_kits() {
+      for (int i = 0; i < this.availablekits.size(); i++) {
+        ItemStack descItem = availablekits.get(i).getDescriptionItem();
+        Component displayNameComponent = descItem.getItemMeta().displayName();
+        // Convert Component to plain string and strip formatting
+        String displayName =
+            LegacyComponentSerializer.legacySection().serialize(displayNameComponent);
+        String kitName = displayName.length() > 2 ? displayName.substring(2).toLowerCase() : "";
+        NamespacedKey key = new NamespacedKey(plugin, "kit");
+        String selected = player.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+        if (kitName.equals(selected)) {
+          ItemMeta clickedMeta = descItem.getItemMeta();
+          clickedMeta.addEnchant(Enchantment.INFINITY, 1, true); // dummy enchantment for glow
+          clickedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+          descItem.setItemMeta(clickedMeta);
+        }
+        inventory.setItem(i, descItem);
       }
-      inventory.setItem(i, descItem);
     }
   }
 }

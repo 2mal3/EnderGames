@@ -1,14 +1,14 @@
-package io.github.mal32.endergames.phases.game;
+package io.github.mal32.endergames.worlds.game.game;
 
+import io.github.mal32.endergames.EnderGames;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class AbstractModule implements Listener {
-  protected final JavaPlugin plugin;
+  protected final EnderGames plugin;
 
-  public AbstractModule(JavaPlugin plugin) {
+  public AbstractModule(EnderGames plugin) {
     this.plugin = plugin;
   }
 

@@ -6,17 +6,18 @@ import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
 import io.papermc.paper.plugin.bootstrap.PluginProviderContext;
 import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 public class PluginBootstrapper implements PluginBootstrap {
   @Override
   public void bootstrap(BootstrapContext context) {
-    final LifecycleEventManager<BootstrapContext> manager = context.getLifecycleManager();
+    final LifecycleEventManager<@org.jetbrains.annotations.NotNull BootstrapContext> manager =
+        context.getLifecycleManager();
     manager.registerEventHandler(
         LifecycleEvents.DATAPACK_DISCOVERY,
         event -> {
@@ -33,7 +34,7 @@ public class PluginBootstrapper implements PluginBootstrap {
   }
 
   @Override
-  public JavaPlugin createPlugin(PluginProviderContext context) {
+  public @NotNull JavaPlugin createPlugin(PluginProviderContext context) {
     return new EnderGames();
   }
 }

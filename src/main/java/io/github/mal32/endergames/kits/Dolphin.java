@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.mal32.endergames.EnderGames;
 import java.util.Arrays;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -12,12 +13,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Dolphin extends AbstractKit {
-  public Dolphin(JavaPlugin plugin) {
+  public Dolphin(EnderGames plugin) {
     super(plugin);
   }
 
@@ -26,7 +26,7 @@ public class Dolphin extends AbstractKit {
     player
         .getInventory()
         .setLeggings(
-            colorLeatherArmor(new ItemStack(Material.LEATHER_BOOTS), Color.fromRGB(3507428)));
+            colorLeatherArmor(new ItemStack(Material.LEATHER_LEGGINGS), Color.fromRGB(3507428)));
     player.getInventory().addItem(new ItemStack(Material.WATER_BUCKET));
 
     player.addPotionEffect(
@@ -42,7 +42,7 @@ public class Dolphin extends AbstractKit {
     if (!event.hasChangedBlock()) return;
 
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     boolean hasRegeneration =
         player.hasPotionEffect(PotionEffectType.REGENERATION)
@@ -94,7 +94,7 @@ public class Dolphin extends AbstractKit {
     if (!event.hasChangedBlock()) return;
 
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     if (!player.isSwimming()) return;
 

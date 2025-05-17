@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.mal32.endergames.EnderGames;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,7 +9,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
-import org.bukkit.entity.*;
+import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.Damageable;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -17,10 +21,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class Cactus extends AbstractKit {
-  public Cactus(JavaPlugin plugin) {
+  private final HashMap<UUID, ArrayList<BlockDisplay>> cactusPlayerMapping = new HashMap<>();
+  private final HashMap<UUID, Boolean> cactusPlayerLocked = new HashMap<>();
+
+  public Cactus(EnderGames plugin) {
     super(plugin);
   }
 
@@ -39,7 +45,7 @@ public class Cactus extends AbstractKit {
   public void onEntityDamagedByEntity(EntityDamageByEntityEvent event) {
     if (!(event.getEntity() instanceof Player player)
         || !(event.getDamager() instanceof Damageable damager)) return;
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     if (Math.random() > 0.8) return;
 
@@ -53,7 +59,7 @@ public class Cactus extends AbstractKit {
   @EventHandler
   public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     if (event.isSneaking()) {
       boolean currentBlockEmpty = player.getLocation().getBlock().isEmpty();
@@ -66,9 +72,6 @@ public class Cactus extends AbstractKit {
       leaveCactus(player);
     }
   }
-
-  private final HashMap<UUID, ArrayList<BlockDisplay>> cactusPlayerMapping = new HashMap<>();
-  private final HashMap<UUID, Boolean> cactusPlayerLocked = new HashMap<>();
 
   private void enterCactus(Player player) {
     UUID uuid = player.getUniqueId();
@@ -111,7 +114,7 @@ public class Cactus extends AbstractKit {
 
   @EventHandler(ignoreCancelled = true)
   public void onPlayerDeath(PlayerDeathEvent event) {
-    if (!(playerHasKit(event.getPlayer()))) return;
+    if (!(playerCanUseThisKit(event.getPlayer()))) return;
 
     leaveCactus(event.getPlayer());
   }
@@ -119,7 +122,7 @@ public class Cactus extends AbstractKit {
   @EventHandler
   public void onPlayerLeave(PlayerQuitEvent event) {
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     leaveCactus(player);
   }
@@ -129,7 +132,7 @@ public class Cactus extends AbstractKit {
     if (!event.hasChangedBlock()) return;
 
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     if (cactusPlayerLocked.get(player.getUniqueId()) == null
         || !cactusPlayerLocked.get(player.getUniqueId())) return;

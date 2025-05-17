@@ -1,31 +1,31 @@
-package io.github.mal32.endergames.phases.game;
+package io.github.mal32.endergames.worlds.game.game;
 
-import java.util.List;
+import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.worlds.game.GameManager;
 import java.util.Random;
-import java.util.stream.Collectors;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 /*
  * This class is an abstract representation of a teleporting block manager.
  * It handles the teleportation and switching of moving blocks like ender chests in specific time intervals.
  */
 public abstract class AbstractTeleportingBlockManager extends AbstractTask {
-
-  public AbstractTeleportingBlockManager(JavaPlugin plugin) {
+  public AbstractTeleportingBlockManager(EnderGames plugin) {
     super(plugin);
   }
 
+  protected static void playTeleportEffects(Location location) {
+    location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.5f);
+    location.getWorld().spawnParticle(Particle.PORTAL, location, 50, 0, 0, 0);
+  }
+
   protected Location getRandomLocationNearPlayer() {
-    List<Player> players =
-        Bukkit.getOnlinePlayers().stream()
-            .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
-            .collect(Collectors.toList());
-    if (players.isEmpty()) {
+    Player[] players = GameManager.getPlayersInGame();
+    if (players.length == 0) {
       return null;
     }
-    Player player = players.get(new Random().nextInt(players.size()));
+    Player player = players[new Random().nextInt(players.length)];
 
     Location location = player.getLocation().getBlock().getLocation().clone();
     // get a random location near the player
@@ -37,10 +37,5 @@ public abstract class AbstractTeleportingBlockManager extends AbstractTask {
     location.add(0, 1, 0);
 
     return location;
-  }
-
-  protected static void playTeleportEffects(Location location) {
-    location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.5f);
-    location.getWorld().spawnParticle(Particle.PORTAL, location, 50, 0, 0, 0);
   }
 }
