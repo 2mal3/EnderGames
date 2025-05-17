@@ -7,6 +7,7 @@ import io.github.mal32.endergames.worlds.game.GameManager;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import net.kyori.adventure.text.Component;
@@ -122,15 +123,6 @@ public class GamePhase extends AbstractPhase {
     for (AbstractKit kit : AbstractKit.getKits(plugin)) {
       kit.disable();
     }
-
-    for (Player player : GameManager.getPlayersInGame()) {
-      player.getInventory().clear();
-      player.setGameMode(GameMode.SPECTATOR);
-
-      for (PotionEffect effect : player.getActivePotionEffects()) {
-        player.removePotionEffect(effect.getType());
-      }
-    }
   }
 
   @EventHandler
@@ -181,10 +173,9 @@ public class GamePhase extends AbstractPhase {
   private void abstractPlayerDeath(Player player, Player damager) {
     World world = player.getWorld();
 
+    // TODO: not the Tracker
     for (ItemStack item : player.getInventory().getContents()) {
-      if (item == null) { // TODO: not the Tracker
-        continue;
-      }
+      if (item == null) continue;
       world.dropItem(player.getLocation(), item);
     }
     player.getInventory().clear();
@@ -222,8 +213,16 @@ public class GamePhase extends AbstractPhase {
     }
 
     if (!moreThanOnePlayersAlive()) {
-      plugin.getServer().getScheduler().runTask(plugin, this::win);
+      plugin.getServer().getScheduler().runTask(plugin, this::gameEnd);
     }
+  }
+
+  private boolean moreThanOnePlayersAlive() {
+    int playersAlive = 0;
+    for (Player player : GameManager.getPlayersInGame()) {
+      playersAlive++; // TODO: maybe count down with every death?
+    }
+    return playersAlive > 1;
   }
 
   public Player getNearestValidPlayer(Player executor) {
@@ -250,7 +249,7 @@ public class GamePhase extends AbstractPhase {
     abstractPlayerDeath(event.getPlayer(), null);
   }
 
-  private void win() {
+  private void gameEnd() {
     Player[] survivalPlayers = GameManager.getPlayersInGame();
     Player lastPlayer = survivalPlayers[0];
 
@@ -271,13 +270,6 @@ public class GamePhase extends AbstractPhase {
     manager.nextPhase();
   }
 
-  private boolean moreThanOnePlayersAlive() {
-    int playersAlive = 0;
-    for (Player player : GameManager.getPlayersInGame()) {
-      playersAlive++; // TODO: maybe count down with every death?
-    }
-    return playersAlive > 1;
-  }
 
   @EventHandler
   private void onPlayerPlaceTNT(BlockPlaceEvent event) {
