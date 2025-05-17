@@ -1,13 +1,13 @@
-package io.github.mal32.endergames.phases.game;
+package io.github.mal32.endergames.worlds.game.game;
 
+import io.github.mal32.endergames.EnderGames;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class PlayerRegenerationManager extends AbstractTask {
-  public PlayerRegenerationManager(JavaPlugin plugin) {
+  public PlayerRegenerationManager(EnderGames plugin) {
     super(plugin);
   }
 

@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.mal32.endergames.EnderGames;
 import java.util.Arrays;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -16,10 +17,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class Lumberjack extends AbstractKit {
-  public Lumberjack(JavaPlugin plugin) {
+  public Lumberjack(EnderGames plugin) {
     super(plugin);
   }
 
@@ -42,7 +42,7 @@ public class Lumberjack extends AbstractKit {
   private void onBlockBreak(BlockBreakEvent event) {
     if (!Tag.LOGS.isTagged(event.getBlock().getType())) return;
 
-    if (!playerHasKit(event.getPlayer())) return;
+    if (!playerCanUseThisKit(event.getPlayer())) return;
 
     Location location = event.getBlock().getLocation().add(0, 1, 0);
     breakTree(location);
@@ -62,7 +62,7 @@ public class Lumberjack extends AbstractKit {
 
   @EventHandler
   private void onCraftItem(CraftItemEvent event) {
-    if (!playerHasKit((Player) event.getWhoClicked())) return;
+    if (!playerCanUseThisKit((Player) event.getWhoClicked())) return;
 
     ItemStack result = event.getRecipe().getResult();
     if (!Tag.ITEMS_AXES.isTagged(result.getType())) return;

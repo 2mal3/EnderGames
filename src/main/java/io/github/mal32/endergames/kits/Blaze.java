@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.mal32.endergames.EnderGames;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,14 +20,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Blaze extends AbstractKit {
   private final HashMap<UUID, LocalTime> burnTime = new HashMap<>();
 
-  public Blaze(JavaPlugin plugin) {
+  public Blaze(EnderGames plugin) {
     super(plugin);
   }
 
@@ -54,7 +54,7 @@ public class Blaze extends AbstractKit {
     if (!event.hasChangedBlock()) return;
 
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     PotionEffect effect = player.getPotionEffect(PotionEffectType.WEAKNESS);
 
@@ -71,7 +71,7 @@ public class Blaze extends AbstractKit {
 
   @EventHandler
   public void onHit(EntityDamageByEntityEvent event) {
-    if (!(event.getDamager() instanceof Player damager) || !playerHasKit(damager)) return;
+    if (!(event.getDamager() instanceof Player damager) || !playerCanUseThisKit(damager)) return;
 
     if (Math.random() > 0.2) return;
 
@@ -81,7 +81,7 @@ public class Blaze extends AbstractKit {
   @EventHandler
   public void onBowShot(EntityShootBowEvent event) {
     if (!(event.getEntity() instanceof Player player)) return;
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     if (Math.random() > 0.25) return;
 
@@ -95,7 +95,7 @@ public class Blaze extends AbstractKit {
 
     Player player = event.getPlayer();
 
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
     ItemStack item = event.getItem();
     if (item == null || item.getType() != Material.BLAZE_POWDER) return;
     if (player.hasCooldown(Material.BLAZE_POWDER)) return;
@@ -116,7 +116,7 @@ public class Blaze extends AbstractKit {
     if (!event.hasChangedBlock()) return;
 
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     if (!burnTime.containsKey(player.getUniqueId())) return;
     if (burnTime.get(player.getUniqueId()).isBefore(LocalTime.now())) return;

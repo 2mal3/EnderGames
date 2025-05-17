@@ -1,5 +1,6 @@
-package io.github.mal32.endergames.phases.game;
+package io.github.mal32.endergames.worlds.game.game;
 
+import io.github.mal32.endergames.EnderGames;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -21,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 public class EnderChestManager extends AbstractTeleportingBlockManager {
   private final List<EnderChest> enderChests = new ArrayList<>();
 
-  public EnderChestManager(JavaPlugin plugin) {
+  public EnderChestManager(EnderGames plugin) {
     super(plugin);
   }
 

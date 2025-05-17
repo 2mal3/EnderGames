@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
+import io.github.mal32.endergames.EnderGames;
 import java.util.Arrays;
 import java.util.Random;
 import net.kyori.adventure.text.Component;
@@ -21,12 +22,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.loot.LootTables;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Slime extends AbstractKit {
-  public Slime(JavaPlugin plugin) {
+  public Slime(EnderGames plugin) {
     super(plugin);
   }
 
@@ -48,7 +48,7 @@ public class Slime extends AbstractKit {
 
   @EventHandler
   public void onEntityDamage(EntityDamageByEntityEvent event) {
-    if (!(event.getEntity() instanceof Player player) || !playerHasKit(player)) return;
+    if (!(event.getEntity() instanceof Player player) || !playerCanUseThisKit(player)) return;
 
     if (event.getDamager() instanceof EnderPearl) return;
 
@@ -97,7 +97,7 @@ public class Slime extends AbstractKit {
   @EventHandler
   public void onSlimeballClick(PlayerInteractEvent event) {
     Player player = event.getPlayer();
-    if (!playerHasKit(player)) return;
+    if (!playerCanUseThisKit(player)) return;
 
     ItemStack item = event.getItem();
 
@@ -152,7 +152,7 @@ public class Slime extends AbstractKit {
   // Get Slimeballs while Jumping
   @EventHandler
   public void onPlayerJump(PlayerJumpEvent event) {
-    if (!playerHasKit(event.getPlayer())) return;
+    if (!playerCanUseThisKit(event.getPlayer())) return;
 
     Random random = new Random();
     ItemStack slimeball = new ItemStack(Material.SLIME_BALL, 1);

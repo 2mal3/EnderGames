@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.mal32.endergames.EnderGames;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.FoodProperties;
 import java.util.Arrays;
@@ -16,12 +17,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Cat extends AbstractKit {
-  public Cat(JavaPlugin plugin) {
+  public Cat(EnderGames plugin) {
     super(plugin);
   }
 
@@ -40,7 +40,8 @@ public class Cat extends AbstractKit {
 
   @EventHandler
   private void onFallDamage(EntityDamageEvent event) {
-    if (!(event.getEntity() instanceof Player) || !playerHasKit((Player) event.getEntity())) return;
+    if (!(event.getEntity() instanceof Player) || !playerCanUseThisKit((Player) event.getEntity()))
+      return;
 
     if (event.getCause() != EntityDamageEvent.DamageCause.FALL) {
       return;
@@ -51,7 +52,7 @@ public class Cat extends AbstractKit {
 
   @EventHandler
   private void onPlayerEatFish(PlayerItemConsumeEvent event) {
-    if (!playerHasKit(event.getPlayer())) return;
+    if (!playerCanUseThisKit(event.getPlayer())) return;
 
     if (!Tag.ITEMS_FISHES.isTagged(event.getItem().getType())) return;
 
@@ -60,7 +61,7 @@ public class Cat extends AbstractKit {
 
   @EventHandler
   private void onPlayerHit(EntityDamageByEntityEvent event) {
-    if (!(event.getDamager() instanceof Player damager) || !playerHasKit(damager)) return;
+    if (!(event.getDamager() instanceof Player damager) || !playerCanUseThisKit(damager)) return;
 
     // skip if damage is not with bare hands
     if (!damager.getInventory().getItemInMainHand().getType().isAir()) return;
