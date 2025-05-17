@@ -1,9 +1,10 @@
 package io.github.mal32.endergames.worlds.game.game;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.worlds.game.GameManager;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -22,10 +23,7 @@ public class PlayerSwapManager extends AbstractTask {
   @Override
   public void task() {
     // get two distinct players
-    List<Player> players =
-        Bukkit.getOnlinePlayers().stream()
-            .filter(plugin::playerIsInGameWorld)
-            .collect(Collectors.toList());
+    List<Player> players = Arrays.stream(GameManager.getPlayersInGame()).toList();
     if (players.size() < 2) {
       return;
     }

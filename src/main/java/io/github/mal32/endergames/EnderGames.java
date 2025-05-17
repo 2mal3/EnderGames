@@ -20,7 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class EnderGames extends JavaPlugin implements Listener {
   private GameManager gameWorld;
   private LobbyPhase lobbyWorld;
-  private final NamespacedKey worldKey = new NamespacedKey(this, "world");
+  private static final NamespacedKey worldKey = new NamespacedKey("endergames", "world");
 
   @Override
   public void onEnable() {
@@ -38,12 +38,12 @@ public class EnderGames extends JavaPlugin implements Listener {
     Bukkit.getPluginManager().registerEvents(this, this);
   }
 
-  public boolean playerIsInLobbyWorld(Player player) {
+  public static boolean playerIsInLobbyWorld(Player player) {
     var world = player.getPersistentDataContainer().get(worldKey, PersistentDataType.STRING);
     return Objects.equals(world, "lobby");
   }
 
-  public boolean playerIsInGameWorld(Player player) {
+  public static boolean playerIsInGameWorld(Player player) {
     var world = player.getPersistentDataContainer().get(worldKey, PersistentDataType.STRING);
     return Objects.equals(world, "game");
   }

@@ -9,7 +9,6 @@ import io.papermc.paper.datacomponent.item.LodestoneTracker;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
@@ -46,9 +45,7 @@ public class GamePhase extends AbstractPhase {
             new PlayerRegenerationManager(plugin),
             new PlayerSwapManager(plugin));
 
-    for (Player player : plugin.getServer().getOnlinePlayers()) {
-      if (!plugin.playerIsInGameWorld(player)) continue;
-
+    for (Player player : GameManager.getPlayersInGame()) {
       Bukkit.dispatchCommand(
           Bukkit.getConsoleSender(), "loot give " + player.getName() + " loot enga:tracker");
 
@@ -104,8 +101,7 @@ public class GamePhase extends AbstractPhase {
     Bukkit.getScheduler()
         .runTaskLater(plugin, protectionTimeBar::removeAll, 20 * protectionTimeDurationSeconds);
 
-    for (Player player : plugin.getServer().getOnlinePlayers()) {
-      if (plugin.playerIsInLobbyWorld(player)) continue;
+    for (Player player : GameManager.getPlayersInGame()) {
       protectionTimeBar.addPlayer(player); // TODO: disable when leaving?
 
       player.addPotionEffect(
@@ -125,9 +121,7 @@ public class GamePhase extends AbstractPhase {
       kit.disable();
     }
 
-    for (Player player : plugin.getServer().getOnlinePlayers()) {
-      if (!plugin.playerIsInGameWorld(player)) continue;
-
+    for (Player player : GameManager.getPlayersInGame()) {
       player.getInventory().clear();
       player.setGameMode(GameMode.SPECTATOR);
 
@@ -140,13 +134,13 @@ public class GamePhase extends AbstractPhase {
   @EventHandler
   private void onTrackerClick(PlayerInteractEvent event) {
     Player player = event.getPlayer();
-    if (!plugin.playerIsInGameWorld(player)) return;
+    if (!GameManager.playerIsInGame(player)) return;
     ItemStack item = event.getItem();
     if (item == null || item.getType() != Material.COMPASS) {
       return;
     }
 
-    Player nearestPlayer = getNearestSurvivalPlayer(player);
+    Player nearestPlayer = getNearestValidPlayer(player);
 
     Location targetLocation = nearestPlayer.getLocation();
     Location currentLocation = player.getLocation();
@@ -160,7 +154,7 @@ public class GamePhase extends AbstractPhase {
 
   @EventHandler
   private void onPlayerDeath(PlayerDeathEvent event) {
-    if (!plugin.playerIsInGameWorld(event.getEntity())) return;
+    if (!EnderGames.playerIsInGameWorld(event.getEntity())) return;
     event.setCancelled(true);
 
     Player player = event.getEntity();
@@ -205,8 +199,7 @@ public class GamePhase extends AbstractPhase {
       player.removePotionEffect(effect.getType());
     }
 
-    for (Player p : Bukkit.getOnlinePlayers()) {
-      if (plugin.playerIsInLobbyWorld(p)) continue;
+    for (Player p : GameManager.getPlayersInGame()) {
       player.playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);
     }
 
@@ -231,14 +224,13 @@ public class GamePhase extends AbstractPhase {
     }
   }
 
-  public Player getNearestSurvivalPlayer(Player executor) {
+  public Player getNearestValidPlayer(Player executor) {
     Player nearest = null;
     double nearestDistance = Double.MAX_VALUE;
     Location executorLocation = executor.getLocation();
 
-    for (Player other : executor.getServer().getOnlinePlayers()) {
+    for (Player other : GameManager.getPlayersInGame()) {
       if (other.equals(executor)) continue;
-      if (!plugin.playerIsInGameWorld(other)) continue;
 
       double distance = executorLocation.distance(other.getLocation());
       if (distance < nearestDistance) {
@@ -251,18 +243,14 @@ public class GamePhase extends AbstractPhase {
 
   @EventHandler
   private void onPlayerQuit(PlayerQuitEvent event) {
-    if (!plugin.playerIsInGameWorld(event.getPlayer())) return;
+    if (!GameManager.playerIsInGame(event.getPlayer())) return;
 
     abstractPlayerDeath(event.getPlayer(), null);
   }
 
   private void win() {
-    List<Player> survivalPlayers =
-        Bukkit.getOnlinePlayers().stream()
-            .filter(plugin::playerIsInGameWorld)
-            //            .filter(p -> p.getGameMode() == GameMode.SURVIVAL)
-            .collect(Collectors.toList());
-    Player lastPlayer = survivalPlayers.getFirst();
+    Player[] survivalPlayers = GameManager.getPlayersInGame();
+    Player lastPlayer = survivalPlayers[0];
 
     Title title =
         Title.title(
@@ -271,9 +259,9 @@ public class GamePhase extends AbstractPhase {
             Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
 
     for (Player player : Bukkit.getOnlinePlayers()) {
-      if (!plugin.playerIsInLobbyWorld(player)) {
-        player.showTitle(title);
-      }
+      if (!EnderGames.playerIsInGameWorld(player)) continue;
+
+      player.showTitle(title);
     }
 
     lastPlayer.playSound(lastPlayer.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
@@ -283,16 +271,15 @@ public class GamePhase extends AbstractPhase {
 
   private boolean moreThanOnePlayersAlive() {
     int playersAlive = 0;
-    for (Player player : Bukkit.getOnlinePlayers()) {
-      if (plugin.playerIsInGameWorld(player) && player.getGameMode() == GameMode.SURVIVAL)
-        playersAlive++; // TODO: maybe count down with every death?
+    for (Player player : GameManager.getPlayersInGame()) {
+      playersAlive++; // TODO: maybe count down with every death?
     }
     return playersAlive > 1;
   }
 
   @EventHandler
   private void onPlayerPlaceTNT(BlockPlaceEvent event) {
-    if (!plugin.playerIsInGameWorld(event.getPlayer())) return;
+    if (!GameManager.playerIsInGame(event.getPlayer())) return;
     if (event.getBlock().getType() != Material.TNT) return;
 
     Block block = event.getBlock();

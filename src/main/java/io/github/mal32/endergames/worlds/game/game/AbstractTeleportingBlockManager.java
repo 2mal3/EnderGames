@@ -1,9 +1,8 @@
 package io.github.mal32.endergames.worlds.game.game;
 
 import io.github.mal32.endergames.EnderGames;
-import java.util.List;
+import io.github.mal32.endergames.worlds.game.GameManager;
 import java.util.Random;
-import java.util.stream.Collectors;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 
@@ -22,15 +21,11 @@ public abstract class AbstractTeleportingBlockManager extends AbstractTask {
   }
 
   protected Location getRandomLocationNearPlayer() {
-    List<Player> players =
-        Bukkit.getOnlinePlayers().stream()
-            .filter(plugin::playerIsInGameWorld)
-            .filter(p -> p.getGameMode() != GameMode.SPECTATOR)
-            .collect(Collectors.toList());
-    if (players.isEmpty()) {
+    Player[] players = GameManager.getPlayersInGame();
+    if (players.length == 0) {
       return null;
     }
-    Player player = players.get(new Random().nextInt(players.size()));
+    Player player = players[new Random().nextInt(players.length)];
 
     Location location = player.getLocation().getBlock().getLocation().clone();
     // get a random location near the player

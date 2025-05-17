@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.worlds.game.GameManager;
 import io.github.mal32.endergames.worlds.game.game.AbstractModule;
 import java.util.List;
 import java.util.Objects;
@@ -48,17 +49,15 @@ public abstract class AbstractKit extends AbstractModule {
   }
 
   protected boolean playerCanUseThisKit(Player player) {
-    var phase =
-        player
-            .getPersistentDataContainer()
-            .get(new NamespacedKey(plugin, "phase"), PersistentDataType.STRING);
-
-    return Objects.equals(phase, "game")
-        && Objects.equals(
+    var playerInGame = GameManager.playerIsInGame(player);
+    var playerHasKit =
+        Objects.equals(
             player
                 .getPersistentDataContainer()
                 .get(new NamespacedKey(plugin, "kit"), PersistentDataType.STRING),
             getName());
+
+    return playerHasKit && playerInGame;
   }
 
   public abstract void start(Player player);

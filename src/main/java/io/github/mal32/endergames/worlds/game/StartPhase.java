@@ -26,16 +26,6 @@ public class StartPhase extends AbstractPhase {
 
     runCountdown();
 
-    int playerindex = 0;
-    final int totalPlayers = Bukkit.getServer().getOnlinePlayers().size();
-    for (Player player : Bukkit.getServer().getOnlinePlayers()) { // TODO: playing players
-      player.setGameMode(GameMode.ADVENTURE);
-      player.getInventory().clear();
-
-      teleportToPlayerSpawns(player, playerindex, totalPlayers);
-      playerindex += 1;
-    }
-
     World world = spawnLocation.getWorld();
 
     world.setTime(0);
@@ -45,14 +35,27 @@ public class StartPhase extends AbstractPhase {
 
     WorldBorder worldBorder = world.getWorldBorder();
     worldBorder.setSize(600);
+
+    Bukkit.getScheduler().runTaskLater(plugin, this::distributePlayers, 20);
+  }
+
+  public void distributePlayers() {
+    int playerindex = 0;
+    final int totalPlayers = Bukkit.getServer().getOnlinePlayers().size();
+    for (Player player : Bukkit.getServer().getOnlinePlayers()) { // TODO: playing players
+      player.setGameMode(GameMode.ADVENTURE);
+      player.getInventory().clear();
+
+      teleportToPlayerSpawns(player, playerindex, totalPlayers);
+      playerindex += 1;
+    }
   }
 
   @Override
   public void disable() {
     super.disable();
 
-    for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-      if (!plugin.playerIsInGameWorld(player)) return;
+    for (Player player : GameManager.getPlayersInGame()) {
       player.clearActivePotionEffects();
     }
   }
@@ -68,9 +71,7 @@ public class StartPhase extends AbstractPhase {
       scheduler.runTaskLater(
           plugin,
           () -> {
-            for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-              if (plugin.playerIsInLobbyWorld(player)) continue;
-
+            for (Player player : GameManager.getPlayersInGame()) {
               showTitleToPlayerWithSound(
                   player,
                   Component.text(titleTime + "").color(NamedTextColor.YELLOW),
@@ -84,8 +85,7 @@ public class StartPhase extends AbstractPhase {
     scheduler.runTaskLater(
         plugin,
         () -> {
-          for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-            if (plugin.playerIsInLobbyWorld(player)) continue;
+          for (Player player : GameManager.getPlayersInGame()) {
             showTitleToPlayerWithSound(
                 player,
                 Component.text("Start").color(NamedTextColor.GOLD),
@@ -177,8 +177,7 @@ public class StartPhase extends AbstractPhase {
 
   @EventHandler
   private void onPlayerMove(PlayerMoveEvent event) {
-    Player player = event.getPlayer();
-    if (!plugin.playerIsInGameWorld(player)) return;
+    if (!GameManager.playerIsInGame(event.getPlayer())) return;
 
     Location startLocation = event.getFrom();
     Location startLocationBlock = startLocation.getBlock().getLocation();

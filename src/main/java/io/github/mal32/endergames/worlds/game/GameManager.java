@@ -28,7 +28,7 @@ public class GameManager extends AbstractWorld {
     border.setWarningTime(60);
     border.setDamageBuffer(1);
 
-    currentPhase = new EmptyPhase(plugin, this, spawnLocation);
+    currentPhase = new LoadPhase(plugin, this, spawnLocation);
   }
 
   private void loadSpawnLocation() {
@@ -55,30 +55,10 @@ public class GameManager extends AbstractWorld {
             List.of((int) spawnLocation.getX(), (int) spawnLocation.getZ()));
 
     world.getWorldBorder().setCenter(spawnLocation);
-
-    loadSpawnChunks();
-  }
-
-  private void loadSpawnChunks() {
-
-    for (Chunk chunk : world.getLoadedChunks()) {
-      chunk.removePluginChunkTicket(plugin);
-    }
-    for (int x = (int) (spawnLocation.getX() - (2 * 16));
-        x < spawnLocation.getX() + (2 * 16);
-        x += 16) {
-      for (int z = (int) (spawnLocation.getZ() - (2 * 16));
-          z < spawnLocation.getZ() + (2 * 16);
-          z += 16) {
-        world
-            .getChunkAt(new Location(world, x, spawnLocation.getY(), z))
-            .addPluginChunkTicket(plugin);
-      }
-    }
   }
 
   public void startGame() {
-    if (!(currentPhase instanceof EmptyPhase)) return;
+    if (!(currentPhase instanceof LoadPhase)) return;
 
     nextPhase();
 
@@ -90,7 +70,7 @@ public class GameManager extends AbstractWorld {
   public void nextPhase() {
     currentPhase.disable();
 
-    if (currentPhase instanceof EmptyPhase) {
+    if (currentPhase instanceof LoadPhase) {
       currentPhase = new StartPhase(plugin, this, spawnLocation);
     } else if (currentPhase instanceof StartPhase) {
       currentPhase = new GamePhase(plugin, this, spawnLocation);
@@ -104,7 +84,7 @@ public class GameManager extends AbstractWorld {
         plugin.teleportPlayerToLobby(player);
       }
 
-      currentPhase = new EmptyPhase(plugin, this, spawnLocation);
+      currentPhase = new LoadPhase(plugin, this, spawnLocation);
     }
   }
 
@@ -143,5 +123,15 @@ public class GameManager extends AbstractWorld {
     } else {
       player.setGameMode(GameMode.SPECTATOR);
     }
+  }
+
+  public static boolean playerIsInGame(Player player) {
+    return EnderGames.playerIsInGameWorld(player) && player.getGameMode() != GameMode.SPECTATOR;
+  }
+
+  public static Player[] getPlayersInGame() {
+    return Bukkit.getOnlinePlayers().stream()
+        .filter(GameManager::playerIsInGame)
+        .toArray(Player[]::new);
   }
 }
