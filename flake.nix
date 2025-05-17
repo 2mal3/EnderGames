@@ -13,6 +13,8 @@
       packages = with pkgs; [
         papermc
       ];
+
+      shellHook = "exec ${pkgs.fish}/bin/fish";
     };
   };
 }
