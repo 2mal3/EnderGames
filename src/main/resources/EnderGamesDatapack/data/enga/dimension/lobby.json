@@ -4,10 +4,7 @@
     "type": "minecraft:flat",
     "settings": {
       "layers": [],
-      "biome": "enga:lobby",
-      "structures": {
-        "structures": {}
-      }
+      "biome": "enga:lobby"
     }
   }
 }

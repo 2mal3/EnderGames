@@ -12,7 +12,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class GameManager extends AbstractWorld {
   private Location spawnLocation;
-  private final World world = Objects.requireNonNull(Bukkit.getWorld("world_enga_world"));
+  private final World world = Objects.requireNonNull(Bukkit.getWorld("world"));
   private AbstractPhase currentPhase;
   private final NamespacedKey spawnLocationKey;
 

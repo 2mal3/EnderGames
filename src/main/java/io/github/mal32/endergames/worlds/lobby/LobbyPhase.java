@@ -2,6 +2,7 @@ package io.github.mal32.endergames.worlds.lobby;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.AbstractWorld;
+import java.util.Objects;
 import java.util.Random;
 import org.bukkit.*;
 import org.bukkit.block.structure.Mirror;
@@ -17,11 +18,13 @@ import org.bukkit.structure.StructureManager;
 
 public class LobbyPhase extends AbstractWorld implements Listener {
   private final KitSelector kitSelector;
-  private final World lobbyWorld = Bukkit.getWorlds().getFirst();
-  private final Location spawnLocation = new Location(lobbyWorld, 0, 0, 0);
+  private final World lobbyWorld = Objects.requireNonNull(Bukkit.getWorld("world_enga_lobby"));
+  private final Location spawnLocation = new Location(lobbyWorld, 0, 64, 0);
 
   public LobbyPhase(EnderGames plugin) {
     super(plugin);
+
+    lobbyWorld.setSpawnLocation(spawnLocation);
 
     Bukkit.getPluginManager().registerEvents(this, plugin);
 
