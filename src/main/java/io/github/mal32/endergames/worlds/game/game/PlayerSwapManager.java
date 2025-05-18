@@ -45,7 +45,8 @@ public class PlayerSwapManager extends AbstractTask {
 
   private void playerSwapEffects(Player player) {
     Location location = player.getLocation();
-    AbstractTeleportingBlockManager.playTeleportEffects(location);
+    location.getWorld().playSound(location, Sound.ENTITY_PLAYER_TELEPORT, 1, 0.5f);
+    location.getWorld().spawnParticle(Particle.PORTAL, location, 50, 0, 0, 0);
 
     player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 0, true));
   }
