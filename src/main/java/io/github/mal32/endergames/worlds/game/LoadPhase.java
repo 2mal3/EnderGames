@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.worlds.game;
 
 import io.github.mal32.endergames.EnderGames;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -9,7 +10,7 @@ public class LoadPhase extends AbstractPhase {
   public LoadPhase(EnderGames plugin, GameManager manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
 
-    loadSpawnChunks();
+    Bukkit.getScheduler().runTaskLater(plugin, this::loadSpawnChunks, 20 * 5);
   }
 
   private void loadSpawnChunks() {
