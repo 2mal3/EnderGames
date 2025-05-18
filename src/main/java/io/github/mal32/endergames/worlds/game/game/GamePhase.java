@@ -49,6 +49,8 @@ public class GamePhase extends AbstractPhase {
             new SwapperItem(plugin));
 
     for (Player player : GameManager.getPlayersInGame()) {
+      player.setGameMode(GameMode.SURVIVAL);
+
       Bukkit.dispatchCommand(
           Bukkit.getConsoleSender(), "loot give " + player.getName() + " loot enga:tracker");
 
