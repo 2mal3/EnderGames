@@ -7,7 +7,6 @@ import io.github.mal32.endergames.worlds.game.GameManager;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import net.kyori.adventure.text.Component;
@@ -46,7 +45,8 @@ public class GamePhase extends AbstractPhase {
             new EnchanterManager(plugin, spawnLocation),
             new EnderChestManager(plugin),
             new PlayerRegenerationManager(plugin),
-            new PlayerSwapManager(plugin));
+            new PlayerSwapManager(plugin),
+            new SwapperItem(plugin));
 
     for (Player player : GameManager.getPlayersInGame()) {
       Bukkit.dispatchCommand(
