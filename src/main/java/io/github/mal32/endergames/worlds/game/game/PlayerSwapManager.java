@@ -5,6 +5,7 @@ import io.github.mal32.endergames.worlds.game.GameManager;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.ArrayList;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -23,7 +24,7 @@ public class PlayerSwapManager extends AbstractTask {
   @Override
   public void task() {
     // get two distinct players
-    List<Player> players = Arrays.stream(GameManager.getPlayersInGame()).toList();
+    List<Player> players = new ArrayList<>(Arrays.stream(GameManager.getPlayersInGame()).toList());
     if (players.size() < 2) {
       return;
     }
