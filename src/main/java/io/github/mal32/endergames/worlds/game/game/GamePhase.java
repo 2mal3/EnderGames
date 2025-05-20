@@ -83,7 +83,7 @@ public class GamePhase extends AbstractPhase {
   private void removeSpawnPlatform() {
     for (int x = spawnLocation.blockX() - 20; x <= spawnLocation.blockX() + 20; x++) {
       for (int z = spawnLocation.blockZ() - 20; z <= spawnLocation.blockZ() + 20; z++) {
-        for (int y = spawnLocation.blockY() - 20; y <= spawnLocation.blockY() + 20; y++) {
+        for (int y = spawnLocation.blockY() - 5; y <= spawnLocation.blockY() + 5; y++) {
           world.getBlockAt(x, y, z).setType(Material.AIR);
         }
       }

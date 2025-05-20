@@ -34,7 +34,7 @@ public class GameManager extends AbstractWorld {
   private void loadSpawnLocation() {
     if (!world.getPersistentDataContainer().has(spawnLocationKey)) {
       plugin.getComponentLogger().info("Creating spawn location");
-      spawnLocation = new Location(world, 0, 150, 0);
+      spawnLocation = new Location(world, 0, 200, 0);
       return;
     }
 
