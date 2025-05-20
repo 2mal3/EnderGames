@@ -46,7 +46,8 @@ public class GamePhase extends AbstractPhase {
             new EnderChestManager(plugin),
             new PlayerRegenerationManager(plugin),
             new PlayerSwapManager(plugin),
-            new SwapperItem(plugin));
+            new SwapperItem(plugin),
+            new SmithingTemplateManager(plugin));
 
     for (Player player : GameManager.getPlayersInGame()) {
       player.setGameMode(GameMode.SURVIVAL);

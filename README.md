@@ -99,6 +99,8 @@ The game can only be started by server operators with the command `/endergames s
 - more expensive Shield recipe
 - slow natural regeneration, even when having low food level
 - players drop all their experience on death
+- Enchanting Tables have infinite Lapis Lazuli
+- Smithing Tables have infinite Netherite Upgrade Templates
 
 ## Disclaimer
 
