@@ -76,6 +76,13 @@ The game can only be started by server operators with the command `/endergames s
 </details>
 
 - <details>
+  <summary>Mace</summary>
+
+    - equipment: Mace and leather boots with Feather Falling III
+
+</details>
+
+- <details>
   <summary>Slime</summary>
 
     - occasionally gains slimeballs when jumping
@@ -95,7 +102,10 @@ The game can only be started by server operators with the command `/endergames s
 
 ## Disclaimer
 
-This plugin is an unofficial, fan-made project and is not approved by, associated with, or supported by Mojang Studios, Microsoft, or GommeHD.net. “Minecraft” and related names are trademarks of Mojang Studios and Microsoft. “EnderGames” and references to GommeHD are used for descriptive purposes only and do not imply any official connection. The creators of this plugin are solely responsible for its content and maintenance.
+This plugin is an unofficial, fan-made project and is not approved by, associated with, or supported by Mojang Studios,
+Microsoft, or GommeHD.net. “Minecraft” and related names are trademarks of Mojang Studios and Microsoft. “EnderGames”
+and references to GommeHD are used for descriptive purposes only and do not imply any official connection. The creators
+of this plugin are solely responsible for its content and maintenance.
 
 ## Contributors ✨
 
