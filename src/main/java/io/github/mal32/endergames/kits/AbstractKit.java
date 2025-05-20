@@ -28,7 +28,8 @@ public abstract class AbstractKit extends AbstractModule {
         new Blaze(plugin),
         new Slime(plugin),
         new Dolphin(plugin),
-        new Mace(plugin));
+        new Mace(plugin),
+        new Bird(plugin));
   }
 
   protected static ItemStack enchantItem(ItemStack item, Enchantment enchantment, int level) {

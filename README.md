@@ -27,6 +27,14 @@ The game can only be started by server operators with the command `/endergames s
 </details>
 
 - <details>
+  <summary>Bird</summary>
+
+    - gains 2 new rockets per player kill
+    - equipment: Elytra & 5 rockets
+
+</details>
+
+- <details>
   <summary>Blaze</summary>
 
     - can leave a fire trail for a short time
