@@ -18,7 +18,7 @@ public class Mace extends AbstractKit {
   @Override
   public void start(Player player) {
     ItemStack mace = new ItemStack(Material.MACE);
-    player.getInventory().setItemInMainHand(mace);
+    player.getInventory().addItem(mace);
 
     player
         .getInventory()
