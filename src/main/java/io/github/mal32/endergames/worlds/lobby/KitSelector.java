@@ -38,14 +38,6 @@ class KitSelector implements Listener {
     Bukkit.getPluginManager().registerEvents(this, plugin);
   }
 
-  public void enable() {
-    Bukkit.getPluginManager().registerEvents(this, this.plugin);
-  }
-
-  public void disable() {
-    HandlerList.unregisterAll(this);
-  }
-
   public void giveKitSelector(Player player) {
     ItemStack chestItem = new ItemStack(Material.CHEST); // Chest item
     ItemMeta meta = chestItem.getItemMeta();

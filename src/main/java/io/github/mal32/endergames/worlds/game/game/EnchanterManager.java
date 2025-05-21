@@ -19,11 +19,11 @@ import org.bukkit.inventory.ItemStack;
 public class EnchanterManager extends AbstractTeleportingBlockManager {
   private final ArrayList<Location> enchanterLocations = new ArrayList<>();
 
-  public EnchanterManager(EnderGames plugin, Location spwanLocation) {
+  public EnchanterManager(EnderGames plugin, Location spawnLocation) {
     super(plugin);
 
     for (int i = 0; i < 4; i++) {
-      enchanterLocations.add(spwanLocation.clone().add(0, 0, 0));
+      enchanterLocations.add(spawnLocation.clone().add(0, 0, 0));
     }
   }
 

@@ -3,46 +3,37 @@ package io.github.mal32.endergames.worlds.game;
 import io.github.mal32.endergames.EnderGames;
 import java.time.Duration;
 import java.util.List;
-import java.util.Random;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
-import org.bukkit.block.structure.Mirror;
-import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.structure.Structure;
-import org.bukkit.structure.StructureManager;
 import org.bukkit.util.BlockVector;
 
 public class StartPhase extends AbstractPhase {
   public StartPhase(EnderGames plugin, GameManager manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
 
-    placeSpawnPlatform();
+    this.manager.getWorldManager().prepareWorldForGame();
 
-    runCountdown();
-
-    World world = spawnLocation.getWorld();
-
-    world.setTime(0);
-    world.setStorm(false);
-    world.setThundering(false);
-    world.setWeatherDuration(20 * 60 * 10);
-
-    WorldBorder worldBorder = world.getWorldBorder();
-    worldBorder.setSize(600);
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      player
+              .getPersistentDataContainer()
+              .set(new NamespacedKey("endergames", "world"), PersistentDataType.STRING, "game"); // TODO
+    }
 
     Bukkit.getScheduler().runTaskLater(plugin, this::distributePlayers, 20);
+    Bukkit.getScheduler().runTaskLater(plugin, this::runCountdown, 25);
   }
 
   public void distributePlayers() {
     int playerindex = 0;
     final int totalPlayers = Bukkit.getServer().getOnlinePlayers().size();
-    for (Player player : Bukkit.getServer().getOnlinePlayers()) { // TODO: playing players
+    for (Player player :  Bukkit.getServer().getOnlinePlayers()) { // TODO: playing players
       player.setGameMode(GameMode.ADVENTURE);
       player.getInventory().clear();
 
@@ -106,19 +97,7 @@ public class StartPhase extends AbstractPhase {
     player.playSound(player.getLocation(), sound, 1, 1);
   }
 
-  private void placeSpawnPlatform() {
-    StructureManager manager = Bukkit.getServer().getStructureManager();
-    Structure structure = manager.loadStructure(new NamespacedKey("enga", "spawn_platform"));
-
-    BlockVector structureSize = structure.getSize();
-    int posX = (int) (spawnLocation.x() - (structureSize.getBlockX() / 2.0));
-    int posZ = (int) (spawnLocation.z() - (structureSize.getBlockZ() / 2.0));
-    Location location = new Location(spawnLocation.getWorld(), posX, spawnLocation.getY(), posZ);
-    structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
-  }
-
-  private void teleportToPlayerSpawns(
-      Player player, int playerIndex, int totalPlayers) { // TODO: calculate with sin, cos
+  private void teleportToPlayerSpawns(Player player, int playerIndex, int totalPlayers) {
     if (totalPlayers == 0) return;
 
     List<BlockVector> offsets = makeSpawnOffsets();
@@ -180,14 +159,7 @@ public class StartPhase extends AbstractPhase {
     if (!GameManager.playerIsInGame(event.getPlayer())) return;
 
     Location startLocation = event.getFrom();
-    Location startLocationBlock = startLocation.getBlock().getLocation();
-    Location endLocation = event.getTo();
-    Location endLocationBlock = endLocation.getBlock().getLocation();
-
-    if (startLocationBlock.getX() != endLocationBlock.getX()
-        || startLocationBlock.getZ() != endLocationBlock.getZ()) {
-      event.getTo().setX(startLocation.getX());
-      event.getTo().setZ(startLocation.getZ());
-    }
+    event.getTo().setX(startLocation.getX());
+    event.getTo().setZ(startLocation.getZ());
   }
 }
