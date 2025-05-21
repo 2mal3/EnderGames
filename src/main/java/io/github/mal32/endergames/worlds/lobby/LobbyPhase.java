@@ -67,11 +67,9 @@ public class LobbyPhase extends AbstractWorld implements Listener {
   @EventHandler
   public void onPlayerDamage(EntityDamageEvent event) {
     if (!(event.getEntity() instanceof Player player)) return;
-    if (!plugin.playerIsInLobbyWorld(player)) return;
+    if (!EnderGames.playerIsInLobbyWorld(player)) return;
     if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) return;
 
     event.setCancelled(true);
   }
-
-  public void startGame() {}
 }

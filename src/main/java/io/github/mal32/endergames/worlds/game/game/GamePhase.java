@@ -33,12 +33,9 @@ import org.bukkit.util.Vector;
 
 public class GamePhase extends AbstractPhase {
   private final List<AbstractModule> modules;
-  private final World world;
-
+  
   public GamePhase(EnderGames plugin, GameManager manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
-
-    world = spawnLocation.getWorld();
 
     this.modules =
         List.of(
@@ -66,10 +63,7 @@ public class GamePhase extends AbstractPhase {
       }
     }
 
-    var worldBorder = world.getWorldBorder();
-    worldBorder.setSize(50, 20 * 60);
-
-    plugin.getServer().getScheduler().runTaskLater(plugin, this::removeSpawnPlatform, 30 * 20);
+    this.manager.getWorldManager().startGame();
 
     initProtectionTime();
 
@@ -78,16 +72,6 @@ public class GamePhase extends AbstractPhase {
     }
     for (AbstractKit kit : AbstractKit.getKits(plugin)) {
       kit.enable();
-    }
-  }
-
-  private void removeSpawnPlatform() {
-    for (int x = spawnLocation.blockX() - 20; x <= spawnLocation.blockX() + 20; x++) {
-      for (int z = spawnLocation.blockZ() - 20; z <= spawnLocation.blockZ() + 20; z++) {
-        for (int y = spawnLocation.blockY() - 5; y <= spawnLocation.blockY() + 5; y++) {
-          world.getBlockAt(x, y, z).setType(Material.AIR);
-        }
-      }
     }
   }
 
@@ -221,11 +205,7 @@ public class GamePhase extends AbstractPhase {
   }
 
   private boolean moreThanOnePlayersAlive() {
-    int playersAlive = 0;
-    for (Player player : GameManager.getPlayersInGame()) {
-      playersAlive++; // TODO: maybe count down with every death?
-    }
-    return playersAlive > 1;
+    return GameManager.getPlayersInGame().length > 1;
   }
 
   public Player getNearestValidPlayer(Player executor) {
