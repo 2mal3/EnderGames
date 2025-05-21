@@ -33,7 +33,7 @@ import org.bukkit.util.Vector;
 
 public class GamePhase extends AbstractPhase {
   private final List<AbstractModule> modules;
-  
+
   public GamePhase(EnderGames plugin, GameManager manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
 

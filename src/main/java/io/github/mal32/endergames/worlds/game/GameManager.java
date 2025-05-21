@@ -7,8 +7,8 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 public class GameManager extends AbstractWorld {
-  private AbstractPhase currentPhase;
   private final WorldManager worldManager;
+  private AbstractPhase currentPhase;
 
   public GameManager(EnderGames plugin) {
     super(plugin);
@@ -17,6 +17,22 @@ public class GameManager extends AbstractWorld {
     this.worldManager.loadSpawnPosition();
 
     currentPhase = new LoadPhase(plugin, this, this.worldManager.getSpawnLocation());
+  }
+
+  public static boolean playerIsInGame(Player player) {
+    return EnderGames.playerIsInGameWorld(player) && player.getGameMode() != GameMode.SPECTATOR;
+  }
+
+  public static Player[] getPlayersInGame() {
+    return Bukkit.getOnlinePlayers().stream()
+        .filter(GameManager::playerIsInGame)
+        .toArray(Player[]::new);
+  }
+
+  public static Player[] getPlayersInGameWorld() {
+    return Bukkit.getOnlinePlayers().stream()
+        .filter(EnderGames::playerIsInGameWorld)
+        .toArray(Player[]::new);
   }
 
   public void startGame() {
@@ -60,21 +76,5 @@ public class GameManager extends AbstractWorld {
 
   public WorldManager getWorldManager() {
     return worldManager;
-  }
-
-  public static boolean playerIsInGame(Player player) {
-    return EnderGames.playerIsInGameWorld(player) && player.getGameMode() != GameMode.SPECTATOR;
-  }
-
-  public static Player[] getPlayersInGame() {
-    return Bukkit.getOnlinePlayers().stream()
-        .filter(GameManager::playerIsInGame)
-        .toArray(Player[]::new);
-  }
-
-  public static Player[] getPlayersInGameWorld() {
-    return Bukkit.getOnlinePlayers().stream()
-        .filter(EnderGames::playerIsInGameWorld)
-        .toArray(Player[]::new);
   }
 }

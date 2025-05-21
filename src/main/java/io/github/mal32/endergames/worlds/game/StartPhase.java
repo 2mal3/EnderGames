@@ -22,8 +22,8 @@ public class StartPhase extends AbstractPhase {
 
     for (Player player : Bukkit.getOnlinePlayers()) {
       player
-              .getPersistentDataContainer()
-              .set(new NamespacedKey("endergames", "world"), PersistentDataType.STRING, "game"); // TODO
+          .getPersistentDataContainer()
+          .set(new NamespacedKey("endergames", "world"), PersistentDataType.STRING, "game"); // TODO
     }
 
     Bukkit.getScheduler().runTaskLater(plugin, this::distributePlayers, 20);
@@ -33,7 +33,7 @@ public class StartPhase extends AbstractPhase {
   public void distributePlayers() {
     int playerindex = 0;
     final int totalPlayers = Bukkit.getServer().getOnlinePlayers().size();
-    for (Player player :  Bukkit.getServer().getOnlinePlayers()) { // TODO: playing players
+    for (Player player : Bukkit.getServer().getOnlinePlayers()) { // TODO: playing players
       player.setGameMode(GameMode.ADVENTURE);
       player.getInventory().clear();
 

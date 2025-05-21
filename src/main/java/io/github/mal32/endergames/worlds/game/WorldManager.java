@@ -36,14 +36,14 @@ public class WorldManager {
   // https://github.com/misode/mcmeta/blob/data/data/minecraft/tags/worldgen/biome/is_ocean.json
   private static boolean isOcean(Biome biome) {
     return biome.equals(Biome.DEEP_FROZEN_OCEAN)
-            || biome.equals(Biome.DEEP_COLD_OCEAN)
-            || biome.equals(Biome.DEEP_OCEAN)
-            || biome.equals(Biome.DEEP_LUKEWARM_OCEAN)
-            || biome.equals(Biome.FROZEN_OCEAN)
-            || biome.equals(Biome.OCEAN)
-            || biome.equals(Biome.COLD_OCEAN)
-            || biome.equals(Biome.LUKEWARM_OCEAN)
-            || biome.equals(Biome.WARM_OCEAN);
+        || biome.equals(Biome.DEEP_COLD_OCEAN)
+        || biome.equals(Biome.DEEP_OCEAN)
+        || biome.equals(Biome.DEEP_LUKEWARM_OCEAN)
+        || biome.equals(Biome.FROZEN_OCEAN)
+        || biome.equals(Biome.OCEAN)
+        || biome.equals(Biome.COLD_OCEAN)
+        || biome.equals(Biome.LUKEWARM_OCEAN)
+        || biome.equals(Biome.WARM_OCEAN);
   }
 
   public Location getSpawnLocation() {
@@ -95,14 +95,17 @@ public class WorldManager {
       return;
     }
 
-    double rawSpawnX = this.world.getPersistentDataContainer().get(this.spawnLocationKey, PersistentDataType.DOUBLE);
+    double rawSpawnX =
+        this.world
+            .getPersistentDataContainer()
+            .get(this.spawnLocationKey, PersistentDataType.DOUBLE);
     this.spawnLocation.setX(rawSpawnX);
   }
 
   private void updateSpawnLocation() {
-    this.world.getPersistentDataContainer().set(this.spawnLocationKey,
-            PersistentDataType.DOUBLE,
-            this.spawnLocation.getX());
+    this.world
+        .getPersistentDataContainer()
+        .set(this.spawnLocationKey, PersistentDataType.DOUBLE, this.spawnLocation.getX());
 
     world.getWorldBorder().setCenter(spawnLocation);
   }
@@ -131,16 +134,16 @@ public class WorldManager {
     int loadDelayTicks = 0;
     final int loadDelayIncrease = 5;
     for (int x = (int) (spawnLocation.getX() - (loadRadius * 16));
-         x < spawnLocation.getX() + (loadRadius * 16);
-         x += 16) {
+        x < spawnLocation.getX() + (loadRadius * 16);
+        x += 16) {
       for (int z = (int) (spawnLocation.getZ() - (loadRadius * 16));
-           z < spawnLocation.getZ() + (loadRadius * 16);
-           z += 16) {
+          z < spawnLocation.getZ() + (loadRadius * 16);
+          z += 16) {
         final Location location = new Location(world, x, spawnLocation.getY(), z);
         final int currentLoadDelayTicks = loadDelayTicks;
         Bukkit.getScheduler()
-                .runTaskLater(
-                        plugin, () -> world.getChunkAt(location).load(true), currentLoadDelayTicks);
+            .runTaskLater(
+                plugin, () -> world.getChunkAt(location).load(true), currentLoadDelayTicks);
         loadDelayTicks += loadDelayIncrease;
       }
     }
