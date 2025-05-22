@@ -1,5 +1,7 @@
 # EnderGames
 
+> Teleporting themed Kit SurivialGames on a random generated map for post 1.8 PvP.
+
 A Paper plugin that revives GommeHD’s discontinued EnderGames mode - reimagined and optimized for the newer Minecraft
 versions.
 
