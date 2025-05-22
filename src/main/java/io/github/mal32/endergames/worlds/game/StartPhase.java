@@ -33,7 +33,7 @@ public class StartPhase extends AbstractPhase {
   public void distributePlayers() {
     int playerindex = 0;
     final int totalPlayers = Bukkit.getServer().getOnlinePlayers().size();
-    for (Player player : Bukkit.getServer().getOnlinePlayers()) { // TODO: playing players
+    for (Player player : GameManager.getPlayersInGameWorld()) { // TODO: playing players
       player.setGameMode(GameMode.ADVENTURE);
       player.getInventory().clear();
 

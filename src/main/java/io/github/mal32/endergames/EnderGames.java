@@ -40,6 +40,10 @@ public class EnderGames extends JavaPlugin implements Listener {
     Bukkit.getPluginManager().registerEvents(this, this);
   }
 
+  public GameManager getGameWorld() {
+    return gameWorld;
+  }
+
   public static boolean playerIsInLobbyWorld(Player player) {
     var world = player.getPersistentDataContainer().get(worldKey, PersistentDataType.STRING);
     return Objects.equals(world, "lobby");
