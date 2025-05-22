@@ -1,5 +1,7 @@
 # EnderGames
 
+![Lines of Code Badge](https://tokei.rs/b1/github/2mal3/EnderGames?category=code) [![CodeQL](https://github.com/2mal3/EnderGames/actions/workflows/codeql.yaml/badge.svg)](https://github.com/2mal3/EnderGames/actions/workflows/codeql.yaml)
+
 > Teleporting themed Kit SurivialGames on a random generated map for post 1.8 PvP.
 
 A Paper plugin that revives GommeHD’s discontinued EnderGames mode - reimagined and optimized for the newer Minecraft
