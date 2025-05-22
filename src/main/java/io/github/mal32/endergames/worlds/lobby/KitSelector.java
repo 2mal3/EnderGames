@@ -8,7 +8,6 @@ import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -27,39 +26,20 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
-class KitSelector implements Listener {
-  private final EnderGames plugin;
-  private final List<AbstractKit> availablekits;
+class KitSelector extends MenuItem implements Listener {
+  private final List<AbstractKit> availableKits;
 
   public KitSelector(EnderGames plugin) {
-    this.plugin = plugin;
-    this.availablekits = AbstractKit.getKits(plugin);
+    super(plugin, Material.CHEST, "§6Select Kit", (byte) 0);
+    this.availableKits = AbstractKit.getKits(plugin);
+
     Bukkit.getPluginManager().registerEvents(this, plugin);
   }
 
-  public void giveKitSelector(Player player) {
-    ItemStack chestItem = new ItemStack(Material.CHEST); // Chest item
-    ItemMeta meta = chestItem.getItemMeta();
-    if (meta != null) {
-      meta.displayName(Component.text("§6Select Kit"));
-      chestItem.setItemMeta(meta);
-    }
-    player.getInventory().addItem(chestItem);
-  }
-
-  @EventHandler
-  public void onPlayerInteract(PlayerInteractEvent event) {
-    if (event.getItem() != null && event.getItem().getType() == Material.CHEST) {
-      ItemMeta meta = event.getItem().getItemMeta();
-      if (meta == null || meta.displayName() == null) {
-        return;
-      }
-      String displayName = PlainTextComponentSerializer.plainText().serialize(meta.displayName());
-      if (displayName.equals("§6Select Kit")) {
-        Player player = event.getPlayer();
-        openKitMenu(player);
-      }
-    }
+  @Override
+  public void playerInteract(PlayerInteractEvent event) {
+    Player player = event.getPlayer();
+    openKitMenu(player);
   }
 
   @EventHandler
@@ -88,7 +68,7 @@ class KitSelector implements Listener {
 
     // Optional: check if the kit is valid (from your list)
     AbstractKit matchedKit =
-        availablekits.stream()
+        availableKits.stream()
             .filter(kit -> kit.getName().equalsIgnoreCase(kitName))
             .findFirst()
             .orElse(null);
@@ -134,7 +114,7 @@ class KitSelector implements Listener {
 
   public void openKitMenu(Player player) {
     player.playSound(player, Sound.BLOCK_CHEST_OPEN, 1, 1);
-    KitInventory kitinv = new KitInventory(plugin, availablekits, player);
+    KitInventory kitinv = new KitInventory(plugin, availableKits, player);
     player.openInventory(kitinv.getInventory());
   }
 
