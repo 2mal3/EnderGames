@@ -23,6 +23,7 @@ public class EndPhase extends AbstractPhase {
 
       player.getInventory().clear();
       player.setGameMode(GameMode.SPECTATOR);
+      player.setExp(0);
 
       for (PotionEffect effect : player.getActivePotionEffects()) {
         player.removePotionEffect(effect.getType());
