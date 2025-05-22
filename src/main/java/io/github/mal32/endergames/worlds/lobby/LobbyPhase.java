@@ -17,8 +17,7 @@ import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
 
 public class LobbyPhase extends AbstractWorld implements Listener {
-  private final KitSelector kitSelector;
-  private final OperatorItem operatorItem;
+  private final MenuManager menuManager;
   private final World lobbyWorld = Objects.requireNonNull(Bukkit.getWorld("world_enga_lobby"));
   private final Location spawnLocation = new Location(lobbyWorld, 0, 64, 0);
 
@@ -29,8 +28,7 @@ public class LobbyPhase extends AbstractWorld implements Listener {
 
     Bukkit.getPluginManager().registerEvents(this, plugin);
 
-    this.kitSelector = new KitSelector(this.plugin);
-    this.operatorItem = new OperatorItem(this.plugin);
+    this.menuManager = new MenuManager(this.plugin);
 
     lobbyWorld.setSpawnLocation(spawnLocation);
     lobbyWorld.setGameRule(GameRule.SPAWN_RADIUS, 6);
@@ -55,9 +53,9 @@ public class LobbyPhase extends AbstractWorld implements Listener {
   @Override
   public void initPlayer(Player player) {
     player.getInventory().clear();
-    kitSelector.giveKitSelector(player);
 
-    if (player.isOp()) this.operatorItem.giveStartItem(player);
+    this.menuManager.getItem(Material.CHEST).giveItem(player);
+    if (player.isOp()) this.menuManager.getItem(Material.NETHER_STAR).giveItem(player);
 
     player.setGameMode(GameMode.ADVENTURE);
 
