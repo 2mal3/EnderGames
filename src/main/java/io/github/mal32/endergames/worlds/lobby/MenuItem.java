@@ -26,6 +26,7 @@ abstract class MenuItem {
   public static HashMap<Material, MenuItem> getItems(EnderGames plugin) {
     HashMap<Material, MenuItem> menuItems = new HashMap<>();
     menuItems.put(Material.NETHER_STAR, new OperatorItem(plugin));
+    menuItems.put(Material.CHEST, new KitSelector(plugin));
     return menuItems;
   }
 
