@@ -45,28 +45,24 @@ class KitSelector extends MenuItem implements Listener {
   @EventHandler
   public void onInventoryClick(InventoryClickEvent event) {
     Inventory inventory = event.getClickedInventory();
-    if (inventory == null || !(inventory.getHolder(false) instanceof KitInventory kitInv)) {
-      return;
-    }
+    if (inventory == null || !(inventory.getHolder(false) instanceof KitInventory kitInv)) return;
     event.setCancelled(true);
 
-    ItemStack clicked = event.getCurrentItem();
-    if (clicked == null || !clicked.hasItemMeta() || !clicked.getItemMeta().hasDisplayName()) {
-      return;
-    }
+    ItemStack clickedItem = event.getCurrentItem();
+    if (clickedItem == null
+        || !clickedItem.hasItemMeta()
+        || !clickedItem.getItemMeta().hasDisplayName()) return;
 
     Player player = (Player) event.getWhoClicked();
-    Component displayNameComponent = clicked.getItemMeta().displayName();
+    Component displayNameComponent = clickedItem.getItemMeta().displayName();
 
-    if (displayNameComponent == null) {
-      return;
-    }
+    if (displayNameComponent == null) return;
 
     // Convert Component to plain string and strip formatting
     String displayName = LegacyComponentSerializer.legacySection().serialize(displayNameComponent);
     String kitName = displayName.length() > 2 ? displayName.substring(2).toLowerCase() : "";
 
-    // Optional: check if the kit is valid (from your list)
+    // Check if the kit is valid (from your list)
     AbstractKit matchedKit =
         availableKits.stream()
             .filter(kit -> kit.getName().equalsIgnoreCase(kitName))
@@ -77,6 +73,7 @@ class KitSelector extends MenuItem implements Listener {
       player.sendMessage("Invalid kit: " + kitName);
       return;
     }
+
     // Feedback + sound
     player.sendMessage(
         Component.text("You selected the ")
@@ -88,23 +85,21 @@ class KitSelector extends MenuItem implements Listener {
     NamespacedKey key = new NamespacedKey(plugin, "kit");
     player.getPersistentDataContainer().set(key, PersistentDataType.STRING, kitName);
 
+    // Update the item enchantements to show which item was selected
     for (int i = 0; i < inventory.getSize(); i++) {
       ItemStack item = inventory.getItem(i);
       if (item == null || !item.hasItemMeta()) continue;
 
       ItemMeta meta = item.getItemMeta();
 
-      // Remove enchantments and glowing effect
       meta.getEnchants().forEach((enchant, level) -> meta.removeEnchant(enchant));
       meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 
       item.setItemMeta(meta);
-      inventory.setItem(i, item);
     }
 
     // Apply enchantment to the selected item
-    ItemStack clickedItem = event.getCurrentItem();
-    if (clickedItem != null && clickedItem.getType() != Material.AIR) {
+    if (clickedItem.getType() != Material.AIR) {
       ItemMeta clickedMeta = clickedItem.getItemMeta();
       clickedMeta.addEnchant(Enchantment.INFINITY, 1, true); // dummy enchantment for glow
       clickedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
