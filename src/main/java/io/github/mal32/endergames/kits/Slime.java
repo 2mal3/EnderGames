@@ -2,11 +2,7 @@ package io.github.mal32.endergames.kits;
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import io.github.mal32.endergames.EnderGames;
-import java.util.Arrays;
 import java.util.Random;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.EntityType;
@@ -19,7 +15,6 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.loot.LootTables;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
@@ -162,41 +157,12 @@ public class Slime extends AbstractKit {
   }
 
   @Override
-  public ItemStack getDescriptionItem() {
-    ItemStack item = new ItemStack(Material.SLIME_BALL, 1);
-    ItemMeta meta = item.getItemMeta();
-    meta.displayName(
-        Component.text("Slime")
-            .color(NamedTextColor.GOLD)
-            .decoration(TextDecoration.ITALIC, false));
-    meta.lore(
-        Arrays.asList(
-            Component.text("Abilities:")
-                .decorate(TextDecoration.UNDERLINED)
-                .color(NamedTextColor.GRAY)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("Occasionally gains slimeballs when jumping,")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("which can be thrown to slow enemies.")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("Spawns small slimes when hit.")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("Permanent Jump Boost II.")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text(" "), // Empty line — no styling needed
-            Component.text("Equipment:")
-                .decorate(TextDecoration.UNDERLINED)
-                .color(NamedTextColor.GRAY)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("10 slimeballs, green leather chestplate & boots")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false)));
-    item.setItemMeta(meta);
-
-    return item;
+  public KitDescriptionItem getDescriptionItem() {
+    return new KitDescriptionItem(
+        Material.SLIME_BALL,
+        "Slime",
+        "Occasionally gains slimeballs when jumping, which can be thrown to slow enemies. Spawns"
+            + " small slimes when hit. Permanent Jump Boost II.",
+        "10 slimeballs, green leather chestplate & boots");
   }
 }

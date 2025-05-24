@@ -1,10 +1,6 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
-import java.util.Arrays;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -12,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -107,51 +102,12 @@ public class Dolphin extends AbstractKit {
   }
 
   @Override
-  public ItemStack getDescriptionItem() {
-    ItemStack item = new ItemStack(Material.TROPICAL_FISH, 1);
-    ItemMeta meta = item.getItemMeta();
-
-    meta.displayName(
-        Component.text("Dolphin")
-            .color(NamedTextColor.GOLD)
-            .decoration(TextDecoration.ITALIC, false));
-    meta.lore(
-        Arrays.asList(
-            Component.text("Abilities:")
-                .decorate(TextDecoration.UNDERLINED)
-                .color(NamedTextColor.GRAY)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("Has permanent Conduit Power")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("and Dolphins Grace.")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("Gets Regeneration and Resistance")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("in Water.")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("Has Weakness on Land.")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("Swimming gives Fish.")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text(" "),
-            Component.text("Equipment:")
-                .decorate(TextDecoration.UNDERLINED)
-                .color(NamedTextColor.GRAY)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("Water Bucket")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("Blue Leather Boots")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false)));
-    item.setItemMeta(meta);
-
-    return item;
+  public KitDescriptionItem getDescriptionItem() {
+    return new KitDescriptionItem(
+        Material.TROPICAL_FISH,
+        "Dolphin",
+        "Has permanent Conduit Power and Dolphins Grace. Gets Regeneration and Resistance in Water."
+            + " Has Weakness on Land. Swimming gives Fish.",
+        "Water Bucket, Blue Leather Boots");
   }
 }

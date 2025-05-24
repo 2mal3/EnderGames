@@ -3,7 +3,6 @@ package io.github.mal32.endergames.kits;
 import io.github.mal32.endergames.EnderGames;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.FoodProperties;
-import java.util.Arrays;
 import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -70,39 +69,12 @@ public class Cat extends AbstractKit {
   }
 
   @Override
-  public ItemStack getDescriptionItem() {
-    ItemStack item = new ItemStack(Material.COD, 1);
-    ItemMeta meta = item.getItemMeta();
-    meta.displayName(
-        Component.text("Cat").color(NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
-    meta.lore(
-        Arrays.asList(
-            Component.text("Abilities:")
-                .decorate(TextDecoration.UNDERLINED)
-                .color(NamedTextColor.GRAY)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("Gains Speed III for 30 seconds when")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("eating raw fish.")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("It deals +1 damage with bare hands")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("and takes 50% less fall damage.")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text(" "),
-            Component.text("Equipment:")
-                .decorate(TextDecoration.UNDERLINED)
-                .color(NamedTextColor.GRAY)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("20 raw fish.")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false)));
-    item.setItemMeta(meta);
-
-    return item;
+  public KitDescriptionItem getDescriptionItem() {
+    return new KitDescriptionItem(
+        Material.COD,
+        "Cat",
+        "Gains Speed III for 30 seconds when eating raw fish. It deals +1 damage with bare hands"
+            + " and takes 50% less fall damage.",
+        "20 raw fish");
   }
 }

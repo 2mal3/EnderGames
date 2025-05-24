@@ -4,9 +4,13 @@ import static org.apache.commons.lang3.StringUtils.capitalize;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
+import io.github.mal32.endergames.kits.KitDescriptionItem;
+import java.util.ArrayList;
 import java.util.List;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -124,7 +128,7 @@ class KitSelector extends MenuItem implements Listener {
       this.availablekits = availablekits;
       this.player = player;
       this.inventory = plugin.getServer().createInventory(this, 27, Component.text("§0Select Kit"));
-      fill_chest_with_kits();
+      fillChestWithKits();
     }
 
     @Override
@@ -132,24 +136,87 @@ class KitSelector extends MenuItem implements Listener {
       return this.inventory;
     }
 
-    public void fill_chest_with_kits() {
-      for (int i = 0; i < this.availablekits.size(); i++) {
-        ItemStack descItem = availablekits.get(i).getDescriptionItem();
-        Component displayNameComponent = descItem.getItemMeta().displayName();
-        // Convert Component to plain string and strip formatting
-        String displayName =
-            LegacyComponentSerializer.legacySection().serialize(displayNameComponent);
-        String kitName = displayName.length() > 2 ? displayName.substring(2).toLowerCase() : "";
+    public void fillChestWithKits() {
+      for (AbstractKit kit : availablekits) {
+        var kitDescription = kit.getDescriptionItem();
+
+        var kitItem = new ItemStack(kitDescription.item, 1);
+        var meta = kitItem.getItemMeta();
+
+        meta.displayName(
+            Component.text(kitDescription.name)
+                .color(NamedTextColor.GOLD)
+                .decoration(TextDecoration.ITALIC, false));
+        meta.lore(getKitLore(kitDescription));
+
+        kitItem.setItemMeta(meta);
+
         NamespacedKey key = new NamespacedKey(plugin, "kit");
-        String selected = player.getPersistentDataContainer().get(key, PersistentDataType.STRING);
-        if (kitName.equals(selected)) {
-          ItemMeta clickedMeta = descItem.getItemMeta();
+        String selectedKit =
+            player.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+        if (kit.getName().equals(selectedKit)) {
+          ItemMeta clickedMeta = kitItem.getItemMeta();
           clickedMeta.addEnchant(Enchantment.INFINITY, 1, true); // dummy enchantment for glow
           clickedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-          descItem.setItemMeta(clickedMeta);
+          kitItem.setItemMeta(clickedMeta);
         }
-        inventory.setItem(i, descItem);
+
+        inventory.addItem(kitItem);
       }
     }
+
+    private List<TextComponent> getKitLore(KitDescriptionItem kitDescription) {
+      var lore = new ArrayList<TextComponent>();
+
+      var abilitiesHeaderComponent =
+          Component.text("Abilities:")
+              .color(NamedTextColor.GRAY)
+              .decoration(TextDecoration.ITALIC, false);
+      lore.add(abilitiesHeaderComponent);
+      var abilitiesText = splitIntoLines(kitDescription.abilities);
+      lore.addAll(convertTextListToComponents(abilitiesText));
+
+      lore.add(Component.text(""));
+
+      var equipmentHeaderComponent =
+          Component.text("Equipment:")
+              .color(NamedTextColor.GRAY)
+              .decoration(TextDecoration.ITALIC, false);
+      lore.add(equipmentHeaderComponent);
+      var equipmentText = splitIntoLines(kitDescription.equipment);
+      lore.addAll(convertTextListToComponents(equipmentText));
+
+      return lore;
+    }
+  }
+
+  private static List<TextComponent> convertTextListToComponents(ArrayList<String> lines) {
+    return lines.stream()
+        .map(
+            line ->
+                Component.text(line)
+                    .color(NamedTextColor.WHITE)
+                    .decoration(TextDecoration.ITALIC, false))
+        .toList();
+  }
+
+  private static ArrayList<String> splitIntoLines(String text) {
+    var lines = new ArrayList<String>();
+
+    final int maxLineLength = 20;
+    int charactersInLine = 0;
+    int lineStartIndex = 0;
+    for (int i = 0; i < text.length(); i++) {
+      charactersInLine++;
+      if (charactersInLine > maxLineLength && text.charAt(i) == ' ') {
+        var line = text.substring(lineStartIndex, i);
+        lines.add(line);
+        charactersInLine = 0;
+        lineStartIndex = i + 1;
+      }
+    }
+    lines.add(text.substring(lineStartIndex, text.length()));
+
+    return lines;
   }
 }

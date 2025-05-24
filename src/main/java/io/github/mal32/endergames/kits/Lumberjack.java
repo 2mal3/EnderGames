@@ -1,10 +1,6 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
-import java.util.Arrays;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,7 +12,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public class Lumberjack extends AbstractKit {
   public Lumberjack(EnderGames plugin) {
@@ -72,45 +67,12 @@ public class Lumberjack extends AbstractKit {
   }
 
   @Override
-  public ItemStack getDescriptionItem() {
-    ItemStack item = new ItemStack(Material.WOODEN_AXE, 1);
-    ItemMeta meta = item.getItemMeta();
-    meta.displayName(
-        Component.text("Lumberjack")
-            .color(NamedTextColor.GOLD)
-            .decoration(TextDecoration.ITALIC, false));
-    meta.lore(
-        Arrays.asList(
-            Component.text("Abilities:")
-                .decorate(TextDecoration.UNDERLINED)
-                .color(NamedTextColor.GRAY)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("The lumberjack can fell entire trees")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("with a single axe swing.")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("Every axe he crafts automatically")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("gains Sharpness I.")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text(" "),
-            Component.text("Equipment:")
-                .decorate(TextDecoration.UNDERLINED)
-                .color(NamedTextColor.GRAY)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("Wooden axe, red leather chestplate,")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("blue leather pants, black boots.")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false)));
-
-    item.setItemMeta(meta);
-
-    return item;
+  public KitDescriptionItem getDescriptionItem() {
+    return new KitDescriptionItem(
+        Material.WOODEN_AXE,
+        "Lumberjack",
+        "The lumberjack can fell entire trees with a single axe swing. Every axe he crafts"
+            + " automatically gains Sharpness I.",
+        "Wooden axe, red leather chestplate, blue leather pants, black boots.");
   }
 }

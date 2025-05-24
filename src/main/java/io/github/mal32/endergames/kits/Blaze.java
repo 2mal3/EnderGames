@@ -2,7 +2,6 @@ package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
@@ -125,44 +124,12 @@ public class Blaze extends AbstractKit {
   }
 
   @Override
-  public ItemStack getDescriptionItem() {
-    ItemStack item = new ItemStack(Material.BLAZE_POWDER, 1);
-    ItemMeta meta = item.getItemMeta();
-    meta.displayName(
-        Component.text("Blaze")
-            .color(NamedTextColor.GOLD)
-            .decoration(TextDecoration.ITALIC, false));
-    meta.lore(
-        Arrays.asList(
-            Component.text("Abilities:")
-                .decorate(TextDecoration.UNDERLINED)
-                .color(NamedTextColor.GRAY)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("Can leave a fire trail for a short time.")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("It is immune to fire damage,")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("but gains Weakness I in water.")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("Sword or Bow hits have a")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("20% chance to ignite enemies")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text(" "), // Empty line — no styling needed
-            Component.text("Equipment:")
-                .decorate(TextDecoration.UNDERLINED)
-                .color(NamedTextColor.GRAY)
-                .decoration(TextDecoration.ITALIC, false),
-            Component.text("Golden Sword and Burn Power")
-                .color(NamedTextColor.WHITE)
-                .decoration(TextDecoration.ITALIC, false)));
-    item.setItemMeta(meta);
-
-    return item;
+  public KitDescriptionItem getDescriptionItem() {
+    return new KitDescriptionItem(
+        Material.BLAZE_POWDER,
+        "Blaze",
+        "Can leave a fire trail for a short time. It is immune to fire damage, but gains Weakness I"
+            + " in water. Sword or Bow hits have a 20% chance to ignite enemies",
+        "Golden Sword and Burn Power");
   }
 }

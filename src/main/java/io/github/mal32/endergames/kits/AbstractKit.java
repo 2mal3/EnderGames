@@ -68,5 +68,5 @@ public abstract class AbstractKit extends AbstractModule {
     return this.getClass().getSimpleName().toLowerCase();
   }
 
-  public abstract ItemStack getDescriptionItem();
+  public abstract KitDescriptionItem getDescriptionItem();
 }
