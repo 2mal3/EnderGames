@@ -63,7 +63,7 @@ public class LobbyPhase extends AbstractWorld implements Listener {
         new PotionEffect(
             PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, true, false));
 
-    player.teleport(spawnLocation.clone().add(0, 5, 0));
+    player.teleport(spawnLocation.clone().add(0, 10, 0));
   }
 
   @EventHandler
