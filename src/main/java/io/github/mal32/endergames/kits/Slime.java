@@ -154,11 +154,11 @@ public class Slime extends AbstractKit {
   public void onPlayerJump(PlayerJumpEvent event) {
     if (!playerCanUseThisKit(event.getPlayer())) return;
 
-    Random random = new Random();
+    double SLIMEBALL_PROBABILITY = 0.10;
+    if (Math.random() > SLIMEBALL_PROBABILITY) return;
+
     ItemStack slimeball = new ItemStack(Material.SLIME_BALL, 1);
-    if (random.nextInt(5) == 0) {
-      event.getPlayer().getInventory().addItem(slimeball);
-    }
+    event.getPlayer().getInventory().addItem(slimeball);
   }
 
   @Override
