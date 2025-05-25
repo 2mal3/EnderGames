@@ -92,7 +92,12 @@ public class Bomber extends AbstractKit {
     if (isMineItem == null || !isMineItem) return;
 
     var blockLocation = event.getBlockPlaced().getLocation();
-    var key = blockLocation.getX() + "," + blockLocation.getY() + "," + blockLocation.getZ();
+    var key =
+        blockLocation.getBlockX()
+            + ","
+            + blockLocation.getBlockY()
+            + ","
+            + blockLocation.getBlockZ();
     mineLocations.add(key);
 
     // Effects
@@ -108,7 +113,12 @@ public class Bomber extends AbstractKit {
     if (!GameManager.playerIsInGame(event.getPlayer())) return;
 
     var blockLocation = event.getTo().getBlock().getLocation();
-    var key = blockLocation.getX() + "," + blockLocation.getY() + "," + blockLocation.getZ();
+    var key =
+        blockLocation.getBlockX()
+            + ","
+            + blockLocation.getBlockY()
+            + ","
+            + blockLocation.getBlockZ();
     if (!mineLocations.contains(key)) return;
 
     event.getTo().getBlock().setType(Material.AIR);
