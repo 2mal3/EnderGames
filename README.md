@@ -54,7 +54,7 @@ The game can only be started by server operators with the command `/endergames s
     - takes no explosion damage
     - killed entities explode
     - TNT placed explodes instantly
-    - equipment: 5 TNT
+    - equipment: 5 TNT, 10 Mines
 
 </details>
 
