@@ -60,7 +60,7 @@ public class Bomber extends AbstractKit {
     if (killer == null || !playerCanUseThisKit(killer)) return;
 
     Location location = event.getEntity().getLocation();
-    location.getWorld().createExplosion(location, 4f, false, true);
+    location.createExplosion(killer, 4f, false, true);
   }
 
   @EventHandler(priority = EventPriority.LOW)
@@ -75,7 +75,7 @@ public class Bomber extends AbstractKit {
 
     Location location = event.getBlock().getLocation();
     event.getBlock().setType(Material.AIR);
-    location.getWorld().createExplosion(location, 4f, false, true);
+    location.createExplosion(player, 4f, false, true);
   }
 
   @EventHandler
