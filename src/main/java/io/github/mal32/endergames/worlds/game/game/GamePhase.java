@@ -20,6 +20,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -261,7 +262,7 @@ public class GamePhase extends AbstractPhase {
     manager.nextPhase();
   }
 
-  @EventHandler
+  @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
   private void onPlayerPlaceTNT(BlockPlaceEvent event) {
     if (!GameManager.playerIsInGame(event.getPlayer())) return;
     if (event.getBlock().getType() != Material.TNT) return;
