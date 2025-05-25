@@ -49,6 +49,16 @@ The game can only be started by server operators with the command `/endergames s
 </details>
 
 - <details>
+  <summary>Bomber</summary>
+
+    - takes no explosion damage
+    - killed entities explode
+    - TNT placed explodes instantly
+    - equipment: 5 TNT, 10 Mines
+
+</details>
+
+- <details>
   <summary>Cactus</summary>
 
     - dealths thorns damage to attackers
