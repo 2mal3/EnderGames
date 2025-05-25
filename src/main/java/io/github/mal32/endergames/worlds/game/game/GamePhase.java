@@ -64,7 +64,14 @@ public class GamePhase extends AbstractPhase {
       }
     }
 
-    this.manager.getWorldManager().startGame();
+    var worldBoarder = spawnLocation.getWorld().getWorldBorder();
+
+    worldBoarder.setSize(50, 20 * 60);
+    worldBoarder.setWarningDistance(32);
+    worldBoarder.setWarningTime(60);
+    worldBoarder.setDamageBuffer(1);
+
+    plugin.getServer().getScheduler().runTaskLater(plugin, this::removeSpawnPlatform, 30 * 20);
 
     initProtectionTime();
 
@@ -73,6 +80,16 @@ public class GamePhase extends AbstractPhase {
     }
     for (AbstractKit kit : AbstractKit.getKits(plugin)) {
       kit.enable();
+    }
+  }
+
+  private void removeSpawnPlatform() {
+    for (int x = spawnLocation.blockX() - 20; x <= spawnLocation.blockX() + 20; x++) {
+      for (int z = spawnLocation.blockZ() - 20; z <= spawnLocation.blockZ() + 20; z++) {
+        for (int y = spawnLocation.blockY() - 5; y <= spawnLocation.blockY() + 5; y++) {
+          spawnLocation.getWorld().getBlockAt(x, y, z).setType(Material.AIR);
+        }
+      }
     }
   }
 

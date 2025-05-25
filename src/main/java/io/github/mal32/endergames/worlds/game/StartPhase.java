@@ -17,8 +17,7 @@ import org.bukkit.util.BlockVector;
 public class StartPhase extends AbstractPhase {
   public StartPhase(EnderGames plugin, GameManager manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
-
-    this.manager.getWorldManager().prepareWorldForGame();
+    World world = spawnLocation.getWorld();
 
     for (Player player : Bukkit.getOnlinePlayers()) {
       player
@@ -28,6 +27,12 @@ public class StartPhase extends AbstractPhase {
 
     Bukkit.getScheduler().runTaskLater(plugin, this::distributePlayers, 20);
     Bukkit.getScheduler().runTaskLater(plugin, this::runCountdown, 25);
+
+    world.setTime(0);
+    world.setStorm(false);
+    world.setThundering(false);
+    world.setWeatherDuration(20 * 60 * 10);
+    world.getWorldBorder().setSize(600);
   }
 
   public void distributePlayers() {
