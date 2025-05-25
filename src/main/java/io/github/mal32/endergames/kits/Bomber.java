@@ -49,7 +49,7 @@ public class Bomber extends AbstractKit {
 
     if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION
         || event.getCause() == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION) {
-      event.setCancelled(true);
+      event.setDamage(0);
     }
   }
 
