@@ -78,7 +78,7 @@ public class Cactus extends AbstractKit {
     if (!playerCanUseThisKit(player)) return;
 
     if (event.isSneaking()) {
-      boolean currentBlockEmpty = player.getLocation().getBlock().isEmpty();
+      boolean currentBlockEmpty = player.getLocation().clone().add(0, 1.1, 0).getBlock().isEmpty();
       boolean standingBlockSolid = player.getLocation().clone().add(0, -1, 0).getBlock().isSolid();
 
       if (currentBlockEmpty && standingBlockSolid) {
@@ -163,9 +163,8 @@ public class Cactus extends AbstractKit {
   private void enterCactus(Player player) {
     UUID uuid = player.getUniqueId();
 
-    // cant use hideplayer he because that makes the cactus invincible
-    player.addPotionEffect(
-        new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, false, false));
+    //cant use hideplayer he because that makes the cactus invincible
+    player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY,PotionEffect.INFINITE_DURATION, 0, false, false,false));
 
     player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 1, 1);
 
@@ -256,6 +255,25 @@ public class Cactus extends AbstractKit {
 
     leaveCactus(player);
   }
+
+  @EventHandler
+  public void onPlayerTeleport(PlayerTeleportEvent event) {
+    Player player = event.getPlayer();
+    if (!playerCanUseThisKit(player)) return;
+    if (cactusPlayerLocked.getOrDefault(player.getUniqueId(), false) == false){
+      return;
+    }
+    else {
+      leaveCactus(player);
+      Bukkit.getScheduler().runTask(plugin, () -> {
+        boolean currentBlockEmpty = player.getLocation().clone().add(0, 1.1, 0).getBlock().isEmpty();
+        boolean standingBlockSolid = player.getLocation().clone().add(0, -1, 0).getBlock().isSolid();
+        if (currentBlockEmpty && standingBlockSolid) {
+          enterCactus(player);
+        }
+      });
+    }
+    }
 
   @EventHandler
   public void onPlayerMove(PlayerMoveEvent event) {

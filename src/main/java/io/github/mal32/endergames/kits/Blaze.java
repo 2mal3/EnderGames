@@ -45,7 +45,7 @@ public class Blaze extends AbstractKit {
 
     player.addPotionEffect(
         new PotionEffect(
-            PotionEffectType.FIRE_RESISTANCE, PotionEffect.INFINITE_DURATION, 0, true, false));
+            PotionEffectType.FIRE_RESISTANCE, PotionEffect.INFINITE_DURATION, 0, true, false,false));
   }
 
   @EventHandler
