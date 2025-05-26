@@ -38,6 +38,8 @@
     </dependencies>
 
     <build>
+        <directory>D:\Programme\Minecraft-Paper-21.4\plugins</directory>
+        <finalName>EnderGames-0.1</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
