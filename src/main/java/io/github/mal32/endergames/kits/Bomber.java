@@ -9,7 +9,9 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -19,6 +21,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class Bomber extends AbstractKit {
   private final NamespacedKey isMineItemKey = new NamespacedKey(plugin, "isMineItem");
@@ -74,8 +78,10 @@ public class Bomber extends AbstractKit {
     player.getInventory().removeItem(new ItemStack(Material.TNT, 1));
 
     Location location = event.getBlock().getLocation();
-    event.getBlock().setType(Material.AIR);
-    location.createExplosion(player, 4f, false, true);
+    TNTPrimed tnt =
+        (TNTPrimed)
+            location.getWorld().spawnEntity(location.clone().add(0.5, 0, 0.5), EntityType.TNT);
+    tnt.setFuseTicks(10);
   }
 
   @EventHandler
@@ -123,6 +129,8 @@ public class Bomber extends AbstractKit {
 
     event.getTo().getBlock().setType(Material.AIR);
 
+    event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 10, 2));
+
     mineLocations.remove(key);
     blockLocation.createExplosion(4f, true, true);
   }
@@ -132,7 +140,7 @@ public class Bomber extends AbstractKit {
     return new KitDescriptionItem(
         Material.TNT,
         "Bomber",
-        "Takes no explosion damage. Killed entities explode. TNT placed explodes instantly.",
+        "Takes no explosion damage. Killed entities explode. TNT placed explodes faster.",
         "5 TNT, 10 Mines");
   }
 }
