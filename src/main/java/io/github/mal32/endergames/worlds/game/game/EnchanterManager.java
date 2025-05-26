@@ -16,50 +16,18 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.EnchantingInventory;
 import org.bukkit.inventory.ItemStack;
 
-public class EnchanterManager extends AbstractTeleportingBlockManager {
-  private final ArrayList<Location> enchanterLocations = new ArrayList<>();
-
+public class EnchanterManager extends AbstractTeleportingBlockManager<Enchanter> {
   public EnchanterManager(EnderGames plugin, Location spawnLocation) {
     super(plugin);
 
     for (int i = 0; i < 4; i++) {
-      enchanterLocations.add(spawnLocation.clone().add(0, 0, 0));
+      blocks.add(new Enchanter(spawnLocation));
     }
   }
 
   @Override
   public int getDelay() {
     return 20 * 10;
-  }
-
-  public void task() {
-    Location randomEnchanter =
-        enchanterLocations.get(new Random().nextInt(enchanterLocations.size()));
-    destroy(randomEnchanter);
-    enchanterLocations.remove(randomEnchanter);
-
-    Location newRandomEnchanter = getRandomLocationNearPlayer();
-    place(newRandomEnchanter);
-    enchanterLocations.add(newRandomEnchanter);
-  }
-
-  private void destroy(Location location) {
-    location.getWorld().getBlockAt(location).setType(Material.AIR);
-    playTeleportEffects(location);
-  }
-
-  private void place(Location location) {
-    World world = location.getWorld();
-
-    world.getBlockAt(location).setType(Material.ENCHANTING_TABLE);
-    playTeleportEffects(location);
-
-    Location blockSpawnLocation = location.getBlock().getLocation().clone();
-    blockSpawnLocation.setY(256);
-    FallingBlock fallingBlock =
-        (FallingBlock) world.spawnEntity(blockSpawnLocation, EntityType.FALLING_BLOCK);
-    fallingBlock.setCancelDrop(true);
-    fallingBlock.setBlockData(Bukkit.createBlockData(Material.OBSIDIAN));
   }
 
   @EventHandler
@@ -85,5 +53,21 @@ public class EnchanterManager extends AbstractTeleportingBlockManager {
     if (item == null || item.getType() != Material.LAPIS_LAZULI) return;
 
     item.setAmount(0);
+  }
+}
+
+class Enchanter extends AbstractTeleportingBlock {
+  public Enchanter(Location location) {
+    super(location);
+  }
+
+  @Override
+  public Material getBlockMaterial() {
+    return Material.ENCHANTING_TABLE;
+  }
+
+  @Override
+  public Material getFallingBlockMaterial() {
+    return Material.OBSIDIAN;
   }
 }

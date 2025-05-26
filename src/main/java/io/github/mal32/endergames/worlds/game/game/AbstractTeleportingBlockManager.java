@@ -2,6 +2,8 @@ package io.github.mal32.endergames.worlds.game.game;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameManager;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -10,17 +12,23 @@ import org.bukkit.entity.Player;
  * This class is an abstract representation of a teleporting block manager.
  * It handles the teleportation and switching of moving blocks like ender chests in specific time intervals.
  */
-public abstract class AbstractTeleportingBlockManager extends AbstractTask {
+public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleportingBlock>
+    extends AbstractTask {
+  protected final List<B> blocks = new ArrayList<>();
+
   public AbstractTeleportingBlockManager(EnderGames plugin) {
     super(plugin);
   }
 
-  protected static void playTeleportEffects(Location location) {
-    location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.5f);
-    location.getWorld().spawnParticle(Particle.PORTAL, location, 50, 0, 0, 0);
+  public void task() {
+    if (blocks.isEmpty()) return;
+
+    B block = blocks.get(new Random().nextInt(blocks.size()));
+    Location location = getRandomLocation();
+    block.teleport(location);
   }
 
-  protected Location getRandomLocationNearPlayer() {
+  protected Location getRandomLocation() {
     Player[] players = GameManager.getPlayersInGame();
     if (players.length == 0) {
       return null;
