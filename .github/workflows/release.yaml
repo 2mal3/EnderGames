@@ -1,0 +1,43 @@
+on:
+  push:
+    tags:
+      - v*.*.*
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Release
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          mondrinth-id: CHztyFRI
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          modrinth-unfeature-mode: intersection
+
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+          name: EnderGames ${{ github.ref_name }}
+          files: |
+            target/endergames*.jar
+          changelog-file: CHANGELOG.md
+          loaders: paper
+          version-type: release
+          game-versions: |
+            1.20.4
