@@ -3,7 +3,6 @@ package io.github.mal32.endergames.worlds.game;
 import io.github.mal32.endergames.EnderGames;
 import java.util.Objects;
 import java.util.Random;
-
 import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.block.structure.Mirror;
@@ -61,31 +60,6 @@ public class WorldManager {
     this.placeSpawnPlatform();
 
     Bukkit.getScheduler().runTaskLater(this.plugin, this::loadSpawnChunks, 20 * 5);
-  }
-
-  public void prepareWorldForGame() {
-    this.world.setTime(0);
-    this.world.setStorm(false);
-    this.world.setThundering(false);
-    this.world.setWeatherDuration(20 * 60 * 10);
-
-    this.world.getWorldBorder().setSize(600);
-  }
-
-  public void startGame() {
-    world.getWorldBorder().setSize(50, 20 * 60);
-
-    plugin.getServer().getScheduler().runTaskLater(plugin, this::removeSpawnPlatform, 30 * 20);
-  }
-
-  private void removeSpawnPlatform() {
-    for (int x = spawnLocation.blockX() - 20; x <= spawnLocation.blockX() + 20; x++) {
-      for (int z = spawnLocation.blockZ() - 20; z <= spawnLocation.blockZ() + 20; z++) {
-        for (int y = spawnLocation.blockY() - 5; y <= spawnLocation.blockY() + 5; y++) {
-          world.getBlockAt(x, y, z).setType(Material.AIR);
-        }
-      }
-    }
   }
 
   private void loadSavedSpawnLocation() {
