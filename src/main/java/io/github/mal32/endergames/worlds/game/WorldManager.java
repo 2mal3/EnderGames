@@ -58,8 +58,6 @@ public class WorldManager {
     this.findNewSpawnLocation();
     this.updateSpawnLocation();
     this.placeSpawnPlatform();
-
-    Bukkit.getScheduler().runTaskLater(this.plugin, this::loadSpawnChunks, 20 * 5);
   }
 
   private void loadSavedSpawnLocation() {
@@ -101,25 +99,5 @@ public class WorldManager {
     double posZ = this.spawnLocation.getZ() - (structureSize.getBlockZ() / 2.0);
     Location location = new Location(this.world, posX, this.spawnLocation.getY(), posZ);
     structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
-  }
-
-  private void loadSpawnChunks() {
-    final int loadRadius = 4;
-    int loadDelayTicks = 0;
-    final int loadDelayIncrease = 5;
-    for (int x = (int) (spawnLocation.getX() - (loadRadius * 16));
-        x < spawnLocation.getX() + (loadRadius * 16);
-        x += 16) {
-      for (int z = (int) (spawnLocation.getZ() - (loadRadius * 16));
-          z < spawnLocation.getZ() + (loadRadius * 16);
-          z += 16) {
-        final Location location = new Location(world, x, spawnLocation.getY(), z);
-        final int currentLoadDelayTicks = loadDelayTicks;
-        Bukkit.getScheduler()
-            .runTaskLater(
-                plugin, () -> world.getChunkAt(location).load(true), currentLoadDelayTicks);
-        loadDelayTicks += loadDelayIncrease;
-      }
-    }
   }
 }
