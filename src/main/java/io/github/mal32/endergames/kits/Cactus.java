@@ -10,17 +10,16 @@ import org.bukkit.entity.Damageable;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
-
 
 public class Cactus extends AbstractKit {
   private final HashMap<UUID, ArrayList<BlockDisplay>> cactusPlayerMapping = new HashMap<>();
@@ -49,7 +48,7 @@ public class Cactus extends AbstractKit {
     // Cancel attack if attacker is a disguised cactus
     if (event.getDamager() instanceof Player attacker) {
       if (playerCanUseThisKit(attacker)
-              && cactusPlayerLocked.getOrDefault(attacker.getUniqueId(), false)) {
+          && cactusPlayerLocked.getOrDefault(attacker.getUniqueId(), false)) {
         event.setCancelled(true);
         return;
       }
@@ -90,12 +89,12 @@ public class Cactus extends AbstractKit {
     }
   }
 
-  //Cancel everything when inside the cactus -------------------
+  // Cancel everything when inside the cactus -------------------
   @EventHandler(ignoreCancelled = true)
   public void onPlayerInteract(PlayerInteractEvent event) {
     Player player = event.getPlayer();
     if (playerCanUseThisKit(player)
-            && cactusPlayerLocked.getOrDefault(player.getUniqueId(), false)) {
+        && cactusPlayerLocked.getOrDefault(player.getUniqueId(), false)) {
       event.setCancelled(true);
     }
   }
@@ -104,7 +103,7 @@ public class Cactus extends AbstractKit {
   public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
     Player player = event.getPlayer();
     if (playerCanUseThisKit(player)
-            && cactusPlayerLocked.getOrDefault(player.getUniqueId(), false)) {
+        && cactusPlayerLocked.getOrDefault(player.getUniqueId(), false)) {
       event.setCancelled(true);
     }
   }
@@ -113,7 +112,7 @@ public class Cactus extends AbstractKit {
   public void onBlockBreak(BlockBreakEvent event) {
     Player player = event.getPlayer();
     if (playerCanUseThisKit(player)
-            && cactusPlayerLocked.getOrDefault(player.getUniqueId(), false)) {
+        && cactusPlayerLocked.getOrDefault(player.getUniqueId(), false)) {
       event.setCancelled(true);
     }
   }
@@ -122,7 +121,7 @@ public class Cactus extends AbstractKit {
   public void onBlockPlace(BlockPlaceEvent event) {
     Player player = event.getPlayer();
     if (playerCanUseThisKit(player)
-            && cactusPlayerLocked.getOrDefault(player.getUniqueId(), false)) {
+        && cactusPlayerLocked.getOrDefault(player.getUniqueId(), false)) {
       event.setCancelled(true);
     }
   }
@@ -132,11 +131,13 @@ public class Cactus extends AbstractKit {
     ProjectileSource shooter = event.getEntity().getShooter();
     if (!(shooter instanceof Player player)) return;
 
-    if (playerCanUseThisKit(player) && cactusPlayerLocked.getOrDefault(player.getUniqueId(), false)) {
+    if (playerCanUseThisKit(player)
+        && cactusPlayerLocked.getOrDefault(player.getUniqueId(), false)) {
       event.setCancelled(true);
     }
   }
-  //----------------------------------------
+
+  // ----------------------------------------
 
   @EventHandler
   public void onPlayerItemHeld(PlayerItemHeldEvent event) {
@@ -150,16 +151,21 @@ public class Cactus extends AbstractKit {
     event.setCancelled(true);
 
     // Force back to previous slot on next tick (or immediately)
-    Bukkit.getScheduler().runTask(plugin, () -> {
-      player.getInventory().setHeldItemSlot(event.getPreviousSlot());
-      player.updateInventory();
-    });
+    Bukkit.getScheduler()
+        .runTask(
+            plugin,
+            () -> {
+              player.getInventory().setHeldItemSlot(event.getPreviousSlot());
+              player.updateInventory();
+            });
   }
+
   private void enterCactus(Player player) {
     UUID uuid = player.getUniqueId();
 
-    //cant use hideplayer he because that makes the cactus invincible
-    player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, false, false));
+    // cant use hideplayer he because that makes the cactus invincible
+    player.addPotionEffect(
+        new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, false, false));
 
     player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 1, 1);
 
@@ -183,7 +189,6 @@ public class Cactus extends AbstractKit {
     player.getInventory().setChestplate(cactusBlock);
     player.getInventory().setLeggings(cactusBlock);
     player.getInventory().setBoots(cactusBlock);
-
 
     cactusPlayerLocked.put(uuid, true);
 
@@ -215,7 +220,7 @@ public class Cactus extends AbstractKit {
       }
       storedHotbars.remove(uuid);
     }
-    //restore armor and Items
+    // restore armor and Items
     player.getInventory().setChestplate(null);
     player.getInventory().setLeggings(null);
     player.getInventory().setBoots(null);
