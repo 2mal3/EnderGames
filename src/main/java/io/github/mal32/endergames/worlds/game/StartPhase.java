@@ -110,14 +110,10 @@ public class StartPhase extends AbstractPhase {
     BlockVector offset = offsets.get(offsetIndex);
 
     World world = spawnLocation.getWorld();
-    double x = spawnLocation.getX() + offset.getBlockX();
+    double x = spawnLocation.getX() + offset.getX();
     double y = spawnLocation.getY();
-    double z = spawnLocation.getZ() + offset.getBlockZ();
-    Location dest =
-        new Location(
-            world, x - 0.5, y + 1.5,
-            z + 0.5); // Add 0.5 on y and z to center player. Substract one from z because
-    // spawnLocation is not the middle    TODO: fix spawnLocation is not the middle
+    double z = spawnLocation.getZ() + offset.getZ();
+    var dest = new Location(world, x, y + 1.5, z);
 
     double dx = spawnLocation.getX() - x;
     double dz = spawnLocation.getZ() - z;
@@ -131,32 +127,31 @@ public class StartPhase extends AbstractPhase {
   }
 
   public List<BlockVector> makeSpawnOffsets() {
-    // not correct yet
     return List.of(
-        new BlockVector(0, 0, -9),
-        new BlockVector(2, 0, -9),
-        new BlockVector(4, 0, -8),
-        new BlockVector(6, 0, -6),
-        new BlockVector(8, 0, -4),
-        new BlockVector(9, 0, -2),
-        new BlockVector(9, 0, 0),
-        new BlockVector(9, 0, 2),
-        new BlockVector(8, 0, 4),
-        new BlockVector(6, 0, 6),
-        new BlockVector(4, 0, 8),
-        new BlockVector(2, 0, 9),
-        new BlockVector(0, 0, 9),
-        new BlockVector(-2, 0, 9),
-        new BlockVector(-4, 0, 8),
-        new BlockVector(-6, 0, 6),
-        new BlockVector(-8, 0, 4),
-        new BlockVector(-9, 0, 2),
-        new BlockVector(-9, 0, 0),
-        new BlockVector(-9, 0, -2),
-        new BlockVector(-8, 0, -4),
-        new BlockVector(-6, 0, -6),
-        new BlockVector(-4, 0, -8),
-        new BlockVector(-2, 0, -9));
+        new BlockVector(0.5, 0, -9.5),
+        new BlockVector(2.5, 0, -9.5),
+        new BlockVector(4.5, 0, -8.5),
+        new BlockVector(6.5, 0, -6.5),
+        new BlockVector(8.5, 0, -4.5),
+        new BlockVector(9.5, 0, -2.5),
+        new BlockVector(9.5, 0, 0.5),
+        new BlockVector(9.5, 0, 2.5),
+        new BlockVector(8.5, 0, 4.5),
+        new BlockVector(6.5, 0, 6.5),
+        new BlockVector(4.5, 0, 8.5),
+        new BlockVector(2.5, 0, 9.5),
+        new BlockVector(0, 0, 9.5),
+        new BlockVector(-2.5, 0, 9.5),
+        new BlockVector(-4.5, 0, 8.5),
+        new BlockVector(-6.5, 0, 6.5),
+        new BlockVector(-8.5, 0, 4.5),
+        new BlockVector(-9.5, 0, 2.5),
+        new BlockVector(-9.5, 0, 0),
+        new BlockVector(-9.5, 0, -2.5),
+        new BlockVector(-8.5, 0, -4.5),
+        new BlockVector(-6.5, 0, -6.5),
+        new BlockVector(-4.5, 0, -8.5),
+        new BlockVector(-2.5, 0, -9.5));
   }
 
   @EventHandler

@@ -2,9 +2,16 @@ package io.github.mal32.endergames.worlds.game;
 
 import io.github.mal32.endergames.EnderGames;
 import java.util.ArrayList;
+import java.util.Random;
+import org.bukkit.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.structure.Mirror;
+import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.structure.Structure;
+import org.bukkit.structure.StructureManager;
+import org.bukkit.util.BlockVector;
 
 public class LoadPhase extends AbstractPhase {
   private final ArrayList<BukkitTask> loadTasks = new ArrayList<>();
@@ -12,9 +19,23 @@ public class LoadPhase extends AbstractPhase {
   public LoadPhase(EnderGames plugin, GameManager manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
 
+    placeSpawnPlatform();
+
     var startLoadTask =
         Bukkit.getScheduler().runTaskLater(this.plugin, this::loadSpawnChunks, 20 * 5);
     loadTasks.add(startLoadTask);
+  }
+
+  public void placeSpawnPlatform() {
+    StructureManager manager = Bukkit.getServer().getStructureManager();
+    Structure structure = manager.loadStructure(new NamespacedKey("enga", "spawn_platform"));
+
+    BlockVector structureSize = structure.getSize();
+    double posX = this.spawnLocation.getBlockX() - (structureSize.getBlockX() / 2.0) + 1;
+    double posZ = this.spawnLocation.getBlockZ() - (structureSize.getBlockZ() / 2.0);
+    Location location =
+        new Location(this.spawnLocation.getWorld(), posX, this.spawnLocation.getY(), posZ);
+    structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
   }
 
   private void loadSpawnChunks() {

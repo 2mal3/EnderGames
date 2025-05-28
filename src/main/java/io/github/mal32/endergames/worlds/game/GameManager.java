@@ -14,8 +14,6 @@ public class GameManager extends AbstractWorld {
     super(plugin);
     this.worldManager = new WorldManager(plugin);
 
-    this.worldManager.loadSpawnPosition();
-
     currentPhase = new LoadPhase(plugin, this, this.worldManager.getSpawnLocation());
   }
 
@@ -57,7 +55,8 @@ public class GameManager extends AbstractWorld {
         plugin.teleportPlayerToLobby(p);
       }
 
-      this.worldManager.updateSpawnPosition();
+      worldManager.findAndSaveNewSpawnLocation();
+      plugin.getComponentLogger().info("Spawn location: " + spawnLocation);
 
       currentPhase = new LoadPhase(plugin, this, spawnLocation);
     }
