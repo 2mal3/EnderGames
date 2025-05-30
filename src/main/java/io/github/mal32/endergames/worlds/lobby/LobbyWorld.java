@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.structure.Structure;
@@ -24,11 +25,9 @@ public class LobbyWorld extends AbstractWorld implements Listener {
   public LobbyWorld(EnderGames plugin) {
     super(plugin);
 
-    lobbyWorld.setSpawnLocation(spawnLocation);
+    this.menuManager = new MenuManager(this.plugin);
 
     Bukkit.getPluginManager().registerEvents(this, plugin);
-
-    this.menuManager = new MenuManager(this.plugin);
 
     lobbyWorld.setSpawnLocation(spawnLocation);
     lobbyWorld.setGameRule(GameRule.SPAWN_RADIUS, 6);
@@ -36,7 +35,24 @@ public class LobbyWorld extends AbstractWorld implements Listener {
     lobbyWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
     lobbyWorld.getWorldBorder().setSize(500);
 
-    placeLobby();
+    tryUpdatingLobby();
+  }
+
+  private void tryUpdatingLobby() {
+    final NamespacedKey placedLobbyVersionKey = new NamespacedKey(plugin, "placed_lobby_version");
+    final int currentLobbyVersion = 1;
+
+    var placedLobbyVersion =
+        lobbyWorld
+            .getPersistentDataContainer()
+            .get(placedLobbyVersionKey, PersistentDataType.INTEGER);
+    if (placedLobbyVersion == null || placedLobbyVersion != currentLobbyVersion) {
+      plugin.getComponentLogger().info("Loading lobby, this could take a few seconds ...");
+      placeLobby();
+      lobbyWorld
+          .getPersistentDataContainer()
+          .set(placedLobbyVersionKey, PersistentDataType.INTEGER, currentLobbyVersion);
+    }
   }
 
   private void placeLobby() {
