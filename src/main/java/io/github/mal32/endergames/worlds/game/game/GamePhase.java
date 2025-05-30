@@ -34,9 +34,12 @@ import org.bukkit.util.Vector;
 
 public class GamePhase extends AbstractPhase {
   private final List<AbstractModule> modules;
+  private final List<AbstractKit> kits;
 
   public GamePhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
+
+    kits = AbstractKit.getKits(plugin);
 
     this.modules =
         List.of(
@@ -57,7 +60,7 @@ public class GamePhase extends AbstractPhase {
           player
               .getPersistentDataContainer()
               .get(new NamespacedKey(plugin, "kit"), PersistentDataType.STRING);
-      for (AbstractKit kit : AbstractKit.getKits(plugin)) {
+      for (AbstractKit kit : kits) {
         if (Objects.equals(kit.getName(), playerKit)) {
           kit.start(player);
         }
@@ -78,7 +81,7 @@ public class GamePhase extends AbstractPhase {
     for (AbstractModule module : modules) {
       module.enable();
     }
-    for (AbstractKit kit : AbstractKit.getKits(plugin)) {
+    for (AbstractKit kit : kits) {
       kit.enable();
     }
   }
@@ -125,7 +128,7 @@ public class GamePhase extends AbstractPhase {
     for (AbstractModule module : modules) {
       module.disable();
     }
-    for (AbstractKit kit : AbstractKit.getKits(plugin)) {
+    for (AbstractKit kit : kits) {
       kit.disable();
     }
   }
