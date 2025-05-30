@@ -27,7 +27,7 @@ jobs:
       - name: Release
         uses: Kir-Antipov/mc-publish@v3.3
         with:
-          mondrinth-id: CHztyFRI
+          modrinth-id: CHztyFRI
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           modrinth-unfeature-mode: intersection
 
