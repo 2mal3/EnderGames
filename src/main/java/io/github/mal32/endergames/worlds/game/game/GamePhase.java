@@ -166,7 +166,7 @@ public class GamePhase extends AbstractPhase {
               .append(Component.text(damager.getName()).color(NamedTextColor.DARK_RED))
               .append(Component.text(" has ").color(NamedTextColor.RED))
               .append(
-                  Component.text(String.format("%.2f", damager.getHealth()))
+                  Component.text(String.format("%.2f", damager.getHealth()) + "❤️")
                       .color(NamedTextColor.DARK_RED))
               .append(Component.text(" left").color(NamedTextColor.RED)));
     }
