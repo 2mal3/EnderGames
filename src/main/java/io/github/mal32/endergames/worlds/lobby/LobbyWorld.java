@@ -16,12 +16,12 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
 
-public class LobbyPhase extends AbstractWorld implements Listener {
+public class LobbyWorld extends AbstractWorld implements Listener {
   private final MenuManager menuManager;
   private final World lobbyWorld = Objects.requireNonNull(Bukkit.getWorld("world_enga_lobby"));
   private final Location spawnLocation = new Location(lobbyWorld, 0, 64, 0);
 
-  public LobbyPhase(EnderGames plugin) {
+  public LobbyWorld(EnderGames plugin) {
     super(plugin);
 
     lobbyWorld.setSpawnLocation(spawnLocation);

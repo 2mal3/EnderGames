@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 
 public class EndPhase extends AbstractPhase {
-  public EndPhase(EnderGames plugin, GameManager manager, Location spawnLocation) {
+  public EndPhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
 
     Bukkit.getServer()

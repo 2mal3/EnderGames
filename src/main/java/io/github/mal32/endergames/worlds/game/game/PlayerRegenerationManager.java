@@ -1,7 +1,7 @@
 package io.github.mal32.endergames.worlds.game.game;
 
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.worlds.game.GameManager;
+import io.github.mal32.endergames.worlds.game.GameWorld;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
@@ -17,7 +17,7 @@ public class PlayerRegenerationManager extends AbstractTask {
 
   @Override
   public void task() {
-    for (Player player : GameManager.getPlayersInGame()) {
+    for (Player player : GameWorld.getPlayersInGame()) {
       if (player.getFoodLevel() < 6 || player.getFoodLevel() > 18) continue;
 
       player.setHealth(

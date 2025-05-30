@@ -16,7 +16,7 @@ import org.bukkit.util.BlockVector;
 public class LoadPhase extends AbstractPhase {
   private final ArrayList<BukkitTask> loadTasks = new ArrayList<>();
 
-  public LoadPhase(EnderGames plugin, GameManager manager, Location spawnLocation) {
+  public LoadPhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
 
     placeSpawnPlatform();

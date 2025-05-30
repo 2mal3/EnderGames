@@ -9,9 +9,9 @@ import org.bukkit.event.Listener;
 public abstract class AbstractPhase implements Listener {
   protected final EnderGames plugin;
   protected final Location spawnLocation;
-  protected final GameManager manager;
+  protected final GameWorld manager;
 
-  public AbstractPhase(EnderGames plugin, GameManager manager, Location spawnLocation) {
+  public AbstractPhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
     this.plugin = plugin;
     this.spawnLocation = spawnLocation;
     this.manager = manager;

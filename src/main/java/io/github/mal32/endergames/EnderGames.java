@@ -2,8 +2,8 @@ package io.github.mal32.endergames;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import io.github.mal32.endergames.worlds.game.GameManager;
-import io.github.mal32.endergames.worlds.lobby.LobbyPhase;
+import io.github.mal32.endergames.worlds.game.GameWorld;
+import io.github.mal32.endergames.worlds.lobby.LobbyWorld;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -19,8 +19,8 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class EnderGames extends JavaPlugin implements Listener {
-  private GameManager gameWorld;
-  private LobbyPhase lobbyWorld;
+  private GameWorld gameWorld;
+  private LobbyWorld lobbyWorld;
   private static final NamespacedKey worldKey = new NamespacedKey("endergames", "world");
 
   @Override
@@ -28,8 +28,8 @@ public class EnderGames extends JavaPlugin implements Listener {
     final int PLUGIN_ID = 25844;
     var metrics = new Metrics(this, PLUGIN_ID);
 
-    gameWorld = new GameManager(this);
-    lobbyWorld = new LobbyPhase(this);
+    gameWorld = new GameWorld(this);
+    lobbyWorld = new LobbyWorld(this);
 
     this.getLifecycleManager()
         .registerEventHandler(
@@ -39,7 +39,7 @@ public class EnderGames extends JavaPlugin implements Listener {
     Bukkit.getPluginManager().registerEvents(this, this);
   }
 
-  public GameManager getGameWorld() {
+  public GameWorld getGameWorld() {
     return gameWorld;
   }
 

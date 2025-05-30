@@ -3,7 +3,7 @@ package io.github.mal32.endergames.worlds.game.game;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.worlds.game.AbstractPhase;
-import io.github.mal32.endergames.worlds.game.GameManager;
+import io.github.mal32.endergames.worlds.game.GameWorld;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
 import java.time.Duration;
@@ -35,7 +35,7 @@ import org.bukkit.util.Vector;
 public class GamePhase extends AbstractPhase {
   private final List<AbstractModule> modules;
 
-  public GamePhase(EnderGames plugin, GameManager manager, Location spawnLocation) {
+  public GamePhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
 
     this.modules =
@@ -47,7 +47,7 @@ public class GamePhase extends AbstractPhase {
             new SwapperItem(plugin),
             new SmithingTemplateManager(plugin));
 
-    for (Player player : GameManager.getPlayersInGame()) {
+    for (Player player : GameWorld.getPlayersInGame()) {
       player.setGameMode(GameMode.SURVIVAL);
 
       Bukkit.dispatchCommand(
@@ -109,7 +109,7 @@ public class GamePhase extends AbstractPhase {
     Bukkit.getScheduler()
         .runTaskLater(plugin, protectionTimeBar::removeAll, 20 * protectionTimeDurationSeconds);
 
-    for (Player player : GameManager.getPlayersInGame()) {
+    for (Player player : GameWorld.getPlayersInGame()) {
       protectionTimeBar.addPlayer(player); // TODO: disable when leaving?
 
       player.addPotionEffect(
@@ -133,7 +133,7 @@ public class GamePhase extends AbstractPhase {
   @EventHandler
   private void onTrackerClick(PlayerInteractEvent event) {
     Player player = event.getPlayer();
-    if (!GameManager.playerIsInGame(player)) return;
+    if (!GameWorld.playerIsInGame(player)) return;
     ItemStack item = event.getItem();
     if (item == null || item.getType() != Material.COMPASS) {
       return;
@@ -199,7 +199,7 @@ public class GamePhase extends AbstractPhase {
       player.removePotionEffect(effect.getType());
     }
 
-    for (Player p : GameManager.getPlayersInGameWorld()) {
+    for (Player p : GameWorld.getPlayersInGameWorld()) {
       player.playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);
     }
 
@@ -225,7 +225,7 @@ public class GamePhase extends AbstractPhase {
   }
 
   private boolean moreThanOnePlayersAlive() {
-    return GameManager.getPlayersInGame().length > 1;
+    return GameWorld.getPlayersInGame().length > 1;
   }
 
   public Player getNearestValidPlayer(Player executor) {
@@ -233,7 +233,7 @@ public class GamePhase extends AbstractPhase {
     double nearestDistance = Double.MAX_VALUE;
     Location executorLocation = executor.getLocation();
 
-    for (Player other : GameManager.getPlayersInGame()) {
+    for (Player other : GameWorld.getPlayersInGame()) {
       if (other.equals(executor)) continue;
 
       double distance = executorLocation.distance(other.getLocation());
@@ -247,7 +247,7 @@ public class GamePhase extends AbstractPhase {
 
   @EventHandler
   private void onPlayerQuit(PlayerQuitEvent event) {
-    if (!GameManager.playerIsInGame(event.getPlayer())) return;
+    if (!GameWorld.playerIsInGame(event.getPlayer())) return;
 
     abstractPlayerDeath(event.getPlayer(), null);
   }
@@ -255,7 +255,7 @@ public class GamePhase extends AbstractPhase {
   private void gameEnd() {
     Title title;
 
-    Player[] survivalPlayers = GameManager.getPlayersInGame();
+    Player[] survivalPlayers = GameWorld.getPlayersInGame();
     if (survivalPlayers.length >= 1) {
       Player lastPlayer = survivalPlayers[0];
       title =
@@ -274,7 +274,7 @@ public class GamePhase extends AbstractPhase {
                   Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
     }
 
-    for (Player player : GameManager.getPlayersInGameWorld()) {
+    for (Player player : GameWorld.getPlayersInGameWorld()) {
       player.showTitle(title);
     }
 
@@ -283,7 +283,7 @@ public class GamePhase extends AbstractPhase {
 
   @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
   private void onPlayerPlaceTNT(BlockPlaceEvent event) {
-    if (!GameManager.playerIsInGame(event.getPlayer())) return;
+    if (!GameWorld.playerIsInGame(event.getPlayer())) return;
     if (event.getBlock().getType() != Material.TNT) return;
 
     Block block = event.getBlock();
@@ -303,7 +303,7 @@ public class GamePhase extends AbstractPhase {
     Player player = event.getPlayer();
 
     if (event.getAction() != Action.RIGHT_CLICK_AIR) return;
-    if (!GameManager.playerIsInGame(player)) return;
+    if (!GameWorld.playerIsInGame(player)) return;
 
     ItemStack item = event.getItem();
     if (item == null || item.getType() != Material.ARROW) return;

@@ -1,7 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.worlds.game.GameManager;
+import io.github.mal32.endergames.worlds.game.GameWorld;
 import io.github.mal32.endergames.worlds.game.game.AbstractModule;
 import java.util.List;
 import java.util.Objects;
@@ -52,7 +52,7 @@ public abstract class AbstractKit extends AbstractModule {
   }
 
   protected boolean playerCanUseThisKit(Player player) {
-    var playerInGame = GameManager.playerIsInGame(player);
+    var playerInGame = GameWorld.playerIsInGame(player);
     var playerHasKit =
         Objects.equals(
             player

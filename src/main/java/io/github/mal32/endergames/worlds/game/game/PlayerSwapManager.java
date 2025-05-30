@@ -1,7 +1,7 @@
 package io.github.mal32.endergames.worlds.game.game;
 
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.worlds.game.GameManager;
+import io.github.mal32.endergames.worlds.game.GameWorld;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +24,7 @@ public class PlayerSwapManager extends AbstractTask {
   @Override
   public void task() {
     // get two distinct players
-    List<Player> players = new ArrayList<>(Arrays.stream(GameManager.getPlayersInGame()).toList());
+    List<Player> players = new ArrayList<>(Arrays.stream(GameWorld.getPlayersInGame()).toList());
     if (players.size() < 2) {
       return;
     }

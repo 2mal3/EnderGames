@@ -15,7 +15,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.BlockVector;
 
 public class StartPhase extends AbstractPhase {
-  public StartPhase(EnderGames plugin, GameManager manager, Location spawnLocation) {
+  public StartPhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
     World world = spawnLocation.getWorld();
 
@@ -38,7 +38,7 @@ public class StartPhase extends AbstractPhase {
   public void distributePlayers() {
     int playerindex = 0;
     final int totalPlayers = Bukkit.getServer().getOnlinePlayers().size();
-    for (Player player : GameManager.getPlayersInGameWorld()) { // TODO: playing players
+    for (Player player : GameWorld.getPlayersInGameWorld()) { // TODO: playing players
       player.setGameMode(GameMode.ADVENTURE);
       player.getInventory().clear();
 
@@ -51,7 +51,7 @@ public class StartPhase extends AbstractPhase {
   public void disable() {
     super.disable();
 
-    for (Player player : GameManager.getPlayersInGame()) {
+    for (Player player : GameWorld.getPlayersInGame()) {
       player.clearActivePotionEffects();
     }
   }
@@ -67,7 +67,7 @@ public class StartPhase extends AbstractPhase {
       scheduler.runTaskLater(
           plugin,
           () -> {
-            for (Player player : GameManager.getPlayersInGame()) {
+            for (Player player : GameWorld.getPlayersInGame()) {
               showTitleToPlayerWithSound(
                   player,
                   Component.text(titleTime + "").color(NamedTextColor.YELLOW),
@@ -81,7 +81,7 @@ public class StartPhase extends AbstractPhase {
     scheduler.runTaskLater(
         plugin,
         () -> {
-          for (Player player : GameManager.getPlayersInGame()) {
+          for (Player player : GameWorld.getPlayersInGame()) {
             showTitleToPlayerWithSound(
                 player,
                 Component.text("Start").color(NamedTextColor.GOLD),
@@ -156,7 +156,7 @@ public class StartPhase extends AbstractPhase {
 
   @EventHandler
   private void onPlayerMove(PlayerMoveEvent event) {
-    if (!GameManager.playerIsInGame(event.getPlayer())) return;
+    if (!GameWorld.playerIsInGame(event.getPlayer())) return;
 
     Location startLocation = event.getFrom();
     event.getTo().setX(startLocation.getX());

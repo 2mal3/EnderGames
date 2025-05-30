@@ -6,11 +6,11 @@ import io.github.mal32.endergames.worlds.game.game.GamePhase;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 
-public class GameManager extends AbstractWorld {
+public class GameWorld extends AbstractWorld {
   private final WorldManager worldManager;
   private AbstractPhase currentPhase;
 
-  public GameManager(EnderGames plugin) {
+  public GameWorld(EnderGames plugin) {
     super(plugin);
     this.worldManager = new WorldManager(plugin);
 
@@ -23,7 +23,7 @@ public class GameManager extends AbstractWorld {
 
   public static Player[] getPlayersInGame() {
     return Bukkit.getOnlinePlayers().stream()
-        .filter(GameManager::playerIsInGame)
+        .filter(GameWorld::playerIsInGame)
         .toArray(Player[]::new);
   }
 
@@ -51,7 +51,7 @@ public class GameManager extends AbstractWorld {
     } else if (currentPhase instanceof GamePhase) {
       currentPhase = new EndPhase(plugin, this, spawnLocation);
     } else if (currentPhase instanceof EndPhase) {
-      for (Player p : GameManager.getPlayersInGameWorld()) {
+      for (Player p : GameWorld.getPlayersInGameWorld()) {
         plugin.teleportPlayerToLobby(p);
       }
 

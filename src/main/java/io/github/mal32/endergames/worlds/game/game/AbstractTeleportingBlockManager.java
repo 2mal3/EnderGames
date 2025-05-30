@@ -1,7 +1,7 @@
 package io.github.mal32.endergames.worlds.game.game;
 
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.worlds.game.GameManager;
+import io.github.mal32.endergames.worlds.game.GameWorld;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -29,7 +29,7 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
   }
 
   protected Location getRandomLocation() {
-    Player[] players = GameManager.getPlayersInGame();
+    Player[] players = GameWorld.getPlayersInGame();
     if (players.length == 0) {
       return null;
     }
