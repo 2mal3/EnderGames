@@ -30,20 +30,28 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
 
   protected Location getRandomLocation() {
     Player[] players = GameWorld.getPlayersInGame();
-    if (players.length == 0) {
-      return null;
-    }
-    Player player = players[new Random().nextInt(players.length)];
+    if (players.length == 0) return null;
 
-    Location location = player.getLocation().getBlock().getLocation().clone();
-    // get a random location near the player
-    final int range = 64;
-    int xOffset = new Random().nextInt(range * 2) - range;
-    int zOffset = new Random().nextInt(range * 2) - range;
-    location.add(xOffset, 0, zOffset);
-    location.setY(location.getWorld().getHighestBlockYAt(location));
-    location.add(0, 1, 0);
+    World world = players[0].getWorld();
+    WorldBorder border = world.getWorldBorder();
+
+    Location center = border.getCenter();
+    double size = border.getSize() / 2; // Half-size from center in each direction
+
+    Random random = new Random();
+
+    Location location;
+    int attempts = 0;
+    do {
+      double x = center.getX() + (random.nextDouble() * size * 2) - size;
+      double z = center.getZ() + (random.nextDouble() * size * 2) - size;
+      double y = world.getHighestBlockYAt((int) x, (int) z) + 1;
+
+      location = new Location(world, x, y, z);
+      attempts++;
+    } while (!border.isInside(location) && attempts < 10);
 
     return location;
   }
+
 }
