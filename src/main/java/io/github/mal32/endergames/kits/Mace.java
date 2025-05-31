@@ -28,6 +28,7 @@ public class Mace extends AbstractKit {
         Material.MACE,
         "Mace",
         "Delivers a crushing blow with a mighty mace",
-        "Mace, Feather Falling III boots");
+        "Mace, Feather Falling III boots",
+        Difficulty.HARD);
   }
 }

@@ -59,6 +59,7 @@ public class Barbarian extends AbstractKit {
         "Barbarian",
         "Deals more attack damage the hungrier he is (+2.5% attack damage per half hunger bar"
             + " missing)",
-        "A wooden sword and a full set of leather armor with Unbreaking I");
+        "A wooden sword and a full set of leather armor with Unbreaking I",
+        Difficulty.HARD);
   }
 }

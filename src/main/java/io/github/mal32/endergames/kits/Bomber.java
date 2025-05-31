@@ -141,6 +141,7 @@ public class Bomber extends AbstractKit {
         Material.TNT,
         "Bomber",
         "Takes no explosion damage. Killed entities explode. TNT placed explodes faster.",
-        "5 TNT, 10 Mines");
+        "5 TNT, 10 Mines",
+        Difficulty.MEDIUM);
   }
 }

@@ -108,6 +108,7 @@ public class Dolphin extends AbstractKit {
         "Dolphin",
         "Has permanent Conduit Power and Dolphins Grace. Gets Regeneration and Resistance in Water."
             + " Has Weakness on Land. Swimming gives Fish.",
-        "Water Bucket, Blue Leather Boots");
+        "Water Bucket, Blue Leather Boots",
+        Difficulty.HARD);
   }
 }

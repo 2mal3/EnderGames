@@ -45,7 +45,12 @@ public class Blaze extends AbstractKit {
 
     player.addPotionEffect(
         new PotionEffect(
-            PotionEffectType.FIRE_RESISTANCE, PotionEffect.INFINITE_DURATION, 0, true, false,false));
+            PotionEffectType.FIRE_RESISTANCE,
+            PotionEffect.INFINITE_DURATION,
+            0,
+            true,
+            false,
+            false));
   }
 
   @EventHandler
@@ -130,6 +135,7 @@ public class Blaze extends AbstractKit {
         "Blaze",
         "Can leave a fire trail for a short time. It is immune to fire damage, but gains Weakness I"
             + " in water. Sword or Bow hits have a 20% chance to ignite enemies",
-        "Golden Sword and Burn Power");
+        "Golden Sword and Burn Power",
+        Difficulty.EASY);
   }
 }

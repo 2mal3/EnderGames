@@ -37,6 +37,7 @@ public class Bird extends AbstractKit {
         Material.ELYTRA,
         "Bird",
         "Starts with an Elytra and 5 rockets. Gains 2 rockets per player kill. Fly like a bird!",
-        "1 Elytra, 5 Firework Rockets");
+        "1 Elytra, 5 Firework Rockets",
+        Difficulty.MEDIUM);
   }
 }

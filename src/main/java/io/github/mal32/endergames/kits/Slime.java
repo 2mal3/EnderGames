@@ -163,6 +163,7 @@ public class Slime extends AbstractKit {
         "Slime",
         "Occasionally gains slimeballs when jumping, which can be thrown to slow enemies. Spawns"
             + " small slimes when hit. Permanent Jump Boost II.",
-        "10 slimeballs, green leather chestplate & boots");
+        "10 slimeballs, green leather chestplate & boots",
+        Difficulty.MEDIUM);
   }
 }

@@ -168,6 +168,7 @@ class KitSelector extends MenuItem implements Listener {
     private List<TextComponent> getKitLore(KitDescriptionItem kitDescription) {
       var lore = new ArrayList<TextComponent>();
 
+      // Abilities
       var abilitiesHeaderComponent =
           Component.text("Abilities:")
               .color(NamedTextColor.GRAY)
@@ -178,6 +179,7 @@ class KitSelector extends MenuItem implements Listener {
 
       lore.add(Component.text(""));
 
+      // Equipment
       var equipmentHeaderComponent =
           Component.text("Equipment:")
               .color(NamedTextColor.GRAY)
@@ -185,6 +187,32 @@ class KitSelector extends MenuItem implements Listener {
       lore.add(equipmentHeaderComponent);
       var equipmentText = splitIntoLines(kitDescription.equipment);
       lore.addAll(convertTextListToComponents(equipmentText));
+
+      lore.add(Component.text(""));
+
+      // Difficulty
+      lore.add(
+          Component.text("Difficulty:")
+              .color(NamedTextColor.GRAY)
+              .decoration(TextDecoration.ITALIC, false));
+
+      switch (kitDescription.difficulty) {
+        case EASY ->
+            lore.add(
+                Component.text("█▒▒ Easy")
+                    .color(NamedTextColor.GREEN)
+                    .decoration(TextDecoration.ITALIC, false));
+        case MEDIUM ->
+            lore.add(
+                Component.text("██▒ Medium")
+                    .color(NamedTextColor.YELLOW)
+                    .decoration(TextDecoration.ITALIC, false));
+        case HARD ->
+            lore.add(
+                Component.text("███ Hard")
+                    .color(NamedTextColor.RED)
+                    .decoration(TextDecoration.ITALIC, false));
+      }
 
       return lore;
     }
