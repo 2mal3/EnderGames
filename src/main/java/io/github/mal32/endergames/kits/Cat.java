@@ -9,10 +9,12 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.Tag;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -35,18 +37,22 @@ public class Cat extends AbstractKit {
     fishMeta.lore(List.of(Component.text("Can always be eaten").color(NamedTextColor.GRAY)));
     fish.setItemMeta(fishMeta);
     player.getInventory().addItem(fish);
+
+    var safeFallDistanceAttribute = player.getAttribute(Attribute.SAFE_FALL_DISTANCE);
+    safeFallDistanceAttribute.setBaseValue(5);
+    var fallDamageMultiplierAttribute = player.getAttribute(Attribute.FALL_DAMAGE_MULTIPLIER);
+    fallDamageMultiplierAttribute.setBaseValue(0.5);
   }
 
-  @EventHandler
-  private void onFallDamage(EntityDamageEvent event) {
-    if (!(event.getEntity() instanceof Player) || !playerCanUseThisKit((Player) event.getEntity()))
-      return;
+  @EventHandler(priority = EventPriority.LOW)
+  public void onPlayerDeath(PlayerDeathEvent event) {
+    var player = event.getPlayer();
+    if (!playerCanUseThisKit(player)) return;
 
-    if (event.getCause() != EntityDamageEvent.DamageCause.FALL) {
-      return;
-    }
-
-    event.setDamage(event.getDamage() * 0.5);
+    var safeFallDistanceAttribute = player.getAttribute(Attribute.SAFE_FALL_DISTANCE);
+    safeFallDistanceAttribute.setBaseValue(safeFallDistanceAttribute.getDefaultValue());
+    var fallDamageMultiplierAttribute = player.getAttribute(Attribute.FALL_DAMAGE_MULTIPLIER);
+    fallDamageMultiplierAttribute.setBaseValue(fallDamageMultiplierAttribute.getDefaultValue());
   }
 
   @EventHandler
