@@ -89,6 +89,14 @@ The game can only be started by server operators with the command `/endergames s
 </details>
 
 - <details>
+  <summary>Kangaroo</summary>
+
+    - can double jump at the cost of hunger
+    - equipment: none
+
+</details>
+
+- <details>
   <summary>Lumberjack</summary>
 
     - mining a log directly destroys its entire tree

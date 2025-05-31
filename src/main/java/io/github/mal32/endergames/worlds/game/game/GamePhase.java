@@ -154,7 +154,7 @@ public class GamePhase extends AbstractPhase {
         LodestoneTracker.lodestoneTracker().tracked(false).location(targetLocation).build());
   }
 
-  @EventHandler
+  @EventHandler(priority = EventPriority.HIGH)
   private void onPlayerDeath(PlayerDeathEvent event) {
     if (!EnderGames.playerIsInGameWorld(event.getEntity())) return;
     event.setCancelled(true);
