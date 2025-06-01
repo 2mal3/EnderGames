@@ -1,6 +1,5 @@
-package io.github.mal32.endergames.worlds.game.game;
+package io.github.mal32.endergames;
 
-import io.github.mal32.endergames.EnderGames;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;

@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.worlds.game.game;
 
+import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;

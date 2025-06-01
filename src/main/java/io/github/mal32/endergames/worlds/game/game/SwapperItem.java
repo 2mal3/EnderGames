@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.worlds.game.game;
 
+import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import java.util.HashMap;
 import java.util.UUID;
