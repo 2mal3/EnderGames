@@ -21,7 +21,7 @@ public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChes
     super(plugin);
     //Add initial Enderchests
     int playerCount = GameWorld.getPlayersInGame().length;
-    int chestmultiplier = 8;
+    int chestmultiplier = 5;
     for (int i = 0; i < playerCount * chestmultiplier; i++) {
       blocks.add(new EnderChest(new Location(spawnLocation.getWorld(), spawnLocation.getX(), 1, spawnLocation.getZ()),plugin));
     }

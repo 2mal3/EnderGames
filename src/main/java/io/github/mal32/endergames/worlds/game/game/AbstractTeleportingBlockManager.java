@@ -49,10 +49,10 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     border = world.getWorldBorder();
 
 
-    final double CHANCE_BAND_0_30   = 0.05;
-    final double CHANCE_BAND_30_100 = 0.09;
-    final double CHANCE_BAND_100_200 = 0.36;
-    final double CHANCE_BAND_200_400 = 0.5; //isn't used cause it's the else case
+    final double CHANCE_BAND_0_30   = 0.02;
+    final double CHANCE_BAND_30_80 = 0.12;
+    final double CHANCE_BAND_80_120 = 0.33;
+    final double CHANCE_BAND_120_160 = 0.53; //isn't used cause it's the else case
 
     double roll = random.nextDouble();
     double minDist, maxDist;
@@ -60,15 +60,15 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     if (roll < CHANCE_BAND_0_30) {
       minDist = 0;
       maxDist = 30;
-    } else if (roll < CHANCE_BAND_0_30 + CHANCE_BAND_30_100) {
+    } else if (roll < CHANCE_BAND_0_30 + CHANCE_BAND_30_80) {
       minDist = 30;
-      maxDist = 100;
-    } else if (roll < CHANCE_BAND_0_30 + CHANCE_BAND_30_100 + CHANCE_BAND_100_200) {
-      minDist = 100;
-      maxDist = 200;
+      maxDist = 80;
+    } else if (roll < CHANCE_BAND_0_30 + CHANCE_BAND_30_80 + CHANCE_BAND_80_120) {
+      minDist = 80;
+      maxDist = 120;
     } else {
-      minDist = 200;
-      maxDist = 400;
+      minDist = 120;
+      maxDist = 160;
     }
 
     // Try a few times to pick a valid "around-player" location inside the border
@@ -85,11 +85,12 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
 
       double x = player.getLocation().getX() + dx;
       double z = player.getLocation().getZ() + dz;
-      int groundY = world.getHighestBlockYAt((int) Math.floor(x), (int) Math.floor(z));
-      double y = groundY + 1.0;
 
+      double y = 0;
       Location candidate = new Location(world, x, y, z);
-      if (border.isInside(candidate)) {
+      if (border.isInside(candidate) && world.isChunkLoaded(candidate.getChunk())) {
+        double groundY = world.getHighestBlockYAt((int) Math.floor(x), (int) Math.floor(z)) + 1.0;
+        candidate.setY(groundY);
         return candidate;
       }
     }
