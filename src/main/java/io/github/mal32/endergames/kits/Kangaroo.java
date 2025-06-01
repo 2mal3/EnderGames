@@ -28,7 +28,7 @@ public class Kangaroo extends AbstractKit {
         Material.RABBIT_FOOT,
         "Kangaroo",
         "Can double jump at the cost of hunger",
-        "none",
+        null,
         Difficulty.EASY);
   }
 

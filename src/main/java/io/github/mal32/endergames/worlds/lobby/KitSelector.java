@@ -180,15 +180,17 @@ class KitSelector extends MenuItem implements Listener {
       lore.add(Component.text(""));
 
       // Equipment
-      var equipmentHeaderComponent =
-          Component.text("Equipment:")
-              .color(NamedTextColor.GRAY)
-              .decoration(TextDecoration.ITALIC, false);
-      lore.add(equipmentHeaderComponent);
-      var equipmentText = splitIntoLines(kitDescription.equipment);
-      lore.addAll(convertTextListToComponents(equipmentText));
+      if (kitDescription.equipment != null) {
+        var equipmentHeaderComponent =
+            Component.text("Equipment:")
+                .color(NamedTextColor.GRAY)
+                .decoration(TextDecoration.ITALIC, false);
+        lore.add(equipmentHeaderComponent);
+        var equipmentText = splitIntoLines(kitDescription.equipment);
+        lore.addAll(convertTextListToComponents(equipmentText));
 
-      lore.add(Component.text(""));
+        lore.add(Component.text(""));
+      }
 
       // Difficulty
       lore.add(
