@@ -11,6 +11,7 @@
           "type": "minecraft:item",
           "name": "minecraft:potion",
           "weight": 4,
+          "quality": 0,
           "functions": [
             {
               "function": "minecraft:set_potion",
@@ -44,6 +45,7 @@
           "type": "minecraft:item",
           "name": "minecraft:potion",
           "weight": 4,
+          "quality": 1,
           "functions": [
             {
               "function": "minecraft:set_potion",
@@ -293,7 +295,14 @@
           "type": "minecraft:item",
           "name": "minecraft:diamond",
           "weight": 3,
-          "functions": []
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": 0,
+              "add": true
+            }
+          ],
+          "conditions": []
         },
         {
           "type": "minecraft:item",
@@ -398,6 +407,7 @@
           "type": "minecraft:item",
           "name": "minecraft:sweet_berries",
           "weight": 2,
+          "quality": -1,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -419,6 +429,31 @@
                 "min": 2,
                 "max": 4
               }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 0,
+      "bonus_rolls": {
+        "type": "minecraft:uniform",
+        "min": 1,
+        "max": 0
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:diamond",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 0
+              },
+              "add": true,
+              "conditions": []
             }
           ]
         }
