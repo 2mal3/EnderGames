@@ -48,7 +48,8 @@ public class GamePhase extends AbstractPhase {
             new PlayerRegenerationManager(plugin),
             new PlayerSwapManager(plugin),
             new SwapperItem(plugin),
-            new SmithingTemplateManager(plugin));
+            new SmithingTemplateManager(plugin),
+            new SpectatorParticles(plugin));
 
     for (Player player : GameWorld.getPlayersInGame()) {
       player.setGameMode(GameMode.SURVIVAL);
