@@ -28,7 +28,7 @@ public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChes
   }
 
   @Override
-  public int getDelay() {
+  public int getDelayTicks() {
     return 20 * 20 / blocks.size();
   }
 

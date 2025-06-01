@@ -20,7 +20,7 @@ public abstract class AbstractTask extends AbstractModule {
     super.enable();
 
     BukkitScheduler scheduler = plugin.getServer().getScheduler();
-    task = scheduler.runTaskTimer(plugin, this::task, getDelay(), getDelay());
+    task = scheduler.runTaskTimer(plugin, this::task, getDelayTicks(), getDelayTicks());
   }
 
   @Override
@@ -30,7 +30,7 @@ public abstract class AbstractTask extends AbstractModule {
     task.cancel();
   }
 
-  public abstract int getDelay();
+  public abstract int getDelayTicks();
 
   public abstract void task();
 }
