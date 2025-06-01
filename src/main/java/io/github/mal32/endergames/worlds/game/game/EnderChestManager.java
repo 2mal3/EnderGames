@@ -3,6 +3,8 @@ package io.github.mal32.endergames.worlds.game.game;
 import io.github.mal32.endergames.EnderGames;
 import java.util.ArrayList;
 import java.util.Random;
+
+import io.github.mal32.endergames.worlds.game.GameWorld;
 import org.bukkit.*;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
@@ -15,13 +17,19 @@ import org.bukkit.loot.LootTable;
 import org.jetbrains.annotations.NotNull;
 
 public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChest> {
-  public EnderChestManager(EnderGames plugin) {
+  public EnderChestManager(EnderGames plugin, Location spawnLocation) {
     super(plugin);
+    //Add initial Enderchests
+    int playerCount = GameWorld.getPlayersInGame().length;
+    int chestmultiplier = 5;
+    for (int i = 0; i < playerCount * chestmultiplier; i++) {
+      blocks.add(new EnderChest(spawnLocation,plugin));
+    }
   }
 
   @Override
   public int getDelay() {
-    return 20 * 10;
+    return 20 * 20 / blocks.size();
   }
 
   @EventHandler

@@ -44,7 +44,7 @@ public class GamePhase extends AbstractPhase {
     this.modules =
         List.of(
             new EnchanterManager(plugin, spawnLocation),
-            new EnderChestManager(plugin),
+            new EnderChestManager(plugin, spawnLocation),
             new PlayerRegenerationManager(plugin),
             new PlayerSwapManager(plugin),
             new SwapperItem(plugin),
