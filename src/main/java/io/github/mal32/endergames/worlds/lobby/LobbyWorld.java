@@ -69,8 +69,8 @@ public class LobbyWorld extends AbstractWorld implements Listener {
   public void initPlayer(Player player) {
     player.getInventory().clear();
 
-    this.menuManager.getItem(Material.CHEST).giveItem(player);
-    if (player.isOp()) this.menuManager.getItem(Material.NETHER_STAR).giveItem(player);
+    this.menuManager.getItem("kit_selector").giveItem(player);
+    if (player.isOp()) this.menuManager.getItem("start_game").giveItem(player);
 
     player.setGameMode(GameMode.ADVENTURE);
 

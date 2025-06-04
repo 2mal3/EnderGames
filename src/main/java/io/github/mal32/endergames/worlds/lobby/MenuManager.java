@@ -1,9 +1,8 @@
 package io.github.mal32.endergames.worlds.lobby;
 
 import io.github.mal32.endergames.EnderGames;
-import java.util.HashMap;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,17 +10,22 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.persistence.PersistentDataType;
+
+import java.util.HashMap;
 
 class MenuManager implements Listener {
-  private final HashMap<Material, MenuItem> items;
+  protected final NamespacedKey namespaceKey;
+  private final HashMap<String, MenuItem> items;
 
   public MenuManager(EnderGames plugin) {
     this.items = MenuItem.getItems(plugin);
+    this.namespaceKey = new NamespacedKey(plugin, "menu_key");
 
     Bukkit.getPluginManager().registerEvents(this, plugin);
   }
 
-  public MenuItem getItem(Material item) {
+  public MenuItem getItem(String item) {
     return this.items.get(item);
   }
 
@@ -29,7 +33,7 @@ class MenuManager implements Listener {
   public void onPlayerInteract(PlayerInteractEvent event) {
     if (!EnderGames.playerIsInLobbyWorld(event.getPlayer())) return;
     if (event.getItem() == null) return;
-    this.items.get(event.getItem().getType()).playerInteract(event);
+    this.items.get(event.getItem().getPersistentDataContainer().get(this.namespaceKey, PersistentDataType.STRING)).playerInteract(event);
 
     event.setCancelled(true);
   }

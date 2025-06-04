@@ -1,12 +1,8 @@
 package io.github.mal32.endergames.worlds.lobby;
 
-import static org.apache.commons.lang3.StringUtils.capitalize;
-
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.kits.KitDescriptionItem;
-import java.util.ArrayList;
-import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -30,11 +26,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.commons.lang3.StringUtils.capitalize;
+
 class KitSelector extends MenuItem implements Listener {
   private final List<AbstractKit> availableKits;
 
   public KitSelector(EnderGames plugin) {
-    super(plugin, Material.CHEST, "§6Select Kit", (byte) 0);
+    super(plugin, Material.CHEST, "§6Select Kit", "kit_selector", (byte) 0);
     this.availableKits = AbstractKit.getKits(plugin);
 
     Bukkit.getPluginManager().registerEvents(this, plugin);
