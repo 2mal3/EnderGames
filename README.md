@@ -1,6 +1,11 @@
 # EnderGames
 
-![Lines of Code Badge](https://tokei.rs/b1/github/2mal3/EnderGames?category=code) [![CodeQL](https://github.com/2mal3/EnderGames/actions/workflows/codeql.yaml/badge.svg)](https://github.com/2mal3/EnderGames/actions/workflows/codeql.yaml)
+![Lines of Code Badge](https://tokei.rs/b1/github/2mal3/EnderGames?category=code) [![CodeQL](https://github.com/2mal3/EnderGames/actions/workflows/codeql.yaml/badge.svg)](https://github.com/2mal3/EnderGames/actions/workflows/codeql.yaml) ![GitHub License](https://img.shields.io/github/license/2mal3/EnderGames?logo=github) ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/2mal3/EnderGames?logo=github) ![GitHub last commit](https://img.shields.io/github/last-commit/2mal3/EnderGames?style=flat&logo=github) ![Modrinth Downloads](https://img.shields.io/modrinth/dt/CHztyFRI?logo=modrinth)
+
+
+
+
+
 
 > Teleporting themed Kit SurivialGames on a random generated map for post 1.8 PvP.
 
