@@ -7,19 +7,6 @@
 A Paper plugin that revives GommeHD’s discontinued EnderGames mode - reimagined and optimized for the newer Minecraft
 versions.
 
-## Using the Plugin
-
-Install the plugin as usual on a Paper Server for Minecraft 1.21.4 of your choice. It is advisable to use a new world,
-as this can be damaged by the game.
-The game can only be started by server operators with the command `/endergames start`.
-
-### Recommended Server Settings
-
-- `spawn-protection=0`
-- `simulation-distance` at least 6
-- `force-gamemode=false`
-- `allow-nether=false` optional, to have the original EnderGames experience
-
 ## Kits
 
 - <details>
@@ -131,6 +118,18 @@ The game can only be started by server operators with the command `/endergames s
 - players drop all their experience on death
 - Enchanting Tables have infinite Lapis Lazuli
 - Smithing Tables have infinite Netherite Upgrade Templates
+
+## Using the Plugin
+
+Install the plugin as usual on a Paper Server for Minecraft 1.21.4 of your choice. It is advisable to use a new world,
+as this can be damaged by the game.
+
+### Recommended Server Settings
+
+- `spawn-protection=0`
+- `simulation-distance` at least 6
+- `force-gamemode=false`
+- `allow-nether=false` optional, to have the original EnderGames experience
 
 ## Disclaimer
 
