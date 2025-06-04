@@ -263,7 +263,6 @@ public class Cactus extends AbstractKit {
     Player player = event.getPlayer();
     if (!playerCanUseThisKit(player)) return;
     if (cactusPlayerLocked.getOrDefault(player.getUniqueId(), false) == false) {
-      return;
     } else {
       leaveCactus(player);
       Bukkit.getScheduler()

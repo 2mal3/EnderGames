@@ -14,7 +14,9 @@ import org.bukkit.structure.StructureManager;
 import org.bukkit.util.BlockVector;
 
 public class LoadPhase extends AbstractPhase {
+  final int loadDelayIncrease = 5;
   private final ArrayList<BukkitTask> loadTasks = new ArrayList<>();
+  int loadDelayTicks = 0;
 
   public LoadPhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
@@ -56,9 +58,6 @@ public class LoadPhase extends AbstractPhase {
       invert *= -1;
     }
   }
-
-  int loadDelayTicks = 0;
-  final int loadDelayIncrease = 5;
 
   private void scheduleChunkLoad(Location location) {
     var chunkLoadTask =

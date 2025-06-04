@@ -8,8 +8,8 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class WorldManager {
   private final World world = Objects.requireNonNull(Bukkit.getWorld("world"));
-  private Location spawnLocation;
   private final NamespacedKey spawnLocationKey;
+  private Location spawnLocation;
 
   public WorldManager(EnderGames plugin) {
     this.spawnLocationKey = new NamespacedKey(plugin, "spawnLocation");
@@ -26,6 +26,21 @@ public class WorldManager {
     } else {
       loadSpawnLocation();
     }
+  }
+
+  // Why doesn't BiomeTagKeys.IS_OCEAN work?
+  // using directly:
+  // https://github.com/misode/mcmeta/blob/data/data/minecraft/tags/worldgen/biome/is_ocean.json
+  private static boolean isOcean(Biome biome) {
+    return biome.equals(Biome.DEEP_FROZEN_OCEAN)
+        || biome.equals(Biome.DEEP_COLD_OCEAN)
+        || biome.equals(Biome.DEEP_OCEAN)
+        || biome.equals(Biome.DEEP_LUKEWARM_OCEAN)
+        || biome.equals(Biome.FROZEN_OCEAN)
+        || biome.equals(Biome.OCEAN)
+        || biome.equals(Biome.COLD_OCEAN)
+        || biome.equals(Biome.LUKEWARM_OCEAN)
+        || biome.equals(Biome.WARM_OCEAN);
   }
 
   public Location getSpawnLocation() {
@@ -54,20 +69,5 @@ public class WorldManager {
 
     saveSpawnLocation();
     world.getWorldBorder().setCenter(spawnLocation);
-  }
-
-  // Why doesn't BiomeTagKeys.IS_OCEAN work?
-  // using directly:
-  // https://github.com/misode/mcmeta/blob/data/data/minecraft/tags/worldgen/biome/is_ocean.json
-  private static boolean isOcean(Biome biome) {
-    return biome.equals(Biome.DEEP_FROZEN_OCEAN)
-        || biome.equals(Biome.DEEP_COLD_OCEAN)
-        || biome.equals(Biome.DEEP_OCEAN)
-        || biome.equals(Biome.DEEP_LUKEWARM_OCEAN)
-        || biome.equals(Biome.FROZEN_OCEAN)
-        || biome.equals(Biome.OCEAN)
-        || biome.equals(Biome.COLD_OCEAN)
-        || biome.equals(Biome.LUKEWARM_OCEAN)
-        || biome.equals(Biome.WARM_OCEAN);
   }
 }

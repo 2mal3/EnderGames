@@ -1,10 +1,9 @@
 package io.github.mal32.endergames.worlds.game.game;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.worlds.game.GameWorld;
 import java.util.ArrayList;
 import java.util.Random;
-
-import io.github.mal32.endergames.worlds.game.GameWorld;
 import org.bukkit.*;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;

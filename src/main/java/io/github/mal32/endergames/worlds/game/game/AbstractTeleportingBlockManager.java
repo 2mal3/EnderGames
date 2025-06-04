@@ -48,11 +48,10 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     world = player.getWorld();
     border = world.getWorldBorder();
 
-
-    final double CHANCE_BAND_0_30   = 0.02;
+    final double CHANCE_BAND_0_30 = 0.02;
     final double CHANCE_BAND_30_80 = 0.12;
     final double CHANCE_BAND_80_120 = 0.33;
-    final double CHANCE_BAND_120_160 = 0.53; //isn't used cause it's the else case
+    final double CHANCE_BAND_120_160 = 0.53; // isn't used cause it's the else case
 
     double roll = random.nextDouble();
     double minDist, maxDist;
@@ -100,8 +99,8 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
   }
 
   /**
-   * Picks a truly random location inside the world border (anywhere in the square),
-   * then clamps to ground level +1.
+   * Picks a truly random location inside the world border (anywhere in the square), then clamps to
+   * ground level +1.
    */
   private Location getRandomBorderLocation(World world, WorldBorder border, Random random) {
     Location center = border.getCenter();
@@ -126,6 +125,4 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     int groundY = world.getHighestBlockYAt(center.getBlockX(), center.getBlockZ());
     return new Location(world, center.getX(), groundY + 1.0, center.getZ());
   }
-
-
 }

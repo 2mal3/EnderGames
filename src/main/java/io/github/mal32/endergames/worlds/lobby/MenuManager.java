@@ -32,7 +32,13 @@ class MenuManager implements Listener {
   public void onPlayerInteract(PlayerInteractEvent event) {
     if (!EnderGames.playerIsInLobbyWorld(event.getPlayer())) return;
     if (event.getItem() == null) return;
-    this.items.get(event.getItem().getPersistentDataContainer().get(this.namespaceKey, PersistentDataType.STRING)).playerInteract(event);
+    this.items
+        .get(
+            event
+                .getItem()
+                .getPersistentDataContainer()
+                .get(this.namespaceKey, PersistentDataType.STRING))
+        .playerInteract(event);
 
     event.setCancelled(true);
   }

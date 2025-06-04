@@ -65,7 +65,7 @@ class KitSelector extends MenuItem implements Listener {
         lineStartIndex = i + 1;
       }
     }
-    lines.add(text.substring(lineStartIndex, text.length()));
+    lines.add(text.substring(lineStartIndex));
 
     return lines;
   }

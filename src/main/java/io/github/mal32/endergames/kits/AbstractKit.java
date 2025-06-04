@@ -1,8 +1,8 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
-import io.github.mal32.endergames.AbstractModule;
 import java.util.List;
 import java.util.Objects;
 import org.bukkit.Color;

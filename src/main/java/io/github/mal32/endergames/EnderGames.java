@@ -19,9 +19,19 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class EnderGames extends JavaPlugin implements Listener {
+  private static final NamespacedKey worldKey = new NamespacedKey("endergames", "world");
   private GameWorld gameWorld;
   private LobbyWorld lobbyWorld;
-  private static final NamespacedKey worldKey = new NamespacedKey("endergames", "world");
+
+  public static boolean playerIsInLobbyWorld(Player player) {
+    var world = player.getPersistentDataContainer().get(worldKey, PersistentDataType.STRING);
+    return Objects.equals(world, "lobby");
+  }
+
+  public static boolean playerIsInGameWorld(Player player) {
+    var world = player.getPersistentDataContainer().get(worldKey, PersistentDataType.STRING);
+    return Objects.equals(world, "game");
+  }
 
   @Override
   public void onEnable() {
@@ -41,16 +51,6 @@ public class EnderGames extends JavaPlugin implements Listener {
 
   public GameWorld getGameWorld() {
     return gameWorld;
-  }
-
-  public static boolean playerIsInLobbyWorld(Player player) {
-    var world = player.getPersistentDataContainer().get(worldKey, PersistentDataType.STRING);
-    return Objects.equals(world, "lobby");
-  }
-
-  public static boolean playerIsInGameWorld(Player player) {
-    var world = player.getPersistentDataContainer().get(worldKey, PersistentDataType.STRING);
-    return Objects.equals(world, "game");
   }
 
   public void teleportPlayerToGame(Player player) {
