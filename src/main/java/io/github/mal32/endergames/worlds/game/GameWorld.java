@@ -5,6 +5,8 @@ import io.github.mal32.endergames.worlds.AbstractWorld;
 import io.github.mal32.endergames.worlds.game.game.GamePhase;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 public class GameWorld extends AbstractWorld {
   private final WorldManager worldManager;
@@ -75,5 +77,14 @@ public class GameWorld extends AbstractWorld {
 
   public WorldManager getWorldManager() {
     return worldManager;
+  }
+
+  @EventHandler
+  public void onPlayerDamage(EntityDamageEvent event) {
+    if (!(event.getEntity() instanceof Player player)) return;
+    if (!EnderGames.playerIsInGameWorld(player)) return;
+    if (playerIsInGame(player)) return;
+
+    event.setCancelled(true);
   }
 }
