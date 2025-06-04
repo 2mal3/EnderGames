@@ -2,6 +2,8 @@ package io.github.mal32.endergames.worlds.lobby;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.AbstractWorld;
+import java.util.Objects;
+import java.util.Random;
 import org.bukkit.*;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
@@ -14,9 +16,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
-
-import java.util.Objects;
-import java.util.Random;
 
 public class LobbyWorld extends AbstractWorld implements Listener {
   private final MenuManager menuManager;

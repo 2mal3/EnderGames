@@ -25,14 +25,15 @@ class OperatorItem extends MenuItem {
   @Override
   public void playerInteract(PlayerInteractEvent event) {
     if (this.startGameTask == null) {
-      this.startGameTask = Bukkit.getScheduler().runTaskLater(
-              this.plugin,
-              () -> {
-                this.plugin.getGameWorld().startGame();
-                this.startGameTask = null;
-              },
-              5 * 20
-      );
+      this.startGameTask =
+          Bukkit.getScheduler()
+              .runTaskLater(
+                  this.plugin,
+                  () -> {
+                    this.plugin.getGameWorld().startGame();
+                    this.startGameTask = null;
+                  },
+                  5 * 20);
 
       for (Player player : Bukkit.getOnlinePlayers()) {
         if (player.isOp()) {

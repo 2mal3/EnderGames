@@ -1,8 +1,12 @@
 package io.github.mal32.endergames.worlds.lobby;
 
+import static org.apache.commons.lang3.StringUtils.capitalize;
+
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.kits.KitDescriptionItem;
+import java.util.ArrayList;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -26,11 +30,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.apache.commons.lang3.StringUtils.capitalize;
-
 class KitSelector extends MenuItem implements Listener {
   private final List<AbstractKit> availableKits;
 
@@ -39,6 +38,36 @@ class KitSelector extends MenuItem implements Listener {
     this.availableKits = AbstractKit.getKits(plugin);
 
     Bukkit.getPluginManager().registerEvents(this, plugin);
+  }
+
+  private static List<TextComponent> convertTextListToComponents(ArrayList<String> lines) {
+    return lines.stream()
+        .map(
+            line ->
+                Component.text(line)
+                    .color(NamedTextColor.WHITE)
+                    .decoration(TextDecoration.ITALIC, false))
+        .toList();
+  }
+
+  private static ArrayList<String> splitIntoLines(String text) {
+    var lines = new ArrayList<String>();
+
+    final int maxLineLength = 20;
+    int charactersInLine = 0;
+    int lineStartIndex = 0;
+    for (int i = 0; i < text.length(); i++) {
+      charactersInLine++;
+      if (charactersInLine > maxLineLength && text.charAt(i) == ' ') {
+        var line = text.substring(lineStartIndex, i);
+        lines.add(line);
+        charactersInLine = 0;
+        lineStartIndex = i + 1;
+      }
+    }
+    lines.add(text.substring(lineStartIndex, text.length()));
+
+    return lines;
   }
 
   @Override
@@ -219,35 +248,5 @@ class KitSelector extends MenuItem implements Listener {
 
       return lore;
     }
-  }
-
-  private static List<TextComponent> convertTextListToComponents(ArrayList<String> lines) {
-    return lines.stream()
-        .map(
-            line ->
-                Component.text(line)
-                    .color(NamedTextColor.WHITE)
-                    .decoration(TextDecoration.ITALIC, false))
-        .toList();
-  }
-
-  private static ArrayList<String> splitIntoLines(String text) {
-    var lines = new ArrayList<String>();
-
-    final int maxLineLength = 20;
-    int charactersInLine = 0;
-    int lineStartIndex = 0;
-    for (int i = 0; i < text.length(); i++) {
-      charactersInLine++;
-      if (charactersInLine > maxLineLength && text.charAt(i) == ' ') {
-        var line = text.substring(lineStartIndex, i);
-        lines.add(line);
-        charactersInLine = 0;
-        lineStartIndex = i + 1;
-      }
-    }
-    lines.add(text.substring(lineStartIndex, text.length()));
-
-    return lines;
   }
 }
