@@ -27,4 +27,4 @@ jobs:
         with:
           primary-key: key
 
-      - run: nix-shell -p google-java-format --run "find . -name '*.java' -exec google-java-format --dry-run --set-exit-if-changed --skip-sorting-imports {} +"
+      - run: nix shell nixpkgs#google-java-format -c find . -name '*.java' -exec google-java-format --dry-run --set-exit-if-changed --skip-sorting-imports {} +
