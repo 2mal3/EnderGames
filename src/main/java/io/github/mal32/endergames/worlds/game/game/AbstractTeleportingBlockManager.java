@@ -26,12 +26,20 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     nextIndex = nextIndex % blocks.size();
 
     B block = blocks.get(nextIndex);
-    Location location = getRandomLocation();
-    block.teleport(location);
+
+    Location horizontalLocation = getRandomHorizontalLocation();
+    int y =
+        horizontalLocation
+            .getWorld()
+            .getHighestBlockAt(horizontalLocation, HeightMap.OCEAN_FLOOR)
+            .getY();
+    horizontalLocation.setY(y + 1);
+
+    block.teleport(horizontalLocation);
     nextIndex++;
   }
 
-  protected Location getRandomLocation() {
+  protected Location getRandomHorizontalLocation() {
     Player[] players = GameWorld.getPlayersInGame();
     World world;
     WorldBorder border;
@@ -40,7 +48,7 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     if (players.length == 0) {
       world = Bukkit.getWorlds().get(0);
       border = world.getWorldBorder();
-      return getRandomBorderLocation(world, border, random);
+      return getRandomHorizontalBorderLocation(world, border, random);
     }
 
     // Otherwise, pick a random player
@@ -85,24 +93,22 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
       double x = player.getLocation().getX() + dx;
       double z = player.getLocation().getZ() + dz;
 
-      double y = 0;
-      Location candidate = new Location(world, x, y, z);
+      Location candidate = new Location(world, x, 0, z);
       if (border.isInside(candidate) && world.isChunkLoaded(candidate.getChunk())) {
-        double groundY = world.getHighestBlockYAt((int) Math.floor(x), (int) Math.floor(z)) + 1.0;
-        candidate.setY(groundY);
         return candidate;
       }
     }
 
     // If we never found a valid around-player spot, fall back to border-only
-    return getRandomBorderLocation(world, border, random);
+    return getRandomHorizontalBorderLocation(world, border, random);
   }
 
   /**
    * Picks a truly random location inside the world border (anywhere in the square), then clamps to
    * ground level +1.
    */
-  private Location getRandomBorderLocation(World world, WorldBorder border, Random random) {
+  private Location getRandomHorizontalBorderLocation(
+      World world, WorldBorder border, Random random) {
     Location center = border.getCenter();
     double halfSize = border.getSize() / 2.0;
 
@@ -112,17 +118,14 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
 
       double x = center.getX() + xOffset;
       double z = center.getZ() + zOffset;
-      int groundY = world.getHighestBlockYAt((int) Math.floor(x), (int) Math.floor(z));
-      double y = groundY + 1.0;
 
-      Location candidate = new Location(world, x, y, z);
+      Location candidate = new Location(world, x, 0, z);
       if (border.isInside(candidate)) {
         return candidate;
       }
     }
 
     // As a last resort (very unlikely), just return the center at ground level
-    int groundY = world.getHighestBlockYAt(center.getBlockX(), center.getBlockZ());
-    return new Location(world, center.getX(), groundY + 1.0, center.getZ());
+    return new Location(world, center.getX(), 0, center.getZ());
   }
 }
