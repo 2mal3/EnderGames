@@ -30,7 +30,7 @@ abstract class MenuItem {
 
   public static HashMap<String, MenuItem> getItems(EnderGames plugin) {
     HashMap<String, MenuItem> menuItems = new HashMap<>();
-    menuItems.put("start_game", new OperatorItem(plugin));
+    menuItems.put("start_game", new OperatorStartItem(plugin));
     menuItems.put("kit_selector", new KitSelector(plugin));
     return menuItems;
   }

@@ -7,11 +7,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitTask;
 
-class OperatorItem extends MenuItem {
+class OperatorStartItem extends MenuItem {
   private final MenuItem cancleItem;
   private BukkitTask startGameTask = null;
 
-  public OperatorItem(EnderGames plugin) {
+  public OperatorStartItem(EnderGames plugin) {
     super(plugin, Material.NETHER_STAR, "§6Start Game", "start_game", (byte) 8);
     this.cancleItem = new CancelStartItem(this.plugin);
   }
