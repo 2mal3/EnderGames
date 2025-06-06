@@ -1,11 +1,16 @@
 package io.github.mal32.endergames.worlds.lobby;
 
 import io.github.mal32.endergames.EnderGames;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitTask;
+
+import java.util.List;
 
 class OperatorStartItem extends MenuItem {
   private final MenuItem cancleItem;
@@ -24,6 +29,8 @@ class OperatorStartItem extends MenuItem {
 
   @Override
   public void playerInteract(PlayerInteractEvent event) {
+    event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+
     if (this.startGameTask == null) {
       this.startGameTask =
           Bukkit.getScheduler()
@@ -37,7 +44,7 @@ class OperatorStartItem extends MenuItem {
 
       for (Player player : Bukkit.getOnlinePlayers()) {
         if (player.isOp()) {
-          player.sendMessage("§aThe game will start in 5 seconds!");
+          player.sendActionBar(Component.text("the game will start in 5 seconds!").color(NamedTextColor.GREEN));
           this.giveItem(player);
         }
       }
@@ -47,7 +54,8 @@ class OperatorStartItem extends MenuItem {
 
       for (Player player : Bukkit.getOnlinePlayers()) {
         if (player.isOp()) {
-          player.sendMessage("§cStart was canceled!");
+          player.sendActionBar(Component.text("Start was canceled!").color(NamedTextColor.RED));
+
           this.giveItem(player);
         }
       }
