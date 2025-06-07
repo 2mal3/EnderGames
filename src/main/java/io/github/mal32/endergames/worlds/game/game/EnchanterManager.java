@@ -16,7 +16,7 @@ public class EnchanterManager extends AbstractTeleportingBlockManager<Enchanter>
   }
 
   @Override
-  public int getBaseTeleportDelayTicks() {
+  public int getBlockTeleportDelayTicks() {
     return 20 * 40;
   }
 

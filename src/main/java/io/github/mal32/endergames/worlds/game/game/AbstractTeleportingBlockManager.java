@@ -145,10 +145,10 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
 
   @Override
   public int getDelayTicks() {
-    return getBaseTeleportDelayTicks() / blocks.size();
+    return getBlockTeleportDelayTicks() / blocks.size();
   }
 
-  abstract int getBaseTeleportDelayTicks();
+  abstract int getBlockTeleportDelayTicks();
 
   protected B getBlockAtLocation(Location location) {
     for (B b : blocks) {
