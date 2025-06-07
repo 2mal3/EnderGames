@@ -32,6 +32,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 
 public class GamePhase extends AbstractPhase {
   private final List<AbstractModule> modules;
@@ -146,6 +147,7 @@ public class GamePhase extends AbstractPhase {
     }
 
     Player nearestPlayer = getNearestValidPlayer(player);
+    if (nearestPlayer == null) return;
 
     Location targetLocation = nearestPlayer.getLocation();
     Location currentLocation = player.getLocation();
@@ -234,6 +236,7 @@ public class GamePhase extends AbstractPhase {
     return GameWorld.getPlayersInGame().length > 1;
   }
 
+  @Nullable
   public Player getNearestValidPlayer(Player executor) {
     Player nearest = null;
     double nearestDistance = Double.MAX_VALUE;
