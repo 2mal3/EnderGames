@@ -2,11 +2,13 @@ name: CodeQL
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
     paths:
       - "**.java"
   pull_request:
-    branches: [main]
+    branches: [ main ]
+    paths:
+      - "**.java"
   workflow_dispatch:
 
 jobs:
