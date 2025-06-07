@@ -17,9 +17,20 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
   protected final List<B> blocks = new ArrayList<>();
   private int nextIndex = 0;
 
-  public AbstractTeleportingBlockManager(EnderGames plugin) {
+  public AbstractTeleportingBlockManager(EnderGames plugin, Location spawnLocation) {
     super(plugin);
+
+    int playerCount = GameWorld.getPlayersInGame().length;
+    Location startLocation = spawnLocation.clone();
+    startLocation.setY(0);
+    for (int i = 0; i < playerCount * blocksPerPlayer(); i++) {
+      blocks.add(getNewBlock(startLocation));
+    }
   }
+
+  protected abstract int blocksPerPlayer();
+
+  protected abstract B getNewBlock(Location location);
 
   public void task() {
     if (blocks.isEmpty()) return;
@@ -128,4 +139,11 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     // As a last resort (very unlikely), just return the center at ground level
     return new Location(world, center.getX(), 0, center.getZ());
   }
+
+  @Override
+  public int getDelayTicks() {
+    return getBaseTeleportDelayTicks() / blocks.size();
+  }
+
+  abstract int getBaseTeleportDelayTicks();
 }

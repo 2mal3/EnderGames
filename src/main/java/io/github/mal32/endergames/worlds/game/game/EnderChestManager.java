@@ -17,21 +17,22 @@ import org.jetbrains.annotations.NotNull;
 
 public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChest> {
   public EnderChestManager(EnderGames plugin, Location spawnLocation) {
-    super(plugin);
-    // Add initial Enderchests
-    int playerCount = GameWorld.getPlayersInGame().length;
-    int chestmultiplier = 5;
-    for (int i = 0; i < playerCount * chestmultiplier; i++) {
-      blocks.add(
-          new EnderChest(
-              new Location(spawnLocation.getWorld(), spawnLocation.getX(), 1, spawnLocation.getZ()),
-              plugin));
-    }
+    super(plugin,spawnLocation);
   }
 
   @Override
-  public int getDelayTicks() {
-    return 20 * 20 / blocks.size();
+  public int getBaseTeleportDelayTicks() {
+    return 20 * 20;
+  }
+
+  @Override
+  protected int blocksPerPlayer() {
+    return 5;
+  }
+
+  @Override
+  protected EnderChest getNewBlock(Location location) {
+    return new EnderChest(location, plugin);
   }
 
   @EventHandler

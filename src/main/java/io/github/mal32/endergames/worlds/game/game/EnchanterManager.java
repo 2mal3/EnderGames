@@ -12,16 +12,22 @@ import org.bukkit.inventory.ItemStack;
 
 public class EnchanterManager extends AbstractTeleportingBlockManager<Enchanter> {
   public EnchanterManager(EnderGames plugin, Location spawnLocation) {
-    super(plugin);
-
-    for (int i = 0; i < 4; i++) {
-      blocks.add(new Enchanter(spawnLocation));
-    }
+    super(plugin, spawnLocation);
   }
 
   @Override
-  public int getDelayTicks() {
-    return 20 * 10;
+  public int getBaseTeleportDelayTicks() {
+    return 20 * 40;
+  }
+
+  @Override
+  protected int blocksPerPlayer() {
+    return 3;
+  }
+
+  @Override
+  protected Enchanter getNewBlock(Location location) {
+    return new Enchanter(location);
   }
 
   @EventHandler
