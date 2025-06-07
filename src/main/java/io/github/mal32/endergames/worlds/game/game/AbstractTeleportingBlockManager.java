@@ -16,9 +16,12 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     extends AbstractTask {
   protected final List<B> blocks = new ArrayList<>();
   private int nextIndex = 0;
+  protected final Location spawnLocation;
 
   public AbstractTeleportingBlockManager(EnderGames plugin, Location spawnLocation) {
     super(plugin);
+
+    this.spawnLocation = spawnLocation;
 
     int playerCount = GameWorld.getPlayersInGame().length;
     Location startLocation = spawnLocation.clone();
@@ -146,4 +149,16 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
   }
 
   abstract int getBaseTeleportDelayTicks();
+
+  protected B getBlockAtLocation(Location location) {
+    for (B b : blocks) {
+      if (b.getLocation().getBlockX() == location.getBlockX()
+          && b.getLocation().getBlockZ() == location.getBlockZ()
+          && b.getLocation().getBlockY() == location.getBlockY()) {
+        return b;
+      }
+    }
+
+    return null;
+  }
 }

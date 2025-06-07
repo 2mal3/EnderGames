@@ -47,6 +47,7 @@ public abstract class AbstractTeleportingBlock {
     if (!location.getChunk().isLoaded()) {
       location.getChunk().load();
     }
+    if (location.getBlock().getType() != getBlockMaterial()) return;
 
     location.getWorld().getBlockAt(location).setType(Material.AIR);
 
@@ -61,4 +62,8 @@ public abstract class AbstractTeleportingBlock {
   public abstract Material getBlockMaterial();
 
   public abstract Material getFallingBlockMaterial();
+
+  public Location getLocation() {
+    return location;
+  }
 }

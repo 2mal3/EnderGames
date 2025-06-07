@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChest> {
   public EnderChestManager(EnderGames plugin, Location spawnLocation) {
-    super(plugin,spawnLocation);
+    super(plugin, spawnLocation);
   }
 
   @Override
@@ -44,14 +44,7 @@ public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChes
     }
 
     Location blockLocation = event.getClickedBlock().getLocation().clone();
-    EnderChest enderChest = null;
-    for (EnderChest e : blocks) {
-      if (e.getLocation().getX() == blockLocation.getX()
-          && e.getLocation().getZ() == blockLocation.getZ()) {
-        enderChest = e;
-        break;
-      }
-    }
+    EnderChest enderChest = getNewBlock(blockLocation);
     if (enderChest == null) {
       enderChest = new EnderChest(blockLocation, plugin);
       blocks.add(enderChest);
@@ -95,10 +88,6 @@ class EnderChest extends AbstractTeleportingBlock implements InventoryHolder {
   @NotNull
   public Inventory getInventory() {
     return inventory;
-  }
-
-  public Location getLocation() {
-    return location;
   }
 
   @Override
