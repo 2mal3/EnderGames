@@ -32,32 +32,40 @@ class OperatorStartItem extends MenuItem {
     event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
 
     if (this.startGameTask == null) {
-      this.startGameTask =
-          Bukkit.getScheduler()
-              .runTaskLater(
-                  this.plugin,
-                  () -> {
-                    this.plugin.getGameWorld().startGame();
-                    this.startGameTask = null;
-                  },
-                  5 * 20);
-
-      for (Player player : Bukkit.getOnlinePlayers()) {
-        if (player.isOp()) {
-          player.sendActionBar(Component.text("the game will start in 5 seconds!").color(NamedTextColor.GREEN));
-          this.giveItem(player);
-        }
-      }
+      scheduleGameStart();
     } else {
-      this.startGameTask.cancel();
-      this.startGameTask = null;
+      stopGameStart();
+    }
+  }
 
-      for (Player player : Bukkit.getOnlinePlayers()) {
-        if (player.isOp()) {
-          player.sendActionBar(Component.text("Start was canceled!").color(NamedTextColor.RED));
+  private void scheduleGameStart() {
+    this.startGameTask =
+        Bukkit.getScheduler()
+            .runTaskLater(
+                this.plugin,
+                () -> {
+                  this.plugin.getGameWorld().startGame();
+                  this.startGameTask = null;
+                },
+                5 * 20);
 
-          this.giveItem(player);
-        }
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      if (player.isOp()) {
+        player.sendActionBar(Component.text("The game will start in 5 seconds!").color(NamedTextColor.GREEN));
+        this.giveItem(player);
+      }
+    }
+  }
+
+  private void stopGameStart() {
+    this.startGameTask.cancel();
+    this.startGameTask = null;
+
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      if (player.isOp()) {
+        player.sendActionBar(Component.text("Start was canceled!").color(NamedTextColor.RED));
+
+        this.giveItem(player);
       }
     }
   }
