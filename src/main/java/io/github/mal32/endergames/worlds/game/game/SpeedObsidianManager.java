@@ -17,12 +17,12 @@ public class SpeedObsidianManager extends AbstractTeleportingBlockManager<SpeedO
 
   @Override
   public int getBlockTeleportDelayTicks() {
-    return 20 * 40;
+    return 20 * 20;
   }
 
   @Override
   protected int blocksPerPlayer() {
-    return 10;
+    return 5;
   }
 
   @Override
