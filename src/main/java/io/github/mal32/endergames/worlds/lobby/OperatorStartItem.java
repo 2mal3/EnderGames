@@ -10,8 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.List;
-
 class OperatorStartItem extends MenuItem {
   private final MenuItem cancleItem;
   private BukkitTask startGameTask = null;
@@ -51,7 +49,8 @@ class OperatorStartItem extends MenuItem {
 
     for (Player player : Bukkit.getOnlinePlayers()) {
       if (player.isOp()) {
-        player.sendActionBar(Component.text("The game will start in 5 seconds!").color(NamedTextColor.GREEN));
+        player.sendActionBar(
+            Component.text("The game will start in 5 seconds!").color(NamedTextColor.GREEN));
         this.giveItem(player);
       }
     }
