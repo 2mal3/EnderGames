@@ -82,6 +82,6 @@ public class Cat extends AbstractKit {
         "Gains Speed III for 30 seconds when eating raw fish. It deals +1 damage with bare hands"
             + " and takes 50% less fall damage.",
         "20 raw fish",
-        Difficulty.MEDIUM);
+        Difficulty.EASY);
   }
 }
