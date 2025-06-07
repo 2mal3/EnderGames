@@ -78,7 +78,8 @@ public class Cactus extends AbstractKit {
     if (!playerCanUseThisKit(player)) return;
 
     if (event.isSneaking()) {
-      boolean currentBlockEmpty = player.getLocation().clone().add(0, 1.1, 0).getBlock().isEmpty();
+      boolean currentBlockEmpty =
+          player.getLocation().clone().add(0, 1.1, 0).getBlock().isPassable();
       boolean standingBlockSolid = player.getLocation().clone().add(0, -1, 0).getBlock().isSolid();
 
       if (currentBlockEmpty && standingBlockSolid) {
