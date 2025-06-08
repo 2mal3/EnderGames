@@ -119,6 +119,7 @@ versions.
 - Enchanting Tables have infinite Lapis Lazuli
 - Smithing Tables have infinite Netherite Upgrade Templates
 - cheaper Anvil recipe
+- items in Furnaces smelt faster
 
 ## Using the Plugin
 

@@ -16,6 +16,7 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.Furnace;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -326,5 +327,19 @@ public class GamePhase extends AbstractPhase {
     Arrow arrow = event.getPlayer().launchProjectile(Arrow.class, customVelocity);
     arrow.setShooter(event.getPlayer());
     arrow.setDamage(1);
+  }
+
+  @EventHandler
+  public void onFurnacePlace(BlockPlaceEvent event) {
+    var player = event.getPlayer();
+    if (!GameWorld.playerIsInGame(player)) return;
+
+    var block = event.getBlock();
+    if (block.getType() != Material.FURNACE
+        && block.getType() != Material.BLAST_FURNACE
+        && block.getType() != Material.SMOKER) return;
+    Furnace furnace = (Furnace) block.getState();
+    furnace.setCookSpeedMultiplier(4);
+    furnace.update();
   }
 }
