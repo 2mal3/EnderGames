@@ -104,7 +104,7 @@ public class GamePhase extends AbstractPhase {
     final int protectionTimeDurationSeconds = 60 * 3;
 
     final BossBar protectionTimeBar =
-        Bukkit.createBossBar("Protection Time", BarColor.GREEN, BarStyle.SEGMENTED_20);
+        Bukkit.createBossBar("Protection Time", BarColor.GREEN, BarStyle.SEGMENTED_6);
     protectionTimeBar.setProgress(0.0);
 
     for (int i = 0; i < protectionTimeDurationSeconds; i += 10) {
