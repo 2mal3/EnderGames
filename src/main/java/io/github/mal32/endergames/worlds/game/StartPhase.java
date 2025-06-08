@@ -59,8 +59,8 @@ public class StartPhase extends AbstractPhase {
   private void runCountdown() {
     BukkitScheduler scheduler = plugin.getServer().getScheduler();
 
-    final int totalCountdownTimeSeconds = 30;
-    var titleTimes = new Integer[] {1, 2, 3, 4, 5, 10, 15, 20, 25, 30};
+    final int totalCountdownTimeSeconds = 20;
+    var titleTimes = new Integer[] {1, 2, 3, 4, 5, 10, 15, 20};
 
     for (Integer titleTime : titleTimes) {
       final int scheduleTicks = (totalCountdownTimeSeconds - titleTime) * 20;
