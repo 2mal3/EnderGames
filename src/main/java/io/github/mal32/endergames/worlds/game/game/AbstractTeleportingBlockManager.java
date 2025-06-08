@@ -70,33 +70,21 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     world = player.getWorld();
     border = world.getWorldBorder();
 
-    final double CHANCE_BAND_0_30 = 0.02;
-    final double CHANCE_BAND_30_80 = 0.12;
-    final double CHANCE_BAND_80_120 = 0.33;
-    final double CHANCE_BAND_120_160 = 0.53; // isn't used cause it's the else case
-
-    double roll = random.nextDouble();
-    double minDist, maxDist;
-
-    if (roll < CHANCE_BAND_0_30) {
-      minDist = 0;
-      maxDist = 30;
-    } else if (roll < CHANCE_BAND_0_30 + CHANCE_BAND_30_80) {
-      minDist = 30;
-      maxDist = 80;
-    } else if (roll < CHANCE_BAND_0_30 + CHANCE_BAND_30_80 + CHANCE_BAND_80_120) {
-      minDist = 80;
-      maxDist = 120;
-    } else {
-      minDist = 120;
-      maxDist = 160;
-    }
+    var randomNumber = random.nextDouble(1);
+    List<BlockRange> distances =
+        List.of(
+            new BlockRange(0, 30, 2),
+            new BlockRange(30, 80, 12),
+            new BlockRange(80, 120, 33),
+            new BlockRange(120, 160, 53));
+    BlockRange randomRange = chooseOnWeight(distances);
 
     // Try a few times to pick a valid "around-player" location inside the border
     final int MAX_ATTEMPTS = 10;
     for (int i = 0; i < MAX_ATTEMPTS; i++) {
       // Choose a random distance in [minDist, maxDist)
-      double dist = minDist + (random.nextDouble() * (maxDist - minDist));
+      double dist =
+          randomRange.min() + (random.nextDouble() * (randomRange.max() - randomRange.min()));
       // Choose a random angle in radians [0, 2π)
       double angle = random.nextDouble() * 2 * Math.PI;
 
@@ -115,6 +103,18 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
 
     // If we never found a valid around-player spot, fall back to border-only
     return getRandomHorizontalBorderLocation(world, border, random);
+  }
+
+  public static <T extends BlockRange> T chooseOnWeight(List<T> items) {
+    double totalWeight = 0.0;
+    for (T item : items) totalWeight += item.weight();
+    double r = Math.random() * totalWeight;
+    double cumulativeWeight = 0.0;
+    for (T item : items) {
+      cumulativeWeight += item.weight();
+      if (cumulativeWeight >= r) return item;
+    }
+    throw new RuntimeException("Should never be shown.");
   }
 
   /**
@@ -162,3 +162,5 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     return null;
   }
 }
+
+record BlockRange(int min, int max, int weight) {}
