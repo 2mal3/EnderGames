@@ -43,7 +43,7 @@ public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChes
     }
 
     Location blockLocation = event.getClickedBlock().getLocation().clone();
-    EnderChest enderChest = getNewBlock(blockLocation);
+    EnderChest enderChest = getBlockAtLocation(blockLocation);
     if (enderChest == null) {
       enderChest = new EnderChest(blockLocation, plugin);
       blocks.add(enderChest);
