@@ -73,8 +73,8 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     var randomNumber = random.nextDouble(1);
     List<BlockRange> distances =
         List.of(
-            new BlockRange(0, 30, 2),
-            new BlockRange(30, 80, 12),
+            new BlockRange(16, 32, 2),
+            new BlockRange(32, 80, 12),
             new BlockRange(80, 120, 33),
             new BlockRange(120, 160, 53));
     BlockRange randomRange = chooseOnWeight(distances);
