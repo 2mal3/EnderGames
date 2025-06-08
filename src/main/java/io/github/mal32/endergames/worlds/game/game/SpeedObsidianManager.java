@@ -17,7 +17,7 @@ public class SpeedObsidianManager extends AbstractTeleportingBlockManager<SpeedO
 
   @Override
   public int getBlockTeleportDelayTicks() {
-    return 20 * 20;
+    return 20 * 40;
   }
 
   @Override
