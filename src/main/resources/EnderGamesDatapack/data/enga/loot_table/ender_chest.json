@@ -23,6 +23,7 @@
           "type": "minecraft:item",
           "name": "minecraft:splash_potion",
           "weight": 2,
+          "quality": 2,
           "functions": [
             {
               "function": "minecraft:set_potion",
@@ -45,7 +46,6 @@
           "type": "minecraft:item",
           "name": "minecraft:potion",
           "weight": 4,
-          "quality": 1,
           "functions": [
             {
               "function": "minecraft:set_potion",
@@ -68,6 +68,7 @@
           "type": "minecraft:item",
           "name": "minecraft:splash_potion",
           "weight": 4,
+          "quality": 1,
           "functions": [
             {
               "function": "minecraft:set_potion",
@@ -102,12 +103,14 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:bucket",
-          "weight": 1
+          "weight": 1,
+          "quality": -1
         },
         {
           "type": "minecraft:item",
           "name": "minecraft:tnt",
           "weight": 4,
+          "quality": 1,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -122,6 +125,7 @@
           "type": "minecraft:item",
           "name": "minecraft:arrow",
           "weight": 6,
+          "quality": 1,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -141,6 +145,7 @@
           "type": "minecraft:item",
           "name": "minecraft:wind_charge",
           "weight": 2,
+          "quality": -1,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -155,6 +160,7 @@
           "type": "minecraft:item",
           "name": "minecraft:chorus_fruit",
           "weight": 2,
+          "quality": -1,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -208,7 +214,7 @@
           "type": "minecraft:item",
           "name": "minecraft:trident",
           "weight": 1,
-          "quality": 4
+          "quality": 2
         }
       ]
     },
@@ -219,6 +225,7 @@
           "type": "minecraft:item",
           "name": "minecraft:redstone",
           "weight": 2,
+          "quality": -2,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -233,6 +240,7 @@
           "type": "minecraft:item",
           "name": "minecraft:iron_ingot",
           "weight": 6,
+          "quality": 2,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -302,6 +310,7 @@
           "type": "minecraft:item",
           "name": "minecraft:netherite_scrap",
           "weight": 2,
+          "quality": 1,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -359,7 +368,8 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:cake",
-          "weight": 2
+          "weight": 2,
+          "quality": -2
         },
         {
           "type": "minecraft:item",
@@ -407,7 +417,7 @@
           "type": "minecraft:item",
           "name": "minecraft:sweet_berries",
           "weight": 2,
-          "quality": -1,
+          "quality": -2,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -422,6 +432,7 @@
           "type": "minecraft:item",
           "name": "minecraft:beef",
           "weight": 4,
+          "quality": -2,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -445,17 +456,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:diamond",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 0,
-                "max": 0
-              },
-              "add": true,
-              "conditions": []
-            }
-          ]
+          "functions": []
         }
       ]
     }
