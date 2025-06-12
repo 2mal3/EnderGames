@@ -1,16 +1,16 @@
 {
   "display": {
     "icon": {
-      "id": "minecraft:rabbit_foot"
+      "id": "minecraft:tropical_fish"
     },
-    "title": "Kangaroo Kit",
-    "description": "Jump 1k times to unlock this kit",
+    "title": "Dolphin Kit",
+    "description": "Swim 1 km to unlock this kit",
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": false,
     "hidden": false
   },
-  "parent": "enga:endergames/root",
+  "parent": "enga:root",
   "criteria": {
     "unlock": {
       "trigger": "minecraft:tick",
@@ -21,9 +21,9 @@
             "stats": [
               {
                 "type": "minecraft:custom",
-                "stat": "minecraft:jump",
+                "stat": "minecraft:swim_one_cm",
                 "value": {
-                  "min": 1000
+                  "min": 100000
                 }
               }
             ]

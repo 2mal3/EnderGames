@@ -1,16 +1,16 @@
 {
   "display": {
     "icon": {
-      "id": "minecraft:mace"
+      "id": "minecraft:rabbit_foot"
     },
-    "title": "Mace Kit",
-    "description": "Deal 500 damage to unlock this kit",
+    "title": "Kangaroo Kit",
+    "description": "Jump 1k times to unlock this kit",
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": false,
     "hidden": false
   },
-  "parent": "enga:endergames/root",
+  "parent": "enga:root",
   "criteria": {
     "unlock": {
       "trigger": "minecraft:tick",
@@ -21,9 +21,9 @@
             "stats": [
               {
                 "type": "minecraft:custom",
-                "stat": "minecraft:damage_dealt",
+                "stat": "minecraft:jump",
                 "value": {
-                  "min": 500
+                  "min": 1000
                 }
               }
             ]
