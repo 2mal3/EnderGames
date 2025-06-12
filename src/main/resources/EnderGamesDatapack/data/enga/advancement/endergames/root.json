@@ -7,7 +7,7 @@
   "display": {
     "announce_to_chat": false,
     "background": "minecraft:textures/gui/advancements/backgrounds/adventure.png",
-    "description": "Welcome to EnderGames!",
+    "description": "Unlock more Kits by doing tasks.",
     "icon": {
       "count": 1,
       "id": "minecraft:ender_eye"
