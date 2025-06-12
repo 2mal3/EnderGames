@@ -164,5 +164,4 @@ of this plugin are solely responsible for its content and maintenance.
 
 ## Contributing
 
-This project uses the [Google Java Style](https://google.github.io/styleguide/javaguide.html).
-I recommend using [google-java-format](https://github.com/google/google-java-format) to format your code for you.
+See [CONTRIBUTING.md](/CONTRIBUTING.md).
