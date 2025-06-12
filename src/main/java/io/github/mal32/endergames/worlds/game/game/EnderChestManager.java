@@ -3,6 +3,7 @@ package io.github.mal32.endergames.worlds.game.game;
 import io.github.mal32.endergames.EnderGames;
 import java.util.ArrayList;
 import java.util.Random;
+import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
@@ -61,7 +62,7 @@ class EnderChest extends AbstractTeleportingBlock implements InventoryHolder {
   public EnderChest(Location location, EnderGames plugin) {
     super(location);
 
-    this.inventory = plugin.getServer().createInventory(this, 27);
+    this.inventory = plugin.getServer().createInventory(this, 27, Component.text("Ender Chest"));
 
     fill();
   }
