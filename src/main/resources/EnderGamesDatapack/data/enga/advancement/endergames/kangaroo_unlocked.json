@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:rabbit_foot",
+      "count": 1
+    },
+    "title": "Kangaroo Unlocked!",
+    "description": "Jump 20 times to unlock the Kangaroo kit.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "parent": "enga:endergames/root",
+  "criteria": {
+    "jump_20_times": {
+      "trigger": "minecraft:tick",
+      "conditions": {
+        "player": {
+          "type_specific": {
+            "type": "minecraft:player",
+            "stats": [
+              {
+                "type": "minecraft:custom",
+                "stat": "minecraft:jump",
+                "value": {
+                  "min": 20
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
