@@ -9,6 +9,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.data.Ageable;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
@@ -28,6 +31,7 @@ import org.bukkit.loot.LootContext;
 import org.bukkit.loot.LootTable;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class Lucker extends AbstractKit {
 
@@ -217,7 +221,7 @@ public class Lucker extends AbstractKit {
   @EventHandler
   private void onCraftItem(CraftItemEvent event) {
     Player player = (Player) event.getWhoClicked();
-    if (!playerCanUseThisKit(player)) return;
+
 
     ItemStack result = event.getRecipe().getResult();
     if (result.getType() != Material.FISHING_ROD) return;
@@ -229,10 +233,38 @@ public class Lucker extends AbstractKit {
     event.getInventory().setResult(enchantedRod);
   }
 
-  /** Plants you place grow faster. (Not implemented yet – method head only.) */
+  /** Plants you place grow faster. */
   @EventHandler
   public void onPlantPlace(BlockPlaceEvent event) {
-    // TODO: Speed up crop growth for plants placed by the player.
+    Player player = event.getPlayer();
+    if (!playerCanUseThisKit(player)) return;
+
+    Block block = event.getBlockPlaced();
+    BlockState state = block.getState();
+    if (!(state instanceof Ageable)) return;  // only crops with growth stages
+
+    // schedule a repeating task: every tick, bump this crop’s age by +1 until max
+    new BukkitRunnable() {
+      @Override
+      public void run() {
+        BlockData data = block.getBlockData();
+        if (!(data instanceof Ageable)) {
+          // no longer a crop? stop
+          cancel();
+          return;
+        }
+
+        Ageable ageable = (Ageable) data;
+        int age = ageable.getAge();
+        int max = ageable.getMaximumAge();
+        if (age < max) {
+          ageable.setAge(age + 1);
+          block.setBlockData(ageable, true); // update block in world
+        } else {
+          cancel();
+        }
+      }
+    }.runTaskTimer(plugin, 1L, 1L);
   }
 
   /** Get better enchantments.*/
@@ -266,6 +298,7 @@ public class Lucker extends AbstractKit {
     // gather all enchants that can apply
     List<Enchantment> pool = Arrays.stream(Enchantment.values())
             .filter(e -> e.canEnchantItem(item))
+            .filter(e -> !e.isCursed())
             .collect(Collectors.toList());
     if (pool.isEmpty()) return;
 
@@ -294,9 +327,7 @@ public class Lucker extends AbstractKit {
     return new KitDescriptionItem(
             Material.AZALEA,
             "Lucker",
-            "Blessed with extraordinary luck: better Enderchest and mob loot, faster plant growth, improved"
-                    + " enchantments, more drops from ores and leaves and always fishes treasures. Gains splash potions of Bad Luck"
-                    + " on player kills.",
+            "No special abilities, but is blessed with extraordinary luck. (Better chest loot, more luck when fishing, mining, existing,...)",
             "Light-Green Leather Chestplate",
             Difficulty.MEDIUM);
   }
