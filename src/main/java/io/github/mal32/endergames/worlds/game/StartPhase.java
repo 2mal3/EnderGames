@@ -140,7 +140,7 @@ public class StartPhase extends AbstractPhase {
         new BlockVector(6.5, 0, 5.5),
         new BlockVector(4.5, 0, 7.5),
         new BlockVector(2.5, 0, 8.5),
-        new BlockVector(0, 0, 8.5),
+        new BlockVector(0.5, 0, 8.5),
         new BlockVector(-1.5, 0, 8.5),
         new BlockVector(-3.5, 0, 7.5),
         new BlockVector(-5.5, 0, 5.5),
