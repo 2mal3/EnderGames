@@ -14,6 +14,8 @@ public class Mace extends AbstractKit {
   @Override
   public void start(Player player) {
     ItemStack mace = new ItemStack(Material.MACE);
+    enchantItem(mace, Enchantment.WIND_BURST, 1);
+
     player.getInventory().addItem(mace);
 
     player
@@ -28,7 +30,7 @@ public class Mace extends AbstractKit {
         Material.MACE,
         "Mace",
         "Delivers a crushing blow with a mighty mace",
-        "Mace, Feather Falling III boots",
+        "Mace with Wind Burst, Feather Falling III boots",
         Difficulty.HARD);
   }
 }

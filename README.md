@@ -95,7 +95,7 @@ versions.
 - <details>
   <summary>Mace</summary>
 
-    - equipment: Mace and leather boots with Feather Falling III
+    - equipment: Mace with Wind Burst and leather boots with Feather Falling III
 
 </details>
 
