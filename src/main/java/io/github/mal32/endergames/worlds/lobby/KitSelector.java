@@ -16,7 +16,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
-import org.bukkit.advancement.Advancement;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -104,22 +103,6 @@ class KitInventory implements InventoryHolder, Listener {
       return;
     }
 
-    // Check if the player has unlocked the kit
-    Advancement kitAdvancement =
-        plugin.getServer().getAdvancement(new NamespacedKey("enga", kitName));
-    boolean kitUnlocked =
-        kitAdvancement == null || player.getAdvancementProgress(kitAdvancement).isDone();
-    if (!kitUnlocked) {
-      player.sendMessage(
-          Component.text()
-              .append(Component.text("You haven't unlocked the ").color(NamedTextColor.RED))
-              .append(Component.text(kitName).color(NamedTextColor.DARK_RED))
-              .append(
-                  Component.text(" kit yet. See the advancements tab.").color(NamedTextColor.RED)));
-      player.playSound(player.getLocation(), Sound.ENTITY_GOAT_AMBIENT, 1, 1);
-      return;
-    }
-
     // Store kit in PersistentDataContainer
     player.getPersistentDataContainer().set(kitStorageKey, PersistentDataType.STRING, kitName);
 
@@ -181,21 +164,6 @@ class KitInventory implements InventoryHolder, Listener {
 
   private List<TextComponent> getKitLore(KitDescriptionItem kitDescription) {
     var lore = new ArrayList<TextComponent>();
-
-    // Kit unlocked display
-    Advancement kitAdvancement =
-        plugin
-            .getServer()
-            .getAdvancement(new NamespacedKey("enga", kitDescription.name.toLowerCase()));
-    boolean isKitUnlocked =
-        kitAdvancement == null || player.getAdvancementProgress(kitAdvancement).isDone();
-    if (!isKitUnlocked) {
-      lore.add(
-          Component.text("Not unlocked yet")
-              .color(NamedTextColor.RED)
-              .decoration(TextDecoration.ITALIC, false));
-      lore.add(Component.text(""));
-    }
 
     // Abilities
     var abilitiesHeaderComponent =
