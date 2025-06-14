@@ -113,7 +113,7 @@ class KitInventory implements InventoryHolder, Listener {
       player.sendMessage(
           Component.text()
               .append(Component.text("You haven't unlocked the ").color(NamedTextColor.RED))
-              .append(Component.text(kitName).color(NamedTextColor.DARK_RED))
+              .append(Component.text(capitalize(kitName)).color(NamedTextColor.DARK_RED))
               .append(
                   Component.text(" kit yet. See the advancements tab.").color(NamedTextColor.RED)));
       player.playSound(player.getLocation(), Sound.ENTITY_GOAT_AMBIENT, 1, 1);
@@ -132,6 +132,13 @@ class KitInventory implements InventoryHolder, Listener {
 
     // Update the item enchantements to show which item was selected
     updateKitItems();
+  }
+
+  private static String capitalize(String str) {
+    if (str == null || str.isEmpty()) {
+      return str;
+    }
+    return str.substring(0, 1).toUpperCase() + str.substring(1);
   }
 
   @EventHandler
