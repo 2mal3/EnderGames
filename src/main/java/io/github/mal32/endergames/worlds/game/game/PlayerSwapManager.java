@@ -18,7 +18,8 @@ public class PlayerSwapManager extends AbstractTask {
 
   @Override
   public int getDelayTicks() {
-    return 20 * 60;
+    int playerCount = GameWorld.getPlayersInGame().length;
+    return 20 * 60 * 3 / playerCount;
   }
 
   @Override
