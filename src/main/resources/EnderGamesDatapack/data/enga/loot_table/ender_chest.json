@@ -340,6 +340,7 @@
           "type": "minecraft:item",
           "name": "minecraft:gold_ingot",
           "weight": 4,
+          "quality": 8,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -471,6 +472,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:diamond",
+          "weight": 10,
           "functions": []
         }
       ]

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
@@ -50,6 +51,19 @@ public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChes
       blocks.add(enderChest);
     }
 
+    if (enderChest.getInventory().isEmpty()) {
+      //To include the player opening it for luck effects
+      float luck = (float) event.getPlayer()
+              .getAttribute(Attribute.LUCK)
+              .getValue();
+      LootContext.Builder lootContextBuilder = new LootContext.Builder(blockLocation)
+              .luck(luck);
+
+      LootContext lootContext = lootContextBuilder.build();
+      enderChest.fill(lootContext);
+    }
+
+
     EnderChest finalEnderChest = enderChest;
     Bukkit.getScheduler()
         .runTask(plugin, () -> event.getPlayer().openInventory(finalEnderChest.getInventory()));
@@ -64,7 +78,6 @@ class EnderChest extends AbstractTeleportingBlock implements InventoryHolder {
 
     this.inventory = plugin.getServer().createInventory(this, 27, Component.text("Ender Chest"));
 
-    fill();
   }
 
   @Override
@@ -72,15 +85,12 @@ class EnderChest extends AbstractTeleportingBlock implements InventoryHolder {
     super.teleport(location);
 
     new ArrayList<>(inventory.getViewers()).forEach(HumanEntity::closeInventory);
-    fill();
+    inventory.clear();
   }
 
-  private void fill() {
+  public void fill(LootContext lootContext) {
     inventory.clear();
-
     LootTable lootTable = Bukkit.getLootTable(new NamespacedKey("enga", "ender_chest"));
-    LootContext.Builder lootContextBuilder = new LootContext.Builder(location);
-    LootContext lootContext = lootContextBuilder.build();
     lootTable.fillInventory(this.inventory, new Random(), lootContext);
   }
 
