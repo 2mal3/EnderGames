@@ -33,6 +33,7 @@ public abstract class AbstractKit extends AbstractModule {
         new Bomber(plugin),
         new Kangaroo(plugin),
         new Lucker(plugin),
+        new Archer(plugin),
         new Spectator(plugin));
   }
 
