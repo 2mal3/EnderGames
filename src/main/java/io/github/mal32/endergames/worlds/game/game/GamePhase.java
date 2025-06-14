@@ -8,8 +8,7 @@ import io.github.mal32.endergames.worlds.game.GameWorld;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
 import java.time.Duration;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
@@ -29,6 +28,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -55,8 +55,19 @@ public class GamePhase extends AbstractPhase {
             new SpectatorParticles(plugin),
             new SpeedObsidianManager(plugin, spawnLocation));
 
+    List<NamespacedKey> allRecipeKeys = new ArrayList<>();
+    Iterator<Recipe> it = Bukkit.recipeIterator();
+    while (it.hasNext()) {
+      org.bukkit.inventory.Recipe recipe = it.next();
+      if (recipe instanceof Keyed) {
+        allRecipeKeys.add(((Keyed) recipe).getKey());
+      }
+    }
+
     for (Player player : GameWorld.getPlayersInGame()) {
       player.setGameMode(GameMode.SURVIVAL);
+
+      player.discoverRecipes(allRecipeKeys);
 
       Bukkit.dispatchCommand(
           Bukkit.getConsoleSender(), "loot give " + player.getName() + " loot enga:tracker");
