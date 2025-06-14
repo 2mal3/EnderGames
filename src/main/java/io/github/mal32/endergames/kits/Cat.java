@@ -79,7 +79,7 @@ public class Cat extends AbstractKit {
     return new KitDescriptionItem(
         Material.COD,
         "Cat",
-        "Gains Speed III for 30 seconds when eating raw fish. It deals +1 damage with bare hands"
+        "Gains Speed III for 30 seconds when eating raw fish. It deals +2 damage with bare hands"
             + " and takes 50% less fall damage.",
         "20 raw fish",
         Difficulty.EASY);
