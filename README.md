@@ -64,6 +64,12 @@ of this plugin are solely responsible for its content and maintenance.
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
+### Other Playtesters
+
+- E44
+- Sulfenir
+- BrosGamer501
+
 ## Contributing
 
 See [CONTRIBUTING.md](/CONTRIBUTING.md).
