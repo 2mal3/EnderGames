@@ -75,18 +75,28 @@ public class Kangaroo extends AbstractKit {
     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 1, 1);
 
     var hungerEffect = player.getPotionEffect(PotionEffectType.HUNGER);
-    int durationSeconds = 10;
+    final int durationSeconds = 10;
+    final int startHungerLoss = 4;
+    final int hungerLossExponent = 3;
     if (hungerEffect == null) {
       // hunger takes 1 saturation per second per 40 levels
       player.addPotionEffect(
           new PotionEffect(
-              PotionEffectType.HUNGER, 20 * durationSeconds, 40 / durationSeconds * 2, true, true));
+              PotionEffectType.HUNGER,
+              20 * durationSeconds,
+              40 / durationSeconds * startHungerLoss,
+              true,
+              true));
       return;
     }
     int hungerAmplifier = hungerEffect.getAmplifier();
     player.addPotionEffect(
         new PotionEffect(
-            PotionEffectType.HUNGER, 20 * durationSeconds, hungerAmplifier * 3, true, true));
+            PotionEffectType.HUNGER,
+            20 * durationSeconds,
+            hungerAmplifier * hungerLossExponent,
+            true,
+            true));
   }
 
   @EventHandler
