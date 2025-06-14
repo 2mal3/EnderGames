@@ -107,7 +107,9 @@ class KitInventory implements InventoryHolder, Listener {
     // Check if the player has unlocked the kit
     Advancement kitAdvancement =
         plugin.getServer().getAdvancement(new NamespacedKey("enga", kitName));
-    if (kitAdvancement == null || !player.getAdvancementProgress(kitAdvancement).isDone()) {
+    boolean kitUnlocked =
+        kitAdvancement == null || player.getAdvancementProgress(kitAdvancement).isDone();
+    if (!kitUnlocked) {
       player.sendMessage(
           Component.text()
               .append(Component.text("You haven't unlocked the ").color(NamedTextColor.RED))
@@ -186,7 +188,7 @@ class KitInventory implements InventoryHolder, Listener {
             .getServer()
             .getAdvancement(new NamespacedKey("enga", kitDescription.name.toLowerCase()));
     boolean isKitUnlocked =
-        kitAdvancement != null && player.getAdvancementProgress(kitAdvancement).isDone();
+        kitAdvancement == null || player.getAdvancementProgress(kitAdvancement).isDone();
     if (!isKitUnlocked) {
       lore.add(
           Component.text("Not unlocked yet")
