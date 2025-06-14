@@ -327,7 +327,7 @@ public class Lucker extends AbstractKit {
     return new KitDescriptionItem(
             Material.AZALEA,
             "Lucker",
-            "No special abilities, but is blessed with extraordinary luck. (Better chest loot, more luck when fishing, mining, existing,...)",
+            "Blessed with extraordinary luck. (Better chest loot, more luck when fishing, mining, existing,...)",
             "Light-Green Leather Chestplate",
             Difficulty.MEDIUM);
   }
