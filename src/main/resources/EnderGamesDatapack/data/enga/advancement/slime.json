@@ -4,7 +4,7 @@
       "id": "minecraft:slime_ball"
     },
     "title": "Slime Kit",
-    "description": "Unlocked from the start",
+    "description": "Sneak for 10 minutes to unlock this kit",
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": false,
@@ -13,7 +13,23 @@
   "parent": "enga:root",
   "criteria": {
     "unlock": {
-      "trigger": "minecraft:tick"
+      "trigger": "minecraft:tick",
+      "conditions": {
+        "player": {
+          "type_specific": {
+            "type": "minecraft:player",
+            "stats": [
+              {
+                "type": "minecraft:custom",
+                "stat": "minecraft:sneak_time",
+                "value": {
+                  "min": 12000
+                }
+              }
+            ]
+          }
+        }
+      }
     }
   }
 }

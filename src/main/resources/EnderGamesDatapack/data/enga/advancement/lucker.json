@@ -4,7 +4,7 @@
       "id": "minecraft:azalea"
     },
     "title": "Lucker Kit",
-    "description": "Open 100 Ender Chests to unlock this kit",
+    "description": "Mine a Diamond Ore to unlock this kit",
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": false,
@@ -20,10 +20,10 @@
             "type": "minecraft:player",
             "stats": [
               {
-                "type": "minecraft:custom",
-                "stat": "minecraft:open_enderchest",
+                "type": "minecraft:mined",
+                "stat": "minecraft:diamond_ore",
                 "value": {
-                  "min": 100
+                  "min": 1
                 }
               }
             ]
