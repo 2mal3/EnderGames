@@ -17,17 +17,18 @@ public class Barbarian extends AbstractKit {
   public void start(Player player) {
     player
         .getInventory()
-        .setHelmet(enchantItem(new ItemStack(Material.LEATHER_HELMET), Enchantment.UNBREAKING));
+        .setHelmet(enchantItem(new ItemStack(Material.LEATHER_HELMET), Enchantment.UNBREAKING, 1));
     player
         .getInventory()
         .setChestplate(
-            enchantItem(new ItemStack(Material.LEATHER_CHESTPLATE), Enchantment.UNBREAKING));
+            enchantItem(new ItemStack(Material.LEATHER_CHESTPLATE), Enchantment.UNBREAKING, 1));
     player
         .getInventory()
-        .setLeggings(enchantItem(new ItemStack(Material.LEATHER_LEGGINGS), Enchantment.UNBREAKING));
+        .setLeggings(
+            enchantItem(new ItemStack(Material.LEATHER_LEGGINGS), Enchantment.UNBREAKING, 1));
     player
         .getInventory()
-        .setBoots(enchantItem(new ItemStack(Material.LEATHER_BOOTS), Enchantment.UNBREAKING));
+        .setBoots(enchantItem(new ItemStack(Material.LEATHER_BOOTS), Enchantment.UNBREAKING, 1));
     player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
   }
 

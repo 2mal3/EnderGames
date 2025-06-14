@@ -30,7 +30,7 @@ public class Lumberjack extends AbstractKit {
             colorLeatherArmor(new ItemStack(Material.LEATHER_LEGGINGS), Color.fromRGB(1728436)));
     player
         .getInventory()
-        .addItem(enchantItem(new ItemStack(Material.WOODEN_AXE), Enchantment.SHARPNESS));
+        .addItem(enchantItem(new ItemStack(Material.WOODEN_AXE), Enchantment.SHARPNESS, 1));
   }
 
   @EventHandler
