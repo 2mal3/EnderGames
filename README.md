@@ -20,8 +20,8 @@ versions.
 - <details>
   <summary>Bird</summary>
 
-    - gains 2 new rockets per player kill
-    - equipment: Elytra & 5 rockets
+    - gains 5 new rockets per player kill
+    - equipment: Elytra & 10 rockets
 
 </details>
 

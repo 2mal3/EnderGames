@@ -18,7 +18,7 @@ public class Bird extends AbstractKit {
     // Give the player an Elytra
     player.getInventory().setChestplate(new ItemStack(Material.ELYTRA));
     // Give the player 5 rockets (firework rockets)
-    player.getInventory().addItem(new ItemStack(Material.FIREWORK_ROCKET, 5));
+    player.getInventory().addItem(new ItemStack(Material.FIREWORK_ROCKET, 10));
   }
 
   @EventHandler
@@ -28,7 +28,7 @@ public class Bird extends AbstractKit {
     if (killer == null) return;
     if (!playerCanUseThisKit(killer)) return;
 
-    killer.getInventory().addItem(new ItemStack(Material.FIREWORK_ROCKET, 2));
+    killer.getInventory().addItem(new ItemStack(Material.FIREWORK_ROCKET, 5));
   }
 
   @Override
@@ -36,7 +36,7 @@ public class Bird extends AbstractKit {
     return new KitDescriptionItem(
         Material.ELYTRA,
         "Bird",
-        "Starts with an Elytra and 5 rockets. Gains 2 rockets per player kill. Fly like a bird!",
+        "Starts with an Elytra and 10 Rockets. Gains 5 rockets per player kill. Fly like a bird!",
         "1 Elytra, 5 Firework Rockets",
         Difficulty.MEDIUM);
   }
