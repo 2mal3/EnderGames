@@ -1,12 +1,17 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
-import java.util.Collection;
-import java.util.Random;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,7 +19,13 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.loot.LootContext;
+import org.bukkit.loot.LootTable;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -64,7 +75,7 @@ public class Lucker extends AbstractKit {
         for (ItemStack drop : drops) {
           // Drop one extra copy of each default drop
           ItemStack extra = drop.clone();
-          extra.setAmount(2);
+          extra.setAmount(1);
           loc.getWorld().dropItemNaturally(loc, extra);
         }
         break;
@@ -110,6 +121,19 @@ public class Lucker extends AbstractKit {
         }
       }
       case WITCH -> event.getDrops().add(new ItemStack(Material.GLOWSTONE));
+      case PLAYER -> {
+        ItemStack bad_luck_potions = new ItemStack(Material.SPLASH_POTION);
+        PotionMeta meta = (PotionMeta) bad_luck_potions.getItemMeta();
+        meta.addCustomEffect(new PotionEffect(PotionEffectType.UNLUCK, 20 * 160, 4), true);
+        meta.displayName(Component.text("Splash Potion of Bad Luck").decoration(TextDecoration.ITALIC, false));
+        bad_luck_potions.setItemMeta(meta);
+        for (int i = 0; i < 3; i++) {
+          killer.getInventory().addItem(bad_luck_potions.clone())
+                  .forEach((slot, leftover) ->
+                          killer.getWorld().dropItemNaturally(killer.getLocation(), leftover)
+                  );
+        }
+      }
       default -> {}
     }
   }
@@ -117,8 +141,92 @@ public class Lucker extends AbstractKit {
   /**
    * Always get treasure (or a lot of fish) when fishing. (Not implemented yet – method head only.)
    */
-  public void onFishCatchEvent(/* e.g. PlayerFishEvent event */ ) {
-    // TODO: Guarantee treasure catches or extra fish.
+  @EventHandler
+  public void onFishCatchEvent(PlayerFishEvent event) {
+    if (!playerCanUseThisKit(event.getPlayer())) return;
+    // Only handle actual catches
+    if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) return;
+    // Remove the vanilla drop:
+    Entity caught = event.getCaught();
+    if (caught != null) caught.remove();
+
+    Player player = event.getPlayer();
+    Random rng = new Random();
+    ItemStack catchItem;
+
+    // 10% branch: 25 random fish species
+    if (rng.nextDouble() < 0.10) {
+      Material[] fishTypes = {
+              Material.COD, Material.SALMON,
+              Material.PUFFERFISH, Material.TROPICAL_FISH
+      };
+      for (int i = 0; i < 25; i++) {
+        Material species = fishTypes[rng.nextInt(fishTypes.length)];
+        ItemStack fish = new ItemStack(species, 1);
+        player.getInventory()
+                .addItem(fish)
+                .values()
+                .forEach(overflow ->
+                        player.getWorld().dropItemNaturally(player.getLocation(), overflow));
+      }
+      catchItem = new ItemStack(Material.PUFFERFISH, 1);
+    } else {
+      // Otherwise: force fishing treasure table
+      LootTable lootTable = Bukkit.getLootTable(
+              NamespacedKey.minecraft("gameplay/fishing/treasure")
+      );
+
+      LootContext ctx = new LootContext.Builder(player.getLocation())
+              .killer(player)
+              .build();
+
+      // Fill fake inventory to pick 1 treasure
+      Inventory tempInv = Bukkit.createInventory(null, 9);
+      lootTable.fillInventory(tempInv, rng, ctx);
+
+      // Pick first valid item as the catch
+      catchItem = null;
+      for (ItemStack drop : tempInv.getContents()) {
+        if (drop != null && drop.getType() != Material.AIR) {
+          catchItem = drop;
+          break;
+        }
+      }
+      // Fallback: basic treasure
+      if (catchItem == null) {
+        catchItem = new ItemStack(Material.BOW);
+      }
+    }
+
+    Location hookLoc = event.getHook().getLocation();
+    Item fakeDrop = player.getWorld().dropItem(hookLoc, catchItem);
+    fakeDrop.setPickupDelay(Integer.MAX_VALUE); // Can't pick up yet
+
+    // Schedule to give item + remove visual after 2 ticks
+    ItemStack finalCatchItem = catchItem;
+    Bukkit.getScheduler().runTaskLater(plugin, () -> {
+      // Try add to inventory, drop overflow
+      player.getInventory().addItem(finalCatchItem)
+              .values()
+              .forEach(overflow -> player.getWorld().dropItemNaturally(player.getLocation(), overflow));
+      fakeDrop.remove();
+    }, 2L);
+
+  }
+
+  @EventHandler
+  private void onCraftItem(CraftItemEvent event) {
+    Player player = (Player) event.getWhoClicked();
+    if (!playerCanUseThisKit(player)) return;
+
+    ItemStack result = event.getRecipe().getResult();
+    if (result.getType() != Material.FISHING_ROD) return;
+
+    // Clone result so you don’t modify the original recipe’s ItemStack
+    ItemStack enchantedRod = result.clone();
+    enchantedRod.addUnsafeEnchantment(Enchantment.LURE, 5);
+
+    event.getInventory().setResult(enchantedRod);
   }
 
   /** Plants you place grow faster. (Not implemented yet – method head only.) */
@@ -127,25 +235,69 @@ public class Lucker extends AbstractKit {
     // TODO: Speed up crop growth for plants placed by the player.
   }
 
-  /** Get better enchantments. (Not implemented yet – method head only.) */
+  /** Get better enchantments.*/
   @EventHandler
   public void onEnchantItem(EnchantItemEvent event) {
-    // TODO: Modify enchanting table behavior to yield higher-level enchantments.
+    Player player = event.getEnchanter();
+    if (!playerCanUseThisKit(player)) return;
+
+    event.getEnchantsToAdd().clear();
+    int paid = event.getExpLevelCost();
+
+    ItemStack item = event.getItem();
+    applyLvL30Enchants(item);
+
+    // 4) Cancel the rest so no vanilla logic runs
+
+    event.setCancelled(true);
+
+    player.setLevel(player.getLevel() - paid);
+    // 6) Put the enchanted item back into the table slot
+    player.getOpenInventory()
+            .getTopInventory()
+            .setItem(0, item);
+  }
+
+  /**
+   * Choose 1–3 non‑conflicting enchants that CAN go on this item,
+   * and give them all at (or near) their max level.
+   */
+  private void applyLvL30Enchants(ItemStack item) {
+    // gather all enchants that can apply
+    List<Enchantment> pool = Arrays.stream(Enchantment.values())
+            .filter(e -> e.canEnchantItem(item))
+            .collect(Collectors.toList());
+    if (pool.isEmpty()) return;
+
+    // we'll give between 1 and 3 enchants
+    Random rng = new Random();
+    int count = 1 + rng.nextInt(4);
+    Set<Enchantment> chosen = new HashSet<>();
+
+    for (int i = 0; i < count && !pool.isEmpty(); i++) {
+      // pick one at random
+      Enchantment pick = pool.remove(rng.nextInt(pool.size()));
+      chosen.add(pick);
+      // remove any that conflict with it
+      pool.removeIf(other -> other.conflictsWith(pick));
+    }
+
+    // apply each at its max level
+    for (Enchantment e : chosen) {
+      int lvl = 1 + rng.nextInt(e.getMaxLevel());
+      item.addUnsafeEnchantment(e, lvl);
+    }
   }
 
   @Override
   public KitDescriptionItem getDescriptionItem() {
     return new KitDescriptionItem(
-        Material.AZALEA,
-        "Lucker",
-        "Has good luck at everything:"
-            + "- More loot from Ender Chests (coming soon)"
-            + "- Extra drops when mining ores; higher apple chance from leaves"
-            + "- Always treasures or tons of fish when fishing (coming soon)"
-            + "- More loot from killing mobs"
-            + "- Faster plant growth (coming soon)"
-            + "- Better enchantments (coming soon)",
-        "Light-Green Leather Chestplate",
-        Difficulty.MEDIUM);
+            Material.AZALEA,
+            "Lucker",
+            "Blessed with extraordinary luck: better Enderchest and mob loot, faster plant growth, improved"
+                    + " enchantments, more drops from ores and leaves and always fishes treasures. Gains splash potions of Bad Luck"
+                    + " on player kills.",
+            "Light-Green Leather Chestplate",
+            Difficulty.MEDIUM);
   }
 }
