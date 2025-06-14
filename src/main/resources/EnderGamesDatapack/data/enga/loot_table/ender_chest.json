@@ -123,8 +123,23 @@
         },
         {
           "type": "minecraft:item",
+          "name": "minecraft:spectral_arrow",
+          "weight": 3,
+          "quality": 2,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 5,
+                "max": 10
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
           "name": "minecraft:arrow",
-          "weight": 6,
+          "weight": 3,
           "quality": 1,
           "functions": [
             {
@@ -159,7 +174,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:chorus_fruit",
-          "weight": 2,
+          "weight": 1,
           "quality": -1,
           "functions": [
             {
@@ -204,8 +219,8 @@
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 1,
-                "max": 2
+                "min": 2,
+                "max": 3
               }
             }
           ]
