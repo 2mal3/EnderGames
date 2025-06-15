@@ -42,7 +42,9 @@ public class Lucker extends AbstractKit {
           Material.WHEAT_SEEDS,
           Material.BEETROOT_SEEDS,
           Material.CARROT,
-          Material.POTATO
+          Material.POTATO,
+          Material.MELON_SEEDS,
+          Material.PUMPKIN_SEEDS
   );
 
   public Lucker(EnderGames plugin) {
@@ -353,7 +355,7 @@ public class Lucker extends AbstractKit {
     return new KitDescriptionItem(
             Material.AZALEA,
             "Lucker",
-            "Blessed with extraordinary luck.         (Better chest loot, more luck when fishing, mining, existing,...)",
+            "Blessed with extraordinary luck.                 (Better chest loot, more luck when fishing, mining, existing,...)",
             "Light-Green Leather Chestplate",
             Difficulty.MEDIUM);
   }
