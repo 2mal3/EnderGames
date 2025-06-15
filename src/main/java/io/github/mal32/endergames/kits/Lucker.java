@@ -18,12 +18,14 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -36,6 +38,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class Lucker extends AbstractKit {
 
   private final Random random = new Random();
+  private static final Set<Material> SEEDS = EnumSet.of(
+          Material.WHEAT_SEEDS,
+          Material.BEETROOT_SEEDS,
+          Material.CARROT,
+          Material.POTATO
+  );
 
   public Lucker(EnderGames plugin) {
     super(plugin);
@@ -205,6 +213,7 @@ public class Lucker extends AbstractKit {
     Location hookLoc = event.getHook().getLocation();
     Item fakeDrop = player.getWorld().dropItem(hookLoc, catchItem);
     fakeDrop.setPickupDelay(Integer.MAX_VALUE); // Can't pick up yet
+    event.getHook().setHookedEntity(fakeDrop);
 
     // Schedule to give item + remove visual after 2 ticks
     ItemStack finalCatchItem = catchItem;
@@ -214,7 +223,7 @@ public class Lucker extends AbstractKit {
               .values()
               .forEach(overflow -> player.getWorld().dropItemNaturally(player.getLocation(), overflow));
       fakeDrop.remove();
-    }, 2L);
+    }, 6);
 
   }
 
@@ -235,21 +244,38 @@ public class Lucker extends AbstractKit {
 
   /** Plants you place grow faster. */
   @EventHandler
-  public void onPlantPlace(BlockPlaceEvent event) {
+  public void onPlayerPlant(PlayerInteractEvent event) {
     Player player = event.getPlayer();
     if (!playerCanUseThisKit(player)) return;
+    if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
-    Block block = event.getBlockPlaced();
-    BlockState state = block.getState();
-    if (!(state instanceof Ageable)) return;  // only crops with growth stages
+    ItemStack inHand = event.getItem();
+    if (inHand == null) return;
 
-    // schedule a repeating task: every tick, bump this crop’s age by +1 until max
+    Material seed = inHand.getType();
+    if (!SEEDS.contains(seed)) return;
+
+    Block clicked = event.getClickedBlock();
+    if (clicked == null || clicked.getType() != Material.FARMLAND) return;
+
     new BukkitRunnable() {
       @Override
       public void run() {
-        BlockData data = block.getBlockData();
+        Block crop = clicked.getRelative(event.getBlockFace());
+        BlockData data = crop.getBlockData();
+        if (data instanceof Ageable) {
+          startFastGrowth(crop);
+        }
+      }
+    }.runTaskLater(plugin, 1L);
+  }
+
+  private void startFastGrowth(Block crop) {
+    new BukkitRunnable() {
+      @Override
+      public void run() {
+        BlockData data = crop.getBlockData();
         if (!(data instanceof Ageable)) {
-          // no longer a crop? stop
           cancel();
           return;
         }
@@ -259,7 +285,7 @@ public class Lucker extends AbstractKit {
         int max = ageable.getMaximumAge();
         if (age < max) {
           ageable.setAge(age + 1);
-          block.setBlockData(ageable, true); // update block in world
+          crop.setBlockData(ageable, true);
         } else {
           cancel();
         }
@@ -327,7 +353,7 @@ public class Lucker extends AbstractKit {
     return new KitDescriptionItem(
             Material.AZALEA,
             "Lucker",
-            "Blessed with extraordinary luck. (Better chest loot, more luck when fishing, mining, existing,...)",
+            "Blessed with extraordinary luck.         (Better chest loot, more luck when fishing, mining, existing,...)",
             "Light-Green Leather Chestplate",
             Difficulty.MEDIUM);
   }
