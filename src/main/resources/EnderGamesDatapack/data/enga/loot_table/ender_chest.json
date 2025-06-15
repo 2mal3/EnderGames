@@ -255,7 +255,7 @@
           "type": "minecraft:item",
           "name": "minecraft:iron_ingot",
           "weight": 6,
-          "quality": 6,
+          "quality": 5,
           "functions": [
             {
               "function": "minecraft:set_count",

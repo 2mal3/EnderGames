@@ -27,7 +27,9 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.loot.LootContext;
 import org.bukkit.loot.LootTable;
@@ -103,7 +105,8 @@ public class Lucker extends AbstractKit {
       // 50% chance to drop an apple
       if (random.nextDouble() > 0.5) {
         ItemStack apple = new ItemStack(Material.APPLE, 1);
-        loc.getWorld().dropItemNaturally(loc, apple);
+        Location dropLoc = block.getLocation().add(0.5, 0.5, 0.5);
+        dropLoc.getWorld().dropItemNaturally(dropLoc, apple);
       }
     }
   }
@@ -160,9 +163,6 @@ public class Lucker extends AbstractKit {
     if (!playerCanUseThisKit(event.getPlayer())) return;
     // Only handle actual catches
     if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) return;
-    // Remove the vanilla drop:
-    Entity caught = event.getCaught();
-    if (caught != null) caught.remove();
 
     Player player = event.getPlayer();
     Random rng = new Random();
@@ -183,49 +183,7 @@ public class Lucker extends AbstractKit {
                 .forEach(overflow ->
                         player.getWorld().dropItemNaturally(player.getLocation(), overflow));
       }
-      catchItem = new ItemStack(Material.PUFFERFISH, 1);
-    } else {
-      // Otherwise: force fishing treasure table
-      LootTable lootTable = Bukkit.getLootTable(
-              NamespacedKey.minecraft("gameplay/fishing/treasure")
-      );
-
-      LootContext ctx = new LootContext.Builder(player.getLocation())
-              .killer(player)
-              .build();
-
-      // Fill fake inventory to pick 1 treasure
-      Inventory tempInv = Bukkit.createInventory(null, 9);
-      lootTable.fillInventory(tempInv, rng, ctx);
-
-      // Pick first valid item as the catch
-      catchItem = null;
-      for (ItemStack drop : tempInv.getContents()) {
-        if (drop != null && drop.getType() != Material.AIR) {
-          catchItem = drop;
-          break;
-        }
-      }
-      // Fallback: basic treasure
-      if (catchItem == null) {
-        catchItem = new ItemStack(Material.BOW);
-      }
     }
-
-    Location hookLoc = event.getHook().getLocation();
-    Item fakeDrop = player.getWorld().dropItem(hookLoc, catchItem);
-    fakeDrop.setPickupDelay(Integer.MAX_VALUE); // Can't pick up yet
-    event.getHook().setHookedEntity(fakeDrop);
-
-    // Schedule to give item + remove visual after 2 ticks
-    ItemStack finalCatchItem = catchItem;
-    Bukkit.getScheduler().runTaskLater(plugin, () -> {
-      // Try add to inventory, drop overflow
-      player.getInventory().addItem(finalCatchItem)
-              .values()
-              .forEach(overflow -> player.getWorld().dropItemNaturally(player.getLocation(), overflow));
-      fakeDrop.remove();
-    }, 6);
 
   }
 
@@ -240,6 +198,12 @@ public class Lucker extends AbstractKit {
     // Clone result so you don’t modify the original recipe’s ItemStack
     ItemStack enchantedRod = result.clone();
     enchantedRod.addUnsafeEnchantment(Enchantment.LURE, 5);
+    enchantedRod.addUnsafeEnchantment(Enchantment.LUCK_OF_THE_SEA, 99);
+    ItemMeta meta = enchantedRod.getItemMeta();
+    if (meta != null) {
+      meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+      enchantedRod.setItemMeta(meta);
+    }
 
     event.getInventory().setResult(enchantedRod);
   }
@@ -332,7 +296,7 @@ public class Lucker extends AbstractKit {
 
     // we'll give between 1 and 3 enchants
     Random rng = new Random();
-    int count = 1 + rng.nextInt(4);
+    int count = 1 + rng.nextInt(3);
     Set<Enchantment> chosen = new HashSet<>();
 
     for (int i = 0; i < count && !pool.isEmpty(); i++) {
@@ -343,7 +307,6 @@ public class Lucker extends AbstractKit {
       pool.removeIf(other -> other.conflictsWith(pick));
     }
 
-    // apply each at its max level
     for (Enchantment e : chosen) {
       int lvl = 1 + rng.nextInt(e.getMaxLevel());
       item.addUnsafeEnchantment(e, lvl);
