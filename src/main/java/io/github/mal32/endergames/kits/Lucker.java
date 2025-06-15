@@ -308,11 +308,7 @@ public class Lucker extends AbstractKit {
     }
 
     for (Enchantment e : chosen) {
-      int max = e.getMaxLevel();
-      double u = rng.nextDouble(); // [0,1)
-      double biased = Math.pow(u, 1.5); // -> bias towards 0
-      int lvl = 1 + (int) (biased * max);
-      if (lvl > max) lvl = max; //just in case
+      int lvl = 1 + rng.nextInt(e.getMaxLevel());
       item.addUnsafeEnchantment(e, lvl);
     }
   }
