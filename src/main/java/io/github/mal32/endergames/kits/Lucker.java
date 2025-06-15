@@ -294,9 +294,9 @@ public class Lucker extends AbstractKit {
             .collect(Collectors.toList());
     if (pool.isEmpty()) return;
 
-    // we'll give between 1 and 3 enchants
+    // give between 1 and 4 enchants
     Random rng = new Random();
-    int count = 1 + rng.nextInt(3);
+    int count = 1 + rng.nextInt(4);
     Set<Enchantment> chosen = new HashSet<>();
 
     for (int i = 0; i < count && !pool.isEmpty(); i++) {
@@ -308,7 +308,11 @@ public class Lucker extends AbstractKit {
     }
 
     for (Enchantment e : chosen) {
-      int lvl = 1 + rng.nextInt(e.getMaxLevel());
+      int max = e.getMaxLevel();
+      double u = rng.nextDouble(); // [0,1)
+      double biased = Math.pow(u, 1.5); // -> bias towards 0
+      int lvl = 1 + (int) (biased * max);
+      if (lvl > max) lvl = max; //just in case
       item.addUnsafeEnchantment(e, lvl);
     }
   }
