@@ -43,10 +43,6 @@ public abstract class AbstractKit extends AbstractModule {
     return item;
   }
 
-  protected static ItemStack enchantItem(ItemStack item, Enchantment enchantment) {
-    return enchantItem(item, enchantment, 1);
-  }
-
   protected static ItemStack colorLeatherArmor(ItemStack item, Color color) {
     LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
     meta.setColor(color);

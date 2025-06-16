@@ -2,113 +2,16 @@
 
 ![](https://tokei.rs/b1/github/2mal3/EnderGames?category=code) [![CodeQL](https://github.com/2mal3/EnderGames/actions/workflows/codeql.yaml/badge.svg)](https://github.com/2mal3/EnderGames/actions/workflows/codeql.yaml) ![GitHub License](https://img.shields.io/github/license/2mal3/EnderGames?logo=github) ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/2mal3/EnderGames?logo=github) ![GitHub last commit](https://img.shields.io/github/last-commit/2mal3/EnderGames?style=flat&logo=github) ![Modrinth Downloads](https://img.shields.io/modrinth/dt/CHztyFRI?logo=modrinth)
 
-> Teleporting themed Kit SurivialGames on a random generated map for post 1.8 PvP.
+> Teleporting themed Kit SurivialGames for small player sizes on a random generated map with post 1.8 PvP.
 
 A Paper plugin that revives GommeHD’s discontinued EnderGames mode - reimagined and optimized for the newer Minecraft
 versions.
 
-## Kits
+## Features
 
-- <details>
-  <summary>Barbarian</summary>
-
-    - deals more attack damage the hungrier he is (+2,5% damage per half hunger missing)
-    - equipment: wooden sword and full Leather armor with Unbreaking I
-
-</details>
-
-- <details>
-  <summary>Bird</summary>
-
-    - gains 2 new rockets per player kill
-    - equipment: Elytra & 5 rockets
-
-</details>
-
-- <details>
-  <summary>Blaze</summary>
-
-    - can leave a fire trail for a short time
-    - is immune to fire damage, but gains Weakness I in water
-    - sword or bow hits have a 20% chance of igniting enemies
-    - equipment: golden sword and Blaze Powder to activate Burn ability
-
-</details>
-
-- <details>
-  <summary>Bomber</summary>
-
-    - takes no explosion damage
-    - killed entities explode
-    - TNT placed explodes faster
-    - equipment: 5 TNT, 10 Mines
-
-</details>
-
-- <details>
-  <summary>Cactus</summary>
-
-    - dealths thorns damage to attackers
-    - can sneak to disguise itself as cactus
-    - equipment: green leather helmet and leggings
-
-</details>
-
-- <details>
-  <summary>Cat</summary>
-
-    - eating fish gives Speed III for 30 seconds
-    - the empty hand deals +2 extra Damage
-    - fall damage is reduced by 50%
-    - equipment: 20 raw fish
-
-</details>
-
-- <details>
-  <summary>Dolphin</summary>
-
-    - has permanent Conduit Power and Dolphins Grace
-    - gets Regeneration and Resistance in water
-    - has Weakness on Land
-    - swimming gives fish
-    - equipment: blue leather boots, water bucket
-
-</details>
-
-- <details>
-  <summary>Kangaroo</summary>
-
-    - can double jump at the cost of hunger
-    - equipment: none
-
-</details>
-
-- <details>
-  <summary>Lumberjack</summary>
-
-    - mining a log directly destroys its entire tree
-    - all axes get enchanted with Sharpness I
-    - equipment: wooden axe with Sharpness I, red leather chestplate and blue leather leggings
-
-</details>
-
-- <details>
-  <summary>Mace</summary>
-
-    - equipment: Mace and leather boots with Feather Falling III
-
-</details>
-
-- <details>
-  <summary>Slime</summary>
-
-    - occasionally gains slimeballs when jumping
-    - slimeballs can be thrown at enemies, giving them slowness
-    - has Jump Boos II
-    - spawns small slimes when hit
-    - equipment: 10 slimeballs, green leather chestplate and boots
-
-</details>
+- a bunch of custom game mechanics such as player swapping, teleporting blocks and custom items
+- 11 unique kits to choose from with more coming soon
+- heavily playtested and balanced
 
 ## Vanilla Modifications
 
@@ -129,9 +32,8 @@ as this can be damaged by the game.
 ### Recommended Server Settings
 
 - `spawn-protection=0`
-- `simulation-distance` at least 6
-- `force-gamemode=false`
-- `allow-nether=false` optional, to have the original EnderGames experience
+- `simulation-distance` > 6
+- `allow-nether=false`
 
 ## Disclaimer
 
@@ -161,6 +63,12 @@ of this plugin are solely responsible for its content and maintenance.
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+
+### Other Playtesters
+
+- E44
+- Sulfenir
+- BrosGamer501
 
 ## Contributing
 
