@@ -255,7 +255,7 @@
           "type": "minecraft:item",
           "name": "minecraft:iron_ingot",
           "weight": 6,
-          "quality": 2,
+          "quality": 5,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -312,14 +312,25 @@
           "type": "minecraft:item",
           "name": "minecraft:diamond",
           "weight": 2,
+          "functions": [],
+          "conditions": []
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:diamond",
+          "weight": 0,
+          "quality": 6,
           "functions": [
             {
               "function": "minecraft:set_count",
-              "count": 0,
-              "add": true
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 0,
+                "max": 3
+              },
+              "add": false
             }
-          ],
-          "conditions": []
+          ]
         },
         {
           "type": "minecraft:item",
@@ -340,6 +351,7 @@
           "type": "minecraft:item",
           "name": "minecraft:gold_ingot",
           "weight": 4,
+          "quality": 9,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -354,6 +366,7 @@
           "type": "minecraft:item",
           "name": "minecraft:flint",
           "weight": 2,
+          "quality": -2,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -457,21 +470,6 @@
               }
             }
           ]
-        }
-      ]
-    },
-    {
-      "rolls": 0,
-      "bonus_rolls": {
-        "type": "minecraft:uniform",
-        "min": 1,
-        "max": 0
-      },
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:diamond",
-          "functions": []
         }
       ]
     }
