@@ -327,7 +327,8 @@ public class GamePhase extends AbstractPhase {
     if (!GameWorld.playerIsInGame(player)) return;
 
     ItemStack item = event.getItem();
-    if (item == null || item.getType() != Material.ARROW) return;
+    if (item == null
+        || (item.getType() != Material.ARROW && item.getType() != Material.SPECTRAL_ARROW)) return;
 
     item.setAmount(item.getAmount() - 1);
 
@@ -335,7 +336,9 @@ public class GamePhase extends AbstractPhase {
     Vector direction = player.getEyeLocation().getDirection();
     Vector customVelocity = direction.normalize().multiply(speedMultiplier);
 
-    Arrow arrow = event.getPlayer().launchProjectile(Arrow.class, customVelocity);
+    var arrowClass = item.getType() == Material.ARROW ? Arrow.class : SpectralArrow.class;
+
+    AbstractArrow arrow = event.getPlayer().launchProjectile(arrowClass, customVelocity);
     arrow.setShooter(event.getPlayer());
     arrow.setDamage(1);
   }
