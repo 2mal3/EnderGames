@@ -52,17 +52,13 @@ public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChes
     }
 
     if (enderChest.getInventory().isEmpty()) {
-      //To include the player opening it for luck effects
-      float luck = (float) event.getPlayer()
-              .getAttribute(Attribute.LUCK)
-              .getValue();
-      LootContext.Builder lootContextBuilder = new LootContext.Builder(blockLocation)
-              .luck(luck);
+      // To include the player opening it for luck effects
+      float luck = (float) event.getPlayer().getAttribute(Attribute.LUCK).getValue();
+      LootContext.Builder lootContextBuilder = new LootContext.Builder(blockLocation).luck(luck);
 
       LootContext lootContext = lootContextBuilder.build();
       enderChest.fill(lootContext);
     }
-
 
     EnderChest finalEnderChest = enderChest;
     Bukkit.getScheduler()
@@ -77,7 +73,6 @@ class EnderChest extends AbstractTeleportingBlock implements InventoryHolder {
     super(location);
 
     this.inventory = plugin.getServer().createInventory(this, 27, Component.text("Ender Chest"));
-
   }
 
   @Override

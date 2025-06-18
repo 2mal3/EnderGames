@@ -90,7 +90,11 @@ public class GamePhase extends AbstractPhase {
     worldBoarder.setWarningTime(60);
     worldBoarder.setDamageBuffer(1);
 
-    plugin.getServer().getScheduler().runTaskLater(plugin, this::removeSpawnPlatform, 30 * 20);
+    int spawnPlatformRemoveDelaySeconds = EnderGames.isInDebugMode() ? 60 * 10 : 30;
+    plugin
+        .getServer()
+        .getScheduler()
+        .runTaskLater(plugin, this::removeSpawnPlatform, spawnPlatformRemoveDelaySeconds * 20);
 
     initProtectionTime();
 
@@ -327,7 +331,8 @@ public class GamePhase extends AbstractPhase {
     if (!GameWorld.playerIsInGame(player)) return;
 
     ItemStack item = event.getItem();
-    if (item == null || item.getType() != Material.ARROW) return;
+    if (item == null
+        || (item.getType() != Material.ARROW && item.getType() != Material.SPECTRAL_ARROW)) return;
 
     item.setAmount(item.getAmount() - 1);
 
@@ -335,7 +340,9 @@ public class GamePhase extends AbstractPhase {
     Vector direction = player.getEyeLocation().getDirection();
     Vector customVelocity = direction.normalize().multiply(speedMultiplier);
 
-    Arrow arrow = event.getPlayer().launchProjectile(Arrow.class, customVelocity);
+    var arrowClass = item.getType() == Material.ARROW ? Arrow.class : SpectralArrow.class;
+
+    AbstractArrow arrow = event.getPlayer().launchProjectile(arrowClass, customVelocity);
     arrow.setShooter(event.getPlayer());
     arrow.setDamage(1);
   }
