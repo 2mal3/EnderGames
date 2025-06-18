@@ -1,38 +1,29 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
-
 import java.util.*;
 import java.util.stream.Collectors;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.loot.LootContext;
-import org.bukkit.loot.LootTable;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -40,14 +31,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class Lucker extends AbstractKit {
 
   private final Random random = new Random();
-  private static final Set<Material> SEEDS = EnumSet.of(
+  private static final Set<Material> SEEDS =
+      EnumSet.of(
           Material.WHEAT_SEEDS,
           Material.BEETROOT_SEEDS,
           Material.CARROT,
           Material.POTATO,
           Material.MELON_SEEDS,
-          Material.PUMPKIN_SEEDS
-  );
+          Material.PUMPKIN_SEEDS);
 
   public Lucker(EnderGames plugin) {
     super(plugin);
@@ -142,13 +133,16 @@ public class Lucker extends AbstractKit {
         ItemStack bad_luck_potions = new ItemStack(Material.SPLASH_POTION);
         PotionMeta meta = (PotionMeta) bad_luck_potions.getItemMeta();
         meta.addCustomEffect(new PotionEffect(PotionEffectType.UNLUCK, 20 * 160, 4), true);
-        meta.displayName(Component.text("Splash Potion of Bad Luck").decoration(TextDecoration.ITALIC, false));
+        meta.displayName(
+            Component.text("Splash Potion of Bad Luck").decoration(TextDecoration.ITALIC, false));
         bad_luck_potions.setItemMeta(meta);
         for (int i = 0; i < 3; i++) {
-          killer.getInventory().addItem(bad_luck_potions.clone())
-                  .forEach((slot, leftover) ->
-                          killer.getWorld().dropItemNaturally(killer.getLocation(), leftover)
-                  );
+          killer
+              .getInventory()
+              .addItem(bad_luck_potions.clone())
+              .forEach(
+                  (slot, leftover) ->
+                      killer.getWorld().dropItemNaturally(killer.getLocation(), leftover));
         }
       }
       default -> {}
@@ -171,26 +165,25 @@ public class Lucker extends AbstractKit {
     // 10% branch: 25 random fish species
     if (rng.nextDouble() < 0.10) {
       Material[] fishTypes = {
-              Material.COD, Material.SALMON,
-              Material.PUFFERFISH, Material.TROPICAL_FISH
+        Material.COD, Material.SALMON,
+        Material.PUFFERFISH, Material.TROPICAL_FISH
       };
       for (int i = 0; i < 25; i++) {
         Material species = fishTypes[rng.nextInt(fishTypes.length)];
         ItemStack fish = new ItemStack(species, 1);
-        player.getInventory()
-                .addItem(fish)
-                .values()
-                .forEach(overflow ->
-                        player.getWorld().dropItemNaturally(player.getLocation(), overflow));
+        player
+            .getInventory()
+            .addItem(fish)
+            .values()
+            .forEach(
+                overflow -> player.getWorld().dropItemNaturally(player.getLocation(), overflow));
       }
     }
-
   }
 
   @EventHandler
   private void onCraftItem(CraftItemEvent event) {
     Player player = (Player) event.getWhoClicked();
-
 
     ItemStack result = event.getRecipe().getResult();
     if (result.getType() != Material.FISHING_ROD) return;
@@ -259,7 +252,7 @@ public class Lucker extends AbstractKit {
     }.runTaskTimer(plugin, 1L, 1L);
   }
 
-  /** Get better enchantments.*/
+  /** Get better enchantments. */
   @EventHandler
   public void onEnchantItem(EnchantItemEvent event) {
     Player player = event.getEnchanter();
@@ -277,18 +270,17 @@ public class Lucker extends AbstractKit {
 
     player.setLevel(player.getLevel() - paid);
     // 6) Put the enchanted item back into the table slot
-    player.getOpenInventory()
-            .getTopInventory()
-            .setItem(0, item);
+    player.getOpenInventory().getTopInventory().setItem(0, item);
   }
 
   /**
-   * Choose 1–3 non‑conflicting enchants that CAN go on this item,
-   * and give them all at (or near) their max level.
+   * Choose 1–3 non‑conflicting enchants that CAN go on this item, and give them all at (or near)
+   * their max level.
    */
   private void applyLvL30Enchants(ItemStack item) {
     // gather all enchants that can apply
-    List<Enchantment> pool = Arrays.stream(Enchantment.values())
+    List<Enchantment> pool =
+        Arrays.stream(Enchantment.values())
             .filter(e -> e.canEnchantItem(item))
             .filter(e -> !e.isCursed())
             .collect(Collectors.toList());
@@ -316,10 +308,11 @@ public class Lucker extends AbstractKit {
   @Override
   public KitDescriptionItem getDescriptionItem() {
     return new KitDescriptionItem(
-            Material.AZALEA,
-            "Lucker",
-            "Blessed with extraordinary luck.                (Better chest loot, more luck when fishing, mining, existing,...)",
-            "Light-Green Leather Chestplate",
-            Difficulty.MEDIUM);
+        Material.AZALEA,
+        "Lucker",
+        "Blessed with extraordinary luck.                (Better chest loot, more luck when"
+            + " fishing, mining, existing,...)",
+        "Light-Green Leather Chestplate",
+        Difficulty.MEDIUM);
   }
 }
