@@ -38,6 +38,10 @@ public class EnderGames extends JavaPlugin implements Listener {
     final int PLUGIN_ID = 25844;
     var metrics = new Metrics(this, PLUGIN_ID);
 
+    if (isInDebugMode()) {
+      this.getComponentLogger().warn("Debug mode is enabled.");
+    }
+
     gameWorld = new GameWorld(this);
     lobbyWorld = new LobbyWorld(this);
 
@@ -79,5 +83,11 @@ public class EnderGames extends JavaPlugin implements Listener {
   @EventHandler
   public void onPlayerJoin(PlayerJoinEvent event) {
     teleportPlayerToLobby(event.getPlayer());
+  }
+
+  public static boolean isInDebugMode() {
+    String debugEnv = System.getenv("EG_DEBUG");
+    return debugEnv != null
+        && (debugEnv.equalsIgnoreCase("true") || debugEnv.equalsIgnoreCase("1"));
   }
 }

@@ -30,6 +30,7 @@ public class EndPhase extends AbstractPhase {
       }
     }
 
-    Bukkit.getScheduler().runTaskLater(plugin, manager::nextPhase, 20 * 30);
+    int endTimeSeconds = EnderGames.isInDebugMode() ? 5 : 30;
+    Bukkit.getScheduler().runTaskLater(plugin, manager::nextPhase, 20 * endTimeSeconds);
   }
 }

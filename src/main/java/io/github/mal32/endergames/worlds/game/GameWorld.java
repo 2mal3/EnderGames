@@ -57,7 +57,7 @@ public class GameWorld extends AbstractWorld {
         plugin.teleportPlayerToLobby(p);
       }
 
-      worldManager.findAndSaveNewSpawnLocation();
+      if (EnderGames.isInDebugMode()) worldManager.findAndSaveNewSpawnLocation();
       plugin.getComponentLogger().info("Spawn location: " + spawnLocation);
 
       currentPhase = new LoadPhase(plugin, this, spawnLocation);

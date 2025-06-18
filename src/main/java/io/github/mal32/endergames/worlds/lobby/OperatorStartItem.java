@@ -37,6 +37,8 @@ class OperatorStartItem extends MenuItem {
   }
 
   private void scheduleGameStart() {
+    int startDelaySeconds = EnderGames.isInDebugMode() ? 1 : 5;
+
     this.startGameTask =
         Bukkit.getScheduler()
             .runTaskLater(
@@ -45,7 +47,7 @@ class OperatorStartItem extends MenuItem {
                   this.plugin.getGameWorld().startGame();
                   this.startGameTask = null;
                 },
-                5 * 20);
+                startDelaySeconds * 20);
 
     for (Player player : Bukkit.getOnlinePlayers()) {
       if (player.isOp()) {

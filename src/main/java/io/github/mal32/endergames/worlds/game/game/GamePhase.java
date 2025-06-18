@@ -90,7 +90,11 @@ public class GamePhase extends AbstractPhase {
     worldBoarder.setWarningTime(60);
     worldBoarder.setDamageBuffer(1);
 
-    plugin.getServer().getScheduler().runTaskLater(plugin, this::removeSpawnPlatform, 30 * 20);
+    int spawnPlatformRemoveDelaySeconds = EnderGames.isInDebugMode() ? 60 * 10 : 30;
+    plugin
+        .getServer()
+        .getScheduler()
+        .runTaskLater(plugin, this::removeSpawnPlatform, spawnPlatformRemoveDelaySeconds * 20);
 
     initProtectionTime();
 
