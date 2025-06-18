@@ -9,6 +9,27 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "minecraft:splash_potion",
+          "weight": 2,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:potion_contents": {
+                  "custom_color": 2367281,
+                  "custom_effects": [
+                    {
+                      "id": "minecraft:blindness",
+                      "duration": 200
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
           "name": "minecraft:potion",
           "weight": 4,
           "quality": 0,
