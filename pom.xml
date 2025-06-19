@@ -8,6 +8,10 @@
     <artifactId>endergames</artifactId>
     <version>0.3.0</version>
 
+    <name>EnderGames</name>
+    <description>Teleporting themed Kit SurivialGames for small player sizes on a random generated map with post 1.8 PvP.</description>
+    <url>https://github.com/2mal3/EnderGames</url>
+
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
@@ -38,6 +42,22 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>paper-plugin.yml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>paper-plugin.yml</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -76,5 +96,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
