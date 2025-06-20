@@ -9,7 +9,7 @@ import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
@@ -17,7 +17,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
 
-public class LobbyWorld extends AbstractWorld implements Listener {
+public class LobbyWorld extends AbstractWorld {
   private final MenuManager menuManager;
   private final World lobbyWorld = Objects.requireNonNull(Bukkit.getWorld("world_enga_lobby"));
   private final Location spawnLocation = new Location(lobbyWorld, 0, 64, 0);
@@ -85,6 +85,16 @@ public class LobbyWorld extends AbstractWorld implements Listener {
     if (!(event.getEntity() instanceof Player player)) return;
     if (!EnderGames.playerIsInLobbyWorld(player)) return;
     if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) return;
+
+    event.setCancelled(true);
+  }
+
+  @EventHandler
+  public void onFieldTrample(EntityChangeBlockEvent event) {
+    if (!(event.getEntity() instanceof Player player)) return;
+    if (!EnderGames.playerIsInLobbyWorld(player)) return;
+
+    if (event.getBlock().getType() != Material.FARMLAND) return;
 
     event.setCancelled(true);
   }
