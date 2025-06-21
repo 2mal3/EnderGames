@@ -311,6 +311,8 @@ public class GamePhase extends AbstractPhase {
     if (!GameWorld.playerIsInGame(event.getPlayer())) return;
     if (event.getBlock().getType() != Material.TNT) return;
 
+    if (event.getPlayer().isSneaking()) return;
+
     Block block = event.getBlock();
 
     block.setType(Material.AIR);
