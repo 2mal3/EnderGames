@@ -1,3 +1,5 @@
+name: Release
+
 on:
   push:
     tags:
@@ -37,7 +39,9 @@ jobs:
           files: |
             target/endergames*.jar
           changelog-file: CHANGELOG.md
-          loaders: paper
+          loaders: |
+            paper
+            purpur
           version-type: release
           game-versions: |
             1.21.4
