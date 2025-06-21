@@ -69,6 +69,8 @@ of this plugin are solely responsible for its content and maintenance.
 - E44
 - Sulfenir
 - BrosGamer501
+- pantaloneon
+- NotWhiteHand
 
 ## Contributing
 
