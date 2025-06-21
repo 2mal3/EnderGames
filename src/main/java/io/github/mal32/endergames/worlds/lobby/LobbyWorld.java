@@ -78,6 +78,12 @@ public class LobbyWorld extends AbstractWorld {
             PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, true, false));
 
     player.teleport(spawnLocation.clone().add(0, 10, 0));
+
+    var kitKey = new NamespacedKey(plugin, "kit");
+    String currentKit = player.getPersistentDataContainer().get(kitKey, PersistentDataType.STRING);
+    if (currentKit == null || currentKit.isEmpty()) {
+      player.getPersistentDataContainer().set(kitKey, PersistentDataType.STRING, "lumberjack");
+    }
   }
 
   @EventHandler
