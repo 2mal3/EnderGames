@@ -13,6 +13,12 @@
           "weight": 2,
           "functions": [
             {
+              "function": "minecraft:set_name",
+              "entity": "this",
+              "name": "Splash Potion of Blindness",
+              "target": "item_name"
+            },
+            {
               "function": "minecraft:set_components",
               "components": {
                 "minecraft:potion_contents": {
@@ -124,13 +130,13 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:bucket",
-          "weight": 1,
+          "weight": 2,
           "quality": -1
         },
         {
           "type": "minecraft:item",
           "name": "minecraft:tnt",
-          "weight": 4,
+          "weight": 8,
           "quality": 1,
           "functions": [
             {
@@ -145,7 +151,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:spectral_arrow",
-          "weight": 3,
+          "weight": 6,
           "quality": 2,
           "functions": [
             {
@@ -160,7 +166,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:arrow",
-          "weight": 3,
+          "weight": 6,
           "quality": 1,
           "functions": [
             {
@@ -175,12 +181,12 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:crossbow",
-          "weight": 1
+          "weight": 2
         },
         {
           "type": "minecraft:item",
           "name": "minecraft:wind_charge",
-          "weight": 2,
+          "weight": 4,
           "quality": -1,
           "functions": [
             {
@@ -195,7 +201,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:chorus_fruit",
-          "weight": 1,
+          "weight": 2,
           "quality": -1,
           "functions": [
             {
@@ -210,7 +216,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:experience_bottle",
-          "weight": 2,
+          "weight": 4,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -224,7 +230,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:snowball",
-          "weight": 2,
+          "weight": 4,
           "functions": [
             {
               "function": "minecraft:set_components",
