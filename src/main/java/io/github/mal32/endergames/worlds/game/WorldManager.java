@@ -19,6 +19,10 @@ public class WorldManager {
     border.setWarningTime(60);
     border.setDamageBuffer(1);
 
+    world.setStorm(false);
+    world.setThundering(false);
+    world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+
     if (!world.getPersistentDataContainer().has(this.spawnLocationKey)) {
       plugin.getComponentLogger().info("Creating spawn location");
       spawnLocation = new Location(world, 0, 200, 0);
