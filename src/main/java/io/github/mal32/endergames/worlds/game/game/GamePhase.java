@@ -12,6 +12,8 @@ import java.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -167,9 +169,14 @@ public class GamePhase extends AbstractPhase {
 
     Location targetLocation = nearestPlayer.getLocation();
     Location currentLocation = player.getLocation();
-    double distance = (int) currentLocation.distance(targetLocation);
-    player.sendActionBar(
-        Component.text(distance + " Blocks").style(Style.style(NamedTextColor.YELLOW)));
+    int distance = (int) currentLocation.distance(targetLocation);
+    Component actionBarMessage = Component.text()
+            .append(Component.text("Tracking ", NamedTextColor.YELLOW))
+            .append(Component.text(nearestPlayer.getName(), TextColor.fromHexString("#FFBA43")).decoration(TextDecoration.ITALIC, true))
+            .append(Component.text(": ", NamedTextColor.YELLOW))
+            .append(Component.text(distance + " blocks", NamedTextColor.GREEN))
+            .build();
+    player.sendActionBar(actionBarMessage);
     item.setData(
         DataComponentTypes.LODESTONE_TRACKER,
         LodestoneTracker.lodestoneTracker().tracked(false).location(targetLocation).build());

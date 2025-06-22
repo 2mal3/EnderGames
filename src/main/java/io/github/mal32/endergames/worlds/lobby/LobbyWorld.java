@@ -75,7 +75,7 @@ public class LobbyWorld extends AbstractWorld {
 
     player.addPotionEffect(
         new PotionEffect(
-            PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, true, false));
+            PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, false, false, false));
 
     player.teleport(spawnLocation.clone().add(0, 10, 0));
 
