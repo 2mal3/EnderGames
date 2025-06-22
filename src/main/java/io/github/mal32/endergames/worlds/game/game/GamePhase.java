@@ -172,7 +172,7 @@ public class GamePhase extends AbstractPhase {
     int distance = (int) currentLocation.distance(targetLocation);
     Component actionBarMessage = Component.text()
             .append(Component.text("Tracking ", NamedTextColor.YELLOW))
-            .append(Component.text(nearestPlayer.getName(), TextColor.fromHexString("#FFBA43")).decoration(TextDecoration.ITALIC, true))
+            .append(Component.text(nearestPlayer.getName(), TextColor.fromHexString("#FFBA43")))
             .append(Component.text(": ", NamedTextColor.YELLOW))
             .append(Component.text(distance + " blocks", NamedTextColor.GREEN))
             .build();
