@@ -184,6 +184,7 @@ public class Lucker extends AbstractKit {
   @EventHandler
   private void onCraftItem(CraftItemEvent event) {
     Player player = (Player) event.getWhoClicked();
+    if (!playerCanUseThisKit(player)) return;
 
     ItemStack result = event.getRecipe().getResult();
     if (result.getType() != Material.FISHING_ROD) return;
