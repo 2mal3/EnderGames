@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -49,7 +50,16 @@ public class Enderman extends AbstractKit {
     var player = event.getPlayer();
     if (!playerCanUseThisKit(player)) return;
 
-    var targetBlock = player.getTargetBlock(null, 16);
+    var passableBlocks =
+        Set.of(
+            Material.AIR,
+            Material.WATER,
+            Material.SNOW,
+            Material.SHORT_GRASS,
+            Material.TALL_GRASS,
+            Material.SEAGRASS,
+            Material.TALL_SEAGRASS);
+    var targetBlock = player.getTargetBlock(passableBlocks, 16);
     if (targetBlock.getType() != Material.ENDER_CHEST) return;
 
     player.playSound(player, Sound.BLOCK_ENDER_CHEST_OPEN, 1, 1);
