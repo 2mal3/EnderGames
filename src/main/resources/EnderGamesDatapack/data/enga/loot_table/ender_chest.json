@@ -27,7 +27,7 @@
                   "custom_effects": [
                     {
                       "id": "minecraft:blindness",
-                      "duration": 200
+                      "duration": 300
                     }
                   ]
                 }
