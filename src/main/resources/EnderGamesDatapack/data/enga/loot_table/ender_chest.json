@@ -14,9 +14,10 @@
           "functions": [
             {
               "function": "minecraft:set_name",
-              "entity": "this",
-              "name": "Splash Potion of Blindness",
-              "target": "item_name"
+              "name": {
+                "text": "Splash Potion of Blindness",
+                "italic": false
+              }
             },
             {
               "function": "minecraft:set_components",
