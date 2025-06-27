@@ -34,6 +34,7 @@ public abstract class AbstractKit extends AbstractModule {
         new Kangaroo(plugin),
         new Enderman(plugin),
         new Lucker(plugin),
+        new Rewind(plugin),
         new Spectator(plugin));
   }
 
