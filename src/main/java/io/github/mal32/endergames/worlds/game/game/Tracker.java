@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Nullable;
 
 public class Tracker extends AbstractModule {
@@ -57,6 +58,8 @@ public class Tracker extends AbstractModule {
 
     for (Player other : GameWorld.getPlayersInGame()) {
       if (other.equals(executor)) continue;
+
+      if (other.hasPotionEffect(PotionEffectType.INVISIBILITY)) continue;
 
       double distance = executorLocation.distance(other.getLocation());
       if (distance < nearestDistance) {
