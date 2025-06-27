@@ -76,7 +76,8 @@ public class Enderman extends AbstractKit {
     return new KitDescriptionItem(
         Material.ENDER_PEARL,
         "Enderman",
-        "Starts with 5 Ender Pearls. Gain 2 Ender Pearls per player kill. Doesn't take damage from Ender Perls. Can open Ender Chests from further away.",
+        "Starts with 5 Ender Pearls. Gain 2 Ender Pearls per player kill. Doesn't take damage from"
+            + " Ender Perls. Can open Ender Chests from further away.",
         "5 Ender Pearls",
         Difficulty.EASY);
   }
