@@ -5,15 +5,10 @@ import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.worlds.game.AbstractPhase;
 import io.github.mal32.endergames.worlds.game.GameWorld;
-import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.LodestoneTracker;
 import java.time.Duration;
 import java.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -35,7 +30,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.Nullable;
 
 public class GamePhase extends AbstractPhase {
   private final List<AbstractModule> modules;
@@ -55,6 +49,7 @@ public class GamePhase extends AbstractPhase {
             new SwapperItem(plugin),
             new SmithingTemplateManager(plugin),
             new SpectatorParticles(plugin),
+            new Tracker(plugin),
             new SpeedObsidianManager(plugin, spawnLocation));
 
     List<NamespacedKey> allRecipeKeys = new ArrayList<>();
@@ -155,33 +150,6 @@ public class GamePhase extends AbstractPhase {
     }
   }
 
-  @EventHandler
-  private void onTrackerClick(PlayerInteractEvent event) {
-    Player player = event.getPlayer();
-    if (!GameWorld.playerIsInGame(player)) return;
-    ItemStack item = event.getItem();
-    if (item == null || item.getType() != Material.COMPASS) {
-      return;
-    }
-
-    Player nearestPlayer = getNearestValidPlayer(player);
-    if (nearestPlayer == null) return;
-
-    Location targetLocation = nearestPlayer.getLocation();
-    Location currentLocation = player.getLocation();
-    int distance = (int) currentLocation.distance(targetLocation);
-    Component actionBarMessage = Component.text()
-            .append(Component.text("Tracking ", NamedTextColor.YELLOW))
-            .append(Component.text(nearestPlayer.getName(), TextColor.fromHexString("#FFBA43")))
-            .append(Component.text(": ", NamedTextColor.YELLOW))
-            .append(Component.text(distance + " blocks", NamedTextColor.GREEN))
-            .build();
-    player.sendActionBar(actionBarMessage);
-    item.setData(
-        DataComponentTypes.LODESTONE_TRACKER,
-        LodestoneTracker.lodestoneTracker().tracked(false).location(targetLocation).build());
-  }
-
   @EventHandler(priority = EventPriority.HIGH)
   private void onPlayerDeath(PlayerDeathEvent event) {
     if (!EnderGames.playerIsInGameWorld(event.getEntity())) return;
@@ -257,24 +225,6 @@ public class GamePhase extends AbstractPhase {
 
   private boolean moreThanOnePlayersAlive() {
     return GameWorld.getPlayersInGame().length > 1;
-  }
-
-  @Nullable
-  public Player getNearestValidPlayer(Player executor) {
-    Player nearest = null;
-    double nearestDistance = Double.MAX_VALUE;
-    Location executorLocation = executor.getLocation();
-
-    for (Player other : GameWorld.getPlayersInGame()) {
-      if (other.equals(executor)) continue;
-
-      double distance = executorLocation.distance(other.getLocation());
-      if (distance < nearestDistance) {
-        nearestDistance = distance;
-        nearest = other;
-      }
-    }
-    return nearest;
   }
 
   @EventHandler
