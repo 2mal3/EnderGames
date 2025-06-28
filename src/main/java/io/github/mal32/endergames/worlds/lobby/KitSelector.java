@@ -36,8 +36,18 @@ class KitSelector extends MenuItem {
   private final List<AbstractKit> availableKits;
 
   public KitSelector(EnderGames plugin) {
-    super(plugin, Material.CHEST, "§6Select Kit", "kit_selector", (byte) 0);
+    super(
+        plugin,
+        Material.CHEST,
+        Component.text("Select Kit").color(NamedTextColor.GOLD),
+        "kit_selector",
+        (byte) 0);
     this.availableKits = AbstractKit.getKits(plugin);
+  }
+
+  @Override
+  public void initPlayer(Player player) {
+    giveItem(player);
   }
 
   @Override
@@ -75,7 +85,7 @@ class KitInventory implements InventoryHolder, Listener {
   @EventHandler
   public void onInventoryClick(InventoryClickEvent event) {
     Inventory inventory = event.getClickedInventory();
-    if (inventory == null || !(inventory.getHolder() instanceof KitInventory kitInv)) return;
+    if (inventory == null || !(inventory.getHolder() instanceof KitInventory)) return;
     event.setCancelled(true);
 
     ItemStack clickedItem = event.getCurrentItem();

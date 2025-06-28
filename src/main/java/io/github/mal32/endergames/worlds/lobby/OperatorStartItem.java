@@ -11,18 +11,23 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 class OperatorStartItem extends MenuItem {
-  private final MenuItem cancleItem;
+  private final MenuItem cancelItem;
   private BukkitTask startGameTask = null;
 
   public OperatorStartItem(EnderGames plugin) {
-    super(plugin, Material.NETHER_STAR, "§6Start Game", "start_game", (byte) 8);
-    this.cancleItem = new CancelStartItem(this.plugin);
+    super(
+        plugin,
+        Material.NETHER_STAR,
+        Component.text("Start Game").color(NamedTextColor.GOLD),
+        "start_game",
+        (byte) 8);
+    this.cancelItem = new CancelStartItem(this.plugin);
   }
 
   @Override
-  public void giveItem(Player player) {
-    if (this.startGameTask == null) super.giveItem(player);
-    else this.cancleItem.giveItem(player);
+  public void initPlayer(Player player) {
+    if (!player.isOp()) return;
+    giveItem(player);
   }
 
   @Override
@@ -37,7 +42,7 @@ class OperatorStartItem extends MenuItem {
   }
 
   private void scheduleGameStart() {
-    int startDelaySeconds = EnderGames.isInDebugMode() ? 1 : 5;
+    int startDelaySeconds = EnderGames.isInDebugMode() ? 10 : 5;
 
     this.startGameTask =
         Bukkit.getScheduler()
@@ -53,7 +58,7 @@ class OperatorStartItem extends MenuItem {
       if (player.isOp()) {
         player.sendActionBar(
             Component.text("The game will start in 5 seconds!").color(NamedTextColor.GREEN));
-        this.giveItem(player);
+        cancelItem.giveItem(player);
       }
     }
   }
