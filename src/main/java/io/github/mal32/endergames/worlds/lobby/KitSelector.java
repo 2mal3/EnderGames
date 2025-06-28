@@ -139,11 +139,11 @@ class KitInventory implements InventoryHolder, Listener {
     for (AbstractKit kit : availableKits) {
       var kitDescription = kit.getDescriptionItem();
 
-      var kitItem = new ItemStack(kitDescription.item, 1);
+      var kitItem = new ItemStack(kitDescription.item(), 1);
       var meta = kitItem.getItemMeta();
 
       meta.displayName(
-          Component.text(kitDescription.name)
+          Component.text(kitDescription.name())
               .color(NamedTextColor.GOLD)
               .decoration(TextDecoration.ITALIC, false));
       meta.lore(getKitLore(kitDescription));
@@ -171,19 +171,19 @@ class KitInventory implements InventoryHolder, Listener {
             .color(NamedTextColor.GRAY)
             .decoration(TextDecoration.ITALIC, false);
     lore.add(abilitiesHeaderComponent);
-    var abilitiesText = splitIntoLines(kitDescription.abilities);
+    var abilitiesText = splitIntoLines(kitDescription.abilities());
     lore.addAll(convertTextListToComponents(abilitiesText));
 
     lore.add(Component.text(""));
 
     // Equipment
-    if (kitDescription.equipment != null) {
+    if (kitDescription.equipment() != null) {
       var equipmentHeaderComponent =
           Component.text("Equipment:")
               .color(NamedTextColor.GRAY)
               .decoration(TextDecoration.ITALIC, false);
       lore.add(equipmentHeaderComponent);
-      var equipmentText = splitIntoLines(kitDescription.equipment);
+      var equipmentText = splitIntoLines(kitDescription.equipment());
       lore.addAll(convertTextListToComponents(equipmentText));
 
       lore.add(Component.text(""));
@@ -195,7 +195,7 @@ class KitInventory implements InventoryHolder, Listener {
             .color(NamedTextColor.GRAY)
             .decoration(TextDecoration.ITALIC, false));
 
-    switch (kitDescription.difficulty) {
+    switch (kitDescription.difficulty()) {
       case EASY ->
           lore.add(
               Component.text("█▒▒ Easy")
