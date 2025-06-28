@@ -31,9 +31,15 @@ as this can be damaged by the game.
 
 ### Recommended Server Settings
 
+#### `server.properties`
+
 - `spawn-protection=0`
 - `simulation-distance` > 6
 - `allow-nether=false`
+
+#### `bukkit.yml`
+
+- `spawn-limits.monsters` around 40
 
 ## Disclaimer
 
