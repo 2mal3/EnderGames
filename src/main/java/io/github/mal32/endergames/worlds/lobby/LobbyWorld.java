@@ -2,6 +2,7 @@ package io.github.mal32.endergames.worlds.lobby;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.AbstractWorld;
+import io.github.mal32.endergames.worlds.lobby.items.MenuManager;
 import java.util.Objects;
 import java.util.Random;
 import org.bukkit.*;

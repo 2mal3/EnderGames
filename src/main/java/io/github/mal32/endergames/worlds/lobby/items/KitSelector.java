@@ -1,4 +1,4 @@
-package io.github.mal32.endergames.worlds.lobby;
+package io.github.mal32.endergames.worlds.lobby.items;
 
 import static org.apache.commons.lang3.StringUtils.capitalize;
 

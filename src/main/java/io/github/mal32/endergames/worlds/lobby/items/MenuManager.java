@@ -1,4 +1,4 @@
-package io.github.mal32.endergames.worlds.lobby;
+package io.github.mal32.endergames.worlds.lobby.items;
 
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
-class MenuManager extends AbstractModule {
+public class MenuManager extends AbstractModule {
   private final HashMap<String, MenuItem> items = new HashMap<>();
   private final NamespacedKey menuKey;
 

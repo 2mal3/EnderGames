@@ -1,4 +1,4 @@
-package io.github.mal32.endergames.worlds.lobby;
+package io.github.mal32.endergames.worlds.lobby.items;
 
 import io.github.mal32.endergames.EnderGames;
 import net.kyori.adventure.text.Component;
