@@ -10,7 +10,7 @@ versions.
 ## Features
 
 - a bunch of custom game mechanics such as player swapping, teleporting blocks and custom items
-- 13 unique kits to choose from with more coming soon
+- 14 unique kits to choose from with more coming soon
 - heavily playtested and balanced
 
 ## Vanilla Modifications
