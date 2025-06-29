@@ -21,6 +21,7 @@ import org.bukkit.scheduler.BukkitTask;
 public class Rewind extends AbstractKit {
   private final int REWIND_SECONDS = 10;
   private final int PLAYER_STATE_INTERVAL_TICKS = 10;
+  private final int USE_COOLDOWN_SECONDS = 30;
   private final NamespacedKey rewindKey;
   private BukkitTask task;
   private final HashMap<UUID, ArrayList<PlayerState>> playerStates = new HashMap<>();
@@ -95,7 +96,6 @@ public class Rewind extends AbstractKit {
       return;
     if (player.hasCooldown(Material.CLOCK)) return;
 
-    final int USE_COOLDOWN_SECONDS = 60;
     player.setCooldown(Material.CLOCK, USE_COOLDOWN_SECONDS * 20);
 
     player
