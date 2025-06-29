@@ -2,9 +2,7 @@ package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
@@ -15,6 +13,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -74,7 +73,9 @@ public class Rewind extends AbstractKit {
     for (Player player : GameWorld.getPlayersInGame()) {
       if (!playerCanUseThisKit(player)) continue;
 
-      var playerState = new PlayerState(player.getLocation(), player.getHealth());
+      var playerState =
+          new PlayerState(
+              player.getLocation(), player.getHealth(), player.getActivePotionEffects());
 
       ArrayList<PlayerState> stateRecords = playerStates.get(player.getUniqueId());
       stateRecords.addFirst(playerState);
@@ -155,6 +156,13 @@ public class Rewind extends AbstractKit {
     player.setGameMode(GameMode.SURVIVAL);
     player.setHealth(lastState.health());
 
+    for (PotionEffect effect : player.getActivePotionEffects()) {
+      player.removePotionEffect(effect.getType());
+    }
+    for (PotionEffect effect : lastState.potionEffects()) {
+      player.addPotionEffect(effect);
+    }
+
     player
         .getLocation()
         .getWorld()
@@ -164,4 +172,4 @@ public class Rewind extends AbstractKit {
   }
 }
 
-record PlayerState(Location location, double health) {}
+record PlayerState(Location location, double health, Collection<PotionEffect> potionEffects) {}
