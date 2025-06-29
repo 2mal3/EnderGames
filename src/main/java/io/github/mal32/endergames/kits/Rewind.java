@@ -111,11 +111,15 @@ public class Rewind extends AbstractKit {
 
     rewindStart(player, enderman);
 
+    final int ANIMATION_SPEED_TICKS = 3;
     var stateRecords = playerStates.get(player.getUniqueId());
     int i = 0;
     for (PlayerState playerState : stateRecords) {
       Bukkit.getScheduler()
-          .runTaskLater(plugin, () -> rewindTick(player, playerState, enderman), i * 2L);
+          .runTaskLater(
+              plugin,
+              () -> rewindTick(player, playerState, enderman),
+              (long) i * ANIMATION_SPEED_TICKS);
       i++;
     }
 
@@ -123,7 +127,7 @@ public class Rewind extends AbstractKit {
         .runTaskLater(
             plugin,
             () -> rewindEnd(player, stateRecords.getLast(), enderman),
-            stateRecords.size() * 2L);
+            (long) stateRecords.size() * ANIMATION_SPEED_TICKS);
   }
 
   private void rewindStart(Player player, Enderman enderman) {
