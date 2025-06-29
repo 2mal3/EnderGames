@@ -36,3 +36,6 @@ build/
 
 ### Aider ###
 .aider*
+
+### Custom Scripts ###
+*.sh
