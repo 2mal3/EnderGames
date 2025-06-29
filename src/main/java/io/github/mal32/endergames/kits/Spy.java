@@ -55,7 +55,10 @@ public class Spy extends AbstractKit {
     final int HUNGER_LEVEL_LOSS_PER_MINUTE = 20;
 
     spiesInvisible.add(player.getUniqueId());
-    player.setInvisible(true);
+
+    player.addPotionEffect(
+        new PotionEffect(
+            PotionEffectType.INVISIBILITY, PotionEffect.INFINITE_DURATION, 0, true, false, true));
     player.addPotionEffect(
         new PotionEffect(
             PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 0, true, false, true));
@@ -71,7 +74,7 @@ public class Spy extends AbstractKit {
 
   private void leaveInvisible(Player player) {
     spiesInvisible.remove(player.getUniqueId());
-    player.setInvisible(false);
+    player.removePotionEffect(PotionEffectType.INVISIBILITY);
     player.removePotionEffect(PotionEffectType.RESISTANCE);
     player.removePotionEffect(PotionEffectType.HUNGER);
   }
