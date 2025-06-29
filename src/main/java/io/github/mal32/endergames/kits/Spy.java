@@ -52,7 +52,7 @@ public class Spy extends AbstractKit {
   }
 
   private void enterInvisible(Player player) {
-    final int HUNGER_LEVEL_LOSS_PER_MINUTE = 20;
+    final int HUNGER_LEVEL_LOSS_PER_MINUTE = 10;
 
     spiesInvisible.add(player.getUniqueId());
 
