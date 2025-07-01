@@ -13,23 +13,7 @@
   "parent": "enga:root",
   "criteria": {
     "unlock": {
-      "trigger": "minecraft:tick",
-      "conditions": {
-        "player": {
-          "type_specific": {
-            "type": "minecraft:player",
-            "stats": [
-              {
-                "type": "minecraft:custom",
-                "stat": "minecraft:jump",
-                "value": {
-                  "min": 1000
-                }
-              }
-            ]
-          }
-        }
-      }
+      "trigger": "minecraft:impossible"
     }
   }
 }

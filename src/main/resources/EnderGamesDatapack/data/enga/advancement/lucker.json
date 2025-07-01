@@ -13,23 +13,7 @@
   "parent": "enga:root",
   "criteria": {
     "unlock": {
-      "trigger": "minecraft:tick",
-      "conditions": {
-        "player": {
-          "type_specific": {
-            "type": "minecraft:player",
-            "stats": [
-              {
-                "type": "minecraft:mined",
-                "stat": "minecraft:diamond_ore",
-                "value": {
-                  "min": 1
-                }
-              }
-            ]
-          }
-        }
-      }
+      "trigger": "minecraft:impossible"
     }
   }
 }

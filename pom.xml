@@ -19,6 +19,10 @@
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>modrinth</id>
+            <url>https://api.modrinth.com/maven/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -27,6 +31,12 @@
             <artifactId>paper-api</artifactId>
             <version>1.21.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>maven.modrinth</groupId>
+            <artifactId>advancementlib</artifactId>
+            <version>0.3.1</version>
         </dependency>
 
         <dependency>
