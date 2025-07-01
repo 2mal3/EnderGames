@@ -22,8 +22,5 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/determinate-nix-action@v3.6.8
 
-      - name: Cache Nix Store
-        uses: DeterminateSystems/magic-nix-cache-action@v11
-
       - name: Lint
         run: nix shell nixpkgs#google-java-format -c find . -name '*.java' -exec google-java-format --dry-run --set-exit-if-changed --skip-sorting-imports {} +
