@@ -40,19 +40,26 @@ public class Lumberjack extends AbstractKit {
     if (!playerCanUseThisKit(event.getPlayer())) return;
 
     Location location = event.getBlock().getLocation().add(0, 1, 0);
-    breakTree(location);
+    breakTree(location, event.getPlayer());
   }
 
-  private void breakTree(Location location) {
+  private void breakTree(Location location, Player player) {
     Block block = location.getBlock();
-    if (!Tag.LOGS.isTagged(block.getType()) && !Tag.LEAVES.isTagged(block.getType())) return;
+    Material material = block.getType();
+    if (!Tag.LOGS.isTagged(material) && !Tag.LEAVES.isTagged(material)) return;
 
-    block.breakNaturally();
-    breakTree(location.clone().add(1, 0, 0));
-    breakTree(location.clone().add(-1, 0, 0));
-    breakTree(location.clone().add(0, 1, 0));
-    breakTree(location.clone().add(0, 0, 1));
-    breakTree(location.clone().add(0, 0, -1));
+    if (Tag.LOGS.isTagged(material)) {
+      var item = new ItemStack(material);
+      player.getInventory().addItem(item);
+    }
+
+    block.setType(Material.AIR);
+
+    breakTree(location.clone().add(1, 0, 0), player);
+    breakTree(location.clone().add(-1, 0, 0), player);
+    breakTree(location.clone().add(0, 1, 0), player);
+    breakTree(location.clone().add(0, 0, 1), player);
+    breakTree(location.clone().add(0, 0, -1), player);
   }
 
   @EventHandler
