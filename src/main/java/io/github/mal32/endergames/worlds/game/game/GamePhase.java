@@ -179,9 +179,9 @@ public class GamePhase extends AbstractPhase {
   private void abstractPlayerDeath(Player player, Player damager) {
     World world = player.getWorld();
 
-    // TODO: not the Tracker
     for (ItemStack item : player.getInventory().getContents()) {
       if (item == null) continue;
+      if (item.getType() == Material.COMPASS) continue;
       world.dropItem(player.getLocation(), item);
     }
     player.getInventory().clear();
