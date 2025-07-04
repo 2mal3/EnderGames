@@ -1,5 +1,5 @@
-name: EnderGames
-version: 0.3.0
+name: ${project.name}
+version: ${project.version}
 main: io.github.mal32.endergames.EnderGames
 authors:
   - 2mal3
@@ -7,3 +7,5 @@ authors:
   - 6mal7
 api-version: '1.21.4'
 bootstrapper: io.github.mal32.endergames.PluginBootstrapper
+description: ${project.description}
+website: ${project.url}

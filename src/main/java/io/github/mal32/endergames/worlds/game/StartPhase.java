@@ -22,16 +22,13 @@ public class StartPhase extends AbstractPhase {
     for (Player player : Bukkit.getOnlinePlayers()) {
       player
           .getPersistentDataContainer()
-          .set(new NamespacedKey("endergames", "world"), PersistentDataType.STRING, "game"); // TODO
+          .set(new NamespacedKey("endergames", "world"), PersistentDataType.STRING, "game");
     }
 
     Bukkit.getScheduler().runTaskLater(plugin, this::distributePlayers, 20);
     Bukkit.getScheduler().runTaskLater(plugin, this::runCountdown, 25);
 
     world.setTime(0);
-    world.setStorm(false);
-    world.setThundering(false);
-    world.setWeatherDuration(20 * 60 * 10);
     world.getWorldBorder().setSize(600);
   }
 

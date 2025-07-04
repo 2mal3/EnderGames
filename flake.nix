@@ -14,6 +14,8 @@
         papermc
       ];
 
+      EG_DEBUG = "true";
+
       shellHook = "exec ${pkgs.fish}/bin/fish";
     };
   };

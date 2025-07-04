@@ -1,4 +1,4 @@
-package io.github.mal32.endergames.worlds.lobby;
+package io.github.mal32.endergames.worlds.lobby.items;
 
 import static org.apache.commons.lang3.StringUtils.capitalize;
 
@@ -37,8 +37,18 @@ class KitSelector extends MenuItem {
   private final List<AbstractKit> availableKits;
 
   public KitSelector(EnderGames plugin) {
-    super(plugin, Material.CHEST, "§6Select Kit", "kit_selector", (byte) 0);
+    super(
+        plugin,
+        Material.CHEST,
+        Component.text("Select Kit").color(NamedTextColor.GOLD),
+        "kit_selector",
+        (byte) 0);
     this.availableKits = AbstractKit.getKits(plugin);
+  }
+
+  @Override
+  public void initPlayer(Player player) {
+    giveItem(player);
   }
 
   @Override
@@ -76,7 +86,7 @@ class KitInventory implements InventoryHolder, Listener {
   @EventHandler
   public void onInventoryClick(InventoryClickEvent event) {
     Inventory inventory = event.getClickedInventory();
-    if (inventory == null || !(inventory.getHolder() instanceof KitInventory kitInv)) return;
+    if (inventory == null || !(inventory.getHolder() instanceof KitInventory)) return;
     event.setCancelled(true);
 
     ItemStack clickedItem = event.getCurrentItem();
@@ -163,11 +173,11 @@ class KitInventory implements InventoryHolder, Listener {
     for (AbstractKit kit : availableKits) {
       var kitDescription = kit.getDescriptionItem();
 
-      var kitItem = new ItemStack(kitDescription.item, 1);
+      var kitItem = new ItemStack(kitDescription.item(), 1);
       var meta = kitItem.getItemMeta();
 
       meta.displayName(
-          Component.text(kitDescription.name)
+          Component.text(kitDescription.name())
               .color(NamedTextColor.GOLD)
               .decoration(TextDecoration.ITALIC, false));
       meta.lore(getKitLore(kitDescription));
@@ -210,19 +220,19 @@ class KitInventory implements InventoryHolder, Listener {
             .color(NamedTextColor.GRAY)
             .decoration(TextDecoration.ITALIC, false);
     lore.add(abilitiesHeaderComponent);
-    var abilitiesText = splitIntoLines(kitDescription.abilities);
+    var abilitiesText = splitIntoLines(kitDescription.abilities());
     lore.addAll(convertTextListToComponents(abilitiesText));
 
     lore.add(Component.text(""));
 
     // Equipment
-    if (kitDescription.equipment != null) {
+    if (kitDescription.equipment() != null) {
       var equipmentHeaderComponent =
           Component.text("Equipment:")
               .color(NamedTextColor.GRAY)
               .decoration(TextDecoration.ITALIC, false);
       lore.add(equipmentHeaderComponent);
-      var equipmentText = splitIntoLines(kitDescription.equipment);
+      var equipmentText = splitIntoLines(kitDescription.equipment());
       lore.addAll(convertTextListToComponents(equipmentText));
 
       lore.add(Component.text(""));
@@ -234,7 +244,7 @@ class KitInventory implements InventoryHolder, Listener {
             .color(NamedTextColor.GRAY)
             .decoration(TextDecoration.ITALIC, false));
 
-    switch (kitDescription.difficulty) {
+    switch (kitDescription.difficulty()) {
       case EASY ->
           lore.add(
               Component.text("█▒▒ Easy")

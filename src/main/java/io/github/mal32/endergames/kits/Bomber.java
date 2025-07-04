@@ -73,6 +73,8 @@ public class Bomber extends AbstractKit {
     Player player = event.getPlayer();
     if (!playerCanUseThisKit(player)) return;
 
+    if (event.getPlayer().isSneaking()) return;
+
     event.setCancelled(true);
 
     player.getInventory().removeItem(new ItemStack(Material.TNT, 1));

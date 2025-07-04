@@ -2,6 +2,7 @@ package io.github.mal32.endergames.worlds.lobby;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.AbstractWorld;
+import io.github.mal32.endergames.worlds.lobby.items.MenuManager;
 import java.util.Objects;
 import java.util.Random;
 import org.bukkit.*;
@@ -9,7 +10,7 @@ import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
@@ -17,7 +18,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
 
-public class LobbyWorld extends AbstractWorld implements Listener {
+public class LobbyWorld extends AbstractWorld {
   private final MenuManager menuManager;
   private final World lobbyWorld = Objects.requireNonNull(Bukkit.getWorld("world_enga_lobby"));
   private final Location spawnLocation = new Location(lobbyWorld, 0, 64, 0);
@@ -68,16 +69,21 @@ public class LobbyWorld extends AbstractWorld implements Listener {
   public void initPlayer(Player player) {
     player.getInventory().clear();
 
-    this.menuManager.getItem("kit_selector").giveItem(player);
-    if (player.isOp()) this.menuManager.getItem("start_game").giveItem(player);
+    menuManager.initPlayer(player);
 
     player.setGameMode(GameMode.ADVENTURE);
 
     player.addPotionEffect(
         new PotionEffect(
-            PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, true, false));
+            PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, false, false, false));
 
     player.teleport(spawnLocation.clone().add(0, 10, 0));
+
+    var kitKey = new NamespacedKey(plugin, "kit");
+    String currentKit = player.getPersistentDataContainer().get(kitKey, PersistentDataType.STRING);
+    if (currentKit == null || currentKit.isEmpty()) {
+      player.getPersistentDataContainer().set(kitKey, PersistentDataType.STRING, "lumberjack");
+    }
   }
 
   @EventHandler
@@ -85,6 +91,16 @@ public class LobbyWorld extends AbstractWorld implements Listener {
     if (!(event.getEntity() instanceof Player player)) return;
     if (!EnderGames.playerIsInLobbyWorld(player)) return;
     if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) return;
+
+    event.setCancelled(true);
+  }
+
+  @EventHandler
+  public void onFieldTrample(EntityChangeBlockEvent event) {
+    if (!(event.getEntity() instanceof Player player)) return;
+    if (!EnderGames.playerIsInLobbyWorld(player)) return;
+
+    if (event.getBlock().getType() != Material.FARMLAND) return;
 
     event.setCancelled(true);
   }

@@ -7,6 +7,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -51,14 +52,7 @@ public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChes
       blocks.add(enderChest);
     }
 
-    if (enderChest.getInventory().isEmpty()) {
-      // To include the player opening it for luck effects
-      float luck = (float) event.getPlayer().getAttribute(Attribute.LUCK).getValue();
-      LootContext.Builder lootContextBuilder = new LootContext.Builder(blockLocation).luck(luck);
-
-      LootContext lootContext = lootContextBuilder.build();
-      enderChest.fill(lootContext);
-    }
+    enderChest.prepareInventoryForOpen(event.getPlayer());
 
     EnderChest finalEnderChest = enderChest;
     Bukkit.getScheduler()
@@ -68,6 +62,7 @@ public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChes
 
 class EnderChest extends AbstractTeleportingBlock implements InventoryHolder {
   private final Inventory inventory;
+  private boolean hasBeenOpened = false;
 
   public EnderChest(Location location, EnderGames plugin) {
     super(location);
@@ -80,13 +75,21 @@ class EnderChest extends AbstractTeleportingBlock implements InventoryHolder {
     super.teleport(location);
 
     new ArrayList<>(inventory.getViewers()).forEach(HumanEntity::closeInventory);
-    inventory.clear();
+    hasBeenOpened = false;
   }
 
-  public void fill(LootContext lootContext) {
+  public void prepareInventoryForOpen(Player player) {
+    if (hasBeenOpened) return;
+
     inventory.clear();
+
+    float luck = (float) player.getAttribute(Attribute.LUCK).getValue();
+    LootContext.Builder lootContextBuilder = new LootContext.Builder(location).luck(luck);
+    LootContext lootContext = lootContextBuilder.build();
     LootTable lootTable = Bukkit.getLootTable(new NamespacedKey("enga", "ender_chest"));
     lootTable.fillInventory(this.inventory, new Random(), lootContext);
+
+    hasBeenOpened = true;
   }
 
   @Override

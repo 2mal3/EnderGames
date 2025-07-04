@@ -10,7 +10,7 @@ versions.
 ## Features
 
 - a bunch of custom game mechanics such as player swapping, teleporting blocks and custom items
-- 11 unique kits to choose from with more coming soon
+- 14 unique kits to choose from with more coming soon
 - heavily playtested and balanced
 
 ## Vanilla Modifications
@@ -31,9 +31,15 @@ as this can be damaged by the game.
 
 ### Recommended Server Settings
 
+#### `server.properties`
+
 - `spawn-protection=0`
 - `simulation-distance` > 6
 - `allow-nether=false`
+
+#### `bukkit.yml`
+
+- `spawn-limits.monsters` around 40
 
 ## Disclaimer
 
@@ -69,6 +75,8 @@ of this plugin are solely responsible for its content and maintenance.
 - E44
 - Sulfenir
 - BrosGamer501
+- pantaloneon
+- NotWhiteHand
 
 ## Contributing
 
