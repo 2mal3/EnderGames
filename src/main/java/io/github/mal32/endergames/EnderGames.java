@@ -4,14 +4,12 @@ import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
-import io.github.lambdaphoenix.advancementLib.GrantMode;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import io.github.mal32.endergames.worlds.lobby.LobbyWorld;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.Objects;
-
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -38,6 +36,12 @@ public class EnderGames extends JavaPlugin implements Listener {
   public static boolean playerIsInGameWorld(Player player) {
     var world = player.getPersistentDataContainer().get(worldKey, PersistentDataType.STRING);
     return Objects.equals(world, "game");
+  }
+
+  public static boolean isInDebugMode() {
+    String debugEnv = System.getenv("EG_DEBUG");
+    return debugEnv != null
+        && (debugEnv.equalsIgnoreCase("true") || debugEnv.equalsIgnoreCase("1"));
   }
 
   @Override
@@ -142,11 +146,5 @@ public class EnderGames extends JavaPlugin implements Listener {
   @EventHandler
   public void onPlayerJoin(PlayerJoinEvent event) {
     teleportPlayerToLobby(event.getPlayer());
-  }
-
-  public static boolean isInDebugMode() {
-    String debugEnv = System.getenv("EG_DEBUG");
-    return debugEnv != null
-        && (debugEnv.equalsIgnoreCase("true") || debugEnv.equalsIgnoreCase("1"));
   }
 }

@@ -30,7 +30,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class Lucker extends AbstractKit {
 
-  private final Random random = new Random();
   private static final Set<Material> SEEDS =
       EnumSet.of(
           Material.WHEAT_SEEDS,
@@ -39,6 +38,7 @@ public class Lucker extends AbstractKit {
           Material.POTATO,
           Material.MELON_SEEDS,
           Material.PUMPKIN_SEEDS);
+  private final Random random = new Random();
 
   public Lucker(EnderGames plugin) {
     super(plugin);
@@ -235,12 +235,11 @@ public class Lucker extends AbstractKit {
       @Override
       public void run() {
         BlockData data = crop.getBlockData();
-        if (!(data instanceof Ageable)) {
+        if (!(data instanceof Ageable ageable)) {
           cancel();
           return;
         }
 
-        Ageable ageable = (Ageable) data;
         int age = ageable.getAge();
         int max = ageable.getMaximumAge();
         if (age < max) {

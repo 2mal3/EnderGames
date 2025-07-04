@@ -81,6 +81,43 @@ class KitInventory implements InventoryHolder, Listener {
     Bukkit.getPluginManager().registerEvents(this, plugin);
   }
 
+  private static String capitalize(String str) {
+    if (str == null || str.isEmpty()) {
+      return str;
+    }
+    return str.substring(0, 1).toUpperCase() + str.substring(1);
+  }
+
+  private static ArrayList<String> splitIntoLines(String text) {
+    var lines = new ArrayList<String>();
+
+    final int maxLineLength = 20;
+    int charactersInLine = 0;
+    int lineStartIndex = 0;
+    for (int i = 0; i < text.length(); i++) {
+      charactersInLine++;
+      if (charactersInLine > maxLineLength && text.charAt(i) == ' ') {
+        var line = text.substring(lineStartIndex, i);
+        lines.add(line);
+        charactersInLine = 0;
+        lineStartIndex = i + 1;
+      }
+    }
+    lines.add(text.substring(lineStartIndex));
+
+    return lines;
+  }
+
+  private static List<TextComponent> convertTextListToComponents(ArrayList<String> lines) {
+    return lines.stream()
+        .map(
+            line ->
+                Component.text(line)
+                    .color(NamedTextColor.WHITE)
+                    .decoration(TextDecoration.ITALIC, false))
+        .toList();
+  }
+
   @EventHandler
   public void onInventoryClick(InventoryClickEvent event) {
     Inventory inventory = event.getClickedInventory();
@@ -140,13 +177,6 @@ class KitInventory implements InventoryHolder, Listener {
 
     // Update the item enchantements to show which item was selected
     updateKitItems();
-  }
-
-  private static String capitalize(String str) {
-    if (str == null || str.isEmpty()) {
-      return str;
-    }
-    return str.substring(0, 1).toUpperCase() + str.substring(1);
   }
 
   @EventHandler
@@ -261,35 +291,5 @@ class KitInventory implements InventoryHolder, Listener {
     }
 
     return lore;
-  }
-
-  private static ArrayList<String> splitIntoLines(String text) {
-    var lines = new ArrayList<String>();
-
-    final int maxLineLength = 20;
-    int charactersInLine = 0;
-    int lineStartIndex = 0;
-    for (int i = 0; i < text.length(); i++) {
-      charactersInLine++;
-      if (charactersInLine > maxLineLength && text.charAt(i) == ' ') {
-        var line = text.substring(lineStartIndex, i);
-        lines.add(line);
-        charactersInLine = 0;
-        lineStartIndex = i + 1;
-      }
-    }
-    lines.add(text.substring(lineStartIndex));
-
-    return lines;
-  }
-
-  private static List<TextComponent> convertTextListToComponents(ArrayList<String> lines) {
-    return lines.stream()
-        .map(
-            line ->
-                Component.text(line)
-                    .color(NamedTextColor.WHITE)
-                    .decoration(TextDecoration.ITALIC, false))
-        .toList();
   }
 }
