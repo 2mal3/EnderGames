@@ -11,6 +11,8 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.Objects;
+
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -107,11 +109,6 @@ public class EnderGames extends JavaPlugin implements Listener {
               Material type = event.getBlock().getType();
               return type == Material.DIAMOND_ORE || type == Material.DEEPSLATE_DIAMOND_ORE;
             })
-        .build();
-    api.register(BlockPlaceEvent.class)
-        .advancementKey("minecraft:adventure/adventuring_time")
-        .targetValue(2)
-        .grantMode(GrantMode.STEP_BY_STEP)
         .build();
   }
 

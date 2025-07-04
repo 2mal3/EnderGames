@@ -1,7 +1,5 @@
 package io.github.mal32.endergames.worlds.lobby.items;
 
-import static org.apache.commons.lang3.StringUtils.capitalize;
-
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.kits.KitDescriptionItem;
@@ -203,7 +201,7 @@ class KitInventory implements InventoryHolder, Listener {
     Advancement kitAdvancement =
         plugin
             .getServer()
-            .getAdvancement(new NamespacedKey("enga", kitDescription.name.toLowerCase()));
+            .getAdvancement(new NamespacedKey("enga", kitDescription.name().toLowerCase()));
     boolean isKitUnlocked =
         kitAdvancement == null || player.getAdvancementProgress(kitAdvancement).isDone();
     if (!isKitUnlocked) {
