@@ -2,9 +2,10 @@ package io.github.mal32.endergames.worlds.game.game;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+
+import java.util.*;
+
+import io.github.mal32.endergames.worlds.game.WorldManager;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 
@@ -54,55 +55,48 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
   }
 
   protected Location getRandomHorizontalLocation() {
-    Player[] players = GameWorld.getPlayersInGame();
-    World world;
-    WorldBorder border;
-    Random random = new Random();
+    final int MIN_PLAYER_DISTANCE = 64;
+    final int MAX_PLAYER_DISTANCE = 128;
 
-    if (players.length == 0) {
-      world = Bukkit.getWorlds().get(0);
-      border = world.getWorldBorder();
-      return getRandomHorizontalBorderLocation(world, border, random);
-    }
+    final World world = Objects.requireNonNull(Bukkit.getWorld("world"));
+    ArrayList<Chunk> loadedChunks = new ArrayList<>(Arrays.asList(world.getLoadedChunks()));
 
-    // Otherwise, pick a random player
-    Player player = players[random.nextInt(players.length)];
-    world = player.getWorld();
-    border = world.getWorldBorder();
+    Chunk targetChunk = null;
+    while (targetChunk == null) {
+      int randomIndex = new Random().nextInt(loadedChunks.size());
+      var chunk = loadedChunks.get(randomIndex);
+      loadedChunks.remove(randomIndex);
 
-    var randomNumber = random.nextDouble(1);
-    List<BlockRange> distances =
-        List.of(
-            new BlockRange(16, 32, 2),
-            new BlockRange(32, 80, 12),
-            new BlockRange(80, 120, 33),
-            new BlockRange(120, 160, 53));
-    BlockRange randomRange = chooseOnWeight(distances);
+      // replace with kd-tree when to slow
 
-    // Try a few times to pick a valid "around-player" location inside the border
-    final int MAX_ATTEMPTS = 10;
-    for (int i = 0; i < MAX_ATTEMPTS; i++) {
-      // Choose a random distance in [minDist, maxDist)
-      double dist =
-          randomRange.min() + (random.nextDouble() * (randomRange.max() - randomRange.min()));
-      // Choose a random angle in radians [0, 2π)
-      double angle = random.nextDouble() * 2 * Math.PI;
+      Location chunkBlockLocation = chunk.getBlock(0, 0, 0).getLocation();
+      double minHorizontalDistance = getMinHorizontalDistanceToPlayers(chunkBlockLocation);
 
-      // Compute offset from the player's X,Z
-      double dx = Math.cos(angle) * dist;
-      double dz = Math.sin(angle) * dist;
-
-      double x = player.getLocation().getX() + dx;
-      double z = player.getLocation().getZ() + dz;
-
-      Location candidate = new Location(world, x, 0, z);
-      if (border.isInside(candidate) && world.isChunkLoaded(candidate.getChunk())) {
-        return candidate;
+      if (minHorizontalDistance > MIN_PLAYER_DISTANCE && minHorizontalDistance < MAX_PLAYER_DISTANCE) {
+        targetChunk = chunk;
       }
     }
 
-    // If we never found a valid around-player spot, fall back to border-only
-    return getRandomHorizontalBorderLocation(world, border, random);
+    // calculate random offset
+    int xOffset = new Random().nextInt(16);
+    int zOffset = new Random().nextInt(16);
+
+    return targetChunk.getBlock(xOffset, 0, zOffset).getLocation();
+  }
+
+  private static double getMinHorizontalDistanceToPlayers(Location chunkBlockLocation) {
+    double minHorizontalDistance = Double.MAX_VALUE;
+    for (Player player : GameWorld.getPlayersInGame()) {
+      var playerLocation = player.getLocation();
+      double horizontalDistance =
+          Math.sqrt(
+              Math.pow(playerLocation.getBlockX() - chunkBlockLocation.getBlockX(), 2)
+                  + Math.pow(playerLocation.getBlockZ() - chunkBlockLocation.getBlockZ(), 2));
+      if (horizontalDistance < minHorizontalDistance) {
+        minHorizontalDistance = horizontalDistance;
+      }
+    }
+    return minHorizontalDistance;
   }
 
   public static <T extends BlockRange> T chooseOnWeight(List<T> items) {
