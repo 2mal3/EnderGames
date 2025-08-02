@@ -68,11 +68,11 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
       loadedChunks.remove(randomIndex);
 
       // replace with kd-tree when to slow
-
       Location chunkBlockLocation = chunk.getBlock(0, 0, 0).getLocation();
       double minHorizontalDistance = getMinHorizontalDistanceToPlayers(chunkBlockLocation);
 
-      if (minHorizontalDistance > MIN_PLAYER_DISTANCE && minHorizontalDistance < MAX_PLAYER_DISTANCE) {
+      if (minHorizontalDistance > MIN_PLAYER_DISTANCE
+          && minHorizontalDistance < MAX_PLAYER_DISTANCE) {
         targetChunk = chunk;
       }
     }
