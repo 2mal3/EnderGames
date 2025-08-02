@@ -34,6 +34,8 @@ public class LobbyWorld extends AbstractWorld {
     lobbyWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
     lobbyWorld.getWorldBorder().setSize(500);
 
+    lobbyWorld.setGameRule(GameRule.LOCATOR_BAR, false);
+
     tryUpdatingLobby();
   }
 

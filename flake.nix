@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/064cbb73bde0942c960e0f40575339893788d45e";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable-small";
   };
 
   outputs = {
