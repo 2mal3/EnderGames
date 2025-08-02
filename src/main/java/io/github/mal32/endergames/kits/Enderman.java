@@ -32,7 +32,7 @@ public class Enderman extends AbstractKit {
     if (killer == null) return;
     if (!playerCanUseThisKit(killer)) return;
 
-    killer.getInventory().addItem(new ItemStack(Material.ENDER_PEARL, 2));
+    killer.getInventory().addItem(new ItemStack(Material.ENDER_PEARL, 3));
   }
 
   @EventHandler
