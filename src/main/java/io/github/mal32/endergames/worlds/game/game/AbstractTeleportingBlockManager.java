@@ -5,7 +5,6 @@ import io.github.mal32.endergames.worlds.game.GameWorld;
 
 import java.util.*;
 
-import io.github.mal32.endergames.worlds.game.WorldManager;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 
