@@ -77,7 +77,7 @@ public class Blaze extends AbstractKit {
   public void onHit(EntityDamageByEntityEvent event) {
     if (!(event.getDamager() instanceof Player damager) || !playerCanUseThisKit(damager)) return;
 
-    if (Math.random() > 0.2) return;
+    if (Math.random() > 0.25) return;
 
     event.getEntity().setFireTicks(20 * 3);
   }
@@ -87,7 +87,7 @@ public class Blaze extends AbstractKit {
     if (!(event.getEntity() instanceof Player player)) return;
     if (!playerCanUseThisKit(player)) return;
 
-    if (Math.random() > 0.25) return;
+    if (Math.random() > 0.33) return;
 
     event.getProjectile().setFireTicks(20 * 3);
   }
