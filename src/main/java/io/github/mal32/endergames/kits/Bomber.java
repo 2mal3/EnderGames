@@ -83,7 +83,7 @@ public class Bomber extends AbstractKit {
     TNTPrimed tnt =
         (TNTPrimed)
             location.getWorld().spawnEntity(location.clone().add(0.5, 0, 0.5), EntityType.TNT);
-    tnt.setFuseTicks(10);
+    tnt.setFuseTicks(20);
   }
 
   @EventHandler
