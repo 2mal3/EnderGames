@@ -68,7 +68,7 @@ public class Bomber extends AbstractKit {
   }
 
   @EventHandler(priority = EventPriority.LOW)
-  private void onTNTPlace(BlockPlaceEvent event) {
+  public void onTNTPlace(BlockPlaceEvent event) {
     if (event.getBlock().getType() != Material.TNT) return;
     Player player = event.getPlayer();
     if (!playerCanUseThisKit(player)) return;
