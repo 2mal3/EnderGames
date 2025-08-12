@@ -99,12 +99,14 @@ public class ParkourManager {
 
     public void startParkour(Player p) {
         UUID id = p.getUniqueId();
+        long now = System.currentTimeMillis();
         if (sessions.containsKey(id)){
-            p.sendMessage(Component.text("Time reset (not implemented yet)").color(NamedTextColor.GRAY));
+            p.sendMessage(Component.text("Time reset to 0:00").color(NamedTextColor.GRAY));
+            ParkourSession s = sessions.get(id);
+            s.reset(now, RESET_LOCATION);
             // already started
             return;
         }
-        long now = System.currentTimeMillis();
         ParkourSession s = new ParkourSession(now, RESET_LOCATION);
         sessions.put(id, s);
 
@@ -116,10 +118,11 @@ public class ParkourManager {
         p.getInventory().setItem(CANCEL_HOTBAR_SLOT, createCancelItem());
 
         // title + chat
-        p.showTitle(Title.title(
-                Component.text("Parkour challenge started", NamedTextColor.GOLD),
-                Component.text("Good luck!", NamedTextColor.GRAY)
-        ));
+        p.sendActionBar(
+                Component.text("Parkour challenge started!     Good luck!", NamedTextColor.GOLD)
+                        .decoration(TextDecoration.ITALIC, false)
+        );
+
 
         p.sendMessage(Component.text("Parkour started! Use the reset item to go back.").color(NamedTextColor.GREEN));
         plugin.getLogger().info(p.getName() + " started parkour.");
