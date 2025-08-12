@@ -1,17 +1,29 @@
 package io.github.mal32.endergames.worlds.lobby;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.ParkourManager;
 import io.github.mal32.endergames.worlds.AbstractWorld;
 import io.github.mal32.endergames.worlds.lobby.items.MenuManager;
 import java.util.Objects;
 import java.util.Random;
 import org.bukkit.*;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -22,11 +34,13 @@ public class LobbyWorld extends AbstractWorld {
   private final MenuManager menuManager;
   private final World lobbyWorld = Objects.requireNonNull(Bukkit.getWorld("world_enga_lobby"));
   private final Location spawnLocation = new Location(lobbyWorld, 0, 64, 0);
+  private final ParkourManager pmanager;
 
   public LobbyWorld(EnderGames plugin) {
     super(plugin);
+      this.pmanager = new ParkourManager(plugin);
 
-    this.menuManager = new MenuManager(this.plugin);
+      this.menuManager = new MenuManager(this.plugin);
 
     lobbyWorld.setSpawnLocation(spawnLocation);
     lobbyWorld.setGameRule(GameRule.SPAWN_RADIUS, 6);
@@ -106,4 +120,100 @@ public class LobbyWorld extends AbstractWorld {
 
     event.setCancelled(true);
   }
+
+//  @EventHandler
+//  public void onPressureplateTrample(PlayerInteractEvent event) {
+//    if (event.getAction() != Action.PHYSICAL) return;
+//    if (event.getClickedBlock() == null) return;
+//
+//    Material type = event.getClickedBlock().getType();
+//
+//    if (type == Material.HEAVY_WEIGHTED_PRESSURE_PLATE || type == Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {
+//      Player player = event.getPlayer();
+//      pmanager.handlePlateStepped(player,event.getClickedBlock().getLocation(),type);
+//    }
+//  }
+
+  @EventHandler
+  public void onPressurePlateRedstone(BlockRedstoneEvent event) {
+    Material type = event.getBlock().getType();
+    if (type != Material.HEAVY_WEIGHTED_PRESSURE_PLATE && type != Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {
+      return;
+    }
+
+    int oldPower = event.getOldCurrent();
+    int newPower = event.getNewCurrent();
+
+    // Trigger only when plate is activated (rising edge)
+    if (oldPower == 0 && newPower > 0) {
+      // The plate just got stepped on or activated
+      // Find players standing on this plate (there can be multiple)
+      for (Player p : event.getBlock().getWorld().getPlayers()) {
+        Location playerBlockLoc = p.getLocation().getBlock().getLocation();
+        Location plateBlock = event.getBlock().getLocation();
+        if (playerBlockLoc.distanceSquared(plateBlock) <= 1) {
+          // Player stepped on this plate
+          pmanager.handlePlateStepped(p, plateBlock, type);
+        }
+      }
+    }
+  }
+
+  @EventHandler
+  public void onPlayerInteract(PlayerInteractEvent event) {
+    if (event.getHand() != EquipmentSlot.HAND) return;
+    if (event.getClickedBlock() != null){
+      Material type = event.getClickedBlock().getType();
+
+      if (type.name().contains("TRAPDOOR")) {
+        event.setCancelled(true);
+      }
+    }
+
+    //Parkour reset item
+    ItemStack item = event.getItem();
+    if (pmanager.isResetItem(item)) {
+      event.setCancelled(true);
+      Player p = event.getPlayer();
+      pmanager.resetPlayer(p);
+    }
+    else if (pmanager.isCancelItem(item)) {
+      event.setCancelled(true);
+      Player p = event.getPlayer();
+      pmanager.abortParkour(p);
+    }
+  }
+
+  @EventHandler
+  public void onQuit(PlayerQuitEvent e) {
+    pmanager.abortParkour(e.getPlayer());
+  }
+
+  //Prevent moving the parkour items
+  @EventHandler
+  public void onInventoryClick(InventoryClickEvent event) {
+    ItemStack item = event.getCurrentItem();
+    if (item != null && (pmanager.isResetItem(item) || pmanager.isCancelItem(item))) {
+      event.setCancelled(true);
+    }
+  }
+
+  @EventHandler
+  public void onInventoryDrag(InventoryDragEvent event) {
+    ItemStack item = event.getOldCursor();
+    if (item != null && (pmanager.isResetItem(item) || pmanager.isCancelItem(item))) {
+      event.setCancelled(true);
+    }
+  }
+
+  @EventHandler
+  public void onPlayerDrop(PlayerDropItemEvent event) {
+    ItemStack item = event.getItemDrop().getItemStack();
+    if (pmanager.isResetItem(item) || pmanager.isCancelItem(item)) {
+      event.setCancelled(true);
+    }
+  }
+
+
+
 }
