@@ -268,7 +268,7 @@ public class ParkourManager {
     private boolean isSameBlock(Location a, Location b) {
         if (a == null || b == null) return false;
         if (a.getWorld() == null || b.getWorld() == null) return false;
-        if (!a.getWorld().getName().equals(b.getWorld().getName())) return false;d
+        if (!a.getWorld().getName().equals(b.getWorld().getName())) return false;
         return a.getBlockX() == b.getBlockX()
                 && a.getBlockY() == b.getBlockY()
                 && a.getBlockZ() == b.getBlockZ();
