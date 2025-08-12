@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.worlds.lobby;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.ParkourManager;
 import io.github.mal32.endergames.worlds.AbstractWorld;
 import io.github.mal32.endergames.worlds.lobby.items.MenuManager;
 import java.util.Objects;
@@ -10,8 +11,14 @@ import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -22,11 +29,13 @@ public class LobbyWorld extends AbstractWorld {
   private final MenuManager menuManager;
   private final World lobbyWorld = Objects.requireNonNull(Bukkit.getWorld("world_enga_lobby"));
   private final Location spawnLocation = new Location(lobbyWorld, 0, 64, 0);
+  private final ParkourManager pmanager;
 
   public LobbyWorld(EnderGames plugin) {
     super(plugin);
+      this.pmanager = new ParkourManager(plugin);
 
-    this.menuManager = new MenuManager(this.plugin);
+      this.menuManager = new MenuManager(this.plugin);
 
     lobbyWorld.setSpawnLocation(spawnLocation);
     lobbyWorld.setGameRule(GameRule.SPAWN_RADIUS, 6);
@@ -106,4 +115,43 @@ public class LobbyWorld extends AbstractWorld {
 
     event.setCancelled(true);
   }
+
+  @EventHandler
+  public void onPressureplateTrample(PlayerInteractEvent event) {
+    if (event.getAction() != Action.PHYSICAL) return;
+    if (event.getClickedBlock() == null) return;
+
+    Material type = event.getClickedBlock().getType();
+
+    if (type == Material.HEAVY_WEIGHTED_PRESSURE_PLATE || type == Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {
+      Player player = event.getPlayer();
+      pmanager.handlePlateStepped(player,event.getClickedBlock().getLocation(),type);
+    }
+  }
+
+  @EventHandler
+  public void onPlayerInteract(PlayerInteractEvent event) {
+    if (event.getHand() != EquipmentSlot.HAND) return;
+    if (event.getClickedBlock() != null){
+      Material type = event.getClickedBlock().getType();
+
+      if (type.name().contains("TRAPDOOR")) {
+        event.setCancelled(true);
+      }
+    }
+
+    //Parkour reset item
+    ItemStack item = event.getItem();
+    if (pmanager.isResetItem(item)) {
+      event.setCancelled(true);
+      Player p = event.getPlayer();
+      pmanager.resetPlayer(p);
+    }
+  }
+
+  @EventHandler
+  public void onQuit(PlayerQuitEvent e) {
+    pmanager.abortParkour(e.getPlayer());
+  }
+
 }
