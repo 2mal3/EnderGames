@@ -37,13 +37,13 @@ public class ParkourManager {
     private final Location FINISH_PLATE = new Location(Bukkit.getWorld("world_enga_lobby"), 15, 81, -23);
 
     // checkpoint locations (optional). add as many as you want.
-    private final List<Location> CHECKPOINTS = List.of(
+    private final List<Checkpoint> CHECKPOINTS = List.of(
             // example: new Location(world, x,y,z)
             // new Location(Bukkit.getWorlds().get(0), 0, 70, 0)
-            new Location(Bukkit.getWorld("world_enga_lobby"),-15,81,27)
+            new Checkpoint(new Location(Bukkit.getWorld("world_enga_lobby"),-15,81,27,-90f,0f)),
+            new Checkpoint(new Location(Bukkit.getWorld("world_enga_lobby"),19,80,0,180f,0f))
     );
 
-    // hotbar slot index (0-based). slot 1 = second hotbar slot (user requested "slot 2")
     private static final int RESET_HOTBAR_SLOT = 1;
 
     public ParkourManager(JavaPlugin plugin) {
@@ -95,9 +95,13 @@ public class ParkourManager {
 
     public void startParkour(Player p) {
         UUID id = p.getUniqueId();
-        if (sessions.containsKey(id)) return; // already started
+        if (sessions.containsKey(id)){
+            p.sendMessage(Component.text("Time reset (not implemented yet)").color(NamedTextColor.GRAY));
+            // already started
+            return;
+        }
         long now = System.currentTimeMillis();
-        ParkourSession s = new ParkourSession(now);
+        ParkourSession s = new ParkourSession(now, RESET_LOCATION);
         sessions.put(id, s);
 
         // save current item in that hotbar slot
@@ -118,35 +122,49 @@ public class ParkourManager {
     }
 
     public void resetPlayer(Player p) {
-        // teleport to configured reset location (keeps them in parkour mode)
-        p.teleport(RESET_LOCATION);
-        p.sendMessage(Component.text("Reset to start.").color(NamedTextColor.RED));
+        ParkourSession s = sessions.get(p.getUniqueId());
+        Location respawn = (s != null && s.lastCheckpointLocation != null)
+                ? s.lastCheckpointLocation.clone()
+                : RESET_LOCATION.clone();
+        // ensure safe teleport & preserve yaw/pitch if present
+        p.teleport(respawn);
+        p.sendMessage(Component.text("Reset to last checkpoint.").color(NamedTextColor.RED));
     }
 
     public void checkpointReached(Player p, Location chkLocation) {
         UUID id = p.getUniqueId();
         ParkourSession s = sessions.get(id);
-        if (s == null) return;
-        long now = System.currentTimeMillis();
+        if (s == null) return; // not in a run
 
-        // determine index of checkpoint
-        int index = indexOfCheckpoint(chkLocation);
-        if (index <= s.lastCheckpointIndex) {
-            // ignore repeated triggers for same or earlier checkpoint
+        int index = indexOfCheckpoint(chkLocation); // 1-based index or -1
+        if (index <= 0) return;
+
+        // strict ordering: only accept exactly the next checkpoint
+        if (index != s.lastCheckpointIndex + 1) {
+            if (index < s.lastCheckpointIndex) {
+                p.sendMessage(Component.text("You already have a newer checkpoint. Use the reset item to get there.").color(NamedTextColor.GRAY));
+            } else if (index > s.lastCheckpointIndex)  { // jumped ahead
+                p.sendMessage(Component.text("You skipped a checkpoint").color(NamedTextColor.RED));
+                abortParkour(p);
+            }
             return;
         }
 
+        long now = System.currentTimeMillis();
         long delta = now - s.lastCheckpointTime;
         s.lastCheckpointTime = now;
         s.lastCheckpointIndex = index;
 
-        String formatted = formatTime(delta);
-        p.sendMessage(Component.text("Finished part " + index + " in " + formatted).color(NamedTextColor.AQUA));
+        // set respawn to the checkpoint's configured respawn position
+        Checkpoint cp = CHECKPOINTS.get(index - 1);
+        s.lastCheckpointLocation = cp.getRespawn().clone();
+
+        p.sendMessage(Component.text("Finished part " + index + " in " + formatTime(delta)).color(NamedTextColor.AQUA));
     }
 
     private int indexOfCheckpoint(Location l) {
         for (int i = 0; i < CHECKPOINTS.size(); i++) {
-            if (isSameBlock(CHECKPOINTS.get(i), l)) return i + 1;
+            if (isSameBlock(CHECKPOINTS.get(i).getPlate(), l)) return i + 1;
         }
         return -1;
     }
@@ -224,7 +242,19 @@ public class ParkourManager {
 
         if (isSameBlock(plateBlockLocation, FINISH_PLATE) && plateType == Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {
             // finish
-            if (isInParkour(p)) finishParkour(p);
+            ParkourSession s = sessions.get(p.getUniqueId());
+            if (s == null) {
+                // not in run -> ignore or tell player
+                p.sendMessage(Component.text("You are not currently running the parkour.").color(NamedTextColor.GRAY));
+                return;
+            }
+            if (!CHECKPOINTS.isEmpty() && s.lastCheckpointIndex != CHECKPOINTS.size()) {
+                p.sendMessage(Component.text("You didn't hit all checkpoints").color(NamedTextColor.RED));
+                p.sendMessage(Component.text("Last checkpoint reached: " + s.lastCheckpointIndex + " / " + CHECKPOINTS.size()).color(NamedTextColor.GRAY));
+                abortParkour(p);
+                return;
+            }
+            finishParkour(p);
             return;
         }
 
@@ -238,7 +268,7 @@ public class ParkourManager {
     private boolean isSameBlock(Location a, Location b) {
         if (a == null || b == null) return false;
         if (a.getWorld() == null || b.getWorld() == null) return false;
-        if (!a.getWorld().getName().equals(b.getWorld().getName())) return false;
+        if (!a.getWorld().getName().equals(b.getWorld().getName())) return false;d
         return a.getBlockX() == b.getBlockX()
                 && a.getBlockY() == b.getBlockY()
                 && a.getBlockZ() == b.getBlockZ();
@@ -264,13 +294,46 @@ public class ParkourManager {
     }
 
     private static class ParkourSession {
-        final long startTime;
+        long startTime;
         long lastCheckpointTime;
         int lastCheckpointIndex = 0;
+        Location lastCheckpointLocation;
 
-        ParkourSession(long now) {
+        ParkourSession(long now, Location initialRespawn) {
             this.startTime = now;
             this.lastCheckpointTime = now;
+            this.lastCheckpointLocation = (initialRespawn == null) ? null : initialRespawn.clone();
+        }
+
+        void reset(long now, Location initialRespawn) {
+            this.startTime = now;
+            this.lastCheckpointTime = now;
+            this.lastCheckpointIndex = 0;
+            this.lastCheckpointLocation = (initialRespawn == null) ? null : initialRespawn.clone();
+        }
+    }
+
+    private static class Checkpoint {
+        private final Location plate;
+        private final Location respawn;
+
+        /** default respawn = center of plate block (plate.x + .5, plate.y, plate.z + .5) */
+        Checkpoint(Location plate) {
+            this.plate = plate.clone();
+            this.respawn = plate.clone().add(0.7, 0, 0.5);
+        }
+
+        Checkpoint(Location plate, Location respawn) {
+            this.plate = plate.clone();
+            this.respawn = respawn.clone();
+        }
+
+        Location getPlate() {
+            return plate;
+        }
+
+        Location getRespawn() {
+            return respawn;
         }
     }
 }
