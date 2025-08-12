@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,6 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class ParkourManager {
     private final JavaPlugin plugin;
     private final NamespacedKey resetKey;
+    private final NamespacedKey cancelKey;
     private final Map<UUID, ParkourSession> sessions = new ConcurrentHashMap<>();
     private final Map<UUID, ItemStack> savedHotbar = new ConcurrentHashMap<>();
     private final File recordsFile;
@@ -45,10 +47,12 @@ public class ParkourManager {
     );
 
     private static final int RESET_HOTBAR_SLOT = 1;
+    private static final int CANCEL_HOTBAR_SLOT = 2;
 
     public ParkourManager(JavaPlugin plugin) {
         this.plugin = plugin;
         this.resetKey = new NamespacedKey(plugin, "parkour_reset");
+        this.cancelKey = new NamespacedKey(plugin, "parkour_cancel");
         this.recordsFile = new File(plugin.getDataFolder(), "parkour-records.yml");
         loadRecords();
     }
@@ -104,12 +108,12 @@ public class ParkourManager {
         ParkourSession s = new ParkourSession(now, RESET_LOCATION);
         sessions.put(id, s);
 
-        // save current item in that hotbar slot
         ItemStack prev = p.getInventory().getItem(RESET_HOTBAR_SLOT);
         if (prev != null) savedHotbar.put(id, prev);
 
-        // give reset item
+        // give reset and cancel item
         p.getInventory().setItem(RESET_HOTBAR_SLOT, createResetItem());
+        p.getInventory().setItem(CANCEL_HOTBAR_SLOT, createCancelItem());
 
         // title + chat
         p.showTitle(Title.title(
@@ -210,6 +214,7 @@ public class ParkourManager {
         ItemStack prev = savedHotbar.remove(id);
         try {
             p.getInventory().setItem(RESET_HOTBAR_SLOT, prev);
+            p.getInventory().setItem(CANCEL_HOTBAR_SLOT, null);
         } catch (Exception e) {
             plugin.getLogger().warning("Failed to restore hotbar for " + id);
         }
@@ -218,16 +223,33 @@ public class ParkourManager {
     public ItemStack createResetItem() {
         ItemStack item = new ItemStack(Material.RED_DYE);
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(Component.text("Reset", NamedTextColor.RED));
+        meta.displayName(Component.text("Reset", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
         meta.getPersistentDataContainer().set(resetKey, PersistentDataType.BYTE, (byte) 1);
         item.setItemMeta(meta);
         return item;
     }
 
+    public ItemStack createCancelItem() {
+        ItemStack item = new ItemStack(Material.BARRIER);
+        ItemMeta meta = item.getItemMeta();
+        meta.displayName(Component.text("Cancel Parkour", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
+        meta.getPersistentDataContainer().set(cancelKey, PersistentDataType.BYTE, (byte) 1);
+        item.setItemMeta(meta);
+        return item;
+    }
+
+
     public boolean isResetItem(ItemStack stack) {
         if (stack == null) return false;
         if (!stack.hasItemMeta()) return false;
         Byte has = stack.getItemMeta().getPersistentDataContainer().get(resetKey, PersistentDataType.BYTE);
+        return has != null && has == (byte) 1;
+    }
+
+    public boolean isCancelItem(ItemStack stack) {
+        if (stack == null) return false;
+        if (!stack.hasItemMeta()) return false;
+        Byte has = stack.getItemMeta().getPersistentDataContainer().get(cancelKey, PersistentDataType.BYTE);
         return has != null && has == (byte) 1;
     }
 

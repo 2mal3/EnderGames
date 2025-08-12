@@ -14,6 +14,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -147,11 +150,43 @@ public class LobbyWorld extends AbstractWorld {
       Player p = event.getPlayer();
       pmanager.resetPlayer(p);
     }
+    else if (pmanager.isCancelItem(item)) {
+      event.setCancelled(true);
+      Player p = event.getPlayer();
+      pmanager.abortParkour(p);
+    }
   }
 
   @EventHandler
   public void onQuit(PlayerQuitEvent e) {
     pmanager.abortParkour(e.getPlayer());
   }
+
+  //Prevent moving the parkour items
+  @EventHandler
+  public void onInventoryClick(InventoryClickEvent event) {
+    ItemStack item = event.getCurrentItem();
+    if (item != null && (pmanager.isResetItem(item) || pmanager.isCancelItem(item))) {
+      event.setCancelled(true);
+    }
+  }
+
+  @EventHandler
+  public void onInventoryDrag(InventoryDragEvent event) {
+    ItemStack item = event.getOldCursor();
+    if (item != null && (pmanager.isResetItem(item) || pmanager.isCancelItem(item))) {
+      event.setCancelled(true);
+    }
+  }
+
+  @EventHandler
+  public void onPlayerDrop(PlayerDropItemEvent event) {
+    ItemStack item = event.getItemDrop().getItemStack();
+    if (pmanager.isResetItem(item) || pmanager.isCancelItem(item)) {
+      event.setCancelled(true);
+    }
+  }
+
+
 
 }
