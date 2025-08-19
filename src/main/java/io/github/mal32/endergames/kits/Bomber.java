@@ -67,25 +67,6 @@ public class Bomber extends AbstractKit {
     location.createExplosion(killer, 4f, false, true);
   }
 
-  @EventHandler(priority = EventPriority.LOW)
-  public void onTNTPlace(BlockPlaceEvent event) {
-    if (event.getBlock().getType() != Material.TNT) return;
-    Player player = event.getPlayer();
-    if (!playerCanUseThisKit(player)) return;
-
-    if (event.getPlayer().isSneaking()) return;
-
-    event.setCancelled(true);
-
-    player.getInventory().removeItem(new ItemStack(Material.TNT, 1));
-
-    Location location = event.getBlock().getLocation();
-    TNTPrimed tnt =
-        (TNTPrimed)
-            location.getWorld().spawnEntity(location.clone().add(0.5, 0, 0.5), EntityType.TNT);
-    tnt.setFuseTicks(20);
-  }
-
   @EventHandler
   private void onMinePlace(BlockPlaceEvent event) {
     if (event.getBlock().getType() != Material.STONE_BUTTON) return;
