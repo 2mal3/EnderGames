@@ -54,8 +54,8 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
   }
 
   protected Location getRandomHorizontalLocation() {
-    final int MIN_PLAYER_DISTANCE = 64;
-    final int MAX_PLAYER_DISTANCE = 128;
+    final int MIN_PLAYER_DISTANCE = 48;
+    final int MAX_PLAYER_DISTANCE = 96;
 
     final World world = Objects.requireNonNull(Bukkit.getWorld("world"));
     ArrayList<Chunk> loadedChunks = new ArrayList<>(Arrays.asList(world.getLoadedChunks()));
