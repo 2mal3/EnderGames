@@ -1,7 +1,5 @@
 package io.github.mal32.endergames.worlds.lobby.items;
 
-import static org.apache.commons.lang3.StringUtils.capitalize;
-
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.kits.KitDescriptionItem;
@@ -16,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
+import org.bukkit.advancement.Advancement;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -82,6 +81,43 @@ class KitInventory implements InventoryHolder, Listener {
     Bukkit.getPluginManager().registerEvents(this, plugin);
   }
 
+  private static String capitalize(String str) {
+    if (str == null || str.isEmpty()) {
+      return str;
+    }
+    return str.substring(0, 1).toUpperCase() + str.substring(1);
+  }
+
+  private static ArrayList<String> splitIntoLines(String text) {
+    var lines = new ArrayList<String>();
+
+    final int maxLineLength = 20;
+    int charactersInLine = 0;
+    int lineStartIndex = 0;
+    for (int i = 0; i < text.length(); i++) {
+      charactersInLine++;
+      if (charactersInLine > maxLineLength && text.charAt(i) == ' ') {
+        var line = text.substring(lineStartIndex, i);
+        lines.add(line);
+        charactersInLine = 0;
+        lineStartIndex = i + 1;
+      }
+    }
+    lines.add(text.substring(lineStartIndex));
+
+    return lines;
+  }
+
+  private static List<TextComponent> convertTextListToComponents(ArrayList<String> lines) {
+    return lines.stream()
+        .map(
+            line ->
+                Component.text(line)
+                    .color(NamedTextColor.WHITE)
+                    .decoration(TextDecoration.ITALIC, false))
+        .toList();
+  }
+
   @EventHandler
   public void onInventoryClick(InventoryClickEvent event) {
     Inventory inventory = event.getClickedInventory();
@@ -110,6 +146,22 @@ class KitInventory implements InventoryHolder, Listener {
             .orElse(null);
     if (matchedKit == null) {
       plugin.getComponentLogger().warn("Invalid kit selected: " + kitName);
+      return;
+    }
+
+    // Check if the player has unlocked the kit
+    Advancement kitAdvancement =
+        plugin.getServer().getAdvancement(new NamespacedKey("enga", kitName));
+    boolean kitUnlocked =
+        kitAdvancement == null || player.getAdvancementProgress(kitAdvancement).isDone();
+    if (!kitUnlocked) {
+      player.sendMessage(
+          Component.text()
+              .append(Component.text("You haven't unlocked the ").color(NamedTextColor.RED))
+              .append(Component.text(capitalize(kitName)).color(NamedTextColor.DARK_RED))
+              .append(
+                  Component.text(" kit yet. See the advancements tab.").color(NamedTextColor.RED)));
+      player.playSound(player.getLocation(), Sound.ENTITY_GOAT_AMBIENT, 1, 1);
       return;
     }
 
@@ -175,6 +227,21 @@ class KitInventory implements InventoryHolder, Listener {
   private List<TextComponent> getKitLore(KitDescriptionItem kitDescription) {
     var lore = new ArrayList<TextComponent>();
 
+    // Kit unlocked display
+    Advancement kitAdvancement =
+        plugin
+            .getServer()
+            .getAdvancement(new NamespacedKey("enga", kitDescription.name().toLowerCase()));
+    boolean isKitUnlocked =
+        kitAdvancement == null || player.getAdvancementProgress(kitAdvancement).isDone();
+    if (!isKitUnlocked) {
+      lore.add(
+          Component.text("Not unlocked yet")
+              .color(NamedTextColor.RED)
+              .decoration(TextDecoration.ITALIC, false));
+      lore.add(Component.text(""));
+    }
+
     // Abilities
     var abilitiesHeaderComponent =
         Component.text("Abilities:")
@@ -224,35 +291,5 @@ class KitInventory implements InventoryHolder, Listener {
     }
 
     return lore;
-  }
-
-  private static ArrayList<String> splitIntoLines(String text) {
-    var lines = new ArrayList<String>();
-
-    final int maxLineLength = 20;
-    int charactersInLine = 0;
-    int lineStartIndex = 0;
-    for (int i = 0; i < text.length(); i++) {
-      charactersInLine++;
-      if (charactersInLine > maxLineLength && text.charAt(i) == ' ') {
-        var line = text.substring(lineStartIndex, i);
-        lines.add(line);
-        charactersInLine = 0;
-        lineStartIndex = i + 1;
-      }
-    }
-    lines.add(text.substring(lineStartIndex));
-
-    return lines;
-  }
-
-  private static List<TextComponent> convertTextListToComponents(ArrayList<String> lines) {
-    return lines.stream()
-        .map(
-            line ->
-                Component.text(line)
-                    .color(NamedTextColor.WHITE)
-                    .decoration(TextDecoration.ITALIC, false))
-        .toList();
   }
 }
