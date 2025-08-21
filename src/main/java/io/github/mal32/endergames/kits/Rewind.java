@@ -47,8 +47,8 @@ public class Rewind extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.CLOCK, "Rewind", "Go back 10 seconds in time", "Rewind Clock", Difficulty.EASY);
   }
 

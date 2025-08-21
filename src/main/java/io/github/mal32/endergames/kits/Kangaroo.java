@@ -23,8 +23,8 @@ public class Kangaroo extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.RABBIT_FOOT,
         "Kangaroo",
         "Can double jump at the cost of hunger",

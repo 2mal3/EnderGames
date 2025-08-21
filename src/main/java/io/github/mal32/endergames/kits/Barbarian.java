@@ -54,8 +54,8 @@ public class Barbarian extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.LEATHER_CHESTPLATE,
         "Barbarian",
         "Deals more attack damage the hungrier he is (+2.5% attack damage per half hunger bar"

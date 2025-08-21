@@ -72,8 +72,8 @@ public class Enderman extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.ENDER_PEARL,
         "Enderman",
         "Starts with 5 Ender Pearls. Gain 2 Ender Pearls per player kill. Doesn't take damage from"

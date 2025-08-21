@@ -32,8 +32,8 @@ public class Bird extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.ELYTRA,
         "Bird",
         "Starts with an Elytra and 10 Rockets. Gains 5 rockets per player kill. Fly like a bird!",

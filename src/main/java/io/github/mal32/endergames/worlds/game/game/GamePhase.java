@@ -74,7 +74,7 @@ public class GamePhase extends AbstractPhase {
               .getPersistentDataContainer()
               .get(new NamespacedKey(plugin, "kit"), PersistentDataType.STRING);
       for (AbstractKit kit : kits) {
-        if (Objects.equals(kit.getName(), playerKit)) {
+        if (Objects.equals(kit.getNameLowercase(), playerKit)) {
           kit.start(player);
         }
       }

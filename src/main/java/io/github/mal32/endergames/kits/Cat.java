@@ -75,8 +75,8 @@ public class Cat extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.COD,
         "Cat",
         "Gains Speed III for 30 seconds when eating raw fish. It deals +3 damage with bare hands"

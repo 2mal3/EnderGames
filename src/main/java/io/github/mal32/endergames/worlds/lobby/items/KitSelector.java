@@ -4,7 +4,7 @@ import static org.apache.commons.lang3.StringUtils.capitalize;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
-import io.github.mal32.endergames.kits.KitDescriptionItem;
+import io.github.mal32.endergames.kits.KitDescription;
 import java.util.ArrayList;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -105,7 +105,7 @@ class KitInventory implements InventoryHolder, Listener {
     // Get the clicked kit
     AbstractKit matchedKit =
         availableKits.stream()
-            .filter(kit -> kit.getName().equalsIgnoreCase(kitName))
+            .filter(kit -> kit.getNameLowercase().equalsIgnoreCase(kitName))
             .findFirst()
             .orElse(null);
     if (matchedKit == null) {
@@ -147,7 +147,7 @@ class KitInventory implements InventoryHolder, Listener {
         player.getPersistentDataContainer().get(kitStorageKey, PersistentDataType.STRING);
 
     for (AbstractKit kit : availableKits) {
-      var kitDescription = kit.getDescriptionItem();
+      var kitDescription = kit.getDescription();
 
       var kitItem = new ItemStack(kitDescription.item(), 1);
       var meta = kitItem.getItemMeta();
@@ -161,7 +161,7 @@ class KitInventory implements InventoryHolder, Listener {
       kitItem.setItemMeta(meta);
 
       // Hightlight the selected kit with a glow effect
-      if (kit.getName().equals(selectedKit)) {
+      if (kit.getNameLowercase().equals(selectedKit)) {
         ItemMeta clickedMeta = kitItem.getItemMeta();
         clickedMeta.addEnchant(Enchantment.INFINITY, 1, true); // dummy enchantment for glow
         clickedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -172,7 +172,7 @@ class KitInventory implements InventoryHolder, Listener {
     }
   }
 
-  private List<TextComponent> getKitLore(KitDescriptionItem kitDescription) {
+  private List<TextComponent> getKitLore(KitDescription kitDescription) {
     var lore = new ArrayList<TextComponent>();
 
     // Abilities

@@ -307,8 +307,8 @@ public class Lucker extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.AZALEA,
         "Lucker",
         "Blessed with extraordinary luck.                (Better chest loot, more luck when"

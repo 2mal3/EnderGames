@@ -25,8 +25,8 @@ public class Mace extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.MACE,
         "Mace",
         "Delivers a crushing blow with a mighty mace",
