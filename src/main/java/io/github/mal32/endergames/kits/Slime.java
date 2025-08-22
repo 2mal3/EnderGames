@@ -157,8 +157,8 @@ public class Slime extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.SLIME_BALL,
         "Slime",
         "Occasionally gains slimeballs when jumping, which can be thrown to slow enemies. Spawns"

@@ -129,8 +129,8 @@ public class Blaze extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.BLAZE_POWDER,
         "Blaze",
         "Can leave a fire trail for a short time. It is immune to fire damage, but gains Weakness I"

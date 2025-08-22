@@ -102,8 +102,8 @@ public class Dolphin extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.TROPICAL_FISH,
         "Dolphin",
         "Has permanent Conduit Power and Dolphins Grace. Gets Regeneration and Resistance in Water."

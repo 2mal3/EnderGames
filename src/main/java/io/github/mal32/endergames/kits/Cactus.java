@@ -290,8 +290,8 @@ public class Cactus extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.CACTUS,
         "Cactus",
         "Deals thorns damage to attackers. It can sneak to disguise itself as a cactus.",

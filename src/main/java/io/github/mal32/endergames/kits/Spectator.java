@@ -14,8 +14,8 @@ public class Spectator extends AbstractKit {
     player.setGameMode(org.bukkit.GameMode.SPECTATOR);
   }
 
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.ENDER_EYE,
         "Spectator",
         "You are a spectator and cannot interact with the game.",

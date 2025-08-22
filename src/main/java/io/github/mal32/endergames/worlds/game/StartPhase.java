@@ -1,10 +1,14 @@
 package io.github.mal32.endergames.worlds.game;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.kits.AbstractKit;
+import io.github.mal32.endergames.kits.KitDescription;
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -26,6 +30,7 @@ public class StartPhase extends AbstractPhase {
     }
 
     Bukkit.getScheduler().runTaskLater(plugin, this::distributePlayers, 20);
+    Bukkit.getScheduler().runTaskLater(plugin, this::showPlayersKitInfo, 20);
     Bukkit.getScheduler().runTaskLater(plugin, this::runCountdown, 25);
 
     world.setTime(0);
@@ -41,6 +46,42 @@ public class StartPhase extends AbstractPhase {
 
       teleportToPlayerSpawns(player, playerindex, totalPlayers);
       playerindex += 1;
+    }
+  }
+
+  private void showPlayersKitInfo() {
+    var kits = AbstractKit.getKits(plugin);
+
+    for (Player player : GameWorld.getPlayersInGameWorld()) { // TODO: playing players
+      String playerKit =
+          player
+              .getPersistentDataContainer()
+              .get(new NamespacedKey(plugin, "kit"), PersistentDataType.STRING);
+
+      for (AbstractKit kit : kits) {
+        if (!Objects.equals(kit.getNameLowercase(), playerKit)) continue;
+        KitDescription kitDescription = kit.getDescription();
+
+        Component nameMessage =
+            Component.text()
+                .append(Component.text("\nYou are playing as ", NamedTextColor.YELLOW))
+                .append(
+                    Component.text(kitDescription.name())
+                        .color(NamedTextColor.GOLD)
+                        .decorate(TextDecoration.BOLD))
+                .build();
+        Component abilitiesMessage =
+            Component.text()
+                .append(
+                    Component.text("\nAbilities\n")
+                        .color(NamedTextColor.GOLD)
+                        .decorate(TextDecoration.BOLD))
+                .append(Component.text(kitDescription.abilities()).color(NamedTextColor.YELLOW))
+                .build();
+
+        player.sendMessage(nameMessage);
+        player.sendMessage(abilitiesMessage);
+      }
     }
   }
 
