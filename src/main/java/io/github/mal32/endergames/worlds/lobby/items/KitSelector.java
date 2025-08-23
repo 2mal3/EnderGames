@@ -23,6 +23,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -109,7 +110,7 @@ class KitInventory implements InventoryHolder, Listener {
             .findFirst()
             .orElse(null);
     if (matchedKit == null) {
-      plugin.getComponentLogger().warn("Invalid kit selected: " + kitName);
+      plugin.getComponentLogger().warn("Invalid kit selected: {}", kitName);
       return;
     }
 
@@ -125,6 +126,13 @@ class KitInventory implements InventoryHolder, Listener {
 
     // Update the item enchantements to show which item was selected
     updateKitItems();
+  }
+
+  @EventHandler
+  public void onInventoryDrag(InventoryDragEvent event) {
+    Inventory inventory = event.getInventory();
+    if (!(inventory.getHolder() instanceof KitInventory)) return;
+    event.setCancelled(true);
   }
 
   @EventHandler
