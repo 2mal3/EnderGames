@@ -76,7 +76,8 @@ public class StartPhase extends AbstractPhase {
                     Component.text("\nAbilities\n")
                         .color(NamedTextColor.GOLD)
                         .decorate(TextDecoration.BOLD))
-                .append(Component.text(kitDescription.abilities()).color(NamedTextColor.YELLOW))
+                .append(
+                    Component.text(kitDescription.abilities() + "\n").color(NamedTextColor.YELLOW))
                 .build();
 
         player.sendMessage(nameMessage);
