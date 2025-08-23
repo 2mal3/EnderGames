@@ -22,12 +22,12 @@ public class EnchanterManager extends AbstractTeleportingBlockManager<Enchanter>
 
   @Override
   protected int blocksPerPlayer() {
-    return 3;
+    return 5;
   }
 
   @Override
   protected Enchanter getNewBlock(Location location) {
-    return new Enchanter(location);
+    return new Enchanter(plugin, location);
   }
 
   @EventHandler
@@ -35,11 +35,19 @@ public class EnchanterManager extends AbstractTeleportingBlockManager<Enchanter>
     if (!(event.getInventory() instanceof EnchantingInventory inventory)) return;
 
     inventory.setSecondary(new ItemStack(Material.LAPIS_LAZULI, 64));
+
+    // Mark the enchanter as used when a player opens it
+    var location = event.getInventory().getLocation();
+    if (location == null) return;
+    Enchanter enchanter = getBlockAtLocation(location);
+    if (enchanter != null) {
+      enchanter.open();
+    }
   }
 
   @EventHandler
   public void onEnchanterClickLapis(InventoryClickEvent event) {
-    if (!(event.getInventory() instanceof EnchantingInventory inventory)) return;
+    if (!(event.getInventory() instanceof EnchantingInventory)) return;
     ItemStack item = event.getCurrentItem();
     if (item == null || item.getType() != Material.LAPIS_LAZULI) return;
 
@@ -57,8 +65,8 @@ public class EnchanterManager extends AbstractTeleportingBlockManager<Enchanter>
 }
 
 class Enchanter extends AbstractTeleportingBlock {
-  public Enchanter(Location location) {
-    super(location);
+  public Enchanter(EnderGames plugin, Location location) {
+    super(plugin, location);
   }
 
   @Override

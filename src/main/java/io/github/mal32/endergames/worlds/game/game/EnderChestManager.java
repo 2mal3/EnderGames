@@ -34,7 +34,7 @@ public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChes
 
   @Override
   protected EnderChest getNewBlock(Location location) {
-    return new EnderChest(location, plugin);
+    return new EnderChest(plugin, location);
   }
 
   @EventHandler
@@ -48,7 +48,7 @@ public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChes
     Location blockLocation = event.getClickedBlock().getLocation().clone();
     EnderChest enderChest = getBlockAtLocation(blockLocation);
     if (enderChest == null) {
-      enderChest = new EnderChest(blockLocation, plugin);
+      enderChest = new EnderChest(plugin, blockLocation);
       blocks.add(enderChest);
     }
 
@@ -62,10 +62,9 @@ public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChes
 
 class EnderChest extends AbstractTeleportingBlock implements InventoryHolder {
   private final Inventory inventory;
-  private boolean hasBeenOpened = false;
 
-  public EnderChest(Location location, EnderGames plugin) {
-    super(location);
+  public EnderChest(EnderGames plugin, Location location) {
+    super(plugin, location);
 
     this.inventory = plugin.getServer().createInventory(this, 27, Component.text("Ender Chest"));
   }
@@ -75,7 +74,6 @@ class EnderChest extends AbstractTeleportingBlock implements InventoryHolder {
     super.teleport(location);
 
     new ArrayList<>(inventory.getViewers()).forEach(HumanEntity::closeInventory);
-    hasBeenOpened = false;
   }
 
   public void prepareInventoryForOpen(Player player) {
@@ -89,7 +87,7 @@ class EnderChest extends AbstractTeleportingBlock implements InventoryHolder {
     LootTable lootTable = Bukkit.getLootTable(new NamespacedKey("enga", "ender_chest"));
     lootTable.fillInventory(this.inventory, new Random(), lootContext);
 
-    hasBeenOpened = true;
+    open();
   }
 
   @Override

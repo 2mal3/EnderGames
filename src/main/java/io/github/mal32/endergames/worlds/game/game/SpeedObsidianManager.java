@@ -22,12 +22,12 @@ public class SpeedObsidianManager extends AbstractTeleportingBlockManager<SpeedO
 
   @Override
   protected int blocksPerPlayer() {
-    return 5;
+    return 6;
   }
 
   @Override
   protected SpeedObsidian getNewBlock(Location location) {
-    return new SpeedObsidian(location);
+    return new SpeedObsidian(plugin, location);
   }
 
   @EventHandler
@@ -48,8 +48,8 @@ public class SpeedObsidianManager extends AbstractTeleportingBlockManager<SpeedO
 }
 
 class SpeedObsidian extends AbstractTeleportingBlock {
-  public SpeedObsidian(Location location) {
-    super(location);
+  public SpeedObsidian(EnderGames plugin, Location location) {
+    super(plugin, location);
   }
 
   @Override

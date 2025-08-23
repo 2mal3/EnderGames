@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
  */
 public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleportingBlock>
     extends AbstractTask {
-  protected final List<B> blocks = new ArrayList<>();
+  protected final ArrayList<B> blocks = new ArrayList<>();
   private int nextIndex = 0;
   protected final Location spawnLocation;
 
@@ -37,9 +37,7 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
 
   public void task() {
     if (blocks.isEmpty()) return;
-    nextIndex = nextIndex % blocks.size();
-
-    B block = blocks.get(nextIndex);
+    B block = chooseBlock();
 
     Location horizontalLocation = getRandomHorizontalLocation();
     int y =
@@ -50,12 +48,33 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     horizontalLocation.setY(y + 1);
 
     block.teleport(horizontalLocation);
+  }
+
+  private B chooseBlock() {
+    var usedBlocks = new ArrayList<B>();
+    for (B b : blocks) {
+      if (b.hasBeenUsed) {
+        usedBlocks.add(b);
+      }
+    }
+
+    ArrayList<B> chosenBlocks;
+    if (usedBlocks.isEmpty()) {
+      chosenBlocks = blocks;
+    } else {
+      chosenBlocks = usedBlocks;
+    }
+
+    nextIndex = nextIndex % chosenBlocks.size();
+    var block = chosenBlocks.get(nextIndex);
     nextIndex++;
+
+    return block;
   }
 
   protected Location getRandomHorizontalLocation() {
-    final int MIN_PLAYER_DISTANCE = 64;
-    final int MAX_PLAYER_DISTANCE = 128;
+    final int MIN_PLAYER_DISTANCE = 48;
+    final int MAX_PLAYER_DISTANCE = 96;
 
     final World world = Objects.requireNonNull(Bukkit.getWorld("world"));
     ArrayList<Chunk> loadedChunks = new ArrayList<>(Arrays.asList(world.getLoadedChunks()));
