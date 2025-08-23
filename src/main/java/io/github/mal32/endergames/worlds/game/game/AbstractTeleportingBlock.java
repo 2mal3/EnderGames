@@ -67,7 +67,8 @@ public abstract class AbstractTeleportingBlock {
     hasBeenOpened = true;
 
     final int TELEPORT_BLOCK_TIME_SECONDS = 10;
-    Bukkit.getScheduler().runTaskLater(plugin, () -> hasBeenUsed = true, 20 * TELEPORT_BLOCK_TIME_SECONDS);
+    Bukkit.getScheduler()
+        .runTaskLater(plugin, () -> hasBeenUsed = true, 20 * TELEPORT_BLOCK_TIME_SECONDS);
   }
 
   private void playTeleportEffects() {
