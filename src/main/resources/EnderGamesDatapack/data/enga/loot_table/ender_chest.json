@@ -187,14 +187,13 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:wind_charge",
-          "weight": 4,
-          "quality": -1,
+          "weight": 6,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 4,
-                "max": 8
+                "min": 3,
+                "max": 6
               }
             }
           ]
