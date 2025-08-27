@@ -199,7 +199,7 @@ public class GamePhase extends AbstractPhase {
     }
 
     for (Player p : GameWorld.getPlayersInGameWorld()) {
-      player.playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);
+      player.playSound(p, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 1, 1);
     }
 
     if (damager == null) {
@@ -246,7 +246,8 @@ public class GamePhase extends AbstractPhase {
               Component.text(""),
               Title.Times.times(
                   Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
-      lastPlayer.playSound(lastPlayer.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
+      lastPlayer.playSound(
+          lastPlayer, Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.MASTER, 1, 1);
     } else {
       title =
           Title.title(
