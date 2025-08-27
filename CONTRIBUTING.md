@@ -13,3 +13,9 @@
    that extends the `AbstractKit` class.
 2. Add a reference to the list in the method `getKits` of the `AbstractKit` class.
 3. Test if you can select the kit in-game and if it works as expected.
+
+## Text Color Style
+
+- use Vanilla colors
+- `green` and `red` for good and bad messages
+- `yellow` for default system messages with optional `gold` highlights
