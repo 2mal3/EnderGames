@@ -125,7 +125,7 @@ class KitInventory implements InventoryHolder, Listener {
     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1, 1);
 
     // Update the item enchantements to show which item was selected
-    updateKitItems();
+    Bukkit.getScheduler().runTask(plugin, this::updateKitItems);
   }
 
   @EventHandler
