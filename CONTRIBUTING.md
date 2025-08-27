@@ -1,10 +1,13 @@
 # Contributing
 
+## Developing
+
+- Setting the `EG_DEBUG` environment variable to `true` enables debug mode when the server is started. This decreases
+
 ## Code
 
 - This project uses the [Google Java Style](https://google.github.io/styleguide/javaguide.html). I recommend
   using [google-java-format](https://github.com/google/google-java-format) to format your code for you.
-- Setting the `EG_DEBUG` environment variable to `true` enables debug mode when the server is started. This decreases
   cosmetic timers, allowing for faster testing and iteration.
 
 ### Adding a Kit
