@@ -1,23 +1,28 @@
 ### Added
 
-- Enderman kit
-- Rewind Kit
-- placing TNT without igniting it
-- default kit (lumberjack)
-- invisible players are hidden from the Tracker
+- lobby jump and run timer with checkpoints
+- Voodoo kit
+- player message at start of game that additionally explains the abilities of the kit
 
 ### Changed
 
-- disabled weather
-- less dangerous natural Minecraft hazards (easy difficulty)
-- Tracker status text
-- disabled Tracker drop on player death
-- Lumberjack tree-cutting items go directly into the player's inventory
-- Loot
-  - fewer tridents
-  - slightly longer blindness effect of Blindness Potion
+- updated to Minecraft 1.21.8
+- all teleporting block placement
+    - no placement directly near players
+    - no teleporting away in front of a longing player
+- kit balancing
+    - nerfed Bomber kit with larger explosion delay (now the same as normal, 1.5 seconds)
+    - buffed Blaze kit with a higher chance to ignite enemies
+    - buff Enderman kit with slightly higher Ender Chest reach and more Ender Pearls on player kills
+    - buff Cat kit with more fist damage
+- mark Lucker kit as easy
+- Ender Chest loot
+    - ~20% less potions
+    - more Wind Charges
+    - more consistent iron ingot amount
 
 ### Fixed
 
-- broken Splash Potion of Blindness name
-- Lucker fishing rod enchantments not applied to every fishing rod
+- Phantoms could spawn
+- players could take out items of the kit selector
+- Bird kit drops Elytra

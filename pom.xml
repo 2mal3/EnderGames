@@ -6,10 +6,12 @@
 
     <groupId>io.github.mal32.endergames</groupId>
     <artifactId>endergames</artifactId>
-    <version>0.5.0</version>
+    <version>0.6.0</version>
 
     <name>EnderGames</name>
-    <description>Teleporting themed Kit SurivialGames for small player sizes on a random generated map with post 1.8 PvP.</description>
+    <description>Teleporting themed Kit SurivialGames for small player sizes on a random generated map with post 1.8
+        PvP.
+    </description>
     <url>https://github.com/2mal3/EnderGames</url>
 
     <properties>
