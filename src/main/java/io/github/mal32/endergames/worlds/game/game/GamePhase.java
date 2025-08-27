@@ -170,33 +170,11 @@ public class GamePhase extends AbstractPhase {
               .append(Component.text(" left").color(NamedTextColor.RED)));
     }
 
-    player.setGameMode(GameMode.SPECTATOR);
-    player.setHealth(20);
-
     abstractPlayerDeath(player, damager);
   }
 
   private void abstractPlayerDeath(Player player, Player damager) {
-    World world = player.getWorld();
-
-    for (ItemStack item : player.getInventory().getContents()) {
-      if (item == null) continue;
-      if (item.getType() == Material.COMPASS) continue;
-      world.dropItem(player.getLocation(), item);
-    }
-    player.getInventory().clear();
-
-    while (player.getLevel() > 0) {
-      ExperienceOrb orb =
-          (ExperienceOrb) world.spawnEntity(player.getLocation(), EntityType.EXPERIENCE_ORB);
-      orb.setExperience(player.getExpToLevel());
-      player.setLevel(player.getLevel() - 1);
-    }
-
-    // clear the player's effects
-    for (PotionEffect effect : player.getActivePotionEffects()) {
-      player.removePotionEffect(effect.getType());
-    }
+    resetPlayer(player);
 
     for (Player p : GameWorld.getPlayersInGameWorld()) {
       player.playSound(p, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 1, 1);
@@ -223,6 +201,31 @@ public class GamePhase extends AbstractPhase {
     }
   }
 
+  private void resetPlayer(Player player) {
+    World world = player.getWorld();
+
+    for (ItemStack item : player.getInventory().getContents()) {
+      if (item == null) continue;
+      if (item.getType() == Material.COMPASS) continue;
+      world.dropItem(player.getLocation(), item);
+    }
+    player.getInventory().clear();
+
+    while (player.getLevel() > 0) {
+      ExperienceOrb orb =
+          (ExperienceOrb) world.spawnEntity(player.getLocation(), EntityType.EXPERIENCE_ORB);
+      orb.setExperience(player.getExpToLevel());
+      player.setLevel(player.getLevel() - 1);
+    }
+
+    for (PotionEffect effect : player.getActivePotionEffects()) {
+      player.removePotionEffect(effect.getType());
+    }
+
+    player.setGameMode(GameMode.SPECTATOR);
+    player.setHealth(20);
+  }
+
   private boolean moreThanOnePlayersAlive() {
     return GameWorld.getPlayersInGame().length > 1;
   }
@@ -238,6 +241,11 @@ public class GamePhase extends AbstractPhase {
     Title title;
 
     Player[] survivalPlayers = GameWorld.getPlayersInGame();
+
+    for (Player p : survivalPlayers) {
+      resetPlayer(p);
+    }
+
     if (survivalPlayers.length >= 1) {
       Player lastPlayer = survivalPlayers[0];
       title =
