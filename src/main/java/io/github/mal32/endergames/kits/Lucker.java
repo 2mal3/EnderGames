@@ -314,6 +314,6 @@ public class Lucker extends AbstractKit {
         "Blessed with extraordinary luck.                (Better chest loot, more luck when"
             + " fishing, mining, existing,...)",
         "Light-Green Leather Chestplate",
-        Difficulty.MEDIUM);
+        Difficulty.EASY);
   }
 }
