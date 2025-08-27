@@ -19,10 +19,8 @@ import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
@@ -33,7 +31,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
-class KitSelector extends MenuItem {
+class KitSelector extends MenuItem implements Listener {
+  private final NamespacedKey kitStorageKey;
   private final List<AbstractKit> availableKits;
 
   public KitSelector(EnderGames plugin) {
@@ -43,7 +42,9 @@ class KitSelector extends MenuItem {
         Component.text("Select Kit").color(NamedTextColor.GOLD),
         "kit_selector",
         (byte) 0);
+    this.kitStorageKey = new NamespacedKey(plugin, "kit");
     this.availableKits = AbstractKit.getKits(plugin);
+    Bukkit.getPluginManager().registerEvents(this, plugin);
   }
 
   @Override
@@ -54,39 +55,18 @@ class KitSelector extends MenuItem {
   @Override
   public void playerInteract(PlayerInteractEvent event) {
     Player player = event.getPlayer();
-    openKitMenu(player);
-  }
 
-  public void openKitMenu(Player player) {
     player.playSound(player, Sound.BLOCK_CHEST_OPEN, 1, 1);
-    KitInventory kiInv = new KitInventory(plugin, availableKits, player);
+    String selectedKit =
+        player.getPersistentDataContainer().get(kitStorageKey, PersistentDataType.STRING);
+    KitInventory kiInv = new KitInventory(plugin, availableKits, selectedKit);
     player.openInventory(kiInv.getInventory());
-  }
-}
-
-class KitInventory implements InventoryHolder, Listener {
-  private final EnderGames plugin;
-  private final List<AbstractKit> availableKits;
-  private final Inventory inventory;
-  private final Player player;
-  private final NamespacedKey kitStorageKey;
-
-  public KitInventory(EnderGames plugin, List<AbstractKit> availableKits, Player player) {
-    this.plugin = plugin;
-    this.availableKits = availableKits;
-    this.player = player;
-    this.inventory = plugin.getServer().createInventory(this, 27, Component.text("Select Kit"));
-    this.kitStorageKey = new NamespacedKey(plugin, "kit");
-
-    updateKitItems();
-
-    Bukkit.getPluginManager().registerEvents(this, plugin);
   }
 
   @EventHandler
   public void onInventoryClick(InventoryClickEvent event) {
-    Inventory inventory = event.getClickedInventory();
-    if (inventory == null || !(inventory.getHolder() instanceof KitInventory)) return;
+    Inventory clickedInv = event.getClickedInventory();
+    if (clickedInv == null || !(clickedInv.getHolder() instanceof KitInventory)) return;
     event.setCancelled(true);
 
     ItemStack clickedItem = event.getCurrentItem();
@@ -95,52 +75,52 @@ class KitInventory implements InventoryHolder, Listener {
         || !clickedItem.getItemMeta().hasDisplayName()) return;
 
     Player player = (Player) event.getWhoClicked();
-    Component displayNameComponent = clickedItem.getItemMeta().displayName();
+    Component displayName = clickedItem.getItemMeta().displayName();
+    if (displayName == null) return;
 
-    if (displayNameComponent == null) return;
+    String nameText = LegacyComponentSerializer.legacySection().serialize(displayName);
+    String kitName = nameText.length() > 2 ? nameText.substring(2).toLowerCase() : "";
 
-    // Convert Component to plain string and strip formatting
-    String displayName = LegacyComponentSerializer.legacySection().serialize(displayNameComponent);
-    String kitName = displayName.length() > 2 ? displayName.substring(2).toLowerCase() : "";
-
-    // Get the clicked kit
-    AbstractKit matchedKit =
+    AbstractKit kit =
         availableKits.stream()
-            .filter(kit -> kit.getNameLowercase().equalsIgnoreCase(kitName))
+            .filter(k -> k.getNameLowercase().equalsIgnoreCase(kitName))
             .findFirst()
             .orElse(null);
-    if (matchedKit == null) {
+    if (kit == null) {
       plugin.getComponentLogger().warn("Invalid kit selected: {}", kitName);
       return;
     }
 
-    // Store kit in PersistentDataContainer
     player.getPersistentDataContainer().set(kitStorageKey, PersistentDataType.STRING, kitName);
-
-    // Feedback + sound
     player.sendMessage(
         Component.text("You selected the ")
             .append(Component.text(capitalize(kitName)).color(NamedTextColor.GOLD))
             .append(Component.text(" kit")));
     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1, 1);
 
-    // Update the item enchantements to show which item was selected
-    updateKitItems();
+    KitInventory kitInv = (KitInventory) event.getInventory().getHolder();
+    kitInv.selectedKitName = kitName;
+    kitInv.updateKitItems();
   }
 
   @EventHandler
   public void onInventoryDrag(InventoryDragEvent event) {
-    Inventory inventory = event.getInventory();
-    if (!(inventory.getHolder() instanceof KitInventory)) return;
+    if (!(event.getInventory().getHolder() instanceof KitInventory)) return;
     event.setCancelled(true);
   }
+}
 
-  @EventHandler
-  public void onInventoryClose(InventoryCloseEvent event) {
-    Inventory inventory = event.getInventory();
-    if (!(inventory.getHolder() instanceof KitInventory)) return;
+class KitInventory implements InventoryHolder {
+  private final List<AbstractKit> availableKits;
+  private final Inventory inventory;
+  public String selectedKitName;
 
-    HandlerList.unregisterAll(this);
+  public KitInventory(EnderGames plugin, List<AbstractKit> availableKits, String selectedKitName) {
+    this.availableKits = availableKits;
+    this.selectedKitName = selectedKitName;
+    this.inventory = plugin.getServer().createInventory(this, 27, Component.text("Select Kit"));
+
+    updateKitItems();
   }
 
   @Override
@@ -150,9 +130,6 @@ class KitInventory implements InventoryHolder, Listener {
 
   public void updateKitItems() {
     inventory.clear();
-
-    String selectedKit =
-        player.getPersistentDataContainer().get(kitStorageKey, PersistentDataType.STRING);
 
     for (AbstractKit kit : availableKits) {
       var kitDescription = kit.getDescription();
@@ -169,7 +146,7 @@ class KitInventory implements InventoryHolder, Listener {
       kitItem.setItemMeta(meta);
 
       // Hightlight the selected kit with a glow effect
-      if (kit.getNameLowercase().equals(selectedKit)) {
+      if (kit.getNameLowercase().equals(selectedKitName)) {
         ItemMeta clickedMeta = kitItem.getItemMeta();
         clickedMeta.addEnchant(Enchantment.INFINITY, 1, true); // dummy enchantment for glow
         clickedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
