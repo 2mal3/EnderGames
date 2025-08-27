@@ -24,7 +24,7 @@ public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChes
 
   @Override
   public int getBlockTeleportDelayTicks() {
-    return 20 * 30;
+    return 20 * 50;
   }
 
   @Override
