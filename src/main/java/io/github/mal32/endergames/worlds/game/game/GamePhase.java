@@ -174,6 +174,13 @@ public class GamePhase extends AbstractPhase {
     abstractPlayerDeath(player, damager);
   }
 
+  @EventHandler
+  private void onPlayerQuit(PlayerQuitEvent event) {
+    if (!GameWorld.playerIsInGame(event.getPlayer())) return;
+
+    abstractPlayerDeath(event.getPlayer(), null);
+  }
+
   private void abstractPlayerDeath(Player player, Player damager) {
     resetPlayer(player);
 
@@ -197,7 +204,8 @@ public class GamePhase extends AbstractPhase {
                   .append(Component.text(damager.getName()).color(NamedTextColor.RED)));
     }
 
-    if (!moreThanOnePlayersAlive()) {
+    boolean moreThanOnePlayersAlive = GameWorld.getPlayersInGame().length > 1;
+    if (!moreThanOnePlayersAlive) {
       plugin.getServer().getScheduler().runTask(plugin, this::gameEnd);
     }
   }
@@ -225,17 +233,6 @@ public class GamePhase extends AbstractPhase {
 
     player.setGameMode(GameMode.SPECTATOR);
     player.setHealth(20);
-  }
-
-  private boolean moreThanOnePlayersAlive() {
-    return GameWorld.getPlayersInGame().length > 1;
-  }
-
-  @EventHandler
-  private void onPlayerQuit(PlayerQuitEvent event) {
-    if (!GameWorld.playerIsInGame(event.getPlayer())) return;
-
-    abstractPlayerDeath(event.getPlayer(), null);
   }
 
   private void gameEnd() {
