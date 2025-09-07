@@ -266,7 +266,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:iron_ingot",
-          "weight": 6,
+          "weight": 8,
           "quality": 5,
           "functions": [
             {
