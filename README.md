@@ -16,7 +16,6 @@ versions.
 ## Vanilla Modifications
 
 - TNT automatically ignites when placed, and explodes after 1.5 seconds
-- more expensive Shield recipe
 - slow natural regeneration, even when having low food level
 - players drop all their experience on death
 - Enchanting Tables have infinite Lapis Lazuli
