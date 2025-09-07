@@ -265,21 +265,6 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:redstone",
-          "weight": 2,
-          "quality": -2,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 8,
-                "max": 12
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
           "name": "minecraft:iron_ingot",
           "weight": 6,
           "quality": 5,
