@@ -4,6 +4,8 @@ import io.github.mal32.endergames.EnderGames;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class Mace extends AbstractKit {
@@ -11,12 +13,22 @@ public class Mace extends AbstractKit {
     super(plugin);
   }
 
+  @EventHandler
+  private void onPlayerKill(PlayerDeathEvent event) {
+    Player killer = event.getEntity().getKiller();
+    if (killer == null) return;
+    if (!playerCanUseThisKit(killer)) return;
+
+    killer.getInventory().addItem(new ItemStack(Material.WIND_CHARGE, 4));
+  }
+
   @Override
   public void start(Player player) {
     ItemStack mace = new ItemStack(Material.MACE);
     enchantItem(mace, Enchantment.WIND_BURST, 1);
-
     player.getInventory().addItem(mace);
+
+    player.getInventory().addItem(new ItemStack(Material.WIND_CHARGE, 8));
 
     player
         .getInventory()
@@ -29,8 +41,8 @@ public class Mace extends AbstractKit {
     return new KitDescription(
         Material.MACE,
         "Mace",
-        "Delivers a crushing blow with a mighty mace",
-        "Mace with Wind Burst, Feather Falling III boots",
+        "Gets 4 Wind Charges per player kill",
+        "Maces with Wind Burst, 8 Wind Charges, Feather Falling III boots",
         Difficulty.HARD);
   }
 }
