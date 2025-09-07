@@ -50,7 +50,8 @@ public class GamePhase extends AbstractPhase {
             new SmithingTemplateManager(plugin),
             new SpectatorParticles(plugin),
             new Tracker(plugin),
-            new SpeedObsidianManager(plugin, spawnLocation));
+            new SpeedObsidianManager(plugin, spawnLocation),
+            new FightDetection(plugin));
 
     List<NamespacedKey> allRecipeKeys = new ArrayList<>();
     Iterator<Recipe> it = Bukkit.recipeIterator();
