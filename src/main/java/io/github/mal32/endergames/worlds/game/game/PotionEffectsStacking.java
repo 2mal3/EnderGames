@@ -27,6 +27,25 @@ public class PotionEffectsStacking extends AbstractModule {
       return;
     }
 
+    applyEffect(player, newPotionEffect, oldPotionEffect);
+  }
+
+  @EventHandler
+  private void onPotionEffect(EntityPotionEffectEvent event) {
+    if (!(event.getEntity() instanceof Player player)) return;
+    if (event.getAction() != EntityPotionEffectEvent.Action.CHANGED) return;
+    if (event.getCause() == EntityPotionEffectEvent.Cause.PLUGIN) return;
+
+    var newPotionEffect = event.getNewEffect();
+    if (newPotionEffect == null) return;
+    var oldPotionEffect = event.getOldEffect();
+    if (oldPotionEffect == null) return;
+
+    applyEffect(player, newPotionEffect, oldPotionEffect);
+  }
+
+  private void applyEffect(
+      Player player, PotionEffect newPotionEffect, PotionEffect oldPotionEffect) {
     var effectTypes = playerEffects.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>());
     var effectList =
         effectTypes.computeIfAbsent(
@@ -38,8 +57,13 @@ public class PotionEffectsStacking extends AbstractModule {
       player.addPotionEffect(newPotionEffect);
     } else if (newPotionEffect.getAmplifier() == oldPotionEffect.getAmplifier()) {
       // if the new effect has the same strength, merge durations
-      int mergedDuration = oldPotionEffect.getDuration() + newPotionEffect.getDuration();
-      player.addPotionEffect(oldPotionEffect.withDuration(mergedDuration));
+      if (newPotionEffect.getDuration() == PotionEffect.INFINITE_DURATION
+          || oldPotionEffect.getDuration() == PotionEffect.INFINITE_DURATION) {
+        player.addPotionEffect(newPotionEffect.withDuration(PotionEffect.INFINITE_DURATION));
+      } else {
+        int mergedDuration = oldPotionEffect.getDuration() + newPotionEffect.getDuration();
+        player.addPotionEffect(oldPotionEffect.withDuration(mergedDuration));
+      }
     } else {
       // if the new effect is weaker, just add it to the list
       effectList.add(newPotionEffect);
@@ -47,9 +71,10 @@ public class PotionEffectsStacking extends AbstractModule {
   }
 
   @EventHandler
-  private void onPotionEffectChange(EntityPotionEffectEvent event) {
+  private void onPotionEffectExpiration(EntityPotionEffectEvent event) {
     if (!(event.getEntity() instanceof Player player)) return;
-    if (event.getCause() != EntityPotionEffectEvent.Cause.EXPIRATION) return;
+    if (event.getCause() != EntityPotionEffectEvent.Cause.EXPIRATION
+        || event.getAction() != EntityPotionEffectEvent.Action.REMOVED) return;
 
     PotionEffectType oldPotionEffectType = event.getOldEffect().getType();
 
