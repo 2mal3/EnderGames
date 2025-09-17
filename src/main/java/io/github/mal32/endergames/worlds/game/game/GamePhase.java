@@ -51,7 +51,8 @@ public class GamePhase extends AbstractPhase {
             new SpectatorParticles(plugin),
             new Tracker(plugin),
             new SpeedObsidianManager(plugin, spawnLocation),
-            new FightDetection(plugin));
+            new FightDetection(plugin),
+            new PotionEffectsStacking(plugin));
 
     List<NamespacedKey> allRecipeKeys = new ArrayList<>();
     Iterator<Recipe> it = Bukkit.recipeIterator();
