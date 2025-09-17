@@ -13,14 +13,14 @@ import org.bukkit.potion.PotionEffectType;
 public class PotionEffectsStacking extends AbstractModule {
   private static final Comparator<PotionEffect> comparator =
       Comparator.comparingInt(e -> -e.getAmplifier());
-  private final HashMap<UUID, HashMap<PotionEffectType, PriorityQueue<PotionEffect>>>
+  private static final HashMap<UUID, HashMap<PotionEffectType, PriorityQueue<PotionEffect>>>
       playerEffects = new HashMap<>();
 
   public PotionEffectsStacking(EnderGames plugin) {
     super(plugin);
   }
 
-  public void addPotionEffect(Player player, PotionEffect newPotionEffect) {
+  public static void addPotionEffect(Player player, PotionEffect newPotionEffect) {
     var oldPotionEffect = player.getPotionEffect(newPotionEffect.getType());
     if (oldPotionEffect == null) {
       player.addPotionEffect(newPotionEffect);
@@ -44,7 +44,7 @@ public class PotionEffectsStacking extends AbstractModule {
     applyEffect(player, newPotionEffect, oldPotionEffect);
   }
 
-  private void applyEffect(
+  private static void applyEffect(
       Player player, PotionEffect newPotionEffect, PotionEffect oldPotionEffect) {
     var effectTypes = playerEffects.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>());
     var effectList =
