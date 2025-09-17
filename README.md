@@ -22,6 +22,7 @@ versions.
 - Smithing Tables have infinite Netherite Upgrade Templates
 - cheaper Anvil recipe
 - items in Furnaces smelt faster
+- potion effects stack
 
 ## Using the Plugin
 

@@ -4,7 +4,6 @@ import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -43,31 +42,10 @@ public class SpeedObsidianManager extends AbstractTeleportingBlockManager<SpeedO
     SpeedObsidian speedObsidian = getBlockAtLocation(block.getLocation());
     if (speedObsidian == null) return;
 
-    applySpeedEffect(player);
+    var speedEffect = new PotionEffect(PotionEffectType.SPEED, 20 * 20, 1, false, false, true);
+    PotionEffectsStacking.addPotionEffect(player, speedEffect);
 
     speedObsidian.teleport(spawnLocation);
-  }
-
-  private void applySpeedEffect(Player player) {
-    PotionEffect current = player.getPotionEffect(PotionEffectType.SPEED);
-    if (current != null && current.getAmplifier() == 1) {
-      // Already has Speed II: extend by 20 seconds
-      int extendedDuration = current.getDuration() + 20 * 20;
-      player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, extendedDuration, 1, true, true));
-    } else {
-      int oldAmp = current != null ? current.getAmplifier() : -1;
-      int oldDuration = current != null ? current.getDuration() : 0;
-      int newDuration = 20 * 10;
-      // Give Speed II
-      player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, newDuration, 1, true, true));
-      if (current != null && oldAmp < 1) {
-        // Reapply old effect after Speed II runs out
-        plugin.getServer().getScheduler()
-          .runTaskLater(plugin, () -> player.addPotionEffect(
-            new PotionEffect(PotionEffectType.SPEED, oldDuration, oldAmp, true, true)),
-            newDuration);
-      }
-    }
   }
 }
 
