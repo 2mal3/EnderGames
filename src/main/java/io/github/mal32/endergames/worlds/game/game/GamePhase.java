@@ -207,10 +207,15 @@ public class GamePhase extends AbstractPhase {
                   .append(Component.text(damager.getName()).color(NamedTextColor.RED)));
     }
 
-    boolean moreThanOnePlayersAlive = GameWorld.getPlayersInGame().length > 1;
-    if (!moreThanOnePlayersAlive) {
-      plugin.getServer().getScheduler().runTask(plugin, this::gameEnd);
-    }
+    Bukkit.getScheduler()
+        .runTask(
+            plugin,
+            () -> {
+              boolean moreThanOnePlayersAlive = GameWorld.getPlayersInGame().length > 1;
+              if (!moreThanOnePlayersAlive) {
+                gameEnd();
+              }
+            });
   }
 
   private void resetPlayer(Player player) {
