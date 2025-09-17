@@ -54,12 +54,10 @@ public class Cactus extends AbstractKit {
       player.setSneaking(false);
     }
 
-    if (Math.random() > 0.8) return;
-
     Location location = player.getLocation();
     location.getWorld().playSound(location, Sound.ENCHANT_THORNS_HIT, 1, 1);
 
-    int damage = 1 + (int) (Math.round(Math.random() * 4));
+    int damage = 3 + (int) (Math.round(Math.random() * 4));
     damager.damage(damage, player);
   }
 
