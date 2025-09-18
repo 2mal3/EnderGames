@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.worlds.game.game.PotionEffectsStacking;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.FoodProperties;
 import java.util.List;
@@ -61,7 +62,8 @@ public class Cat extends AbstractKit {
 
     if (!Tag.ITEMS_FISHES.isTagged(event.getItem().getType())) return;
 
-    event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 30, 2, true));
+    PotionEffectsStacking.addPotionEffect(
+        event.getPlayer(), new PotionEffect(PotionEffectType.SPEED, 20 * 30, 2, true));
   }
 
   @EventHandler
