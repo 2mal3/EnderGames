@@ -21,7 +21,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -153,14 +154,16 @@ public class GamePhase extends AbstractPhase {
   }
 
   @EventHandler(priority = EventPriority.HIGH)
-  private void onPlayerDeath(PlayerDeathEvent event) {
-    if (!EnderGames.playerIsInGameWorld(event.getEntity())) return;
+  private void onFatalPlayerDamage(EntityDamageEvent event) {
+    if (!(event.getEntity() instanceof Player player)) return;
+    if (!GameWorld.playerIsInGame(player)) return;
+    double damage = event.getFinalDamage();
+    if (player.getHealth() - damage > 0) return;
+
     event.setCancelled(true);
 
-    Player player = event.getEntity();
-
     Player damager = null;
-    if (event.getDamageSource().getCausingEntity() instanceof Player d) {
+    if (event instanceof EntityDamageByEntityEvent ede && ede.getDamager() instanceof Player d) {
       damager = d;
       player.sendMessage(
           Component.text("")
@@ -173,6 +176,13 @@ public class GamePhase extends AbstractPhase {
     }
 
     abstractPlayerDeath(player, damager);
+  }
+
+  @EventHandler
+  private void onPlayerQuit(PlayerQuitEvent event) {
+    if (!GameWorld.playerIsInGame(event.getPlayer())) return;
+
+    abstractPlayerDeath(event.getPlayer(), null);
   }
 
   private void abstractPlayerDeath(Player player, Player damager) {
@@ -198,9 +208,15 @@ public class GamePhase extends AbstractPhase {
                   .append(Component.text(damager.getName()).color(NamedTextColor.RED)));
     }
 
-    if (!moreThanOnePlayersAlive()) {
-      plugin.getServer().getScheduler().runTask(plugin, this::gameEnd);
-    }
+    Bukkit.getScheduler()
+        .runTask(
+            plugin,
+            () -> {
+              boolean moreThanOnePlayersAlive = GameWorld.getPlayersInGame().length > 1;
+              if (!moreThanOnePlayersAlive) {
+                gameEnd();
+              }
+            });
   }
 
   private void resetPlayer(Player player) {
@@ -226,17 +242,6 @@ public class GamePhase extends AbstractPhase {
 
     player.setGameMode(GameMode.SPECTATOR);
     player.setHealth(20);
-  }
-
-  private boolean moreThanOnePlayersAlive() {
-    return GameWorld.getPlayersInGame().length > 1;
-  }
-
-  @EventHandler
-  private void onPlayerQuit(PlayerQuitEvent event) {
-    if (!GameWorld.playerIsInGame(event.getPlayer())) return;
-
-    abstractPlayerDeath(event.getPlayer(), null);
   }
 
   private void gameEnd() {
