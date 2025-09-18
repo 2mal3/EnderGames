@@ -58,7 +58,8 @@ public class Enderman extends AbstractKit {
             Material.SHORT_GRASS,
             Material.TALL_GRASS,
             Material.SEAGRASS,
-            Material.TALL_SEAGRASS);
+            Material.TALL_SEAGRASS,
+            Material.LEAF_LITTER);
     var targetBlock = player.getTargetBlock(passableBlocks, 24);
     if (targetBlock.getType() != Material.ENDER_CHEST) return;
 
