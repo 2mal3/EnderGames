@@ -8,9 +8,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.jetbrains.annotations.Nullable;
 
 public class FightDetection extends AbstractModule {
-  private static final Map<UUID, Integer> fightTimestamps = new ConcurrentHashMap<>();
+  private static final Map<UUID, FightInfo> fights = new ConcurrentHashMap<>();
   private static final long FIGHT_THRESHOLD_SECONDS = 10;
 
   public FightDetection(EnderGames plugin) {
@@ -18,12 +19,12 @@ public class FightDetection extends AbstractModule {
   }
 
   public static boolean playerIsInFight(Player player) {
-    Integer lastHit = fightTimestamps.get(player.getUniqueId());
-    if (lastHit == null) {
+    FightInfo info = fights.get(player.getUniqueId());
+    if (info == null) {
       return false;
     }
     int now = (int) (System.currentTimeMillis() / 1000);
-    return (now - lastHit) <= FIGHT_THRESHOLD_SECONDS;
+    return (now - info.lastHitTimestamp()) <= FIGHT_THRESHOLD_SECONDS;
   }
 
   @EventHandler
@@ -39,7 +40,15 @@ public class FightDetection extends AbstractModule {
     int now = (int) (System.currentTimeMillis() / 1000);
     UUID targetId = target.getUniqueId();
     UUID damagerId = damager.getUniqueId();
-    fightTimestamps.put(targetId, now);
-    fightTimestamps.put(damagerId, now);
+    fights.put(targetId, new FightInfo(now, damagerId));
+    fights.put(damagerId, new FightInfo(now, null));
+  }
+
+  @Nullable
+  public static UUID getLastAttacker(Player player) {
+    FightInfo info = fights.get(player.getUniqueId());
+    return info == null ? null : info.attacker();
   }
 }
+
+record FightInfo(int lastHitTimestamp, @Nullable UUID attacker) {}
