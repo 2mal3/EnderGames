@@ -2,6 +2,7 @@ package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
+import io.github.mal32.endergames.worlds.game.game.PotionEffectsStacking;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -56,8 +57,8 @@ public class Voodoo extends AbstractKit {
     if (!playerCanUseThisKit(shooter)) return;
     if (!(event.getEntity() instanceof Player)) return;
 
-    shooter.addPotionEffect(
-        new PotionEffect(PotionEffectType.REGENERATION, 1, 5, true, false, false));
+    PotionEffectsStacking.addPotionEffect(
+        shooter, new PotionEffect(PotionEffectType.REGENERATION, 1, 5, true, false, false));
   }
 
   @EventHandler
@@ -69,7 +70,8 @@ public class Voodoo extends AbstractKit {
     var attribute = victim.getAttribute(Attribute.MAX_HEALTH);
     if (attribute == null) return;
     if (victim.getHealth() <= attribute.getValue() * 0.4) {
-      attacker.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 20 * 60, 0, true));
+      PotionEffectsStacking.addPotionEffect(
+          attacker, new PotionEffect(PotionEffectType.ABSORPTION, 20 * 60, 0, true));
     }
   }
 
