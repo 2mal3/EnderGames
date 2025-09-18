@@ -165,14 +165,23 @@ public class GamePhase extends AbstractPhase {
     Player damager = null;
     if (event instanceof EntityDamageByEntityEvent ede && ede.getDamager() instanceof Player d) {
       damager = d;
-      player.sendMessage(
-          Component.text("")
-              .append(Component.text(damager.getName()).color(NamedTextColor.DARK_RED))
-              .append(Component.text(" has ").color(NamedTextColor.RED))
-              .append(
-                  Component.text(String.format("%.2f", damager.getHealth()) + "❤")
-                      .color(NamedTextColor.DARK_RED))
-              .append(Component.text(" left").color(NamedTextColor.RED)));
+    }
+
+    if (FightDetection.playerIsInFight(player)) {
+      UUID lastAttackerUuid = FightDetection.getLastAttacker(player);
+      if (lastAttackerUuid != null) {
+        Player lastAttacker = Bukkit.getPlayer(lastAttackerUuid);
+        if (lastAttacker != null) {
+          player.sendMessage(
+              Component.text("")
+                  .append(Component.text(lastAttacker.getName()).color(NamedTextColor.DARK_RED))
+                  .append(Component.text(" has ").color(NamedTextColor.RED))
+                  .append(
+                      Component.text(String.format("%.2f", lastAttacker.getHealth()) + "❤")
+                          .color(NamedTextColor.DARK_RED))
+                  .append(Component.text(" left").color(NamedTextColor.RED)));
+        }
+      }
     }
 
     abstractPlayerDeath(player, damager);
