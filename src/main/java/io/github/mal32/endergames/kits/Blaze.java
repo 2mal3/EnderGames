@@ -87,7 +87,7 @@ public class Blaze extends AbstractKit {
     if (!(event.getEntity() instanceof Player player)) return;
     if (!playerCanUseThisKit(player)) return;
 
-    if (Math.random() > 0.33) return;
+    if (Math.random() > 0.60) return;
 
     event.getProjectile().setFireTicks(20 * 3);
   }
