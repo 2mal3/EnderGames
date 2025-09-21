@@ -44,7 +44,7 @@ public class SpeedObsidianManager extends AbstractTeleportingBlockManager<SpeedO
 
     if (player.isInWater()) {
       var dolphinGraceEffect =
-          new PotionEffect(PotionEffectType.DOLPHINS_GRACE, 20 * 20, 0, false, false, true);
+          new PotionEffect(PotionEffectType.DOLPHINS_GRACE, 20 * 10, 0, false, false, true);
       PotionEffectsStacking.addPotionEffect(player, dolphinGraceEffect);
     } else {
       var speedEffect = new PotionEffect(PotionEffectType.SPEED, 20 * 20, 1, false, false, true);
