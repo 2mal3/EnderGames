@@ -19,21 +19,25 @@ public class Mace extends AbstractKit {
     if (killer == null) return;
     if (!playerCanUseThisKit(killer)) return;
 
-    killer.getInventory().addItem(new ItemStack(Material.WIND_CHARGE, 4));
+    ItemStack charges = new ItemStack(Material.WIND_CHARGE, 4);
+    charges.addEnchantment(Enchantment.VANISHING_CURSE, 1);
+    killer.getInventory().addItem(charges);
   }
 
   @Override
   public void start(Player player) {
     ItemStack mace = new ItemStack(Material.MACE);
     enchantItem(mace, Enchantment.WIND_BURST, 1);
+    mace.addEnchantment(Enchantment.VANISHING_CURSE, 1);
     player.getInventory().addItem(mace);
 
-    player.getInventory().addItem(new ItemStack(Material.WIND_CHARGE, 8));
+    ItemStack charges = new ItemStack(Material.WIND_CHARGE, 8);
+    charges.addEnchantment(Enchantment.VANISHING_CURSE, 1);
+    player.getInventory().addItem(charges);
 
-    player
-        .getInventory()
-        .setBoots(
-            enchantItem(new ItemStack(Material.LEATHER_BOOTS), Enchantment.FEATHER_FALLING, 3));
+    ItemStack boots = enchantItem(new ItemStack(Material.LEATHER_BOOTS), Enchantment.FEATHER_FALLING, 3);
+    boots.addEnchantment(Enchantment.VANISHING_CURSE, 1);
+    player.getInventory().setBoots(boots);
   }
 
   @Override

@@ -6,8 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.enchantments.Enchantment;
 
 public class Bird extends AbstractKit {
 
@@ -18,9 +18,13 @@ public class Bird extends AbstractKit {
   @Override
   public void start(Player player) {
     // Give the player an Elytra
-    player.getInventory().setChestplate(new ItemStack(Material.ELYTRA));
-    // Give the player 5 rockets (firework rockets)
-    player.getInventory().addItem(new ItemStack(Material.FIREWORK_ROCKET, 10));
+    ItemStack elytra = new ItemStack(Material.ELYTRA);
+    elytra.addEnchantment(Enchantment.VANISHING_CURSE, 1);
+    player.getInventory().setChestplate(elytra);
+    // Give the player 10 rockets (firework rockets)
+    ItemStack rockets = new ItemStack(Material.FIREWORK_ROCKET, 10);
+    rockets.addEnchantment(Enchantment.VANISHING_CURSE, 1);
+    player.getInventory().addItem(rockets);
   }
 
   @EventHandler
@@ -30,16 +34,11 @@ public class Bird extends AbstractKit {
     if (killer == null) return;
     if (!playerCanUseThisKit(killer)) return;
 
-    killer.getInventory().addItem(new ItemStack(Material.FIREWORK_ROCKET, 5));
+    ItemStack rockets = new ItemStack(Material.FIREWORK_ROCKET, 5);
+    rockets.addEnchantment(Enchantment.VANISHING_CURSE, 1);
+    killer.getInventory().addItem(rockets);
   }
 
-  @EventHandler(priority = EventPriority.LOW)
-  public void onPlayerDeath(PlayerDeathEvent event) {
-    Player player = event.getEntity();
-    if (!playerCanUseThisKit(player)) return;
-
-    player.getInventory().remove(Material.ELYTRA);
-  }
 
   @Override
   public KitDescription getDescription() {

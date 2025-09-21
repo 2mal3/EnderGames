@@ -234,7 +234,6 @@ public class GamePhase extends AbstractPhase {
 
     for (ItemStack item : player.getInventory().getContents()) {
       if (item == null) continue;
-      if (item.getType() == Material.COMPASS) continue;
       world.dropItem(player.getLocation(), item);
     }
     player.getInventory().clear();
