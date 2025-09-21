@@ -73,7 +73,15 @@ public abstract class AbstractTeleportingBlock {
 
   private void playTeleportEffects() {
     location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.5f);
-    location.getWorld().spawnParticle(Particle.PORTAL, location, 50, 0, 0, 0);
+    location
+        .getWorld()
+        .spawnParticle(
+            Particle.PORTAL,
+            location.getBlock().getLocation().clone().add(0.5, 0.5, 0.5),
+            50,
+            0,
+            0,
+            0);
   }
 
   public abstract Material getBlockMaterial();
