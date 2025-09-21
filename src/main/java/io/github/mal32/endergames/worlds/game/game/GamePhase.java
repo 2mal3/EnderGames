@@ -31,6 +31,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 
 public class GamePhase extends AbstractPhase {
   private final List<AbstractModule> modules;
@@ -154,28 +155,28 @@ public class GamePhase extends AbstractPhase {
   }
 
   @EventHandler(priority = EventPriority.HIGH)
-  private void onFatalPlayerDamage(EntityDamageEvent event) {
-    if (!(event.getEntity() instanceof Player player)) return;
-    if (!GameWorld.playerIsInGame(player)) return;
+  private void onPlayerDeath(EntityDamageEvent event) {
+    if (!(event.getEntity() instanceof Player attackedPlayer)) return;
+    if (!GameWorld.playerIsInGame(attackedPlayer)) return;
     double damage = event.getFinalDamage();
-    if (player.getHealth() - damage > 0) return;
+    if (attackedPlayer.getHealth() - damage > 0) return;
 
     event.setCancelled(true);
 
-    Player damager = null;
+    Player attackingPlayer = null;
     if (event instanceof EntityDamageByEntityEvent ede && ede.getDamager() instanceof Player d) {
-      damager = d;
-      player.sendMessage(
+      attackingPlayer = d;
+      attackedPlayer.sendMessage(
           Component.text("")
-              .append(Component.text(damager.getName()).color(NamedTextColor.DARK_RED))
+              .append(Component.text(attackingPlayer.getName()).color(NamedTextColor.DARK_RED))
               .append(Component.text(" has ").color(NamedTextColor.RED))
               .append(
-                  Component.text(String.format("%.2f", damager.getHealth()) + "❤")
+                  Component.text(String.format("%.2f", attackingPlayer.getHealth()) + "❤")
                       .color(NamedTextColor.DARK_RED))
               .append(Component.text(" left").color(NamedTextColor.RED)));
     }
 
-    abstractPlayerDeath(player, damager);
+    abstractPlayerDeath(attackedPlayer, attackingPlayer);
   }
 
   @EventHandler
@@ -185,27 +186,35 @@ public class GamePhase extends AbstractPhase {
     abstractPlayerDeath(event.getPlayer(), null);
   }
 
-  private void abstractPlayerDeath(Player player, Player damager) {
-    resetPlayer(player);
-
-    for (Player p : GameWorld.getPlayersInGameWorld()) {
-      player.playSound(p, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 1, 1);
+  private void abstractPlayerDeath(Player deadPlayer, @Nullable Player attackingPlayer) {
+    if (attackingPlayer != null) {
+      plugin
+          .getComponentLogger()
+          .info(deadPlayer.getName() + " died from \"" + attackingPlayer.getName() + "\"");
+    } else {
+      plugin.getComponentLogger().info(deadPlayer.getName() + " died");
     }
 
-    if (damager == null) {
+    resetPlayer(deadPlayer);
+
+    for (Player p : GameWorld.getPlayersInGameWorld()) {
+      deadPlayer.playSound(p, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 1, 1);
+    }
+
+    if (attackingPlayer == null) {
       Bukkit.getServer()
           .sendMessage(
               Component.text("")
                   .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
-                  .append(Component.text(player.getName()).color(NamedTextColor.RED)));
+                  .append(Component.text(deadPlayer.getName()).color(NamedTextColor.RED)));
     } else {
       Bukkit.getServer()
           .sendMessage(
               Component.text("")
                   .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
-                  .append(Component.text(player.getName()).color(NamedTextColor.RED))
+                  .append(Component.text(deadPlayer.getName()).color(NamedTextColor.RED))
                   .append(Component.text(" was killed by ").color(NamedTextColor.DARK_RED))
-                  .append(Component.text(damager.getName()).color(NamedTextColor.RED)));
+                  .append(Component.text(attackingPlayer.getName()).color(NamedTextColor.RED)));
     }
 
     Bukkit.getScheduler()
@@ -213,6 +222,7 @@ public class GamePhase extends AbstractPhase {
             plugin,
             () -> {
               boolean moreThanOnePlayersAlive = GameWorld.getPlayersInGame().length > 1;
+              plugin.getComponentLogger().info("Players alive: " + moreThanOnePlayersAlive);
               if (!moreThanOnePlayersAlive) {
                 gameEnd();
               }
