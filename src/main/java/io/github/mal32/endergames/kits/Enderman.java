@@ -14,6 +14,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class Enderman extends AbstractKit {
   public Enderman(EnderGames plugin) {
@@ -42,6 +44,9 @@ public class Enderman extends AbstractKit {
     if (event.getDamageSource().getDamageType() != DamageType.ENDER_PEARL) return;
 
     event.setCancelled(true);
+
+    player.addPotionEffect(
+        new PotionEffect(PotionEffectType.RESISTANCE, 10, 4, true, false, false));
   }
 
   @EventHandler
