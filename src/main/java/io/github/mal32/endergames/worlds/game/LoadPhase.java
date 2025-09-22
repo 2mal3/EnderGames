@@ -20,7 +20,7 @@ import org.bukkit.util.BlockVector;
 public class LoadPhase extends AbstractPhase {
   private final Queue<Location> chunksToLoad = new LinkedList<>() {};
   private final BukkitTask chunkGenWorker;
-  private final int MAP_SIZE = 640;
+  private final int MAP_SIZE = 600;
   private final Color[][] map = new Color[MAP_SIZE][MAP_SIZE];
 
   public LoadPhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
@@ -57,7 +57,7 @@ public class LoadPhase extends AbstractPhase {
   }
 
   private void scheduleChunks() {
-    final int LOAD_RADIUS_CHUNKS = 32; // 32
+    final int LOAD_RADIUS_CHUNKS = (int) Math.ceil(((float)MAP_SIZE)/16); // 32
     var location = spawnLocation.clone();
 
     chunksToLoad.add(location.clone());
