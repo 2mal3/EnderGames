@@ -1,7 +1,9 @@
 package io.github.mal32.endergames.worlds.game;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.MapPixel;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
@@ -21,7 +23,6 @@ public class LoadPhase extends AbstractPhase {
   private final Queue<Location> chunksToLoad = new LinkedList<>() {};
   private final BukkitTask chunkGenWorker;
   private final int MAP_SIZE = 600;
-  private final Color[][] map = new Color[MAP_SIZE][MAP_SIZE];
 
   public LoadPhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
@@ -57,7 +58,7 @@ public class LoadPhase extends AbstractPhase {
   }
 
   private void scheduleChunks() {
-    final int LOAD_RADIUS_CHUNKS = (int) Math.ceil(((float)MAP_SIZE)/16); // 32
+    final int LOAD_RADIUS_CHUNKS = (int) Math.ceil(((float) MAP_SIZE) / 16); // 32
     var location = spawnLocation.clone();
 
     chunksToLoad.add(location.clone());
@@ -90,6 +91,8 @@ public class LoadPhase extends AbstractPhase {
     Location spawnHorizontalLocation = spawnLocation.clone();
     spawnHorizontalLocation.setY(0);
 
+    ArrayList<MapPixel> pixelBatch = new ArrayList<>();
+
     for (int x = 0; x < 16; x++) {
       for (int y = 0; y < 16; y++) {
         Location blockHorizontalLocation = location.clone().add(x, 0, y);
@@ -101,14 +104,12 @@ public class LoadPhase extends AbstractPhase {
         int mapX = (int) inverted.getX() + (MAP_SIZE / 2);
         int mapY = (int) inverted.getZ() + (MAP_SIZE / 2);
         if (mapX >= 0 && mapX < MAP_SIZE && mapY >= 0 && mapY < MAP_SIZE) {
-          map[mapX][mapY] = color;
-        } else {
-          plugin.getLogger().warning("Map coordinates out of bounds: " + mapX + ", " + mapY);
+          pixelBatch.add(new MapPixel(mapX, mapY, color));
         }
       }
     }
 
-    plugin.sendMapToLobby(map);
+    plugin.sendNewMapPixelsToLobby(pixelBatch);
   }
 
   private static Color getBlockColor(Block block) {
