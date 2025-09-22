@@ -1,5 +1,4 @@
-package io.github.mal32.endergames.worlds.lobby; // adjust package
-
+package io.github.mal32.endergames.worlds.lobby;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
