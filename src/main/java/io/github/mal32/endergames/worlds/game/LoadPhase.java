@@ -22,7 +22,6 @@ public class LoadPhase extends AbstractPhase {
   private final BukkitTask chunkGenWorker;
   private final int MAP_SIZE = 640;
   private final Color[][] map = new Color[MAP_SIZE][MAP_SIZE];
-  private int blocksLoaded = 0;
 
   public LoadPhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
@@ -33,7 +32,7 @@ public class LoadPhase extends AbstractPhase {
     plugin.getComponentLogger().info("" + chunksToLoad.size());
 
     BukkitScheduler scheduler = plugin.getServer().getScheduler();
-    final int CHUNK_GEN_DELAY_TICKS = 2;
+    final int CHUNK_GEN_DELAY_TICKS = 1;
     chunkGenWorker =
         scheduler.runTaskTimer(plugin, this::chunkGenWorker, 20 * 5, CHUNK_GEN_DELAY_TICKS);
   }
@@ -103,14 +102,13 @@ public class LoadPhase extends AbstractPhase {
         int mapY = (int) inverted.getZ() + (MAP_SIZE / 2);
         if (mapX >= 0 && mapX < MAP_SIZE && mapY >= 0 && mapY < MAP_SIZE) {
           map[mapX][mapY] = color;
-          blocksLoaded++;
-          //          plugin.getComponentLogger().info("Set map pixel: " + mapX + ", " + mapY);
-          //          plugin.getComponentLogger().info("" + blocksLoaded);
         } else {
           plugin.getLogger().warning("Map coordinates out of bounds: " + mapX + ", " + mapY);
         }
       }
     }
+
+    plugin.sendMapToLobby(map);
   }
 
   private static Color getBlockColor(Block block) {

@@ -7,6 +7,7 @@ import io.github.mal32.endergames.worlds.lobby.LobbyWorld;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import java.awt.*;
 import java.util.Objects;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -32,6 +33,8 @@ public class EnderGames extends JavaPlugin implements Listener {
     var world = player.getPersistentDataContainer().get(worldKey, PersistentDataType.STRING);
     return Objects.equals(world, "game");
   }
+
+  public void sendMapToLobby(Color[][] map) {}
 
   @Override
   public void onEnable() {
