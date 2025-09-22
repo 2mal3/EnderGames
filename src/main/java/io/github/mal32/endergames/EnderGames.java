@@ -36,7 +36,7 @@ public class EnderGames extends JavaPlugin implements Listener {
   }
 
   public void sendNewMapPixelsToLobby(ArrayList<MapPixel> pixelBatch) {
-    MapManager.setupMapWall(pixelBatch);
+    MapManager.addToMapWall(pixelBatch);
   }
 
   @Override
