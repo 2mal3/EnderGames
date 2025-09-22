@@ -121,9 +121,6 @@ public class LobbyWorld extends AbstractWorld {
 
   @EventHandler
   public void onPressurePlateRedstone(BlockRedstoneEvent event) {
-    //temporary
-    MapManager.setupMapWall(Bukkit.getWorld("world_enga_lobby"));
-    Bukkit.getLogger().info("Hi");
     Material type = event.getBlock().getType();
     if (type != Material.HEAVY_WEIGHTED_PRESSURE_PLATE
         && type != Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {

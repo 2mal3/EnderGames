@@ -140,21 +140,10 @@ public class MapManager {
 
 
 
-    public static void setupMapWall(World world) {
-        Color[][] matrix = generateMatrix();
+    public static void setupMapWall(Color[][] matrix) {
+        World world = Bukkit.getWorld("world_enga_lobby");
         ItemStack[][] maps = createMapsFromMatrix(matrix, world);
         placeMapsInFrames(maps, world);
-        Location location = new Location(world, 0, 71, 0);
-
-//        for (int i = 0; i < maps.length; i++) {
-//            for (int j = 0; j < maps[i].length; j++) {
-//                ItemStack item = maps[i][j];
-//                if (item != null) {
-//                    world.dropItem(new Location(world, 0, 71, 0), item);
-//                }
-//            }
-//        }
-
     }
 
 

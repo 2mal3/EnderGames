@@ -4,6 +4,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import io.github.mal32.endergames.worlds.lobby.LobbyWorld;
+import io.github.mal32.endergames.worlds.lobby.MapManager;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -34,7 +35,9 @@ public class EnderGames extends JavaPlugin implements Listener {
     return Objects.equals(world, "game");
   }
 
-  public void sendMapToLobby(Color[][] map) {}
+  public void sendMapToLobby(Color[][] map) {
+    MapManager.setupMapWall(map);
+  }
 
   @Override
   public void onEnable() {
