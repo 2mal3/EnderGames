@@ -154,7 +154,7 @@ public class GamePhase extends AbstractPhase {
     }
   }
 
-  @EventHandler(priority = EventPriority.HIGH)
+  @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
   private void onPlayerDeath(EntityDamageEvent event) {
     if (!(event.getEntity() instanceof Player attackedPlayer)) return;
     if (!GameWorld.playerIsInGame(attackedPlayer)) return;
