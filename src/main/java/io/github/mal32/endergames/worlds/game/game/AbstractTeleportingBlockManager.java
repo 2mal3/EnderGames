@@ -2,9 +2,7 @@ package io.github.mal32.endergames.worlds.game.game;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
-
 import java.util.*;
-
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 
@@ -17,11 +15,14 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
   protected final ArrayList<B> blocks = new ArrayList<>();
   private int nextIndex = 0;
   protected final Location spawnLocation;
+  private final int startTimeSeconds;
 
   public AbstractTeleportingBlockManager(EnderGames plugin, Location spawnLocation) {
     super(plugin);
 
     this.spawnLocation = spawnLocation;
+
+    startTimeSeconds = (int) (System.currentTimeMillis() / 1000);
 
     int playerCount = GameWorld.getPlayersInGame().length;
     Location startLocation = spawnLocation.clone();
@@ -37,6 +38,10 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
 
   public void task() {
     if (blocks.isEmpty()) return;
+
+    int durationSeconds = (int) (System.currentTimeMillis() / 1000) - startTimeSeconds;
+    if (new Random().nextInt(durationSeconds) > (GamePhase.INTENDED_DURATION_SECONDS / 3)) return;
+
     B block = chooseBlock();
 
     Location horizontalLocation = getRandomHorizontalLocation();

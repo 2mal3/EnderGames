@@ -36,6 +36,7 @@ import org.jetbrains.annotations.Nullable;
 public class GamePhase extends AbstractPhase {
   private final List<AbstractModule> modules;
   private final List<AbstractKit> kits;
+  public static final int INTENDED_DURATION_SECONDS = 60 * 20;
 
   public GamePhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
@@ -86,7 +87,7 @@ public class GamePhase extends AbstractPhase {
 
     var worldBoarder = spawnLocation.getWorld().getWorldBorder();
 
-    worldBoarder.setSize(50, 20 * 60);
+    worldBoarder.setSize(50, INTENDED_DURATION_SECONDS);
     worldBoarder.setWarningDistance(32);
     worldBoarder.setWarningTime(60);
     worldBoarder.setDamageBuffer(1);
