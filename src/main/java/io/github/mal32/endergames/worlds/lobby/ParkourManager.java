@@ -32,19 +32,19 @@ public class ParkourManager implements Listener {
   private final World world = Bukkit.getWorld("world_enga_lobby");
 
   // change these to your desired coordinates/world if needed
-  private final Location START_PLATE = new Location(world, -6, 70, -1);
+  private final Location START_PLATE = new Location(world, -3, 70, -0);
   private final Location RESET_LOCATION =
-      new Location(world, -5.5, 70, 1, 180f, 14f); // two blocks before
+      new Location(world, -3.5, 70, 1.5, 180f, 14f); // two blocks before
 
-  private final Location FINISH_PLATE = new Location(world, 15, 81, -23);
+  private final Location FINISH_PLATE = new Location(world, 17.5, 81, -22.5);
 
   // checkpoint locations (optional). add as many as you want.
   private final List<Checkpoint> CHECKPOINTS =
       List.of(
           // example: new Location(world, x,y,z)
           // new Location(Bukkit.getWorlds().get(0), 0, 70, 0)
-          new Checkpoint(new Location(world, -15, 81, 27, -90f, 0f)),
-          new Checkpoint(new Location(world, 19, 80, 0, 180f, 0f)));
+          new Checkpoint(new Location(world, -12.5, 81, 27.5, -90f, 0f)),
+          new Checkpoint(new Location(world, 21.5, 80, 0.5, 180f, 0f)));
 
   private static final int RESET_HOTBAR_SLOT = 1;
   private static final int CANCEL_HOTBAR_SLOT = 2;
@@ -339,9 +339,8 @@ public class ParkourManager implements Listener {
     if (a == null || b == null) return false;
     if (a.getWorld() == null || b.getWorld() == null) return false;
     if (!a.getWorld().getName().equals(b.getWorld().getName())) return false;
-    return a.getBlockX() == b.getBlockX()
-        && a.getBlockY() == b.getBlockY()
-        && a.getBlockZ() == b.getBlockZ();
+    // compare by distance under one block
+    return a.distanceSquared(b) < 3.0;
   }
 
   private static String formatTime(long ms) {
@@ -371,7 +370,7 @@ class Checkpoint {
   /** default respawn = center of plate block (plate.x + .5, plate.y, plate.z + .5) */
   Checkpoint(Location plate) {
     this.plate = plate.clone();
-    this.respawn = plate.clone().add(0.7, 0, 0.5);
+    this.respawn = plate.clone();
   }
 
   Checkpoint(Location plate, Location respawn) {
