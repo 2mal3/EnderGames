@@ -106,16 +106,15 @@ public class ParkourManager implements Listener {
     int newPower = event.getNewCurrent();
 
     // Trigger only when plate is activated (rising edge)
-    if (oldPower == 0 && newPower > 0) {
-      // The plate just got stepped on or activated
-      // Find players standing on this plate (there can be multiple)
-      for (Player p : event.getBlock().getWorld().getPlayers()) {
-        Location playerBlockLoc = p.getLocation().getBlock().getLocation();
-        Location plateBlock = event.getBlock().getLocation();
-        if (playerBlockLoc.distanceSquared(plateBlock) <= 1) {
-          // Player stepped on this plate
-          this.handlePlateStepped(p, plateBlock, type);
-        }
+    if (!(oldPower == 0 && newPower > 0)) return;
+
+    // The plate just got stepped on or activated
+    // Find players standing on this plate (there can be multiple)
+    for (Player p : event.getBlock().getWorld().getPlayers()) {
+      Location playerBlockLoc = p.getLocation().getBlock().getLocation();
+      Location plateBlock = event.getBlock().getLocation();
+      if (playerBlockLoc.distanceSquared(plateBlock) <= 1) {
+        this.handlePlateStepped(p, plateBlock, type);
       }
     }
   }
