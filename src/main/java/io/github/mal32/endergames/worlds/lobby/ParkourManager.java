@@ -8,19 +8,19 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class ParkourManager {
+public class ParkourManager implements Listener {
   private final JavaPlugin plugin;
   private final NamespacedKey resetKey;
   private final NamespacedKey cancelKey;
@@ -50,6 +50,7 @@ public class ParkourManager {
   private static final int CANCEL_HOTBAR_SLOT = 2;
 
   public ParkourManager(JavaPlugin plugin) {
+    Bukkit.getPluginManager().registerEvents(this, plugin);
     this.plugin = plugin;
     this.resetKey = new NamespacedKey(plugin, "parkour_reset");
     this.cancelKey = new NamespacedKey(plugin, "parkour_cancel");
@@ -90,6 +91,32 @@ public class ParkourManager {
       cfg.save(recordsFile);
     } catch (IOException e) {
       plugin.getLogger().severe("Could not save parkour-records.yml: " + e.getMessage());
+    }
+  }
+
+  @EventHandler
+  private void onPressurePlateRedstone(BlockRedstoneEvent event) {
+    Material type = event.getBlock().getType();
+    if (type != Material.HEAVY_WEIGHTED_PRESSURE_PLATE
+        && type != Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {
+      return;
+    }
+
+    int oldPower = event.getOldCurrent();
+    int newPower = event.getNewCurrent();
+
+    // Trigger only when plate is activated (rising edge)
+    if (oldPower == 0 && newPower > 0) {
+      // The plate just got stepped on or activated
+      // Find players standing on this plate (there can be multiple)
+      for (Player p : event.getBlock().getWorld().getPlayers()) {
+        Location playerBlockLoc = p.getLocation().getBlock().getLocation();
+        Location plateBlock = event.getBlock().getLocation();
+        if (playerBlockLoc.distanceSquared(plateBlock) <= 1) {
+          // Player stepped on this plate
+          this.handlePlateStepped(p, plateBlock, type);
+        }
+      }
     }
   }
 
