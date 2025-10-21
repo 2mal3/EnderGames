@@ -363,48 +363,48 @@ public class ParkourManager implements Listener {
     sessions.clear();
     saveRecords();
   }
+}
 
-  private static class ParkourSession {
-    long startTime;
-    long lastCheckpointTime;
-    int lastCheckpointIndex = 0;
-    Location lastCheckpointLocation;
+class Checkpoint {
+  private final Location plate;
+  private final Location respawn;
 
-    ParkourSession(long now, Location initialRespawn) {
-      this.startTime = now;
-      this.lastCheckpointTime = now;
-      this.lastCheckpointLocation = (initialRespawn == null) ? null : initialRespawn.clone();
-    }
-
-    void reset(long now, Location initialRespawn) {
-      this.startTime = now;
-      this.lastCheckpointTime = now;
-      this.lastCheckpointIndex = 0;
-      this.lastCheckpointLocation = (initialRespawn == null) ? null : initialRespawn.clone();
-    }
+  /** default respawn = center of plate block (plate.x + .5, plate.y, plate.z + .5) */
+  Checkpoint(Location plate) {
+    this.plate = plate.clone();
+    this.respawn = plate.clone().add(0.7, 0, 0.5);
   }
 
-  private static class Checkpoint {
-    private final Location plate;
-    private final Location respawn;
+  Checkpoint(Location plate, Location respawn) {
+    this.plate = plate.clone();
+    this.respawn = respawn.clone();
+  }
 
-    /** default respawn = center of plate block (plate.x + .5, plate.y, plate.z + .5) */
-    Checkpoint(Location plate) {
-      this.plate = plate.clone();
-      this.respawn = plate.clone().add(0.7, 0, 0.5);
-    }
+  Location getPlate() {
+    return plate;
+  }
 
-    Checkpoint(Location plate, Location respawn) {
-      this.plate = plate.clone();
-      this.respawn = respawn.clone();
-    }
+  Location getRespawn() {
+    return respawn;
+  }
+}
 
-    Location getPlate() {
-      return plate;
-    }
+class ParkourSession {
+  long startTime;
+  long lastCheckpointTime;
+  int lastCheckpointIndex = 0;
+  Location lastCheckpointLocation;
 
-    Location getRespawn() {
-      return respawn;
-    }
+  ParkourSession(long now, Location initialRespawn) {
+    this.startTime = now;
+    this.lastCheckpointTime = now;
+    this.lastCheckpointLocation = (initialRespawn == null) ? null : initialRespawn.clone();
+  }
+
+  void reset(long now, Location initialRespawn) {
+    this.startTime = now;
+    this.lastCheckpointTime = now;
+    this.lastCheckpointIndex = 0;
+    this.lastCheckpointLocation = (initialRespawn == null) ? null : initialRespawn.clone();
   }
 }
