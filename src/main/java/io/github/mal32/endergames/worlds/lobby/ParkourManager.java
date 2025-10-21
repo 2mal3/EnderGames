@@ -220,6 +220,8 @@ public class ParkourManager implements Listener {
             Component.text("", NamedTextColor.GRAY)));
     p.sendMessage(Component.text("You finished in " + formatted).color(NamedTextColor.GOLD));
 
+    p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
+
     // save best time if better (or absent)
     Long best = bestTimes.get(id);
     if (best == null || elapsed < best) {
