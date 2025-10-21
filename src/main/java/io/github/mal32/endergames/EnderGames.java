@@ -21,17 +21,17 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class EnderGames extends JavaPlugin implements Listener {
-  private static final NamespacedKey worldKey = new NamespacedKey("endergames", "world");
+  private static final NamespacedKey playerWorldKey = new NamespacedKey("endergames", "world");
   private GameWorld gameWorld;
   private LobbyWorld lobbyWorld;
 
   public static boolean playerIsInLobbyWorld(Player player) {
-    var world = player.getPersistentDataContainer().get(worldKey, PersistentDataType.STRING);
+    var world = player.getPersistentDataContainer().get(playerWorldKey, PersistentDataType.STRING);
     return Objects.equals(world, "lobby");
   }
 
   public static boolean playerIsInGameWorld(Player player) {
-    var world = player.getPersistentDataContainer().get(worldKey, PersistentDataType.STRING);
+    var world = player.getPersistentDataContainer().get(playerWorldKey, PersistentDataType.STRING);
     return Objects.equals(world, "game");
   }
 
@@ -64,12 +64,12 @@ public class EnderGames extends JavaPlugin implements Listener {
   }
 
   public void teleportPlayerToGame(Player player) {
-    player.getPersistentDataContainer().set(worldKey, PersistentDataType.STRING, "game");
+    player.getPersistentDataContainer().set(playerWorldKey, PersistentDataType.STRING, "game");
     gameWorld.initPlayer(player);
   }
 
   public void teleportPlayerToLobby(Player player) {
-    player.getPersistentDataContainer().set(worldKey, PersistentDataType.STRING, "lobby");
+    player.getPersistentDataContainer().set(playerWorldKey, PersistentDataType.STRING, "lobby");
     lobbyWorld.initPlayer(player);
   }
 

@@ -7,19 +7,19 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class ParkourManager {
+public class ParkourManager implements Listener {
   private final JavaPlugin plugin;
   private final NamespacedKey resetKey;
   private final NamespacedKey cancelKey;
@@ -28,29 +28,28 @@ public class ParkourManager {
   private final File recordsFile;
   private final YamlConfiguration recordsConfig = new YamlConfiguration();
   private final Map<UUID, Long> bestTimes = new ConcurrentHashMap<>();
+  private final World world = Bukkit.getWorld("world_enga_lobby");
 
   // change these to your desired coordinates/world if needed
-  private final Location START_PLATE =
-      new Location(Bukkit.getWorld("world_enga_lobby"), -6, 70, -1);
+  private final Location START_PLATE = new Location(world, -3, 70, -0);
   private final Location RESET_LOCATION =
-      new Location(
-          Bukkit.getWorld("world_enga_lobby"), -5.5, 70, 1, 180f, 14f); // two blocks before
+      new Location(world, -3.5, 70, 1.5, 180f, 14f); // two blocks before
 
-  private final Location FINISH_PLATE =
-      new Location(Bukkit.getWorld("world_enga_lobby"), 15, 81, -23);
+  private final Location FINISH_PLATE = new Location(world, 17.5, 81, -22.5);
 
   // checkpoint locations (optional). add as many as you want.
   private final List<Checkpoint> CHECKPOINTS =
       List.of(
           // example: new Location(world, x,y,z)
           // new Location(Bukkit.getWorlds().get(0), 0, 70, 0)
-          new Checkpoint(new Location(Bukkit.getWorld("world_enga_lobby"), -15, 81, 27, -90f, 0f)),
-          new Checkpoint(new Location(Bukkit.getWorld("world_enga_lobby"), 19, 80, 0, 180f, 0f)));
+          new Checkpoint(new Location(world, -12.5, 81, 27.5, -90f, 0f)),
+          new Checkpoint(new Location(world, 21.5, 80, 0.5, 180f, 0f)));
 
   private static final int RESET_HOTBAR_SLOT = 1;
   private static final int CANCEL_HOTBAR_SLOT = 2;
 
   public ParkourManager(JavaPlugin plugin) {
+    Bukkit.getPluginManager().registerEvents(this, plugin);
     this.plugin = plugin;
     this.resetKey = new NamespacedKey(plugin, "parkour_reset");
     this.cancelKey = new NamespacedKey(plugin, "parkour_cancel");
@@ -91,6 +90,31 @@ public class ParkourManager {
       cfg.save(recordsFile);
     } catch (IOException e) {
       plugin.getLogger().severe("Could not save parkour-records.yml: " + e.getMessage());
+    }
+  }
+
+  @EventHandler
+  private void onPressurePlateRedstone(BlockRedstoneEvent event) {
+    Material type = event.getBlock().getType();
+    if (type != Material.HEAVY_WEIGHTED_PRESSURE_PLATE
+        && type != Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {
+      return;
+    }
+
+    int oldPower = event.getOldCurrent();
+    int newPower = event.getNewCurrent();
+
+    // Trigger only when plate is activated (rising edge)
+    if (!(oldPower == 0 && newPower > 0)) return;
+
+    // The plate just got stepped on or activated
+    // Find players standing on this plate (there can be multiple)
+    for (Player p : event.getBlock().getWorld().getPlayers()) {
+      Location playerBlockLoc = p.getLocation().getBlock().getLocation();
+      Location plateBlock = event.getBlock().getLocation();
+      if (playerBlockLoc.distanceSquared(plateBlock) <= 1) {
+        this.handlePlateStepped(p, plateBlock, type);
+      }
     }
   }
 
@@ -194,6 +218,8 @@ public class ParkourManager {
             Component.text("Parkour finished", NamedTextColor.GOLD),
             Component.text("", NamedTextColor.GRAY)));
     p.sendMessage(Component.text("You finished in " + formatted).color(NamedTextColor.GOLD));
+
+    p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
 
     // save best time if better (or absent)
     Long best = bestTimes.get(id);
@@ -314,9 +340,8 @@ public class ParkourManager {
     if (a == null || b == null) return false;
     if (a.getWorld() == null || b.getWorld() == null) return false;
     if (!a.getWorld().getName().equals(b.getWorld().getName())) return false;
-    return a.getBlockX() == b.getBlockX()
-        && a.getBlockY() == b.getBlockY()
-        && a.getBlockZ() == b.getBlockZ();
+    // compare by distance under one block
+    return a.distanceSquared(b) < 3.0;
   }
 
   private static String formatTime(long ms) {
@@ -337,48 +362,48 @@ public class ParkourManager {
     sessions.clear();
     saveRecords();
   }
+}
 
-  private static class ParkourSession {
-    long startTime;
-    long lastCheckpointTime;
-    int lastCheckpointIndex = 0;
-    Location lastCheckpointLocation;
+class Checkpoint {
+  private final Location plate;
+  private final Location respawn;
 
-    ParkourSession(long now, Location initialRespawn) {
-      this.startTime = now;
-      this.lastCheckpointTime = now;
-      this.lastCheckpointLocation = (initialRespawn == null) ? null : initialRespawn.clone();
-    }
-
-    void reset(long now, Location initialRespawn) {
-      this.startTime = now;
-      this.lastCheckpointTime = now;
-      this.lastCheckpointIndex = 0;
-      this.lastCheckpointLocation = (initialRespawn == null) ? null : initialRespawn.clone();
-    }
+  /** default respawn = center of plate block (plate.x + .5, plate.y, plate.z + .5) */
+  Checkpoint(Location plate) {
+    this.plate = plate.clone();
+    this.respawn = plate.clone();
   }
 
-  private static class Checkpoint {
-    private final Location plate;
-    private final Location respawn;
+  Checkpoint(Location plate, Location respawn) {
+    this.plate = plate.clone();
+    this.respawn = respawn.clone();
+  }
 
-    /** default respawn = center of plate block (plate.x + .5, plate.y, plate.z + .5) */
-    Checkpoint(Location plate) {
-      this.plate = plate.clone();
-      this.respawn = plate.clone().add(0.7, 0, 0.5);
-    }
+  Location getPlate() {
+    return plate;
+  }
 
-    Checkpoint(Location plate, Location respawn) {
-      this.plate = plate.clone();
-      this.respawn = respawn.clone();
-    }
+  Location getRespawn() {
+    return respawn;
+  }
+}
 
-    Location getPlate() {
-      return plate;
-    }
+class ParkourSession {
+  long startTime;
+  long lastCheckpointTime;
+  int lastCheckpointIndex = 0;
+  Location lastCheckpointLocation;
 
-    Location getRespawn() {
-      return respawn;
-    }
+  ParkourSession(long now, Location initialRespawn) {
+    this.startTime = now;
+    this.lastCheckpointTime = now;
+    this.lastCheckpointLocation = (initialRespawn == null) ? null : initialRespawn.clone();
+  }
+
+  void reset(long now, Location initialRespawn) {
+    this.startTime = now;
+    this.lastCheckpointTime = now;
+    this.lastCheckpointIndex = 0;
+    this.lastCheckpointLocation = (initialRespawn == null) ? null : initialRespawn.clone();
   }
 }

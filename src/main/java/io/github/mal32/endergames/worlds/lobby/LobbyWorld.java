@@ -10,7 +10,6 @@ import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -117,32 +116,6 @@ public class LobbyWorld extends AbstractWorld {
     if (event.getBlock().getType() != Material.FARMLAND) return;
 
     event.setCancelled(true);
-  }
-
-  @EventHandler
-  public void onPressurePlateRedstone(BlockRedstoneEvent event) {
-    Material type = event.getBlock().getType();
-    if (type != Material.HEAVY_WEIGHTED_PRESSURE_PLATE
-        && type != Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {
-      return;
-    }
-
-    int oldPower = event.getOldCurrent();
-    int newPower = event.getNewCurrent();
-
-    // Trigger only when plate is activated (rising edge)
-    if (oldPower == 0 && newPower > 0) {
-      // The plate just got stepped on or activated
-      // Find players standing on this plate (there can be multiple)
-      for (Player p : event.getBlock().getWorld().getPlayers()) {
-        Location playerBlockLoc = p.getLocation().getBlock().getLocation();
-        Location plateBlock = event.getBlock().getLocation();
-        if (playerBlockLoc.distanceSquared(plateBlock) <= 1) {
-          // Player stepped on this plate
-          pmanager.handlePlateStepped(p, plateBlock, type);
-        }
-      }
-    }
   }
 
   @EventHandler
