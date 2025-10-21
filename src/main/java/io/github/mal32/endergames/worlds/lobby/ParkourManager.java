@@ -29,24 +29,22 @@ public class ParkourManager {
   private final File recordsFile;
   private final YamlConfiguration recordsConfig = new YamlConfiguration();
   private final Map<UUID, Long> bestTimes = new ConcurrentHashMap<>();
+  private final World world = Bukkit.getWorld("world_enga_lobby");
 
   // change these to your desired coordinates/world if needed
-  private final Location START_PLATE =
-      new Location(Bukkit.getWorld("world_enga_lobby"), -6, 70, -1);
+  private final Location START_PLATE = new Location(world, -6, 70, -1);
   private final Location RESET_LOCATION =
-      new Location(
-          Bukkit.getWorld("world_enga_lobby"), -5.5, 70, 1, 180f, 14f); // two blocks before
+      new Location(world, -5.5, 70, 1, 180f, 14f); // two blocks before
 
-  private final Location FINISH_PLATE =
-      new Location(Bukkit.getWorld("world_enga_lobby"), 15, 81, -23);
+  private final Location FINISH_PLATE = new Location(world, 15, 81, -23);
 
   // checkpoint locations (optional). add as many as you want.
   private final List<Checkpoint> CHECKPOINTS =
       List.of(
           // example: new Location(world, x,y,z)
           // new Location(Bukkit.getWorlds().get(0), 0, 70, 0)
-          new Checkpoint(new Location(Bukkit.getWorld("world_enga_lobby"), -15, 81, 27, -90f, 0f)),
-          new Checkpoint(new Location(Bukkit.getWorld("world_enga_lobby"), 19, 80, 0, 180f, 0f)));
+          new Checkpoint(new Location(world, -15, 81, 27, -90f, 0f)),
+          new Checkpoint(new Location(world, 19, 80, 0, 180f, 0f)));
 
   private static final int RESET_HOTBAR_SLOT = 1;
   private static final int CANCEL_HOTBAR_SLOT = 2;
