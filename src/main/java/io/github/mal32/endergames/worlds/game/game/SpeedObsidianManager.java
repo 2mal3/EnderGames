@@ -27,7 +27,7 @@ public class SpeedObsidianManager extends AbstractTeleportingBlockManager<SpeedO
 
   @Override
   protected SpeedObsidian getNewBlock(Location location) {
-    return new SpeedObsidian(location);
+    return new SpeedObsidian(plugin, location);
   }
 
   @EventHandler
@@ -42,14 +42,22 @@ public class SpeedObsidianManager extends AbstractTeleportingBlockManager<SpeedO
     SpeedObsidian speedObsidian = getBlockAtLocation(block.getLocation());
     if (speedObsidian == null) return;
 
-    player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 10, 1, true, true));
+    if (player.isInWater()) {
+      var dolphinGraceEffect =
+          new PotionEffect(PotionEffectType.DOLPHINS_GRACE, 20 * 10, 0, false, false, true);
+      PotionEffectsStacking.addPotionEffect(player, dolphinGraceEffect);
+    } else {
+      var speedEffect = new PotionEffect(PotionEffectType.SPEED, 20 * 20, 1, false, false, true);
+      PotionEffectsStacking.addPotionEffect(player, speedEffect);
+    }
+
     speedObsidian.teleport(spawnLocation);
   }
 }
 
 class SpeedObsidian extends AbstractTeleportingBlock {
-  public SpeedObsidian(Location location) {
-    super(location);
+  public SpeedObsidian(EnderGames plugin, Location location) {
+    super(plugin, location);
   }
 
   @Override

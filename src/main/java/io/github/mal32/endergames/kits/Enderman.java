@@ -14,6 +14,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class Enderman extends AbstractKit {
   public Enderman(EnderGames plugin) {
@@ -32,7 +34,7 @@ public class Enderman extends AbstractKit {
     if (killer == null) return;
     if (!playerCanUseThisKit(killer)) return;
 
-    killer.getInventory().addItem(new ItemStack(Material.ENDER_PEARL, 2));
+    killer.getInventory().addItem(new ItemStack(Material.ENDER_PEARL, 3));
   }
 
   @EventHandler
@@ -42,6 +44,9 @@ public class Enderman extends AbstractKit {
     if (event.getDamageSource().getDamageType() != DamageType.ENDER_PEARL) return;
 
     event.setCancelled(true);
+
+    player.addPotionEffect(
+        new PotionEffect(PotionEffectType.RESISTANCE, 10, 4, true, false, false));
   }
 
   @EventHandler
@@ -58,8 +63,9 @@ public class Enderman extends AbstractKit {
             Material.SHORT_GRASS,
             Material.TALL_GRASS,
             Material.SEAGRASS,
-            Material.TALL_SEAGRASS);
-    var targetBlock = player.getTargetBlock(passableBlocks, 16);
+            Material.TALL_SEAGRASS,
+            Material.LEAF_LITTER);
+    var targetBlock = player.getTargetBlock(passableBlocks, 24);
     if (targetBlock.getType() != Material.ENDER_CHEST) return;
 
     player.playSound(player, Sound.BLOCK_ENDER_CHEST_OPEN, 1, 1);
@@ -72,8 +78,8 @@ public class Enderman extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.ENDER_PEARL,
         "Enderman",
         "Starts with 5 Ender Pearls. Gain 2 Ender Pearls per player kill. Doesn't take damage from"

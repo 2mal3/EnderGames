@@ -35,7 +35,7 @@ public abstract class AbstractKit extends AbstractModule {
         new Enderman(plugin),
         new Lucker(plugin),
         new Rewind(plugin),
-        new Spy(plugin),
+        new Voodoo(plugin),
         new Spectator(plugin));
   }
 
@@ -60,16 +60,16 @@ public abstract class AbstractKit extends AbstractModule {
             player
                 .getPersistentDataContainer()
                 .get(new NamespacedKey(plugin, "kit"), PersistentDataType.STRING),
-            getName());
+            getNameLowercase());
 
     return playerHasKit && playerInGame;
   }
 
   public abstract void start(Player player);
 
-  public String getName() {
+  public String getNameLowercase() {
     return this.getClass().getSimpleName().toLowerCase();
   }
 
-  public abstract KitDescriptionItem getDescriptionItem();
+  public abstract KitDescription getDescription();
 }

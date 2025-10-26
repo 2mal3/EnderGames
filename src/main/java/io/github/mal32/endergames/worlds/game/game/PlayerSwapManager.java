@@ -43,6 +43,8 @@ public class PlayerSwapManager extends AbstractTask {
 
     playerSwapEffects(player1);
     playerSwapEffects(player2);
+
+    switchIntoFightProtection(player1, player2);
   }
 
   private void playerSwapEffects(Player player) {
@@ -51,5 +53,16 @@ public class PlayerSwapManager extends AbstractTask {
     location.getWorld().spawnParticle(Particle.PORTAL, location, 50, 0, 0, 0);
 
     player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 0, true));
+  }
+
+  private void switchIntoFightProtection(Player player1, Player player2) {
+    if (FightDetection.playerIsInFight(player1) && !FightDetection.playerIsInFight(player2)) {
+      player2.addPotionEffect(
+          new PotionEffect(PotionEffectType.RESISTANCE, 20 * 2, 4, true, false, true));
+    }
+    if (FightDetection.playerIsInFight(player2) && !FightDetection.playerIsInFight(player1)) {
+      player1.addPotionEffect(
+          new PotionEffect(PotionEffectType.RESISTANCE, 20 * 2, 4, true, false, true));
+    }
   }
 }

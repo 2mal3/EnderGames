@@ -20,7 +20,7 @@ import org.bukkit.scheduler.BukkitTask;
 public class Rewind extends AbstractKit {
   private final int REWIND_SECONDS = 10;
   private final int PLAYER_STATE_INTERVAL_TICKS = 10;
-  private final int USE_COOLDOWN_SECONDS = 30;
+  private final int USE_COOLDOWN_SECONDS = 40;
   private final NamespacedKey rewindKey;
   private final HashMap<UUID, ArrayList<PlayerState>> playerStates = new HashMap<>();
   private BukkitTask task;
@@ -47,9 +47,13 @@ public class Rewind extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
-        Material.CLOCK, "Rewind", "Go back 10 seconds in time", "Rewind Clock", Difficulty.EASY);
+  public KitDescription getDescription() {
+    return new KitDescription(
+        Material.CLOCK,
+        "Rewind",
+        "Can go back 10 seconds in time every 40 seconds.",
+        "Rewind Clock",
+        Difficulty.EASY);
   }
 
   @Override

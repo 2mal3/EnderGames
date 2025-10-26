@@ -6,9 +6,11 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import io.github.mal32.endergames.worlds.lobby.LobbyWorld;
+import io.github.mal32.endergames.worlds.lobby.MapManager;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import java.util.ArrayList;
 import java.util.Objects;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -24,24 +26,23 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class EnderGames extends JavaPlugin implements Listener {
-  private static final NamespacedKey worldKey = new NamespacedKey("endergames", "world");
+  private static final NamespacedKey playerWorldKey = new NamespacedKey("endergames", "world");
   private GameWorld gameWorld;
   private LobbyWorld lobbyWorld;
+  private final MapManager mapManager = new MapManager();
 
   public static boolean playerIsInLobbyWorld(Player player) {
-    var world = player.getPersistentDataContainer().get(worldKey, PersistentDataType.STRING);
+    var world = player.getPersistentDataContainer().get(playerWorldKey, PersistentDataType.STRING);
     return Objects.equals(world, "lobby");
   }
 
   public static boolean playerIsInGameWorld(Player player) {
-    var world = player.getPersistentDataContainer().get(worldKey, PersistentDataType.STRING);
+    var world = player.getPersistentDataContainer().get(playerWorldKey, PersistentDataType.STRING);
     return Objects.equals(world, "game");
   }
 
-  public static boolean isInDebugMode() {
-    String debugEnv = System.getenv("EG_DEBUG");
-    return debugEnv != null
-        && (debugEnv.equalsIgnoreCase("true") || debugEnv.equalsIgnoreCase("1"));
+  public void sendNewMapPixelsToLobby(ArrayList<MapPixel> pixelBatch) {
+    mapManager.addToMapWall(pixelBatch);
   }
 
   @Override
@@ -121,12 +122,12 @@ public class EnderGames extends JavaPlugin implements Listener {
   }
 
   public void teleportPlayerToGame(Player player) {
-    player.getPersistentDataContainer().set(worldKey, PersistentDataType.STRING, "game");
+    player.getPersistentDataContainer().set(playerWorldKey, PersistentDataType.STRING, "game");
     gameWorld.initPlayer(player);
   }
 
   public void teleportPlayerToLobby(Player player) {
-    player.getPersistentDataContainer().set(worldKey, PersistentDataType.STRING, "lobby");
+    player.getPersistentDataContainer().set(playerWorldKey, PersistentDataType.STRING, "lobby");
     lobbyWorld.initPlayer(player);
   }
 

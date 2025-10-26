@@ -149,7 +149,7 @@ public class Slime extends AbstractKit {
   public void onPlayerJump(PlayerJumpEvent event) {
     if (!playerCanUseThisKit(event.getPlayer())) return;
 
-    double SLIMEBALL_PROBABILITY = 0.10;
+    final double SLIMEBALL_PROBABILITY = 0.15;
     if (Math.random() > SLIMEBALL_PROBABILITY) return;
 
     ItemStack slimeball = new ItemStack(Material.SLIME_BALL, 1);
@@ -157,8 +157,8 @@ public class Slime extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.SLIME_BALL,
         "Slime",
         "Occasionally gains slimeballs when jumping, which can be thrown to slow enemies. Spawns"

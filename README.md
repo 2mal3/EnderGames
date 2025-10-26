@@ -10,23 +10,23 @@ versions.
 ## Features
 
 - a bunch of custom game mechanics such as player swapping, teleporting blocks and custom items
-- 14 unique kits to choose from with more coming soon
+- 16 unique kits to choose from with more coming soon
 - heavily playtested and balanced
 
 ## Vanilla Modifications
 
 - TNT automatically ignites when placed, and explodes after 1.5 seconds
-- more expensive Shield recipe
 - slow natural regeneration, even when having low food level
 - players drop all their experience on death
 - Enchanting Tables have infinite Lapis Lazuli
 - Smithing Tables have infinite Netherite Upgrade Templates
 - cheaper Anvil recipe
 - items in Furnaces smelt faster
+- potion effects stack
 
 ## Using the Plugin
 
-Install the plugin as usual on a Paper Server for Minecraft 1.21.4 of your choice. It is advisable to use a new world,
+Install the plugin as usual on a Paper Server for Minecraft 1.21.8 of your choice. It is advisable to use a new world,
 as this can be damaged by the game.
 
 ### Recommended Server Settings

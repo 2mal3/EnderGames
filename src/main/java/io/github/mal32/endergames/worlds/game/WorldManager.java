@@ -22,6 +22,8 @@ public class WorldManager {
     world.setStorm(false);
     world.setThundering(false);
     world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+    world.setGameRule(GameRule.LOCATOR_BAR, false);
+    world.setGameRule(GameRule.DO_INSOMNIA, false);
 
     world.setDifficulty(Difficulty.EASY);
 

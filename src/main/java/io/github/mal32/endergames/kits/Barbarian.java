@@ -54,12 +54,12 @@ public class Barbarian extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.LEATHER_CHESTPLATE,
         "Barbarian",
-        "Deals more attack damage the hungrier he is (+2.5% attack damage per half hunger bar"
-            + " missing)",
+        "Deals more attack damage with swords the hungrier he is (+2.5% attack damage per half"
+            + " hunger bar missing)",
         "A wooden sword and a full set of leather armor with Unbreaking I",
         Difficulty.HARD);
   }

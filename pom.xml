@@ -6,10 +6,12 @@
 
     <groupId>io.github.mal32.endergames</groupId>
     <artifactId>endergames</artifactId>
-    <version>0.4.0</version>
+    <version>0.7.0</version>
 
     <name>EnderGames</name>
-    <description>Teleporting themed Kit SurivialGames for small player sizes on a random generated map with post 1.8 PvP.</description>
+    <description>Teleporting themed Kit SurivialGames for small player sizes on a random generated map with post 1.8
+        PvP.
+    </description>
     <url>https://github.com/2mal3/EnderGames</url>
 
     <properties>
@@ -33,7 +35,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21.4-R0.1-SNAPSHOT</version>
+            <version>1.21.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 

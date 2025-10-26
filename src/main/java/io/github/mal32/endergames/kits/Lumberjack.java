@@ -74,8 +74,8 @@ public class Lumberjack extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.WOODEN_AXE,
         "Lumberjack",
         "The lumberjack can fell entire trees with a single axe swing. Every axe he crafts"

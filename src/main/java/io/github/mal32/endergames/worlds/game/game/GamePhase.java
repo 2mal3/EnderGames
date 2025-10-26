@@ -21,7 +21,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -30,6 +31,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 
 public class GamePhase extends AbstractPhase {
   private final List<AbstractModule> modules;
@@ -50,7 +52,9 @@ public class GamePhase extends AbstractPhase {
             new SmithingTemplateManager(plugin),
             new SpectatorParticles(plugin),
             new Tracker(plugin),
-            new SpeedObsidianManager(plugin, spawnLocation));
+            new SpeedObsidianManager(plugin, spawnLocation),
+            new FightDetection(plugin),
+            new PotionEffectsStacking(plugin));
 
     List<NamespacedKey> allRecipeKeys = new ArrayList<>();
     Iterator<Recipe> it = Bukkit.recipeIterator();
@@ -74,7 +78,7 @@ public class GamePhase extends AbstractPhase {
               .getPersistentDataContainer()
               .get(new NamespacedKey(plugin, "kit"), PersistentDataType.STRING);
       for (AbstractKit kit : kits) {
-        if (Objects.equals(kit.getName(), playerKit)) {
+        if (Objects.equals(kit.getNameLowercase(), playerKit)) {
           kit.start(player);
         }
       }
@@ -150,33 +154,82 @@ public class GamePhase extends AbstractPhase {
     }
   }
 
-  @EventHandler(priority = EventPriority.HIGH)
-  private void onPlayerDeath(PlayerDeathEvent event) {
-    if (!EnderGames.playerIsInGameWorld(event.getEntity())) return;
+  @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+  private void onPlayerDeath(EntityDamageEvent event) {
+    if (!(event.getEntity() instanceof Player attackedPlayer)) return;
+    if (!GameWorld.playerIsInGame(attackedPlayer)) return;
+    double damage = event.getFinalDamage();
+    if (attackedPlayer.getHealth() - damage > 0) return;
+
     event.setCancelled(true);
 
-    Player player = event.getEntity();
-
-    Player damager = null;
-    if (event.getDamageSource().getCausingEntity() instanceof Player d) {
-      damager = d;
-      player.sendMessage(
+    Player attackingPlayer = null;
+    if (event instanceof EntityDamageByEntityEvent ede && ede.getDamager() instanceof Player d) {
+      attackingPlayer = d;
+      attackedPlayer.sendMessage(
           Component.text("")
-              .append(Component.text(damager.getName()).color(NamedTextColor.DARK_RED))
+              .append(Component.text(attackingPlayer.getName()).color(NamedTextColor.DARK_RED))
               .append(Component.text(" has ").color(NamedTextColor.RED))
               .append(
-                  Component.text(String.format("%.2f", damager.getHealth()) + "❤")
+                  Component.text(String.format("%.2f", attackingPlayer.getHealth()) + "❤")
                       .color(NamedTextColor.DARK_RED))
               .append(Component.text(" left").color(NamedTextColor.RED)));
     }
 
-    player.setGameMode(GameMode.SPECTATOR);
-    player.setHealth(20);
-
-    abstractPlayerDeath(player, damager);
+    abstractPlayerDeath(attackedPlayer, attackingPlayer);
   }
 
-  private void abstractPlayerDeath(Player player, Player damager) {
+  @EventHandler
+  private void onPlayerQuit(PlayerQuitEvent event) {
+    if (!GameWorld.playerIsInGame(event.getPlayer())) return;
+
+    abstractPlayerDeath(event.getPlayer(), null);
+  }
+
+  private void abstractPlayerDeath(Player deadPlayer, @Nullable Player attackingPlayer) {
+    if (attackingPlayer != null) {
+      plugin
+          .getComponentLogger()
+          .info(deadPlayer.getName() + " died from \"" + attackingPlayer.getName() + "\"");
+    } else {
+      plugin.getComponentLogger().info(deadPlayer.getName() + " died");
+    }
+
+    resetPlayer(deadPlayer);
+
+    for (Player p : GameWorld.getPlayersInGameWorld()) {
+      deadPlayer.playSound(p, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 1, 1);
+    }
+
+    if (attackingPlayer == null) {
+      Bukkit.getServer()
+          .sendMessage(
+              Component.text("")
+                  .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
+                  .append(Component.text(deadPlayer.getName()).color(NamedTextColor.RED)));
+    } else {
+      Bukkit.getServer()
+          .sendMessage(
+              Component.text("")
+                  .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
+                  .append(Component.text(deadPlayer.getName()).color(NamedTextColor.RED))
+                  .append(Component.text(" was killed by ").color(NamedTextColor.DARK_RED))
+                  .append(Component.text(attackingPlayer.getName()).color(NamedTextColor.RED)));
+    }
+
+    Bukkit.getScheduler()
+        .runTask(
+            plugin,
+            () -> {
+              boolean moreThanOnePlayersAlive = GameWorld.getPlayersInGame().length > 1;
+              plugin.getComponentLogger().info("Players alive: " + moreThanOnePlayersAlive);
+              if (!moreThanOnePlayersAlive) {
+                gameEnd();
+              }
+            });
+  }
+
+  private void resetPlayer(Player player) {
     World world = player.getWorld();
 
     for (ItemStack item : player.getInventory().getContents()) {
@@ -193,51 +246,23 @@ public class GamePhase extends AbstractPhase {
       player.setLevel(player.getLevel() - 1);
     }
 
-    // clear the player's effects
     for (PotionEffect effect : player.getActivePotionEffects()) {
       player.removePotionEffect(effect.getType());
     }
 
-    for (Player p : GameWorld.getPlayersInGameWorld()) {
-      player.playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);
-    }
-
-    if (damager == null) {
-      Bukkit.getServer()
-          .sendMessage(
-              Component.text("")
-                  .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
-                  .append(Component.text(player.getName()).color(NamedTextColor.RED)));
-    } else {
-      Bukkit.getServer()
-          .sendMessage(
-              Component.text("")
-                  .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
-                  .append(Component.text(player.getName()).color(NamedTextColor.RED))
-                  .append(Component.text(" was killed by ").color(NamedTextColor.DARK_RED))
-                  .append(Component.text(damager.getName()).color(NamedTextColor.RED)));
-    }
-
-    if (!moreThanOnePlayersAlive()) {
-      plugin.getServer().getScheduler().runTask(plugin, this::gameEnd);
-    }
-  }
-
-  private boolean moreThanOnePlayersAlive() {
-    return GameWorld.getPlayersInGame().length > 1;
-  }
-
-  @EventHandler
-  private void onPlayerQuit(PlayerQuitEvent event) {
-    if (!GameWorld.playerIsInGame(event.getPlayer())) return;
-
-    abstractPlayerDeath(event.getPlayer(), null);
+    player.setGameMode(GameMode.SPECTATOR);
+    player.setHealth(20);
   }
 
   private void gameEnd() {
     Title title;
 
     Player[] survivalPlayers = GameWorld.getPlayersInGame();
+
+    for (Player p : survivalPlayers) {
+      resetPlayer(p);
+    }
+
     if (survivalPlayers.length >= 1) {
       Player lastPlayer = survivalPlayers[0];
       title =
@@ -246,7 +271,8 @@ public class GamePhase extends AbstractPhase {
               Component.text(""),
               Title.Times.times(
                   Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
-      lastPlayer.playSound(lastPlayer.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
+      lastPlayer.playSound(
+          lastPlayer, Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.MASTER, 1, 1);
     } else {
       title =
           Title.title(
@@ -295,7 +321,7 @@ public class GamePhase extends AbstractPhase {
 
     item.setAmount(item.getAmount() - 1);
 
-    final double speedMultiplier = 1;
+    final double speedMultiplier = 1.2;
     Vector direction = player.getEyeLocation().getDirection();
     Vector customVelocity = direction.normalize().multiply(speedMultiplier);
 

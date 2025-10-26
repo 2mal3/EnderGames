@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.worlds.game.game.PotionEffectsStacking;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.FoodProperties;
 import java.util.List;
@@ -61,7 +62,8 @@ public class Cat extends AbstractKit {
 
     if (!Tag.ITEMS_FISHES.isTagged(event.getItem().getType())) return;
 
-    event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 30, 2, true));
+    PotionEffectsStacking.addPotionEffect(
+        event.getPlayer(), new PotionEffect(PotionEffectType.SPEED, 20 * 30, 2, true));
   }
 
   @EventHandler
@@ -71,15 +73,15 @@ public class Cat extends AbstractKit {
     // skip if damage is not with bare hands
     if (!damager.getInventory().getItemInMainHand().getType().isAir()) return;
 
-    event.setDamage(event.getDamage() + 2);
+    event.setDamage(event.getDamage() + 3);
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.COD,
         "Cat",
-        "Gains Speed III for 30 seconds when eating raw fish. It deals +2 damage with bare hands"
+        "Gains Speed III for 30 seconds when eating raw fish. It deals +3 damage with bare hands"
             + " and takes 50% less fall damage.",
         "20 raw fish",
         Difficulty.EASY);

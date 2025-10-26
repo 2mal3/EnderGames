@@ -1,31 +1,56 @@
 package io.github.mal32.endergames.worlds.game;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.MapPixel;
+import java.awt.Color;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.Random;
 import org.bukkit.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
 import org.bukkit.util.BlockVector;
 
 public class LoadPhase extends AbstractPhase {
-  final int loadDelayIncrease = 5;
-  private final ArrayList<BukkitTask> loadTasks = new ArrayList<>();
-  int loadDelayTicks = 0;
+  private final Queue<Location> chunksToLoad = new LinkedList<>();
+  private final BukkitTask chunkGenWorker;
+  private final BukkitTask pixelFlushTask;
+  private final List<MapPixel> pendingPixels = new ArrayList<>();
+  private final int MAP_SIZE = 600;
 
   public LoadPhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
 
     placeSpawnPlatform();
 
-    var startLoadTask =
-        Bukkit.getScheduler().runTaskLater(this.plugin, this::loadSpawnChunks, 20 * 5);
-    loadTasks.add(startLoadTask);
+    scheduleChunks();
+    plugin.getComponentLogger().info("" + chunksToLoad.size());
+
+    BukkitScheduler scheduler = plugin.getServer().getScheduler();
+    final int CHUNK_GEN_DELAY_TICKS = 1;
+    chunkGenWorker =
+        scheduler.runTaskTimer(plugin, this::chunkGenWorker, 20 * 5, CHUNK_GEN_DELAY_TICKS);
+    int FLUSH_INTERVAL_TICKS = 20;
+    pixelFlushTask =
+        scheduler.runTaskTimer(
+            plugin, this::flushPixels, FLUSH_INTERVAL_TICKS, FLUSH_INTERVAL_TICKS);
+  }
+
+  @Override
+  public void disable() {
+    super.disable();
+
+    chunkGenWorker.cancel();
+    pixelFlushTask.cancel();
   }
 
   public void placeSpawnPlatform() {
@@ -40,43 +65,87 @@ public class LoadPhase extends AbstractPhase {
     structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
   }
 
-  private void loadSpawnChunks() {
-    final int loadRadius = 8;
+  private void scheduleChunks() {
+    final int LOAD_RADIUS_CHUNKS = (int) Math.ceil(((float) MAP_SIZE) / 16); // 32
     var location = spawnLocation.clone();
 
+    chunksToLoad.add(location.clone());
+
     int invert = 1;
-    for (int i = 0; i < loadRadius; i++) {
+    for (int i = 0; i < LOAD_RADIUS_CHUNKS; i++) {
       for (int k = 0; k < i; k++) {
         location.add(invert * 16, 0, 0);
-        scheduleChunkLoad(location.clone());
+        chunksToLoad.add(location.clone());
       }
       for (int k = 0; k < i; k++) {
         location.add(0, 0, invert * 16);
-        scheduleChunkLoad(location.clone());
+        chunksToLoad.add(location.clone());
       }
 
       invert *= -1;
     }
   }
 
-  private void scheduleChunkLoad(Location location) {
-    var chunkLoadTask =
-        Bukkit.getScheduler()
-            .runTaskLater(
-                plugin, () -> location.getWorld().getChunkAt(location).load(true), loadDelayTicks);
-    loadTasks.add(chunkLoadTask);
+  private void chunkGenWorker() {
+    if (chunksToLoad.isEmpty()) {
+      chunkGenWorker.cancel();
+      return;
+    }
+    Location location = chunksToLoad.poll();
 
-    loadDelayTicks += loadDelayIncrease;
+    Chunk chunk = location.getWorld().getChunkAt(location);
+    chunk.load(true);
+
+    Location spawnHorizontalLocation = spawnLocation.clone();
+    spawnHorizontalLocation.setY(0);
+
+    ArrayList<MapPixel> pixelBatch = new ArrayList<>();
+
+    for (int x = 0; x < 16; x++) {
+      for (int y = 0; y < 16; y++) {
+        Location blockHorizontalLocation = location.clone().add(x, 0, y);
+        Block highestBlock = spawnLocation.getWorld().getHighestBlockAt(blockHorizontalLocation);
+        Color color = getBlockColor(highestBlock);
+
+        Location delta = blockHorizontalLocation.clone().subtract(spawnHorizontalLocation);
+        Location inverted = delta.multiply(-1);
+        int mapX = (int) inverted.getX() + (MAP_SIZE / 2);
+        int mapY = (int) inverted.getZ() + (MAP_SIZE / 2);
+        if (mapX >= 0 && mapX < MAP_SIZE && mapY >= 0 && mapY < MAP_SIZE) {
+          pixelBatch.add(new MapPixel(mapX, mapY, color));
+        }
+      }
+    }
+
+    pendingPixels.addAll(pixelBatch);
   }
 
-  @Override
-  public void disable() {
-    super.disable();
+  private void flushPixels() {
+    if (pendingPixels.isEmpty()) return;
+    plugin.sendNewMapPixelsToLobby(new ArrayList<>(pendingPixels));
+    pendingPixels.clear();
+  }
 
-    for (BukkitTask task : loadTasks) {
-      if (task == null || task.isCancelled()) continue;
+  private static Color getBlockColor(Block block) {
+    var blockBukkitColor = block.getBlockData().getMapColor();
+    Color blockColor =
+        new Color(
+            blockBukkitColor.getRed(), blockBukkitColor.getGreen(), blockBukkitColor.getBlue());
 
-      task.cancel();
+    Block aboveHighest = block.getRelative(0, 1, 0);
+    var adjacentBlocks =
+        new Block[] {
+          aboveHighest.getRelative(0, 0, 1),
+          aboveHighest.getRelative(1, 0, 0),
+          aboveHighest.getRelative(-1, 0, 0),
+          aboveHighest.getRelative(0, 0, -1)
+        };
+    for (Block adjacent : adjacentBlocks) {
+      if (adjacent.isSolid() && !adjacent.isLiquid()) {
+        blockColor = blockColor.darker();
+      }
     }
+
+    return blockColor;
   }
 }

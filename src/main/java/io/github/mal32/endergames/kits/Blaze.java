@@ -77,7 +77,7 @@ public class Blaze extends AbstractKit {
   public void onHit(EntityDamageByEntityEvent event) {
     if (!(event.getDamager() instanceof Player damager) || !playerCanUseThisKit(damager)) return;
 
-    if (Math.random() > 0.2) return;
+    if (Math.random() > 0.25) return;
 
     event.getEntity().setFireTicks(20 * 3);
   }
@@ -87,7 +87,7 @@ public class Blaze extends AbstractKit {
     if (!(event.getEntity() instanceof Player player)) return;
     if (!playerCanUseThisKit(player)) return;
 
-    if (Math.random() > 0.25) return;
+    if (Math.random() > 0.60) return;
 
     event.getProjectile().setFireTicks(20 * 3);
   }
@@ -129,8 +129,8 @@ public class Blaze extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.BLAZE_POWDER,
         "Blaze",
         "Can leave a fire trail for a short time. It is immune to fire damage, but gains Weakness I"

@@ -9,11 +9,8 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -65,25 +62,6 @@ public class Bomber extends AbstractKit {
 
     Location location = event.getEntity().getLocation();
     location.createExplosion(killer, 4f, false, true);
-  }
-
-  @EventHandler(priority = EventPriority.LOW)
-  private void onTNTPlace(BlockPlaceEvent event) {
-    if (event.getBlock().getType() != Material.TNT) return;
-    Player player = event.getPlayer();
-    if (!playerCanUseThisKit(player)) return;
-
-    if (event.getPlayer().isSneaking()) return;
-
-    event.setCancelled(true);
-
-    player.getInventory().removeItem(new ItemStack(Material.TNT, 1));
-
-    Location location = event.getBlock().getLocation();
-    TNTPrimed tnt =
-        (TNTPrimed)
-            location.getWorld().spawnEntity(location.clone().add(0.5, 0, 0.5), EntityType.TNT);
-    tnt.setFuseTicks(10);
   }
 
   @EventHandler
@@ -138,8 +116,8 @@ public class Bomber extends AbstractKit {
   }
 
   @Override
-  public KitDescriptionItem getDescriptionItem() {
-    return new KitDescriptionItem(
+  public KitDescription getDescription() {
+    return new KitDescription(
         Material.TNT,
         "Bomber",
         "Takes no explosion damage. Killed entities explode. TNT placed explodes faster.",

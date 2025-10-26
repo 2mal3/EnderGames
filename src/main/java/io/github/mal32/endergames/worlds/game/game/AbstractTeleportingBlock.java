@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.worlds.game.game;
 
+import io.github.mal32.endergames.EnderGames;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -12,15 +13,22 @@ import org.bukkit.entity.FallingBlock;
 
 public abstract class AbstractTeleportingBlock {
   protected Location location;
+  public boolean hasBeenUsed = false;
+  protected boolean hasBeenOpened = false;
+  private final EnderGames plugin;
 
-  public AbstractTeleportingBlock(Location location) {
+  public AbstractTeleportingBlock(EnderGames plugin, Location location) {
     this.location = location;
+    this.plugin = plugin;
   }
 
   public void teleport(Location location) {
     destroy();
     this.location = location;
     place();
+
+    hasBeenUsed = false;
+    hasBeenOpened = false;
   }
 
   public void place() {
@@ -54,9 +62,26 @@ public abstract class AbstractTeleportingBlock {
     playTeleportEffects();
   }
 
+  public void open() {
+    if (hasBeenOpened) return;
+    hasBeenOpened = true;
+
+    final int TELEPORT_BLOCK_TIME_SECONDS = 10;
+    Bukkit.getScheduler()
+        .runTaskLater(plugin, () -> hasBeenUsed = true, 20 * TELEPORT_BLOCK_TIME_SECONDS);
+  }
+
   private void playTeleportEffects() {
     location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.5f);
-    location.getWorld().spawnParticle(Particle.PORTAL, location, 50, 0, 0, 0);
+    location
+        .getWorld()
+        .spawnParticle(
+            Particle.PORTAL,
+            location.getBlock().getLocation().clone().add(0.5, 0.5, 0.5),
+            50,
+            0,
+            0,
+            0);
   }
 
   public abstract Material getBlockMaterial();
