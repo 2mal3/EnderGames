@@ -24,7 +24,7 @@ public class EnderGames extends JavaPlugin implements Listener {
   private static final NamespacedKey playerWorldKey = new NamespacedKey("endergames", "world");
   private GameWorld gameWorld;
   private LobbyWorld lobbyWorld;
-  private final MapManager mapManager = new MapManager(this);
+  private final MapManager mapManager = new MapManager();
 
   public static boolean playerIsInLobbyWorld(Player player) {
     var world = player.getPersistentDataContainer().get(playerWorldKey, PersistentDataType.STRING);

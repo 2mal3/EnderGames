@@ -1,4 +1,5 @@
 package io.github.mal32.endergames.worlds.lobby;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -20,6 +21,8 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class ParkourManager implements Listener {
+  private static final int RESET_HOTBAR_SLOT = 1;
+  private static final int CANCEL_HOTBAR_SLOT = 2;
   private final JavaPlugin plugin;
   private final NamespacedKey resetKey;
   private final NamespacedKey cancelKey;
@@ -29,14 +32,11 @@ public class ParkourManager implements Listener {
   private final YamlConfiguration recordsConfig = new YamlConfiguration();
   private final Map<UUID, Long> bestTimes = new ConcurrentHashMap<>();
   private final World world = Bukkit.getWorld("world_enga_lobby");
-
   // change these to your desired coordinates/world if needed
   private final Location START_PLATE = new Location(world, -3, 70, -0);
   private final Location RESET_LOCATION =
       new Location(world, -3.5, 70, 1.5, 180f, 14f); // two blocks before
-
   private final Location FINISH_PLATE = new Location(world, 17.5, 81, -22.5);
-
   // checkpoint locations (optional). add as many as you want.
   private final List<Checkpoint> CHECKPOINTS =
       List.of(
@@ -45,9 +45,6 @@ public class ParkourManager implements Listener {
           new Checkpoint(new Location(world, -12.5, 81, 27.5, -90f, 0f)),
           new Checkpoint(new Location(world, 21.5, 80, 0.5, 180f, 0f)));
 
-  private static final int RESET_HOTBAR_SLOT = 1;
-  private static final int CANCEL_HOTBAR_SLOT = 2;
-
   public ParkourManager(JavaPlugin plugin) {
     Bukkit.getPluginManager().registerEvents(this, plugin);
     this.plugin = plugin;
@@ -55,6 +52,13 @@ public class ParkourManager implements Listener {
     this.cancelKey = new NamespacedKey(plugin, "parkour_cancel");
     this.recordsFile = new File(plugin.getDataFolder(), "parkour-records.yml");
     loadRecords();
+  }
+
+  private static String formatTime(long ms) {
+    long minutes = (ms / 1000) / 60;
+    long seconds = (ms / 1000) % 60;
+    long millis = ms % 1000;
+    return String.format("%d:%02d.%03d", minutes, seconds, millis);
   }
 
   private void loadRecords() {
@@ -342,13 +346,6 @@ public class ParkourManager implements Listener {
     if (!a.getWorld().getName().equals(b.getWorld().getName())) return false;
     // compare by distance under one block
     return a.distanceSquared(b) < 3.0;
-  }
-
-  private static String formatTime(long ms) {
-    long minutes = (ms / 1000) / 60;
-    long seconds = (ms / 1000) % 60;
-    long millis = ms % 1000;
-    return String.format("%d:%02d.%03d", minutes, seconds, millis);
   }
 
   public void shutdown() {

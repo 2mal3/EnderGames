@@ -30,12 +30,10 @@ public class LobbyWorld extends AbstractWorld {
   private final World lobbyWorld = Objects.requireNonNull(Bukkit.getWorld("world_enga_lobby"));
   private final Location spawnLocation = new Location(lobbyWorld, 0, 64, 0);
   private final ParkourManager pmanager;
-  //private final MapManager mapmanager;
 
   public LobbyWorld(EnderGames plugin) {
     super(plugin);
     this.pmanager = new ParkourManager(plugin);
-    //this.mapmanager = new MapManager(plugin);
 
     this.menuManager = new MenuManager(this.plugin);
 

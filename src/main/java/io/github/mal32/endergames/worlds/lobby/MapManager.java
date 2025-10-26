@@ -14,7 +14,6 @@ import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
-import org.bukkit.plugin.java.JavaPlugin;
 
 record MapTile(int x, int y) {}
 
@@ -25,11 +24,6 @@ public class MapManager {
   private static final int TOTAL_PIXELS = TILES * TILE; // 640
   // center 600 inside 640 -> margin 40 total -> 20 on each side
   private static final int CENTER_OFFSET = (TOTAL_PIXELS - MATRIX_SIZE) / 2;
-  private final JavaPlugin plugin;
-
-  public MapManager(JavaPlugin plugin) {
-    this.plugin = plugin;
-  }
 
   private final Color[][] matrix = new Color[MATRIX_SIZE][MATRIX_SIZE];
 
@@ -47,9 +41,8 @@ public class MapManager {
   private HashSet<MapTile> getChangedMapTiles(ArrayList<MapPixel> chunkPixels) {
     HashSet<MapTile> changedMapTiles = new HashSet<>();
     for (MapPixel pixel : chunkPixels) {
-      MapTile mapTile = new MapTile(
-          getTileIndexOfCoordinate(pixel.x()),
-          getTileIndexOfCoordinate(pixel.y()));
+      MapTile mapTile =
+          new MapTile(getTileIndexOfCoordinate(pixel.x()), getTileIndexOfCoordinate(pixel.y()));
       changedMapTiles.add(mapTile);
     }
     return changedMapTiles;
@@ -101,13 +94,13 @@ public class MapManager {
 }
 
 class MatrixMapRenderer extends MapRenderer {
+  private static final int TILE = 128;
+  private static final int MATRIX_SIZE = 600;
+  private static final int CENTER_OFFSET = (5 * TILE - MATRIX_SIZE) / 2;
   private final Color[][] matrix;
   private final int originX;
   private final int originY;
   private boolean rendered = false;
-  private static final int TILE = 128;
-  private static final int MATRIX_SIZE = 600;
-  private static final int CENTER_OFFSET = (5 * TILE - MATRIX_SIZE) / 2;
 
   public MatrixMapRenderer(Color[][] matrix, int tileX, int tileY) {
     this.matrix = matrix;
