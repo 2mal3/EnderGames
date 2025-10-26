@@ -21,7 +21,7 @@ import org.bukkit.structure.StructureManager;
 import org.bukkit.util.BlockVector;
 
 public class LoadPhase extends AbstractPhase {
-  private final Queue<Location> chunksToLoad = new LinkedList<>() {};
+  private final Queue<Location> chunksToLoad = new LinkedList<>();
   private final BukkitTask chunkGenWorker;
   private final BukkitTask pixelFlushTask;
   private final List<MapPixel> pendingPixels = new ArrayList<>();

@@ -21,9 +21,10 @@ public class MapManager {
   private static final int MATRIX_SIZE = 600;
   private static final int TILE = 128;
   private static final int TILES = 5; // 5x5
-  private static final int TOTAL_PIXELS = TILES * TILE; // 640
+  // Pixel dimension (width/height) of the full grid: 5 tiles * 128 pixels = 640 pixels per side
+  private static final int GRID_PIXEL_DIMENSION = TILES * TILE; // 640 pixels per side
   // center 600 inside 640 -> margin 40 total -> 20 on each side
-  private static final int CENTER_OFFSET = (TOTAL_PIXELS - MATRIX_SIZE) / 2;
+  private static final int CENTER_OFFSET = (GRID_PIXEL_DIMENSION - MATRIX_SIZE) / 2;
 
   private final Color[][] matrix = new Color[MATRIX_SIZE][MATRIX_SIZE];
 
