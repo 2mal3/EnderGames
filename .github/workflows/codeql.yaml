@@ -24,3 +24,20 @@ jobs:
 
       - name: Lint
         run: nix shell nixpkgs#google-java-format -c find . -name '*.java' -exec google-java-format --dry-run --set-exit-if-changed --skip-sorting-imports {} +
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+
+      - name: Test
+        run: mvn test
