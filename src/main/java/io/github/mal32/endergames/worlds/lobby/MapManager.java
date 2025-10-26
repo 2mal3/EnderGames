@@ -49,10 +49,10 @@ public class MapManager {
 
     int[] arr = {0, 15, 239, 255}; // index of 4 corner points of chunk
     for (int value : arr) {
+      if (value >= chunkPixels.size()) continue;
+      MapPixel pixel = chunkPixels.get(value);
       MapTile mapTile =
-          new MapTile(
-              getTileIndexOfCoordinate(chunkPixels.get(value).x()),
-              getTileIndexOfCoordinate(chunkPixels.get(value).y()));
+          new MapTile(getTileIndexOfCoordinate(pixel.x()), getTileIndexOfCoordinate(pixel.y()));
       changedMapTiles.add(mapTile);
     }
     return changedMapTiles;
