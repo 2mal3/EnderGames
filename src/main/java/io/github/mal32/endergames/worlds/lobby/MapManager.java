@@ -75,11 +75,9 @@ public class MapManager {
     Location center = new Location(world, x + 0.5, y + 0.5, z + 0.5);
 
     for (Entity e : world.getNearbyEntities(center, 0.6, 0.6, 0.6)) {
-      if (e instanceof GlowItemFrame) { // or ItemFrame if not using glow frames
-        ItemFrame frame = (ItemFrame) e;
-        frame.setItem(map, false);
-        break;
-      }
+      ItemFrame frame = (ItemFrame) e;
+      frame.setItem(map, false);
+      break;
     }
   }
 
