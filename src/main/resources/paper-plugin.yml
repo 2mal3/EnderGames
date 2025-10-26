@@ -5,7 +5,7 @@ authors:
   - 2mal3
   - MCsharerGIT
   - lambdaphoenix
-api-version: '1.21.8'
+api-version: '1.21.10'
 bootstrapper: io.github.mal32.endergames.PluginBootstrapper
 description: ${project.description}
 website: ${project.url}
