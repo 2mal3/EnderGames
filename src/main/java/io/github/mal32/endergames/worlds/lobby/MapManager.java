@@ -61,38 +61,9 @@ public class MapManager {
   private ItemStack generateMapFromMatrix(MapTile mapTile, World world) {
     MapView view = Bukkit.createMap(world);
 
-    final int originX = mapTile.x() * TILE - CENTER_OFFSET;
-    final int originY = mapTile.y() * TILE - CENTER_OFFSET;
+    view.getRenderers().clear();
 
-    // remove default renderers
-    for (MapRenderer r : view.getRenderers()) view.removeRenderer(r);
-
-    view.addRenderer(
-        new MapRenderer() {
-          private boolean rendered = false;
-
-          @Override
-          public void render(MapView mapView, MapCanvas canvas, Player player) {
-            if (rendered) return;
-
-            for (int py = 0; py < TILE; py++) {
-              for (int px = 0; px < TILE; px++) {
-                int srcX = originX + px;
-                int srcY = originY + py;
-
-                // If inside the 600x600 matrix, use that color; otherwise use null ->
-                // transparent
-                Color c =
-                    (srcX >= 0 && srcX < MATRIX_SIZE && srcY >= 0 && srcY < MATRIX_SIZE)
-                        ? matrix[srcY][srcX]
-                        : null; // null = show base pixel / transparent for this renderer
-
-                canvas.setPixelColor(px, py, c);
-              }
-            }
-            rendered = true;
-          }
-        });
+    view.addRenderer(new MatrixMapRenderer(matrix, mapTile.x(), mapTile.y()));
 
     ItemStack filled = new ItemStack(Material.FILLED_MAP);
     MapMeta meta = (MapMeta) filled.getItemMeta();
@@ -129,5 +100,41 @@ public class MapManager {
       ItemStack map = generateMapFromMatrix(mapTile, world);
       placeMapInFrame(mapTile, map, world);
     }
+  }
+}
+
+class MatrixMapRenderer extends MapRenderer {
+  private final Color[][] matrix;
+  private final int originX;
+  private final int originY;
+  private boolean rendered = false;
+  private static final int TILE = 128;
+  private static final int MATRIX_SIZE = 600;
+  private static final int CENTER_OFFSET = (5 * TILE - MATRIX_SIZE) / 2;
+
+  public MatrixMapRenderer(Color[][] matrix, int tileX, int tileY) {
+    this.matrix = matrix;
+    this.originX = tileX * TILE - CENTER_OFFSET;
+    this.originY = tileY * TILE - CENTER_OFFSET;
+  }
+
+  @Override
+  public void render(MapView mapView, MapCanvas canvas, Player player) {
+    if (rendered) return;
+
+    for (int py = 0; py < TILE; py++) {
+      for (int px = 0; px < TILE; px++) {
+        int srcX = originX + px;
+        int srcY = originY + py;
+
+        Color c =
+            (srcX >= 0 && srcX < MATRIX_SIZE && srcY >= 0 && srcY < MATRIX_SIZE)
+                ? matrix[srcY][srcX]
+                : null;
+
+        canvas.setPixelColor(px, py, c);
+      }
+    }
+    rendered = true;
   }
 }
