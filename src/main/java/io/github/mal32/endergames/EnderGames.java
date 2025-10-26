@@ -4,9 +4,11 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import io.github.mal32.endergames.worlds.lobby.LobbyWorld;
+import io.github.mal32.endergames.worlds.lobby.MapManager;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import java.util.ArrayList;
 import java.util.Objects;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -22,6 +24,7 @@ public class EnderGames extends JavaPlugin implements Listener {
   private static final NamespacedKey playerWorldKey = new NamespacedKey("endergames", "world");
   private GameWorld gameWorld;
   private LobbyWorld lobbyWorld;
+  private final MapManager mapManager = new MapManager();
 
   public static boolean playerIsInLobbyWorld(Player player) {
     var world = player.getPersistentDataContainer().get(playerWorldKey, PersistentDataType.STRING);
@@ -31,6 +34,10 @@ public class EnderGames extends JavaPlugin implements Listener {
   public static boolean playerIsInGameWorld(Player player) {
     var world = player.getPersistentDataContainer().get(playerWorldKey, PersistentDataType.STRING);
     return Objects.equals(world, "game");
+  }
+
+  public void sendNewMapPixelsToLobby(ArrayList<MapPixel> pixelBatch) {
+    mapManager.addToMapWall(pixelBatch);
   }
 
   @Override
