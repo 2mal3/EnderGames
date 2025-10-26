@@ -5,6 +5,7 @@ import io.github.mal32.endergames.MapPixel;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import org.bukkit.*;
@@ -22,6 +23,8 @@ import org.bukkit.util.BlockVector;
 public class LoadPhase extends AbstractPhase {
   private final Queue<Location> chunksToLoad = new LinkedList<>() {};
   private final BukkitTask chunkGenWorker;
+  private final BukkitTask pixelFlushTask;
+  private final List<MapPixel> pendingPixels = new ArrayList<>();
   private final int MAP_SIZE = 600;
 
   public LoadPhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
@@ -36,6 +39,10 @@ public class LoadPhase extends AbstractPhase {
     final int CHUNK_GEN_DELAY_TICKS = 1;
     chunkGenWorker =
         scheduler.runTaskTimer(plugin, this::chunkGenWorker, 20 * 5, CHUNK_GEN_DELAY_TICKS);
+    int FLUSH_INTERVAL_TICKS = 20;
+    pixelFlushTask =
+        scheduler.runTaskTimer(
+            plugin, this::flushPixels, FLUSH_INTERVAL_TICKS, FLUSH_INTERVAL_TICKS);
   }
 
   @Override
@@ -43,6 +50,7 @@ public class LoadPhase extends AbstractPhase {
     super.disable();
 
     chunkGenWorker.cancel();
+    pixelFlushTask.cancel();
   }
 
   public void placeSpawnPlatform() {
@@ -109,7 +117,13 @@ public class LoadPhase extends AbstractPhase {
       }
     }
 
-    plugin.sendNewMapPixelsToLobby(pixelBatch);
+    pendingPixels.addAll(pixelBatch);
+  }
+
+  private void flushPixels() {
+    if (pendingPixels.isEmpty()) return;
+    plugin.sendNewMapPixelsToLobby(new ArrayList<>(pendingPixels));
+    pendingPixels.clear();
   }
 
   private static Color getBlockColor(Block block) {
