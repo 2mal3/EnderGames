@@ -74,11 +74,9 @@ public class MapManager {
 
     Location center = new Location(world, x + 0.5, y + 0.5, z + 0.5);
 
-    for (Entity e : world.getNearbyEntities(center, 0.6, 0.6, 0.6)) {
-      ItemFrame frame = (ItemFrame) e;
-      frame.setItem(map, false);
-      break;
-    }
+    var nearbyItemFrames = world.getNearbyEntities(center, 0.6, 0.6, 0.6);
+    ItemFrame frame = (ItemFrame) nearbyItemFrames.iterator().next();
+    frame.setItem(map, false);
   }
 
   public void addToMapWall(ArrayList<MapPixel> chunkPixels) {
