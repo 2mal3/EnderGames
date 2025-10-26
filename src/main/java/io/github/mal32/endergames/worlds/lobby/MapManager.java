@@ -103,14 +103,12 @@ public class MapManager {
   }
 
   private void placeMapInFrame(MapTile mapTile, ItemStack map, World world) {
-    final int startX = 3; // left
+    final int startX = 5; // left
     final int startY = 75; // top
-    final int z = 7;
+    final int z = 6;
 
     int x = startX - mapTile.x(); // left → right: 3,2,1,0,-1
     int y = startY - mapTile.y(); // top → bottom: 75,74,73,72,71
-
-    this.plugin.getComponentLogger().info("Placing map at {}, {}", x, y);
 
     Location center = new Location(world, x + 0.5, y + 0.5, z + 0.5);
 
@@ -130,7 +128,6 @@ public class MapManager {
     for (MapTile mapTile : changedMapTiles) {
       ItemStack map = generateMapFromMatrix(mapTile, world);
       placeMapInFrame(mapTile, map, world);
-      plugin.getComponentLogger().info(mapTile.toString());
     }
   }
 }
