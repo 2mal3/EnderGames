@@ -2,12 +2,15 @@ package io.github.mal32.endergames.kits;
 
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.worlds.game.GameWorld;
 import org.bukkit.Material;
+import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerStatisticIncrementEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class Bird extends AbstractKit {
@@ -53,5 +56,14 @@ public class Bird extends AbstractKit {
   }
 
   @Override
-  public void registerAdvancement(AdvancementAPI api) {}
+  public void registerAdvancement(AdvancementAPI api) {
+    api.register(PlayerStatisticIncrementEvent.class)
+        .advancementKey("enga:bird")
+        .condition(
+            (player, event) ->
+                GameWorld.playerIsInGame(player) && event.getStatistic() == Statistic.FALL_ONE_CM)
+        .increment(event -> event.getNewValue() - event.getPreviousValue())
+        .targetValue(50000)
+        .build();
+  }
 }
