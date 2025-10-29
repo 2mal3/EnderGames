@@ -1,6 +1,8 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.worlds.game.GameWorld;
 import java.util.*;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
@@ -315,5 +317,18 @@ public class Lucker extends AbstractKit {
             + " fishing, mining, existing,...)",
         "Light-Green Leather Chestplate",
         Difficulty.EASY);
+  }
+
+  @Override
+  public void registerAdvancement(AdvancementAPI api) {
+    api.register(BlockBreakEvent.class)
+        .advancementKey("enga:lucker")
+        .condition(
+            (player, event) -> {
+              if (!GameWorld.playerIsInGame(player)) return false;
+              Material type = event.getBlock().getType();
+              return type == Material.DIAMOND_ORE || type == Material.DEEPSLATE_DIAMOND_ORE;
+            })
+        .build();
   }
 }

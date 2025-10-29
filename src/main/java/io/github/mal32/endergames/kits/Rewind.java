@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import java.util.*;
@@ -55,6 +56,9 @@ public class Rewind extends AbstractKit {
         "Rewind Clock",
         Difficulty.EASY);
   }
+
+  @Override
+  public void registerAdvancement(AdvancementAPI api) {}
 
   @Override
   public void enable() {

@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
 import java.util.Set;
 import org.bukkit.Bukkit;
@@ -87,4 +88,7 @@ public class Enderman extends AbstractKit {
         "5 Ender Pearls",
         Difficulty.EASY);
   }
+
+  @Override
+  public void registerAdvancement(AdvancementAPI api) {}
 }

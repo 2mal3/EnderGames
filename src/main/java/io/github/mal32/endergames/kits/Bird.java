@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -50,4 +51,7 @@ public class Bird extends AbstractKit {
         "1 Elytra, 5 Firework Rockets",
         Difficulty.MEDIUM);
   }
+
+  @Override
+  public void registerAdvancement(AdvancementAPI api) {}
 }

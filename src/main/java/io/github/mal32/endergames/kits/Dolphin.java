@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -111,4 +112,7 @@ public class Dolphin extends AbstractKit {
         "Water Bucket, Blue Leather Boots",
         Difficulty.HARD);
   }
+
+  @Override
+  public void registerAdvancement(AdvancementAPI api) {}
 }

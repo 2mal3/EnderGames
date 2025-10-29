@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
 import java.util.Random;
 import org.bukkit.*;
@@ -166,4 +167,7 @@ public class Slime extends AbstractKit {
         "10 slimeballs, green leather chestplate & boots",
         Difficulty.MEDIUM);
   }
+
+  @Override
+  public void registerAdvancement(AdvancementAPI api) {}
 }

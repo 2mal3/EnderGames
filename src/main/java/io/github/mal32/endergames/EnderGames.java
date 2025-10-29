@@ -2,6 +2,8 @@ package io.github.mal32.endergames;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
+import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import io.github.mal32.endergames.worlds.lobby.LobbyWorld;
 import io.github.mal32.endergames.worlds.lobby.MapManager;
@@ -25,6 +27,7 @@ public class EnderGames extends JavaPlugin implements Listener {
   private GameWorld gameWorld;
   private LobbyWorld lobbyWorld;
   private final MapManager mapManager = new MapManager();
+  private AdvancementAPI advancementAPI;
 
   public static boolean playerIsInLobbyWorld(Player player) {
     var world = player.getPersistentDataContainer().get(playerWorldKey, PersistentDataType.STRING);
@@ -58,6 +61,15 @@ public class EnderGames extends JavaPlugin implements Listener {
             commands -> commands.registrar().register(endergamesCommand()));
 
     Bukkit.getPluginManager().registerEvents(this, this);
+
+    registerKitAdvancements();
+  }
+
+  private void registerKitAdvancements() {
+    advancementAPI = new AdvancementAPI(this);
+    for (var kit : AbstractKit.getKits(this)) {
+      kit.registerAdvancement(advancementAPI);
+    }
   }
 
   public GameWorld getGameWorld() {

@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.game.PotionEffectsStacking;
 import io.papermc.paper.datacomponent.DataComponentTypes;
@@ -86,4 +87,7 @@ public class Cat extends AbstractKit {
         "20 raw fish",
         Difficulty.EASY);
   }
+
+  @Override
+  public void registerAdvancement(AdvancementAPI api) {}
 }

@@ -1,11 +1,14 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.worlds.game.GameWorld;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class Mace extends AbstractKit {
@@ -44,5 +47,19 @@ public class Mace extends AbstractKit {
         "Gets 4 Wind Charges per player kill",
         "Maces with Wind Burst, 8 Wind Charges, Feather Falling III boots",
         Difficulty.HARD);
+  }
+
+  @Override
+  public void registerAdvancement(AdvancementAPI api) {
+    api.register(PlayerInteractEvent.class)
+        .advancementKey("enga:mace")
+        .condition(
+            (player, event) -> {
+              if (!GameWorld.playerIsInGame(player)) return false;
+              if (event.getItem() == null) return false;
+              return event.getItem().getType() == Material.WIND_CHARGE;
+            })
+        .targetValue(5)
+        .build();
   }
 }

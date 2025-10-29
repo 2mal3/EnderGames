@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -296,6 +297,9 @@ public class Cactus extends AbstractKit {
         "Green leather helmet and leggings",
         Difficulty.EASY);
   }
+
+  @Override
+  public void registerAdvancement(AdvancementAPI api) {}
 }
 
 record PlayerInventory(ItemStack[] armor, ItemStack[] hotbar, ItemStack offhand) {}

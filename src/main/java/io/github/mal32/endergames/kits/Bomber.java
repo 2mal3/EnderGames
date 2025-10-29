@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import java.util.HashSet;
@@ -123,5 +124,18 @@ public class Bomber extends AbstractKit {
         "Takes no explosion damage. Killed entities explode. TNT placed explodes faster.",
         "5 TNT, 10 Mines",
         Difficulty.MEDIUM);
+  }
+
+  @Override
+  public void registerAdvancement(AdvancementAPI api) {
+    api.register(BlockPlaceEvent.class)
+        .advancementKey("enga:bomber")
+        .condition(
+            (player, event) -> {
+              if (!GameWorld.playerIsInGame(player)) return false;
+              return event.getBlockPlaced().getType() == Material.TNT;
+            })
+        .targetValue(5)
+        .build();
   }
 }

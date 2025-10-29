@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
+import org.bukkit.advancement.Advancement;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -91,6 +92,22 @@ class KitSelector extends MenuItem implements Listener {
       return;
     }
 
+    // Check if the player has unlocked the kit
+    Advancement kitAdvancement =
+        plugin.getServer().getAdvancement(new NamespacedKey("enga", kitName));
+    boolean kitUnlocked =
+        kitAdvancement == null || player.getAdvancementProgress(kitAdvancement).isDone();
+    if (!kitUnlocked) {
+      player.sendMessage(
+          Component.text()
+              .append(Component.text("You haven't unlocked the ").color(NamedTextColor.RED))
+              .append(Component.text(capitalize(kitName)).color(NamedTextColor.DARK_RED))
+              .append(
+                  Component.text(" kit yet. See the advancements tab.").color(NamedTextColor.RED)));
+      player.playSound(player.getLocation(), Sound.ENTITY_GOAT_AMBIENT, 1, 1);
+      return;
+    }
+
     player.getPersistentDataContainer().set(kitStorageKey, PersistentDataType.STRING, kitName);
     player.sendMessage(
         Component.text("You selected the ")
@@ -114,11 +131,13 @@ class KitInventory implements InventoryHolder {
   private final List<AbstractKit> availableKits;
   private final Inventory inventory;
   public String selectedKitName;
+  private final EnderGames plugin;
 
   public KitInventory(EnderGames plugin, List<AbstractKit> availableKits, String selectedKitName) {
     this.availableKits = availableKits;
     this.selectedKitName = selectedKitName;
     this.inventory = plugin.getServer().createInventory(this, 27, Component.text("Select Kit"));
+    this.plugin = plugin;
 
     updateKitItems();
   }
@@ -142,6 +161,20 @@ class KitInventory implements InventoryHolder {
               .color(NamedTextColor.GOLD)
               .decoration(TextDecoration.ITALIC, false));
       meta.lore(getKitLore(kitDescription));
+
+      // Kit unlocked display
+      //      Advancement kitAdvancement =
+      //          plugin
+      //              .getServer()
+      //              .getAdvancement(new NamespacedKey("enga",
+      // kitDescription.name().toLowerCase()));
+      //      boolean isKitUnlocked =
+      //          kitAdvancement == null || player.getAdvancementProgress(kitAdvancement).isDone();
+      //      if (!isKitUnlocked) {
+      //        meta.lore().add(
+      //            Component.text("Not unlocked yet")
+      //                .color(NamedTextColor.RED)
+      //                .decoration(TextDecoration.ITALIC, false));
 
       kitItem.setItemMeta(meta);
 

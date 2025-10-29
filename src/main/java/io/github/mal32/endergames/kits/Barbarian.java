@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
@@ -63,4 +64,7 @@ public class Barbarian extends AbstractKit {
         "A wooden sword and a full set of leather armor with Unbreaking I",
         Difficulty.HARD);
   }
+
+  @Override
+  public void registerAdvancement(AdvancementAPI api) {}
 }

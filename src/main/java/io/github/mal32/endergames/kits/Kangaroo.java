@@ -1,6 +1,9 @@
 package io.github.mal32.endergames.kits;
 
+import com.destroystokyo.paper.event.player.PlayerJumpEvent;
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.worlds.game.GameWorld;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
@@ -108,5 +111,14 @@ public class Kangaroo extends AbstractKit {
     if (player.getLocation().clone().add(0, -0.1, 0).getBlock().isPassable()) return;
 
     player.setAllowFlight(true);
+  }
+
+  @Override
+  public void registerAdvancement(AdvancementAPI api) {
+    api.register(PlayerJumpEvent.class)
+        .advancementKey("enga:kangaroo")
+        .condition((player, event) -> GameWorld.playerIsInGame(player))
+        .targetValue(10)
+        .build();
   }
 }

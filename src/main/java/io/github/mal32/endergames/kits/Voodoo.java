@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import io.github.mal32.endergames.worlds.game.game.PotionEffectsStacking;
@@ -121,4 +122,7 @@ public class Voodoo extends AbstractKit {
       event.setCancelled(true);
     }
   }
+
+  @Override
+  public void registerAdvancement(AdvancementAPI api) {}
 }

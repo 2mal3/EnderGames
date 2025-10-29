@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -22,4 +23,7 @@ public class Spectator extends AbstractKit {
         null,
         Difficulty.EASY);
   }
+
+  @Override
+  public void registerAdvancement(AdvancementAPI api) {}
 }

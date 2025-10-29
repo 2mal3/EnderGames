@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -83,4 +84,7 @@ public class Lumberjack extends AbstractKit {
         "Wooden axe, red leather chestplate, blue leather pants, black boots.",
         Difficulty.EASY);
   }
+
+  @Override
+  public void registerAdvancement(AdvancementAPI api) {}
 }
