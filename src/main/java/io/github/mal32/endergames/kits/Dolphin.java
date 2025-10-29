@@ -2,6 +2,7 @@ package io.github.mal32.endergames.kits;
 
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.worlds.game.GameWorld;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -114,5 +115,11 @@ public class Dolphin extends AbstractKit {
   }
 
   @Override
-  public void registerAdvancement(AdvancementAPI api) {}
+  public void registerAdvancement(AdvancementAPI api) {
+    api.register(PlayerMoveEvent.class)
+        .advancementKey("enga:dolphin")
+        .condition((player, event) -> GameWorld.playerIsInGame(player) && player.isSwimming())
+        .targetValue(100000)
+        .build();
+  }
 }
