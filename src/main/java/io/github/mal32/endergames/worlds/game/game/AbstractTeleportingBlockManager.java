@@ -17,6 +17,7 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
   protected final ArrayList<B> blocks = new ArrayList<>();
   private int nextIndex = 0;
   protected final Location spawnLocation;
+  private int nextIndex = 0;
 
   public AbstractTeleportingBlockManager(EnderGames plugin, Location spawnLocation) {
     super(plugin);
@@ -29,6 +30,18 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     for (int i = 0; i < playerCount * blocksPerPlayer(); i++) {
       blocks.add(getNewBlock(startLocation));
     }
+  }
+
+  public static <T extends BlockRange> T chooseOnWeight(List<T> items) {
+    double totalWeight = 0.0;
+    for (T item : items) totalWeight += item.weight();
+    double r = Math.random() * totalWeight;
+    double cumulativeWeight = 0.0;
+    for (T item : items) {
+      cumulativeWeight += item.weight();
+      if (cumulativeWeight >= r) return item;
+    }
+    throw new RuntimeException("Should never be shown.");
   }
 
   protected abstract int blocksPerPlayer();
@@ -115,18 +128,6 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
       }
     }
     return minHorizontalDistance;
-  }
-
-  public static <T extends BlockRange> T chooseOnWeight(List<T> items) {
-    double totalWeight = 0.0;
-    for (T item : items) totalWeight += item.weight();
-    double r = Math.random() * totalWeight;
-    double cumulativeWeight = 0.0;
-    for (T item : items) {
-      cumulativeWeight += item.weight();
-      if (cumulativeWeight >= r) return item;
-    }
-    throw new RuntimeException("Should never be shown.");
   }
 
   /**
