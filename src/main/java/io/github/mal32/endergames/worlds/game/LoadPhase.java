@@ -36,7 +36,7 @@ public class LoadPhase extends AbstractPhase {
     plugin.getComponentLogger().info("" + chunksToLoad.size());
 
     BukkitScheduler scheduler = plugin.getServer().getScheduler();
-    final int CHUNK_GEN_DELAY_TICKS = 1;
+    final int CHUNK_GEN_DELAY_TICKS = 2;
     chunkGenWorker =
         scheduler.runTaskTimer(plugin, this::chunkGenWorker, 20 * 5, CHUNK_GEN_DELAY_TICKS);
     int FLUSH_INTERVAL_TICKS = 20;
