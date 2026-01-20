@@ -130,6 +130,29 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "minecraft:sponge",
+          "weight": 10,
+          "quality": 3,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_data": {
+                  "PublicBukkitValues": {
+                    "luckyblocks:luckyblock": "luckyblock"
+                  }
+                }
+              }
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 4
+            }
+
+          ]
+        },
+        {
+          "type": "minecraft:item",
           "name": "minecraft:bucket",
           "weight": 2,
           "quality": -1
@@ -338,7 +361,7 @@
               "count": {
                 "type": "minecraft:uniform",
                 "min": 0,
-                "max": 2
+                "max": 3
               },
               "add": false
             }
