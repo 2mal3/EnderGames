@@ -39,7 +39,7 @@ public class LoadPhase extends AbstractPhase {
     final int CHUNK_GEN_DELAY_TICKS = 2;
     chunkGenWorker =
         scheduler.runTaskTimer(plugin, this::chunkGenWorker, 20 * 5, CHUNK_GEN_DELAY_TICKS);
-    int FLUSH_INTERVAL_TICKS = 20;
+    int FLUSH_INTERVAL_TICKS = 20 * 2;
     pixelFlushTask =
         scheduler.runTaskTimer(
             plugin, this::flushPixels, FLUSH_INTERVAL_TICKS, FLUSH_INTERVAL_TICKS);
