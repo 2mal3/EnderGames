@@ -36,7 +36,7 @@ public class MapManager {
   // wall info (your coordinates)
   private static final int WALL_START_X = 5;  // spans x=1..5
   private static final int WALL_START_Y = 75; // spans y=71..75
-  private static final int WALL_Z = 6;        
+  private static final int WALL_Z = 6;
   private static final BlockFace WALL_FACING = BlockFace.NORTH;
 
   // deterministic spiral: center -> outward

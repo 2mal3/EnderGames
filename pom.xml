@@ -1,7 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.mal32.endergames</groupId>
@@ -9,7 +11,8 @@
     <version>0.8.0</version>
 
     <name>EnderGames</name>
-    <description>Teleporting themed Kit SurivialGames for small player sizes on a random generated map with post 1.8
+    <description
+    >Teleporting themed Kit SurivialGames for small player sizes on a random generated map with post 1.8
         PvP.
     </description>
     <url>https://github.com/2mal3/EnderGames</url>
@@ -31,7 +34,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21.8-R0.1-SNAPSHOT</version>
+            <version>1.21.10-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -69,7 +72,8 @@
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>io.github.mal32.endergames</shadedPattern>
+                            <shadedPattern
+                            >io.github.mal32.endergames</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -80,9 +84,11 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <createDependencyReducedPom
+                            >false</createDependencyReducedPom>
                             <!-- Prevents creation of "original" plugin file -->
-                            <outputFile>${project.build.directory}/${project.build.finalName}.jar</outputFile>
+                            <outputFile
+                            >${project.build.directory}/${project.build.finalName}.jar</outputFile>
                             <!-- Prevents waring about duplicated files -->
                             <filters>
                                 <filter>
