@@ -33,58 +33,6 @@ public class Dolphin extends AbstractKit {
   }
 
   @EventHandler
-  public void waterEffects(PlayerMoveEvent event) {
-    if (!event.hasChangedBlock()) return;
-
-    Player player = event.getPlayer();
-    if (!playerCanUseThisKit(player)) return;
-
-    boolean hasRegeneration =
-        player.hasPotionEffect(PotionEffectType.REGENERATION)
-            && player.getPotionEffect(PotionEffectType.REGENERATION).getDuration()
-                == PotionEffect.INFINITE_DURATION;
-    boolean hasWeakness =
-        player.hasPotionEffect(PotionEffectType.WEAKNESS)
-            && player.getPotionEffect(PotionEffectType.WEAKNESS).getDuration()
-                == PotionEffect.INFINITE_DURATION;
-    boolean hasResistance =
-        player.hasPotionEffect(PotionEffectType.RESISTANCE)
-            && player.getPotionEffect(PotionEffectType.RESISTANCE).getDuration()
-                == PotionEffect.INFINITE_DURATION;
-
-    // Effects in Water
-    if (player.isInWater()) {
-      if (!hasRegeneration) {
-        player.addPotionEffect(
-            new PotionEffect(
-                PotionEffectType.REGENERATION, PotionEffect.INFINITE_DURATION, 0, true, false));
-      }
-      if (!hasResistance) {
-        player.addPotionEffect(
-            new PotionEffect(
-                PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 0, true, false));
-      }
-      if (hasWeakness) {
-        player.removePotionEffect(PotionEffectType.WEAKNESS);
-      }
-
-      // Effects out of Water
-    } else {
-      if (hasRegeneration) {
-        player.removePotionEffect(PotionEffectType.REGENERATION);
-      }
-      if (hasResistance) {
-        player.removePotionEffect(PotionEffectType.RESISTANCE);
-      }
-      if (!hasWeakness) {
-        player.addPotionEffect(
-            new PotionEffect(
-                PotionEffectType.WEAKNESS, PotionEffect.INFINITE_DURATION, 0, true, false));
-      }
-    }
-  }
-
-  @EventHandler
   public void fishWhenSwimming(PlayerMoveEvent event) {
     if (!event.hasChangedBlock()) return;
 
@@ -106,9 +54,8 @@ public class Dolphin extends AbstractKit {
     return new KitDescription(
         Material.TROPICAL_FISH,
         "Dolphin",
-        "Has permanent Conduit Power and Dolphins Grace. Gets Regeneration and Resistance in Water."
-            + " Has Weakness on Land. Swimming gives Fish.",
+        "Has permanent Conduit Power and Dolphins Grace. Swimming gives Fish.",
         "Water Bucket, Blue Leather Boots",
-        Difficulty.HARD);
+        Difficulty.MEDIUM);
   }
 }
