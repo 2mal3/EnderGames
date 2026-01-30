@@ -33,7 +33,7 @@ public abstract class AbstractTeleportingBlock {
 
   public void place() {
     if (!location.getChunk().isLoaded()) {
-      location.getChunk().load();
+      location.getChunk().load(true);
     }
 
     World world = location.getWorld();
@@ -53,7 +53,7 @@ public abstract class AbstractTeleportingBlock {
 
   public void destroy() {
     if (!location.getChunk().isLoaded()) {
-      location.getChunk().load();
+      location.getChunk().load(true);
     }
     if (location.getBlock().getType() != getBlockMaterial()) return;
 

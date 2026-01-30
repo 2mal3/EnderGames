@@ -21,8 +21,8 @@ public class EnchanterManager extends AbstractTeleportingBlockManager<Enchanter>
   }
 
   @Override
-  protected int blocksPerPlayer() {
-    return 5;
+  protected int blockCount() {
+    return 15;
   }
 
   @Override

@@ -21,8 +21,8 @@ public class SpeedObsidianManager extends AbstractTeleportingBlockManager<SpeedO
   }
 
   @Override
-  protected int blocksPerPlayer() {
-    return 5;
+  protected int blockCount() {
+    return 36;
   }
 
   @Override

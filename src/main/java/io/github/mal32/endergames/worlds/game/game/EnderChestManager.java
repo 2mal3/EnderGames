@@ -28,8 +28,8 @@ public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChes
   }
 
   @Override
-  protected int blocksPerPlayer() {
-    return 5;
+  protected int blockCount() {
+    return 36;
   }
 
   @Override

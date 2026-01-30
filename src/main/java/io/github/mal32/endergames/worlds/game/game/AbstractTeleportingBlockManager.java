@@ -15,21 +15,21 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
   protected final ArrayList<B> blocks = new ArrayList<>();
   private int nextIndex = 0;
   protected final Location spawnLocation;
+  private final World gameWorld = Objects.requireNonNull(Bukkit.getWorld("world"));
 
   public AbstractTeleportingBlockManager(EnderGames plugin, Location spawnLocation) {
     super(plugin);
 
     this.spawnLocation = spawnLocation;
 
-    int playerCount = GameWorld.getPlayersInGame().length;
     Location startLocation = spawnLocation.clone();
     startLocation.setY(0);
-    for (int i = 0; i < playerCount * blocksPerPlayer(); i++) {
+    for (int i = 0; i < blockCount(); i++) {
       blocks.add(getNewBlock(startLocation));
     }
   }
 
-  protected abstract int blocksPerPlayer();
+  protected abstract int blockCount();
 
   protected abstract B getNewBlock(Location location);
 
@@ -71,33 +71,25 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
   }
 
   protected Location getRandomHorizontalLocation() {
-    final int MIN_PLAYER_DISTANCE = 48;
-    final int MAX_PLAYER_DISTANCE = 96;
+    final int MIN_PLAYER_DISTANCE = 32;
+    final int MAX_ATTEMPTS = 100;
 
-    final World world = Objects.requireNonNull(Bukkit.getWorld("world"));
-    ArrayList<Chunk> loadedChunks = new ArrayList<>(Arrays.asList(world.getLoadedChunks()));
+    final Location center = gameWorld.getWorldBorder().getCenter();
+    final int size = (int) gameWorld.getWorldBorder().getSize();
 
-    Chunk targetChunk = null;
-    while (targetChunk == null) {
-      int randomIndex = new Random().nextInt(loadedChunks.size());
-      var chunk = loadedChunks.get(randomIndex);
-      loadedChunks.remove(randomIndex);
+    Location targetLocation = null;
+    for (int attempts = 0; attempts < MAX_ATTEMPTS; attempts++) {
+      final int randomX = (new Random().nextInt(size) - (size / 2)) + center.getBlockX();
+      final int randomZ = (new Random().nextInt(size) - (size / 2)) + center.getBlockZ();
+      targetLocation = new Location(Bukkit.getWorld("world"), randomX, 0, randomZ);
 
-      // replace with kd-tree when to slow
-      Location chunkBlockLocation = chunk.getBlock(0, 0, 0).getLocation();
-      double minHorizontalDistance = getMinHorizontalDistanceToPlayers(chunkBlockLocation);
-
-      if (minHorizontalDistance > MIN_PLAYER_DISTANCE
-          && minHorizontalDistance < MAX_PLAYER_DISTANCE) {
-        targetChunk = chunk;
+      final double minHorizontalDistance = getMinHorizontalDistanceToPlayers(targetLocation);
+      if (minHorizontalDistance < MIN_PLAYER_DISTANCE) {
+        continue;
       }
     }
 
-    // calculate random offset
-    int xOffset = new Random().nextInt(16);
-    int zOffset = new Random().nextInt(16);
-
-    return targetChunk.getBlock(xOffset, 0, zOffset).getLocation();
+    return targetLocation;
   }
 
   private static double getMinHorizontalDistanceToPlayers(Location chunkBlockLocation) {
