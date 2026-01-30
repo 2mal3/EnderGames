@@ -113,13 +113,10 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:ender_pearl",
-          "functions": [
+          "conditions": [
             {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 0,
-                "max": 1
-              }
+              "condition": "minecraft:random_chance",
+              "chance": 0.2
             }
           ]
         }
