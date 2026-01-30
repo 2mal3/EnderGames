@@ -4,14 +4,16 @@ import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
+import java.util.HashMap;
 import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.GameRule;
 import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.World;
@@ -20,7 +22,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.persistence.PersistentDataType;
 
 /**
  * Strategy for handling player deaths: Use the normal player death event and dont cancel it to keep
@@ -30,8 +31,9 @@ import org.bukkit.persistence.PersistentDataType;
  */
 public class Death extends AbstractModule {
   private final World world = Objects.requireNonNull(Bukkit.getWorld("world"));
-  private NamespacedKey deathLocationKey;
   private GamePhase gamePhase;
+  private final HashMap<UUID, Location> deathLocations = new HashMap<>();
+  private final Set<UUID> loggedOut = new java.util.HashSet<>();
 
   public Death(EnderGames plugin, GamePhase gamePhase) {
     super(plugin);
@@ -39,7 +41,6 @@ public class Death extends AbstractModule {
     this.gamePhase = gamePhase;
 
     world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
-    deathLocationKey = new NamespacedKey(plugin, "deathLocation");
   }
 
   @EventHandler
@@ -61,15 +62,11 @@ public class Death extends AbstractModule {
             Float.MAX_VALUE,
             1);
 
-    player
-        .getPersistentDataContainer()
-        .set(
-            deathLocationKey,
-            PersistentDataType.INTEGER_ARRAY,
-            new int[] {location.getBlockX(), location.getBlockY(), location.getBlockZ()});
+    deathLocations.put(player.getUniqueId(), location);
 
     EntityDamageEvent lastDamage = player.getLastDamageCause();
-    if (lastDamage.getDamageSource().getCausingEntity() instanceof Player killer) {
+    if (lastDamage != null
+        && lastDamage.getDamageSource().getCausingEntity() instanceof Player killer) {
       // player died by another player
       event.deathMessage(
           Component.text("")
@@ -93,6 +90,8 @@ public class Death extends AbstractModule {
               .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
               .append(Component.text(player.getName()).color(NamedTextColor.RED)));
     }
+
+    Bukkit.getScheduler().runTask(plugin, gamePhase::checkAndGameEnd);
   }
 
   @EventHandler
@@ -100,20 +99,26 @@ public class Death extends AbstractModule {
     Player player = event.getPlayer();
     if (!EnderGames.playerIsInGameWorld(player)) return;
 
-    int[] rawDeathPos =
-        player.getPersistentDataContainer().get(deathLocationKey, PersistentDataType.INTEGER_ARRAY);
-    Location deathPos = new Location(world, rawDeathPos[0], rawDeathPos[1], rawDeathPos[2]);
+    // we are respaning a player that has just logged in and get sent to the lobby, we dont want to
+    // interfere with that
+    if (loggedOut.contains(player.getUniqueId())) {
+      loggedOut.remove(player.getUniqueId());
+      return;
+    }
+
+    Location deathPos = deathLocations.get(player.getUniqueId());
     player.teleport(deathPos);
 
     player.setGameMode(GameMode.SPECTATOR);
-    Bukkit.getScheduler().runTask(plugin, gamePhase::checkAndGameEnd);
   }
 
+  // Handle player quitting just like a death
   @EventHandler
   private void onPlayerQuit(PlayerQuitEvent event) {
     Player player = event.getPlayer();
     if (!GameWorld.playerIsInGame(player)) return;
 
+    loggedOut.add(player.getUniqueId());
     player.setHealth(0);
   }
 }
