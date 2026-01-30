@@ -2,9 +2,7 @@ package io.github.mal32.endergames.worlds.game.game;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
-
 import java.util.*;
-
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 
@@ -115,44 +113,6 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
       }
     }
     return minHorizontalDistance;
-  }
-
-  public static <T extends BlockRange> T chooseOnWeight(List<T> items) {
-    double totalWeight = 0.0;
-    for (T item : items) totalWeight += item.weight();
-    double r = Math.random() * totalWeight;
-    double cumulativeWeight = 0.0;
-    for (T item : items) {
-      cumulativeWeight += item.weight();
-      if (cumulativeWeight >= r) return item;
-    }
-    throw new RuntimeException("Should never be shown.");
-  }
-
-  /**
-   * Picks a truly random location inside the world border (anywhere in the square), then clamps to
-   * ground level +1.
-   */
-  private Location getRandomHorizontalBorderLocation(
-      World world, WorldBorder border, Random random) {
-    Location center = border.getCenter();
-    double halfSize = border.getSize() / 2.0;
-
-    for (int i = 0; i < 10; i++) {
-      double xOffset = (random.nextDouble() * halfSize * 2.0) - halfSize;
-      double zOffset = (random.nextDouble() * halfSize * 2.0) - halfSize;
-
-      double x = center.getX() + xOffset;
-      double z = center.getZ() + zOffset;
-
-      Location candidate = new Location(world, x, 0, z);
-      if (border.isInside(candidate)) {
-        return candidate;
-      }
-    }
-
-    // As a last resort (very unlikely), just return the center at ground level
-    return new Location(world, center.getX(), 0, center.getZ());
   }
 
   @Override
