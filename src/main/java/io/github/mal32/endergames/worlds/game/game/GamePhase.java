@@ -21,17 +21,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.Nullable;
 
 public class GamePhase extends AbstractPhase {
   private final List<AbstractModule> modules;
@@ -54,7 +50,8 @@ public class GamePhase extends AbstractPhase {
             new Tracker(plugin),
             new SpeedObsidianManager(plugin, spawnLocation),
             new FightDetection(plugin),
-            new PotionEffectsStacking(plugin));
+            new PotionEffectsStacking(plugin),
+            new Death(plugin, this));
 
     List<NamespacedKey> allRecipeKeys = new ArrayList<>();
     Iterator<Recipe> it = Bukkit.recipeIterator();
@@ -154,115 +151,15 @@ public class GamePhase extends AbstractPhase {
     }
   }
 
-  @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-  private void onPlayerDeath(EntityDamageEvent event) {
-    if (!(event.getEntity() instanceof Player attackedPlayer)) return;
-    if (!GameWorld.playerIsInGame(attackedPlayer)) return;
-    double damage = event.getFinalDamage();
-    if (attackedPlayer.getHealth() - damage > 0) return;
-
-    event.setCancelled(true);
-
-    Player attackingPlayer = null;
-    if (event instanceof EntityDamageByEntityEvent ede && ede.getDamager() instanceof Player d) {
-      attackingPlayer = d;
-      attackedPlayer.sendMessage(
-          Component.text("")
-              .append(Component.text(attackingPlayer.getName()).color(NamedTextColor.DARK_RED))
-              .append(Component.text(" has ").color(NamedTextColor.RED))
-              .append(
-                  Component.text(String.format("%.2f", attackingPlayer.getHealth()) + "❤")
-                      .color(NamedTextColor.DARK_RED))
-              .append(Component.text(" left").color(NamedTextColor.RED)));
-    }
-
-    abstractPlayerDeath(attackedPlayer, attackingPlayer);
-  }
-
-  @EventHandler
-  private void onPlayerQuit(PlayerQuitEvent event) {
-    if (!GameWorld.playerIsInGame(event.getPlayer())) return;
-
-    abstractPlayerDeath(event.getPlayer(), null);
-  }
-
-  private void abstractPlayerDeath(Player deadPlayer, @Nullable Player attackingPlayer) {
-    if (attackingPlayer != null) {
-      plugin
-          .getComponentLogger()
-          .info(deadPlayer.getName() + " died from \"" + attackingPlayer.getName() + "\"");
-    } else {
-      plugin.getComponentLogger().info(deadPlayer.getName() + " died");
-    }
-
-    resetPlayer(deadPlayer);
-
-    for (Player p : GameWorld.getPlayersInGameWorld()) {
-      deadPlayer.playSound(p, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 1, 1);
-    }
-
-    if (attackingPlayer == null) {
-      Bukkit.getServer()
-          .sendMessage(
-              Component.text("")
-                  .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
-                  .append(Component.text(deadPlayer.getName()).color(NamedTextColor.RED)));
-    } else {
-      Bukkit.getServer()
-          .sendMessage(
-              Component.text("")
-                  .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
-                  .append(Component.text(deadPlayer.getName()).color(NamedTextColor.RED))
-                  .append(Component.text(" was killed by ").color(NamedTextColor.DARK_RED))
-                  .append(Component.text(attackingPlayer.getName()).color(NamedTextColor.RED)));
-    }
-
-    Bukkit.getScheduler()
-        .runTask(
-            plugin,
-            () -> {
-              boolean moreThanOnePlayersAlive = GameWorld.getPlayersInGame().length > 1;
-              plugin.getComponentLogger().info("Players alive: " + moreThanOnePlayersAlive);
-              if (!moreThanOnePlayersAlive) {
-                gameEnd();
-              }
-            });
-  }
-
-  private void resetPlayer(Player player) {
-    World world = player.getWorld();
-
-    for (ItemStack item : player.getInventory().getContents()) {
-      if (item == null) continue;
-      if (item.getType() == Material.COMPASS) continue;
-      world.dropItem(player.getLocation(), item);
-    }
-    player.getInventory().clear();
-
-    while (player.getLevel() > 0) {
-      ExperienceOrb orb =
-          (ExperienceOrb) world.spawnEntity(player.getLocation(), EntityType.EXPERIENCE_ORB);
-      orb.setExperience(player.getExpToLevel());
-      player.setLevel(player.getLevel() - 1);
-    }
-
-    for (PotionEffect effect : player.getActivePotionEffects()) {
-      player.removePotionEffect(effect.getType());
-    }
-
-    player.setGameMode(GameMode.SPECTATOR);
-    player.setHealth(20);
-  }
-
-  private void gameEnd() {
-    Title title;
-
+  public void checkAndGameEnd() {
     Player[] survivalPlayers = GameWorld.getPlayersInGame();
+    if (survivalPlayers.length > 1) return;
 
     for (Player p : survivalPlayers) {
-      resetPlayer(p);
+      p.setGameMode(GameMode.SPECTATOR);
     }
 
+    Title title;
     if (survivalPlayers.length >= 1) {
       Player lastPlayer = survivalPlayers[0];
       title =
