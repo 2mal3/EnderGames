@@ -46,25 +46,27 @@ public class Death extends AbstractModule {
   private void onPlayerDeath(PlayerDeathEvent event) {
     Player player = event.getPlayer();
     if (!GameWorld.playerIsInGame(player)) return;
+    Location location = player.getLocation();
 
     event.setNewExp(0);
     event.setDroppedExp(player.getTotalExperience());
     event.setShouldDropExperience(true);
 
-    for (Player p : GameWorld.getPlayersInGameWorld()) {
-      p.playSound(p, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 100, 1);
-    }
+    location
+        .getWorld()
+        .playSound(
+            location,
+            Sound.ENTITY_LIGHTNING_BOLT_THUNDER,
+            SoundCategory.PLAYERS,
+            Float.MAX_VALUE,
+            1);
 
     player
         .getPersistentDataContainer()
         .set(
             deathLocationKey,
             PersistentDataType.INTEGER_ARRAY,
-            new int[] {
-              player.getLocation().getBlockX(),
-              player.getLocation().getBlockY(),
-              player.getLocation().getBlockZ()
-            });
+            new int[] {location.getBlockX(), location.getBlockY(), location.getBlockZ()});
 
     EntityDamageEvent lastDamage = player.getLastDamageCause();
     if (lastDamage.getDamageSource().getCausingEntity() instanceof Player killer) {
