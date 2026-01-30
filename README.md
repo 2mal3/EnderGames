@@ -2,9 +2,9 @@
 
 ![](https://tokei.rs/b1/github/2mal3/EnderGames?category=code) [![CodeQL](https://github.com/2mal3/EnderGames/actions/workflows/codeql.yaml/badge.svg)](https://github.com/2mal3/EnderGames/actions/workflows/codeql.yaml) ![GitHub License](https://img.shields.io/github/license/2mal3/EnderGames?logo=github) ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/2mal3/EnderGames?logo=github) ![GitHub last commit](https://img.shields.io/github/last-commit/2mal3/EnderGames?style=flat&logo=github) ![Modrinth Downloads](https://img.shields.io/modrinth/dt/CHztyFRI?logo=modrinth)
 
-> Teleporting themed Kit SurivialGames for small player sizes on a random generated map with post 1.8 PvP.
+> Teleporting themed Kit SurvivalGames for small player sizes on a random generated map with post 1.8 PvP.
 
-A Paper plugin that revives GommeHD’s discontinued EnderGames mode - reimagined and optimized for the newer Minecraft
+A Paper plugin that revives GommeHD’s discontinued EnderGames mode - reimagined and optimized for newer Minecraft
 versions.
 
 ## Features
@@ -26,8 +26,7 @@ versions.
 
 ## Using the Plugin
 
-Install the plugin as usual on a Paper Server for Minecraft 1.21.10 of your choice. It is advisable to use a new world,
-as this can be damaged by the game.
+Install the plugin as usual on a Paper Server for Minecraft 1.21.10 of your choice. It is advisable to use a new world, as it can be damaged by the game.
 
 ### Recommended Server Settings
 
@@ -44,7 +43,7 @@ as this can be damaged by the game.
 ## Disclaimer
 
 This plugin is an unofficial, fan-made project and is not approved by, associated with, or supported by Mojang Studios,
-Microsoft, or GommeHD.net. “Minecraft” and related names are trademarks of Mojang Studios and Microsoft. “EnderGames”
+Microsoft, or GommeHD.net. "Minecraft" and related names are trademarks of Mojang Studios and Microsoft. “EnderGames”
 and references to GommeHD are used for descriptive purposes only and do not imply any official connection. The creators
 of this plugin are solely responsible for its content and maintenance.
 
@@ -72,7 +71,7 @@ of this plugin are solely responsible for its content and maintenance.
 
 ### Other Playtesters
 
-- E44
+- [E44](https://github.com/programmer-44)
 - Sulfenir
 - BrosGamer501
 - pantaloneon
