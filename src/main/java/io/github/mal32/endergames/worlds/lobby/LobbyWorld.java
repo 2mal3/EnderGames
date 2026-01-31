@@ -86,6 +86,9 @@ public class LobbyWorld extends AbstractWorld {
 
     player.setGameMode(GameMode.ADVENTURE);
 
+    for (PotionEffect effect : player.getActivePotionEffects()) {
+      player.removePotionEffect(effect.getType());
+    }
     player.addPotionEffect(
         new PotionEffect(
             PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, false, false, false));
