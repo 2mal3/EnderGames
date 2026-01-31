@@ -2,6 +2,8 @@ package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import java.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -40,7 +42,9 @@ public class Rewind extends AbstractKit {
     meta.getPersistentDataContainer().set(rewindKey, PersistentDataType.BOOLEAN, true);
     meta.itemName(Component.text("Rewind").color(NamedTextColor.GOLD));
     clock.setItemMeta(meta);
-    clock.addEnchantment(Enchantment.VANISHING_CURSE, 1);
+    clock.setData(
+        DataComponentTypes.ENCHANTMENTS,
+        ItemEnchantments.itemEnchantments().add(Enchantment.VANISHING_CURSE, 1).build());
     player.getInventory().addItem(clock);
 
     playerStates.put(player.getUniqueId(), new ArrayList<>());
