@@ -6,7 +6,6 @@ import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -33,7 +32,6 @@ public class Death extends AbstractModule {
   private final World world = Objects.requireNonNull(Bukkit.getWorld("world"));
   private GamePhase gamePhase;
   private final HashMap<UUID, Location> deathLocations = new HashMap<>();
-  private final Set<UUID> loggedOut = new java.util.HashSet<>();
 
   public Death(EnderGames plugin, GamePhase gamePhase) {
     super(plugin);
@@ -99,13 +97,6 @@ public class Death extends AbstractModule {
     Player player = event.getPlayer();
     if (!EnderGames.playerIsInGameWorld(player)) return;
 
-    // we are respaning a player that has just logged in and get sent to the lobby, we dont want to
-    // interfere with that
-    if (loggedOut.contains(player.getUniqueId())) {
-      loggedOut.remove(player.getUniqueId());
-      return;
-    }
-
     Location deathPos = deathLocations.get(player.getUniqueId());
     player.teleport(deathPos);
 
@@ -118,7 +109,6 @@ public class Death extends AbstractModule {
     Player player = event.getPlayer();
     if (!GameWorld.playerIsInGame(player)) return;
 
-    loggedOut.add(player.getUniqueId());
     player.setHealth(0);
   }
 }

@@ -89,7 +89,8 @@ public class EnderGames extends JavaPlugin implements Listener {
 
   @EventHandler
   public void onPlayerJoin(PlayerJoinEvent event) {
-    teleportPlayerToLobby(event.getPlayer());
+    Player player = event.getPlayer();
+    Bukkit.getScheduler().runTaskLater(this, () -> teleportPlayerToLobby(player), 10);
   }
 
   public static boolean isInDebugMode() {
