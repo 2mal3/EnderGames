@@ -34,7 +34,7 @@ public class MapManager {
   private static final int CENTER_OFFSET = (GRID_PIXEL_DIMENSION - MATRIX_SIZE) / 2; // 20
 
   // wall info (your coordinates)
-  private static final int WALL_START_X = 5;  // spans x=1..5
+  private static final int WALL_START_X = 5; // spans x=1..5
   private static final int WALL_START_Y = 75; // spans y=71..75
   private static final int WALL_Z = 6;
   private static final BlockFace WALL_FACING = BlockFace.NORTH;
@@ -117,12 +117,21 @@ public class MapManager {
     Location expected = new Location(world, x + 0.5, y + 0.5, zWall + 0.5);
 
     return world.getNearbyEntities(expected, 1.5, 1.5, 1.5, e -> e instanceof ItemFrame).stream()
-            .map(e -> (ItemFrame) e)
-            .filter(f -> f.getFacing() == WALL_FACING)
-            .filter(f -> f.getLocation().getBlockX() == x && f.getLocation().getBlockY() == y)
-            .min(Comparator.comparingDouble(f -> f.getLocation().distanceSquared(expected)))
-            .orElseThrow(() -> new IllegalStateException(
-                    "No matching ItemFrame at x=" + x + " y=" + y + " near z=" + zWall + " facing " + WALL_FACING));
+        .map(e -> (ItemFrame) e)
+        .filter(f -> f.getFacing() == WALL_FACING)
+        .filter(f -> f.getLocation().getBlockX() == x && f.getLocation().getBlockY() == y)
+        .min(Comparator.comparingDouble(f -> f.getLocation().distanceSquared(expected)))
+        .orElseThrow(
+            () ->
+                new IllegalStateException(
+                    "No matching ItemFrame at x="
+                        + x
+                        + " y="
+                        + y
+                        + " near z="
+                        + zWall
+                        + " facing "
+                        + WALL_FACING));
   }
 
   private void addChunkPixelsToMatrix(ArrayList<MapPixel> chunkPixels) {
@@ -137,7 +146,8 @@ public class MapManager {
   }
 
   /**
-   * Main entry: pushes pixels into per-tile queues so updates appear gradually without map reload flicker.
+   * Main entry: pushes pixels into per-tile queues so updates appear gradually without map reload
+   * flicker.
    */
   public void addToMapWall(ArrayList<MapPixel> chunkPixels) {
     World world = Bukkit.getWorld("world_enga_lobby");
@@ -188,6 +198,7 @@ class MatrixMapRenderer extends MapRenderer {
   private boolean initialDrawDone = false;
 
   private record QueuedPixel(int x, int y, Color c) {}
+
   private final ArrayDeque<QueuedPixel> queue = new ArrayDeque<>();
 
   public MatrixMapRenderer(Color[][] matrix, int tileX, int tileY) {
@@ -212,9 +223,9 @@ class MatrixMapRenderer extends MapRenderer {
         int srcY = originY + py;
 
         Color c =
-                (srcX >= 0 && srcX < MATRIX_SIZE && srcY >= 0 && srcY < MATRIX_SIZE)
-                        ? matrix[srcY][srcX]
-                        : null;
+            (srcX >= 0 && srcX < MATRIX_SIZE && srcY >= 0 && srcY < MATRIX_SIZE)
+                ? matrix[srcY][srcX]
+                : null;
 
         if (c != null) canvas.setPixelColor(px, py, c);
         else canvas.setPixel(px, py, MapPalette.TRANSPARENT);

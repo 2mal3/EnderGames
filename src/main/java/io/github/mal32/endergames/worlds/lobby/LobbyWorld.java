@@ -47,7 +47,7 @@ public class LobbyWorld extends AbstractWorld {
 
     tryUpdatingLobby();
 
-    lobbyWorld.getChunkAt(0, 0).setForceLoaded(true);   // ensure item frames for map wall are loaded
+    lobbyWorld.getChunkAt(0, 0).setForceLoaded(true); // ensure item frames for map wall are loaded
   }
 
   private void tryUpdatingLobby() {

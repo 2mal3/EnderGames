@@ -1,6 +1,8 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.UUID;
@@ -11,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -31,16 +34,16 @@ public class Blaze extends AbstractKit {
 
   @Override
   public void start(Player player) {
-    {
-      ItemStack blazePowder = new ItemStack(Material.BLAZE_POWDER);
-      ItemMeta meta = blazePowder.getItemMeta();
-      meta.displayName(
-          Component.text("Burn")
-              .color(NamedTextColor.GOLD)
-              .decoration(TextDecoration.ITALIC, false));
-      blazePowder.setItemMeta(meta);
-      player.getInventory().addItem(blazePowder);
-    }
+    ItemStack blazePowder = new ItemStack(Material.BLAZE_POWDER);
+    ItemMeta meta = blazePowder.getItemMeta();
+    meta.displayName(
+        Component.text("Burn").color(NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
+    blazePowder.setItemMeta(meta);
+    blazePowder.setData(
+        DataComponentTypes.ENCHANTMENTS,
+        ItemEnchantments.itemEnchantments().add(Enchantment.VANISHING_CURSE, 1).build());
+    player.getInventory().addItem(blazePowder);
+
     player.getInventory().addItem(new ItemStack(Material.GOLDEN_SWORD));
 
     player.addPotionEffect(

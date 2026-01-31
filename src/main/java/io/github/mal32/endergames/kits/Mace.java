@@ -1,6 +1,8 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -26,6 +28,9 @@ public class Mace extends AbstractKit {
   public void start(Player player) {
     ItemStack mace = new ItemStack(Material.MACE);
     enchantItem(mace, Enchantment.WIND_BURST, 1);
+    mace.setData(
+        DataComponentTypes.ENCHANTMENTS,
+        ItemEnchantments.itemEnchantments().add(Enchantment.VANISHING_CURSE, 1).build());
     player.getInventory().addItem(mace);
 
     player.getInventory().addItem(new ItemStack(Material.WIND_CHARGE, 8));
