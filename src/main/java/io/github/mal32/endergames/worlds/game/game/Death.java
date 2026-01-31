@@ -100,6 +100,7 @@ public class Death extends AbstractModule {
     if (!EnderGames.playerIsInGameWorld(player)) return;
 
     Location deathPos = deathLocations.get(player.getUniqueId());
+    if (deathPos == null) return;
     player.teleport(deathPos);
 
     player.setGameMode(GameMode.SPECTATOR);
