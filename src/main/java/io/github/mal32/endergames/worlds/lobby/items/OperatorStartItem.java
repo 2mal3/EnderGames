@@ -42,7 +42,7 @@ class OperatorStartItem extends MenuItem {
   }
 
   private void scheduleGameStart() {
-    int startDelaySeconds = EnderGames.isInDebugMode() ? 10 : 5;
+    int startDelaySeconds = EnderGames.isInDebugMode() ? 1 : 5;
 
     this.startGameTask =
         Bukkit.getScheduler()
