@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -40,6 +41,7 @@ public class Bomber extends AbstractKit {
     meta.setRarity(ItemRarity.RARE);
     meta.getPersistentDataContainer().set(isMineItemKey, PersistentDataType.BOOLEAN, true);
     mineStack.setItemMeta(meta);
+    mineStack.addEnchantment(Enchantment.VANISHING_CURSE, 1);
     player.getInventory().addItem(mineStack);
   }
 

@@ -26,6 +26,7 @@ public class Mace extends AbstractKit {
   public void start(Player player) {
     ItemStack mace = new ItemStack(Material.MACE);
     enchantItem(mace, Enchantment.WIND_BURST, 1);
+    mace.addEnchantment(Enchantment.VANISHING_CURSE, 1);
     player.getInventory().addItem(mace);
 
     player.getInventory().addItem(new ItemStack(Material.WIND_CHARGE, 8));

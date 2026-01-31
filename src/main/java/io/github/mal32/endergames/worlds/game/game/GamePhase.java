@@ -16,6 +16,7 @@ import org.bukkit.block.Furnace;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,6 +25,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -67,8 +69,12 @@ public class GamePhase extends AbstractPhase {
 
       player.discoverRecipes(allRecipeKeys);
 
-      Bukkit.dispatchCommand(
-          Bukkit.getConsoleSender(), "loot give " + player.getName() + " loot enga:tracker");
+      final ItemStack trackerItem = new ItemStack(Material.COMPASS);
+      final ItemMeta trackerMeta = trackerItem.getItemMeta();
+      trackerMeta.itemName(Component.text("Tracker").color(NamedTextColor.AQUA));
+      trackerItem.setItemMeta(trackerMeta);
+      trackerItem.addEnchantment(Enchantment.VANISHING_CURSE, 1);
+      player.getInventory().addItem(trackerItem);
 
       String playerKit =
           player

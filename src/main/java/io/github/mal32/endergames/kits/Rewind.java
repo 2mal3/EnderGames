@@ -6,6 +6,7 @@ import java.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,9 +39,8 @@ public class Rewind extends AbstractKit {
     var meta = clock.getItemMeta();
     meta.getPersistentDataContainer().set(rewindKey, PersistentDataType.BOOLEAN, true);
     meta.itemName(Component.text("Rewind").color(NamedTextColor.GOLD));
-
     clock.setItemMeta(meta);
-
+    clock.addEnchantment(Enchantment.VANISHING_CURSE, 1);
     player.getInventory().addItem(clock);
 
     playerStates.put(player.getUniqueId(), new ArrayList<>());

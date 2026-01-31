@@ -2,6 +2,7 @@ package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,7 +19,9 @@ public class Bird extends AbstractKit {
   @Override
   public void start(Player player) {
     // Give the player an Elytra
-    player.getInventory().setChestplate(new ItemStack(Material.ELYTRA));
+    final ItemStack elytra = new ItemStack(Material.ELYTRA);
+    elytra.addEnchantment(Enchantment.VANISHING_CURSE, 1);
+    player.getInventory().setChestplate(elytra);
     // Give the player 5 rockets (firework rockets)
     player.getInventory().addItem(new ItemStack(Material.FIREWORK_ROCKET, 10));
   }
