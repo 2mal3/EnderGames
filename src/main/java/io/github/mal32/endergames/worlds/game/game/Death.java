@@ -48,7 +48,7 @@ public class Death extends AbstractModule {
     Location location = player.getLocation();
 
     event.setNewExp(0);
-    event.setDroppedExp(player.getTotalExperience());
+    event.setDroppedExp(player.calculateTotalExperiencePoints());
     event.setShouldDropExperience(true);
 
     location
