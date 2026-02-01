@@ -24,7 +24,7 @@ public class Enderman extends AbstractKit {
 
   @Override
   public void start(Player player) {
-    var enderPerls = new ItemStack(Material.ENDER_PEARL, 5);
+    var enderPerls = new ItemStack(Material.ENDER_PEARL, 2);
     player.getInventory().addItem(enderPerls);
   }
 
@@ -82,9 +82,9 @@ public class Enderman extends AbstractKit {
     return new KitDescription(
         Material.ENDER_PEARL,
         "Enderman",
-        "Starts with 5 Ender Pearls. Gain 2 Ender Pearls per player kill. Doesn't take damage from"
+        "Gain 3 Ender Pearls per player kill. Doesn't take damage from"
             + " Ender Perls. Can open Ender Chests from further away.",
-        "5 Ender Pearls",
+        "2 Ender Pearls",
         Difficulty.EASY);
   }
 }

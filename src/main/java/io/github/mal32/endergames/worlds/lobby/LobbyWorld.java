@@ -47,7 +47,7 @@ public class LobbyWorld extends AbstractWorld {
 
     tryUpdatingLobby();
 
-    lobbyWorld.getChunkAt(0, 0).setForceLoaded(true);   // ensure item frames for map wall are loaded
+    lobbyWorld.getChunkAt(0, 0).setForceLoaded(true); // ensure item frames for map wall are loaded
   }
 
   private void tryUpdatingLobby() {
@@ -86,6 +86,9 @@ public class LobbyWorld extends AbstractWorld {
 
     player.setGameMode(GameMode.ADVENTURE);
 
+    for (PotionEffect effect : player.getActivePotionEffects()) {
+      player.removePotionEffect(effect.getType());
+    }
     player.addPotionEffect(
         new PotionEffect(
             PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, false, false, false));

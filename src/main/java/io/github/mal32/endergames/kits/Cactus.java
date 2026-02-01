@@ -294,7 +294,7 @@ public class Cactus extends AbstractKit {
         "Cactus",
         "Deals thorns damage to attackers. It can sneak to disguise itself as a cactus.",
         "Green leather helmet and leggings",
-        Difficulty.EASY);
+        Difficulty.HARD);
   }
 }
 

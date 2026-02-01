@@ -113,13 +113,10 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:ender_pearl",
-          "functions": [
+          "conditions": [
             {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 0,
-                "max": 1
-              }
+              "condition": "minecraft:random_chance",
+              "chance": 0.2
             }
           ]
         }
@@ -331,7 +328,7 @@
           "type": "minecraft:item",
           "name": "minecraft:diamond",
           "weight": 0,
-          "quality": 6,
+          "quality": 5,
           "functions": [
             {
               "function": "minecraft:set_count",
