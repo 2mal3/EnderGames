@@ -38,13 +38,6 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     B block = chooseBlock();
 
     Location horizontalLocation = getRandomHorizontalLocation();
-    int y =
-        horizontalLocation
-            .getWorld()
-            .getHighestBlockAt(horizontalLocation, HeightMap.OCEAN_FLOOR)
-            .getY();
-    horizontalLocation.setY(y + 1);
-
     block.teleport(horizontalLocation);
   }
 

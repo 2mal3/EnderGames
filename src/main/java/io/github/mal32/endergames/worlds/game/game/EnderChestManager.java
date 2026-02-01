@@ -82,7 +82,7 @@ class EnderChest extends AbstractTeleportingBlock implements InventoryHolder {
     inventory.clear();
 
     float luck = (float) player.getAttribute(Attribute.LUCK).getValue();
-    LootContext.Builder lootContextBuilder = new LootContext.Builder(location).luck(luck);
+    LootContext.Builder lootContextBuilder = new LootContext.Builder(currentLocation).luck(luck);
     LootContext lootContext = lootContextBuilder.build();
     LootTable lootTable = Bukkit.getLootTable(new NamespacedKey("enga", "ender_chest"));
     lootTable.fillInventory(this.inventory, new Random(), lootContext);

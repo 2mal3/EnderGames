@@ -2,6 +2,7 @@ package io.github.mal32.endergames.worlds.game.game;
 
 import io.github.mal32.endergames.EnderGames;
 import org.bukkit.Bukkit;
+import org.bukkit.HeightMap;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -12,19 +13,36 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 
 public abstract class AbstractTeleportingBlock {
-  protected Location location;
+  protected Location currentLocation;
   public boolean hasBeenUsed = false;
   protected boolean hasBeenOpened = false;
   private final EnderGames plugin;
 
   public AbstractTeleportingBlock(EnderGames plugin, Location location) {
-    this.location = location;
+    this.currentLocation = location;
     this.plugin = plugin;
   }
 
-  public void teleport(Location location) {
+  public void teleport(Location targetLocation) {
+    // Every other method that World#isChunkLoaded(x, z) already loads the chunk and leads to
+    // performance degradation, so we try load as little as possible here.
+    World world = targetLocation.getWorld();
+    int targetChunkX = targetLocation.blockX() >> 4;
+    int targetChunkZ = targetLocation.blockZ() >> 4;
+    int currentChunkX = currentLocation.blockX() >> 4;
+    int currentChunkZ = currentLocation.blockZ() >> 4;
+    boolean currentChunkLoaded = world.isChunkLoaded(currentChunkX, currentChunkZ);
+    boolean targetChunkLoaded = world.isChunkLoaded(targetChunkX, targetChunkZ);
+
+    if (currentChunkLoaded) {
+      world.loadChunk(currentChunkX, currentChunkZ, false);
+    }
+    if (!targetChunkLoaded) {
+      world.loadChunk(targetChunkX, targetChunkZ, true);
+    }
+
     destroy();
-    this.location = location;
+    this.currentLocation = targetLocation;
     place();
 
     hasBeenUsed = false;
@@ -32,32 +50,28 @@ public abstract class AbstractTeleportingBlock {
   }
 
   public void place() {
-    if (!location.getChunk().isLoaded()) {
-      location.getChunk().load(true);
-    }
+    World world = currentLocation.getWorld();
 
-    World world = location.getWorld();
+    int y = world.getHighestBlockAt(currentLocation, HeightMap.OCEAN_FLOOR).getY();
+    currentLocation.setY(y + 1);
 
-    Location blockSpawnLocation = this.location.getBlock().getLocation().clone();
+    Location blockSpawnLocation = this.currentLocation.getBlock().getLocation().clone();
     blockSpawnLocation.setY(256);
     FallingBlock fallingBlock =
         (FallingBlock) world.spawnEntity(blockSpawnLocation, EntityType.FALLING_BLOCK);
     fallingBlock.setCancelDrop(true);
     fallingBlock.setBlockData(Bukkit.createBlockData(getFallingBlockMaterial()));
 
-    Block block = world.getBlockAt(location);
+    Block block = world.getBlockAt(currentLocation);
     block.setType(getBlockMaterial());
 
     playTeleportEffects();
   }
 
   public void destroy() {
-    if (!location.getChunk().isLoaded()) {
-      location.getChunk().load(true);
-    }
-    if (location.getBlock().getType() != getBlockMaterial()) return;
+    if (currentLocation.getBlock().getType() != getBlockMaterial()) return;
 
-    location.getWorld().getBlockAt(location).setType(Material.AIR);
+    currentLocation.getWorld().getBlockAt(currentLocation).setType(Material.AIR);
 
     playTeleportEffects();
   }
@@ -72,12 +86,12 @@ public abstract class AbstractTeleportingBlock {
   }
 
   private void playTeleportEffects() {
-    location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.5f);
-    location
+    currentLocation.getWorld().playSound(currentLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.5f);
+    currentLocation
         .getWorld()
         .spawnParticle(
             Particle.PORTAL,
-            location.getBlock().getLocation().clone().add(0.5, 0.5, 0.5),
+            currentLocation.getBlock().getLocation().clone().add(0.5, 0.5, 0.5),
             50,
             0,
             0,
@@ -89,6 +103,6 @@ public abstract class AbstractTeleportingBlock {
   public abstract Material getFallingBlockMaterial();
 
   public Location getLocation() {
-    return location;
+    return currentLocation;
   }
 }
