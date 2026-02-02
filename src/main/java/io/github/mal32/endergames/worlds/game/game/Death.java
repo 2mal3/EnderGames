@@ -34,6 +34,9 @@ public class Death extends AbstractModule {
   private final World world = Objects.requireNonNull(Bukkit.getWorld("world"));
   private GameWorld manager;
   private final HashMap<UUID, Location> deathLocations = new HashMap<>();
+  // Immediate respawn doesnt actualy respawn the player immediately
+  private final int IMMEDIATE_RESPAWN_TICKS = 10;
+  private boolean gameEnded = false;
 
   public Death(EnderGames plugin, GameWorld manager) {
     super(plugin);
@@ -93,7 +96,7 @@ public class Death extends AbstractModule {
               .append(Component.text(player.getName()).color(NamedTextColor.RED)));
     }
 
-    Bukkit.getScheduler().runTask(plugin, this::checkAndGameEnd);
+    Bukkit.getScheduler().runTaskLater(plugin, this::checkAndGameEnd, IMMEDIATE_RESPAWN_TICKS);
   }
 
   @EventHandler
@@ -117,11 +120,15 @@ public class Death extends AbstractModule {
     player.setHealth(0);
   }
 
-  public void checkAndGameEnd() {
+  private void checkAndGameEnd() {
     Player[] survivalPlayers = GameWorld.getPlayersInGame();
+    if (survivalPlayers.length > 1) return;
+    // prevent re-triggering this when the final player gets killed to reset him
+    if (gameEnded) return;
+    gameEnded = true;
 
     Title title;
-    if (survivalPlayers.length >= 1) {
+    if (survivalPlayers.length == 1) {
       // kill surviving player to reset him, not clean but simple
       for (Player p : survivalPlayers) {
         p.setHealth(0);
@@ -149,6 +156,6 @@ public class Death extends AbstractModule {
       player.showTitle(title);
     }
 
-    manager.nextPhase();
+    Bukkit.getScheduler().runTaskLater(plugin, manager::nextPhase, IMMEDIATE_RESPAWN_TICKS);
   }
 }
