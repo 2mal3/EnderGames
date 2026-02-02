@@ -33,7 +33,6 @@ public class LoadPhase extends AbstractPhase {
     placeSpawnPlatform();
 
     scheduleChunks();
-    plugin.getComponentLogger().info("" + chunksToLoad.size());
 
     BukkitScheduler scheduler = plugin.getServer().getScheduler();
     final int CHUNK_GEN_DELAY_TICKS = 2;
