@@ -163,14 +163,14 @@ public class GamePhase extends AbstractPhase {
 
   public void checkAndGameEnd() {
     Player[] survivalPlayers = GameWorld.getPlayersInGame();
-    if (survivalPlayers.length > 1) return;
-
-    for (Player p : survivalPlayers) {
-      p.setGameMode(GameMode.SPECTATOR);
-    }
 
     Title title;
     if (survivalPlayers.length >= 1) {
+      // kill surviving player to reset him, not clean but simple
+      for (Player p : survivalPlayers) {
+        p.setHealth(0);
+      }
+
       Player lastPlayer = survivalPlayers[0];
       title =
           Title.title(
