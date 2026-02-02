@@ -80,6 +80,7 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
       if (minHorizontalDistance < MIN_PLAYER_DISTANCE) {
         continue;
       }
+      break;
     }
 
     return targetLocation;
