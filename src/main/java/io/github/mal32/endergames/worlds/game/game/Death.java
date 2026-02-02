@@ -4,11 +4,13 @@ import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.GameRule;
@@ -30,13 +32,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
  */
 public class Death extends AbstractModule {
   private final World world = Objects.requireNonNull(Bukkit.getWorld("world"));
-  private GamePhase gamePhase;
+  private GameWorld manager;
   private final HashMap<UUID, Location> deathLocations = new HashMap<>();
 
-  public Death(EnderGames plugin, GamePhase gamePhase) {
+  public Death(EnderGames plugin, GameWorld manager) {
     super(plugin);
 
-    this.gamePhase = gamePhase;
+    this.manager = manager;
 
     world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
   }
@@ -91,7 +93,7 @@ public class Death extends AbstractModule {
               .append(Component.text(player.getName()).color(NamedTextColor.RED)));
     }
 
-    Bukkit.getScheduler().runTask(plugin, gamePhase::checkAndGameEnd);
+    Bukkit.getScheduler().runTask(plugin, this::checkAndGameEnd);
   }
 
   @EventHandler
@@ -113,5 +115,40 @@ public class Death extends AbstractModule {
     if (!GameWorld.playerIsInGame(player)) return;
 
     player.setHealth(0);
+  }
+
+  public void checkAndGameEnd() {
+    Player[] survivalPlayers = GameWorld.getPlayersInGame();
+
+    Title title;
+    if (survivalPlayers.length >= 1) {
+      // kill surviving player to reset him, not clean but simple
+      for (Player p : survivalPlayers) {
+        p.setHealth(0);
+      }
+
+      Player lastPlayer = survivalPlayers[0];
+      title =
+          Title.title(
+              Component.text(lastPlayer.getName() + " has Won!").color(NamedTextColor.GOLD),
+              Component.text(""),
+              Title.Times.times(
+                  Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
+      lastPlayer.playSound(
+          lastPlayer, Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.MASTER, Float.MAX_VALUE, 1);
+    } else {
+      title =
+          Title.title(
+              Component.text("Draw").color(NamedTextColor.GOLD),
+              Component.text(""),
+              Title.Times.times(
+                  Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
+    }
+
+    for (Player player : GameWorld.getPlayersInGameWorld()) {
+      player.showTitle(title);
+    }
+
+    manager.nextPhase();
   }
 }
