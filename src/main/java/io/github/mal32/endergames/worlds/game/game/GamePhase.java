@@ -179,7 +179,7 @@ public class GamePhase extends AbstractPhase {
               Title.Times.times(
                   Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
       lastPlayer.playSound(
-          lastPlayer, Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.MASTER, 1, 1);
+          lastPlayer, Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.MASTER, Float.MAX_VALUE, 1);
     } else {
       title =
           Title.title(
