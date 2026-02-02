@@ -7,11 +7,9 @@ import io.github.mal32.endergames.worlds.game.AbstractPhase;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemEnchantments;
-import java.time.Duration;
 import java.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Furnace;
@@ -55,7 +53,7 @@ public class GamePhase extends AbstractPhase {
             new SpeedObsidianManager(plugin, spawnLocation),
             new FightDetection(plugin),
             new PotionEffectsStacking(plugin),
-            new Death(plugin, this));
+            new Death(plugin, manager));
 
     List<NamespacedKey> allRecipeKeys = new ArrayList<>();
     Iterator<Recipe> it = Bukkit.recipeIterator();
@@ -159,41 +157,6 @@ public class GamePhase extends AbstractPhase {
     for (AbstractKit kit : kits) {
       kit.disable();
     }
-  }
-
-  public void checkAndGameEnd() {
-    Player[] survivalPlayers = GameWorld.getPlayersInGame();
-    if (survivalPlayers.length > 1) return;
-
-    for (Player p : survivalPlayers) {
-      p.setGameMode(GameMode.SPECTATOR);
-    }
-
-    Title title;
-    if (survivalPlayers.length >= 1) {
-      Player lastPlayer = survivalPlayers[0];
-      title =
-          Title.title(
-              Component.text(lastPlayer.getName() + " has Won!").color(NamedTextColor.GOLD),
-              Component.text(""),
-              Title.Times.times(
-                  Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
-      lastPlayer.playSound(
-          lastPlayer, Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.MASTER, 1, 1);
-    } else {
-      title =
-          Title.title(
-              Component.text("Draw").color(NamedTextColor.GOLD),
-              Component.text(""),
-              Title.Times.times(
-                  Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
-    }
-
-    for (Player player : GameWorld.getPlayersInGameWorld()) {
-      player.showTitle(title);
-    }
-
-    manager.nextPhase();
   }
 
   @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
