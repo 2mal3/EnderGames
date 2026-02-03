@@ -89,9 +89,13 @@ public class LobbyWorld extends AbstractWorld {
     for (PotionEffect effect : player.getActivePotionEffects()) {
       player.removePotionEffect(effect.getType());
     }
+    // Together prevent killing of player by other players
     player.addPotionEffect(
         new PotionEffect(
-            PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, false, false, false));
+            PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, true, false, false));
+    player.addPotionEffect(
+        new PotionEffect(
+            PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 0, true, false, false));
 
     player.teleport(spawnLocation.clone().add(0, 10, 0));
 
