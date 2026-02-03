@@ -7,9 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class Bird extends AbstractKit {
@@ -38,14 +36,6 @@ public class Bird extends AbstractKit {
     if (!playerCanUseThisKit(killer)) return;
 
     killer.getInventory().addItem(new ItemStack(Material.FIREWORK_ROCKET, 5));
-  }
-
-  @EventHandler(priority = EventPriority.LOW)
-  public void onPlayerDeath(PlayerDeathEvent event) {
-    Player player = event.getEntity();
-    if (!playerCanUseThisKit(player)) return;
-
-    player.getInventory().remove(Material.ELYTRA);
   }
 
   @Override
