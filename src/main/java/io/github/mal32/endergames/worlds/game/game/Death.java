@@ -58,6 +58,21 @@ public class Death extends AbstractModule {
     event.setDroppedExp(player.calculateTotalExperiencePoints());
     event.setShouldDropExperience(true);
 
+    event.setShowDeathMessages(false);
+
+    deathLocations.put(player.getUniqueId(), location);
+
+    // game has already ended, we are currently the winning player that has been killed
+    if (gameEnded) return;
+
+    killEffects(event);
+    Bukkit.getScheduler().runTaskLater(plugin, this::checkAndGameEnd, IMMEDIATE_RESPAWN_TICKS);
+  }
+
+  private static void killEffects(PlayerDeathEvent event) {
+    Player player = event.getPlayer();
+    Location location = player.getLocation();
+
     location
         .getWorld()
         .playSound(
@@ -67,8 +82,7 @@ public class Death extends AbstractModule {
             Float.MAX_VALUE,
             1);
 
-    deathLocations.put(player.getUniqueId(), location);
-
+    event.setShowDeathMessages(true);
     EntityDamageEvent lastDamage = player.getLastDamageCause();
     if (lastDamage != null
         && lastDamage.getDamageSource().getCausingEntity() instanceof Player killer) {
@@ -95,8 +109,6 @@ public class Death extends AbstractModule {
               .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
               .append(Component.text(player.getName()).color(NamedTextColor.RED)));
     }
-
-    Bukkit.getScheduler().runTaskLater(plugin, this::checkAndGameEnd, IMMEDIATE_RESPAWN_TICKS);
   }
 
   @EventHandler
@@ -129,20 +141,30 @@ public class Death extends AbstractModule {
 
     Title title;
     if (survivalPlayers.length == 1) {
-      // kill surviving player to reset him, not clean but simple
-      for (Player p : survivalPlayers) {
-        p.setHealth(0);
-      }
-
       Player lastPlayer = survivalPlayers[0];
+      // kill surviving player to reset him, not clean but simple
+      lastPlayer.setHealth(0);
+
       title =
           Title.title(
               Component.text(lastPlayer.getName() + " has Won!").color(NamedTextColor.GOLD),
               Component.text(""),
               Title.Times.times(
                   Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
-      lastPlayer.playSound(
-          lastPlayer, Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.MASTER, Float.MAX_VALUE, 1);
+
+      // delay win sound because the player has to respawn first
+      Bukkit.getScheduler()
+          .runTaskLater(
+              plugin,
+              () ->
+                  lastPlayer.playSound(
+                      lastPlayer,
+                      Sound.UI_TOAST_CHALLENGE_COMPLETE,
+                      SoundCategory.MASTER,
+                      Float.MAX_VALUE,
+                      1),
+              IMMEDIATE_RESPAWN_TICKS);
+
     } else {
       title =
           Title.title(
