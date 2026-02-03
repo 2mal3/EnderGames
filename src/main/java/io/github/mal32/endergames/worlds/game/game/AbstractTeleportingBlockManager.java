@@ -67,7 +67,7 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
 
   protected Location getRandomHorizontalLocation() {
     final int MIN_PLAYER_DISTANCE = 32;
-    final int MAX_ATTEMPTS = 100;
+    final int MAX_ATTEMPTS = 50;
 
     final Location center = gameWorld.getWorldBorder().getCenter();
     final int size = (int) gameWorld.getWorldBorder().getSize();
