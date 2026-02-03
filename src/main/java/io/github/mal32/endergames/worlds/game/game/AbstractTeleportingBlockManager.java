@@ -40,8 +40,8 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
   private void tickBlocks() {
     for (int i = blocks.size() - 1; i >= 0; i--) {
       B block = blocks.get(i);
-      block.secondsToLive--;
-      if (block.secondsToLive <= 0) {
+      block.ticksToLive -= getDelayTicks();
+      if (block.ticksToLive <= 0) {
         removeBlock(block);
       }
     }
@@ -105,7 +105,7 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
 
   @Override
   protected int getDelayTicks() {
-    return 20;
+    return 10;
   }
 
   protected B getBlockAtLocation(Location location) {

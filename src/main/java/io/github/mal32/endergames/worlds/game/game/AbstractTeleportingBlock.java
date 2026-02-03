@@ -15,11 +15,11 @@ import org.bukkit.entity.FallingBlock;
 public abstract class AbstractTeleportingBlock {
   protected Location location;
   private final World world;
-  public int secondsToLive;
+  public int ticksToLive;
 
   public AbstractTeleportingBlock(EnderGames plugin, Location location, int secondsToLive) {
     this.location = location;
-    this.secondsToLive = secondsToLive;
+    this.ticksToLive = secondsToLive * 20;
     this.world = location.getWorld();
 
     if (location.getBlock().getType() != getBlockMaterial()) {
@@ -64,7 +64,7 @@ public abstract class AbstractTeleportingBlock {
   }
 
   public void open() {
-    secondsToLive = 20;
+    ticksToLive = 20 * 20;
   }
 
   private void playTeleportEffects() {
