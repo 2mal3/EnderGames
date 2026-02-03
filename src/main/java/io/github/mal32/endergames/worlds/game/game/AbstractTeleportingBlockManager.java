@@ -50,7 +50,7 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
   private void spawnNewBlock() {
     double worldSizeChunks = gameWorld.getWorldBorder().getSize() / 16.0;
     double chunkCount = worldSizeChunks * worldSizeChunks;
-    int preferedBlockCount = (int) (chunkCount * getAvgBocksPerChunk());
+    int preferedBlockCount = Math.max((int) (chunkCount * getAvgBocksPerChunk()), 1);
 
     // Too many blocks in the world: do nothing and let them despawn
     if (blocks.size() > preferedBlockCount) return;
