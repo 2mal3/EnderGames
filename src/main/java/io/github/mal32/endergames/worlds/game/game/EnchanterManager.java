@@ -16,18 +16,18 @@ public class EnchanterManager extends AbstractTeleportingBlockManager<Enchanter>
   }
 
   @Override
-  public int getBlockTeleportDelayTicks() {
-    return 20 * 50;
+  public double getAvgBocksPerChunk() {
+    return 0.025;
   }
 
   @Override
-  protected int blockCount() {
-    return 15;
+  protected int getBlockSecondsToLive() {
+    return 60 * 3;
   }
 
   @Override
   protected Enchanter getNewBlock(Location location) {
-    return new Enchanter(plugin, location);
+    return new Enchanter(plugin, location, getBlockSecondsToLive());
   }
 
   @EventHandler
@@ -65,8 +65,8 @@ public class EnchanterManager extends AbstractTeleportingBlockManager<Enchanter>
 }
 
 class Enchanter extends AbstractTeleportingBlock {
-  public Enchanter(EnderGames plugin, Location location) {
-    super(plugin, location);
+  public Enchanter(EnderGames plugin, Location location, int secondsToLive) {
+    super(plugin, location, secondsToLive);
   }
 
   @Override

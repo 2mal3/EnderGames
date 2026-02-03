@@ -13,85 +13,67 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 
 public abstract class AbstractTeleportingBlock {
-  protected Location currentLocation;
-  public boolean hasBeenUsed = false;
-  protected boolean hasBeenOpened = false;
-  private final EnderGames plugin;
+  protected Location location;
+  private final World world;
+  public int secondsToLive;
 
-  public AbstractTeleportingBlock(EnderGames plugin, Location location) {
-    this.currentLocation = location;
-    this.plugin = plugin;
+  public AbstractTeleportingBlock(EnderGames plugin, Location location, int secondsToLive) {
+    this.location = location;
+    this.secondsToLive = secondsToLive;
+    this.world = location.getWorld();
+
+    if (location.getBlock().getType() != getBlockMaterial()) {
+      place();
+    }
   }
 
-  public void teleport(Location targetLocation) {
-    // Every other method that World#isChunkLoaded(x, z) already loads the chunk and leads to
-    // performance degradation, so we try load as little as possible here.
-    World world = targetLocation.getWorld();
-    int targetChunkX = targetLocation.blockX() >> 4;
-    int targetChunkZ = targetLocation.blockZ() >> 4;
-    int currentChunkX = currentLocation.blockX() >> 4;
-    int currentChunkZ = currentLocation.blockZ() >> 4;
-    boolean currentChunkLoaded = world.isChunkLoaded(currentChunkX, currentChunkZ);
-    boolean targetChunkLoaded = world.isChunkLoaded(targetChunkX, targetChunkZ);
+  private void place() {
+    loadChunkIfNotLoaded();
 
-    if (currentChunkLoaded) {
-      world.loadChunk(currentChunkX, currentChunkZ, false);
-    }
-    if (!targetChunkLoaded) {
-      world.loadChunk(targetChunkX, targetChunkZ, true);
-    }
+    int y = world.getHighestBlockAt(location, HeightMap.OCEAN_FLOOR).getY();
+    location.setY(y + 1);
 
-    destroy();
-    this.currentLocation = targetLocation;
-    place();
-
-    hasBeenUsed = false;
-    hasBeenOpened = false;
-  }
-
-  public void place() {
-    World world = currentLocation.getWorld();
-
-    int y = world.getHighestBlockAt(currentLocation, HeightMap.OCEAN_FLOOR).getY();
-    currentLocation.setY(y + 1);
-
-    Location blockSpawnLocation = this.currentLocation.getBlock().getLocation().clone();
+    Location blockSpawnLocation = this.location.getBlock().getLocation().clone();
     blockSpawnLocation.setY(256);
     FallingBlock fallingBlock =
         (FallingBlock) world.spawnEntity(blockSpawnLocation, EntityType.FALLING_BLOCK);
     fallingBlock.setCancelDrop(true);
     fallingBlock.setBlockData(Bukkit.createBlockData(getFallingBlockMaterial()));
 
-    Block block = world.getBlockAt(currentLocation);
+    Block block = world.getBlockAt(location);
     block.setType(getBlockMaterial());
-
-    playTeleportEffects();
   }
 
   public void destroy() {
-    if (currentLocation.getBlock().getType() != getBlockMaterial()) return;
+    loadChunkIfNotLoaded();
 
-    currentLocation.getWorld().getBlockAt(currentLocation).setType(Material.AIR);
+    if (location.getBlock().getType() != getBlockMaterial()) return;
+
+    location.getWorld().getBlockAt(location).setType(Material.AIR);
 
     playTeleportEffects();
   }
 
-  public void open() {
-    if (hasBeenOpened) return;
-    hasBeenOpened = true;
+  private void loadChunkIfNotLoaded() {
+    int chunkX = location.blockX() >> 4;
+    int chunkZ = location.blockZ() >> 4;
+    boolean chunkLoaded = world.isChunkLoaded(chunkX, chunkZ);
+    if (!chunkLoaded) {
+      world.loadChunk(chunkX, chunkZ, true);
+    }
+  }
 
-    final int TELEPORT_BLOCK_TIME_SECONDS = 10;
-    Bukkit.getScheduler()
-        .runTaskLater(plugin, () -> hasBeenUsed = true, 20 * TELEPORT_BLOCK_TIME_SECONDS);
+  public void open() {
+    secondsToLive = 20;
   }
 
   private void playTeleportEffects() {
-    currentLocation.getWorld().playSound(currentLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.5f);
-    currentLocation
+    location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.5f);
+    location
         .getWorld()
         .spawnParticle(
             Particle.PORTAL,
-            currentLocation.getBlock().getLocation().clone().add(0.5, 0.5, 0.5),
+            location.getBlock().getLocation().clone().add(0.5, 0.5, 0.5),
             50,
             0,
             0,
@@ -103,6 +85,6 @@ public abstract class AbstractTeleportingBlock {
   public abstract Material getFallingBlockMaterial();
 
   public Location getLocation() {
-    return currentLocation;
+    return location;
   }
 }

@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleportingBlock>
     extends AbstractTask {
   protected final ArrayList<B> blocks = new ArrayList<>();
-  private int nextIndex = 0;
   protected final Location spawnLocation;
   private final World gameWorld = Objects.requireNonNull(Bukkit.getWorld("world"));
 
@@ -21,46 +20,49 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     super(plugin);
 
     this.spawnLocation = spawnLocation;
-
-    Location startLocation = spawnLocation.clone();
-    startLocation.setY(0);
-    for (int i = 0; i < blockCount(); i++) {
-      blocks.add(getNewBlock(startLocation));
-    }
   }
 
-  protected abstract int blockCount();
+  protected abstract double getAvgBocksPerChunk();
+
+  protected abstract int getBlockSecondsToLive();
 
   protected abstract B getNewBlock(Location location);
 
-  public void task() {
-    if (blocks.isEmpty()) return;
-    B block = chooseBlock();
-
-    Location horizontalLocation = getRandomHorizontalLocation();
-    block.teleport(horizontalLocation);
+  protected ArrayList<B> getBlocks() {
+    return blocks;
   }
 
-  private B chooseBlock() {
-    var usedBlocks = new ArrayList<B>();
-    for (B b : blocks) {
-      if (b.hasBeenUsed) {
-        usedBlocks.add(b);
+  public void task() {
+    tickBlocks();
+    spawnNewBlock();
+  }
+
+  private void tickBlocks() {
+    for (int i = blocks.size() - 1; i >= 0; i--) {
+      B block = blocks.get(i);
+      block.secondsToLive--;
+      if (block.secondsToLive <= 0) {
+        removeBlock(block);
       }
     }
+  }
 
-    ArrayList<B> chosenBlocks;
-    if (usedBlocks.isEmpty()) {
-      chosenBlocks = blocks;
-    } else {
-      chosenBlocks = usedBlocks;
-    }
+  private void spawnNewBlock() {
+    double worldSizeChunks = gameWorld.getWorldBorder().getSize() / 16.0;
+    double chunkCount = worldSizeChunks * worldSizeChunks;
+    int preferedBlockCount = (int) (chunkCount * getAvgBocksPerChunk());
 
-    nextIndex = nextIndex % chosenBlocks.size();
-    var block = chosenBlocks.get(nextIndex);
-    nextIndex++;
+    // Too many blocks in the world: do nothing and let them despawn
+    if (blocks.size() > preferedBlockCount) return;
 
-    return block;
+    Location randomHorizontalLocation = getRandomHorizontalLocation();
+    B newBlock = getNewBlock(randomHorizontalLocation);
+    blocks.add(newBlock);
+  }
+
+  protected void removeBlock(B block) {
+    block.destroy();
+    blocks.remove(block);
   }
 
   protected Location getRandomHorizontalLocation() {
@@ -102,11 +104,9 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
   }
 
   @Override
-  public int getDelayTicks() {
-    return getBlockTeleportDelayTicks() / blocks.size();
+  protected int getDelayTicks() {
+    return 20;
   }
-
-  abstract int getBlockTeleportDelayTicks();
 
   protected B getBlockAtLocation(Location location) {
     for (B b : blocks) {
@@ -120,5 +120,3 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     return null;
   }
 }
-
-record BlockRange(int min, int max, int weight) {}
