@@ -191,7 +191,7 @@ public class GamePhase extends AbstractPhase {
 
     item.setAmount(item.getAmount() - 1);
 
-    final double speedMultiplier = 1.2;
+    final double speedMultiplier = 1.5;
     Vector direction = player.getEyeLocation().getDirection();
     Vector customVelocity = direction.normalize().multiply(speedMultiplier);
 
