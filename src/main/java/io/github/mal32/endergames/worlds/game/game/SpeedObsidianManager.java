@@ -17,7 +17,7 @@ public class SpeedObsidianManager extends AbstractTeleportingBlockManager<SpeedO
 
   @Override
   public double getAvgBocksPerChunk() {
-    return 0.1;
+    return 0.07;
   }
 
   @Override
