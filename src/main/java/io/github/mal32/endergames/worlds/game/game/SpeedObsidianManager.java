@@ -16,18 +16,18 @@ public class SpeedObsidianManager extends AbstractTeleportingBlockManager<SpeedO
   }
 
   @Override
-  public int getBlockTeleportDelayTicks() {
-    return 20 * 40;
+  public double getAvgBocksPerChunk() {
+    return 0.07;
   }
 
   @Override
-  protected int blocksPerPlayer() {
-    return 5;
+  protected int getBlockSecondsToLive() {
+    return 60 * 3;
   }
 
   @Override
   protected SpeedObsidian getNewBlock(Location location) {
-    return new SpeedObsidian(plugin, location);
+    return new SpeedObsidian(plugin, location, getBlockSecondsToLive());
   }
 
   @EventHandler
@@ -51,13 +51,13 @@ public class SpeedObsidianManager extends AbstractTeleportingBlockManager<SpeedO
       PotionEffectsStacking.addPotionEffect(player, speedEffect);
     }
 
-    speedObsidian.teleport(spawnLocation);
+    removeBlock(speedObsidian);
   }
 }
 
 class SpeedObsidian extends AbstractTeleportingBlock {
-  public SpeedObsidian(EnderGames plugin, Location location) {
-    super(plugin, location);
+  public SpeedObsidian(EnderGames plugin, Location location, int secondsToLive) {
+    super(plugin, location, secondsToLive);
   }
 
   @Override

@@ -30,7 +30,7 @@ public abstract class AbstractTask extends AbstractModule {
     task.cancel();
   }
 
-  public abstract int getDelayTicks();
+  protected abstract int getDelayTicks();
 
-  public abstract void task();
+  protected abstract void task();
 }

@@ -2,9 +2,7 @@ package io.github.mal32.endergames.worlds.game.game;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
-
 import java.util.*;
-
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 
@@ -15,91 +13,79 @@ import org.bukkit.entity.Player;
 public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleportingBlock>
     extends AbstractTask {
   protected final ArrayList<B> blocks = new ArrayList<>();
-  private int nextIndex = 0;
   protected final Location spawnLocation;
+  private final World gameWorld = Objects.requireNonNull(Bukkit.getWorld("world"));
 
   public AbstractTeleportingBlockManager(EnderGames plugin, Location spawnLocation) {
     super(plugin);
 
     this.spawnLocation = spawnLocation;
-
-    int playerCount = GameWorld.getPlayersInGame().length;
-    Location startLocation = spawnLocation.clone();
-    startLocation.setY(0);
-    for (int i = 0; i < playerCount * blocksPerPlayer(); i++) {
-      blocks.add(getNewBlock(startLocation));
-    }
   }
 
-  protected abstract int blocksPerPlayer();
+  protected abstract double getAvgBocksPerChunk();
+
+  protected abstract int getBlockSecondsToLive();
 
   protected abstract B getNewBlock(Location location);
 
-  public void task() {
-    if (blocks.isEmpty()) return;
-    B block = chooseBlock();
-
-    Location horizontalLocation = getRandomHorizontalLocation();
-    int y =
-        horizontalLocation
-            .getWorld()
-            .getHighestBlockAt(horizontalLocation, HeightMap.OCEAN_FLOOR)
-            .getY();
-    horizontalLocation.setY(y + 1);
-
-    block.teleport(horizontalLocation);
+  protected ArrayList<B> getBlocks() {
+    return blocks;
   }
 
-  private B chooseBlock() {
-    var usedBlocks = new ArrayList<B>();
-    for (B b : blocks) {
-      if (b.hasBeenUsed) {
-        usedBlocks.add(b);
+  public void task() {
+    tickBlocks();
+    spawnNewBlock();
+  }
+
+  private void tickBlocks() {
+    for (int i = blocks.size() - 1; i >= 0; i--) {
+      B block = blocks.get(i);
+      block.ticksToLive -= getDelayTicks();
+      if (block.ticksToLive <= 0) {
+        removeBlock(block);
       }
     }
+  }
 
-    ArrayList<B> chosenBlocks;
-    if (usedBlocks.isEmpty()) {
-      chosenBlocks = blocks;
-    } else {
-      chosenBlocks = usedBlocks;
-    }
+  private void spawnNewBlock() {
+    double worldSizeChunks = gameWorld.getWorldBorder().getSize() / 16.0;
+    double chunkCount = worldSizeChunks * worldSizeChunks;
+    int preferedBlockCount = Math.max((int) (chunkCount * getAvgBocksPerChunk()), 1);
 
-    nextIndex = nextIndex % chosenBlocks.size();
-    var block = chosenBlocks.get(nextIndex);
-    nextIndex++;
+    // Too many blocks in the world: do nothing and let them despawn
+    if (blocks.size() > preferedBlockCount) return;
 
-    return block;
+    Location randomHorizontalLocation = getRandomHorizontalLocation();
+    B newBlock = getNewBlock(randomHorizontalLocation);
+    blocks.add(newBlock);
+  }
+
+  protected void removeBlock(B block) {
+    block.destroy();
+    blocks.remove(block);
   }
 
   protected Location getRandomHorizontalLocation() {
-    final int MIN_PLAYER_DISTANCE = 48;
-    final int MAX_PLAYER_DISTANCE = 96;
+    final int MIN_PLAYER_DISTANCE = 32;
+    final int MAX_ATTEMPTS = 50;
 
-    final World world = Objects.requireNonNull(Bukkit.getWorld("world"));
-    ArrayList<Chunk> loadedChunks = new ArrayList<>(Arrays.asList(world.getLoadedChunks()));
+    final Location center = gameWorld.getWorldBorder().getCenter();
+    final int size = (int) gameWorld.getWorldBorder().getSize();
 
-    Chunk targetChunk = null;
-    while (targetChunk == null) {
-      int randomIndex = new Random().nextInt(loadedChunks.size());
-      var chunk = loadedChunks.get(randomIndex);
-      loadedChunks.remove(randomIndex);
+    Location targetLocation = null;
+    for (int attempts = 0; attempts < MAX_ATTEMPTS; attempts++) {
+      final int randomX = (new Random().nextInt(size) - (size / 2)) + center.getBlockX();
+      final int randomZ = (new Random().nextInt(size) - (size / 2)) + center.getBlockZ();
+      targetLocation = new Location(Bukkit.getWorld("world"), randomX, 0, randomZ);
 
-      // replace with kd-tree when to slow
-      Location chunkBlockLocation = chunk.getBlock(0, 0, 0).getLocation();
-      double minHorizontalDistance = getMinHorizontalDistanceToPlayers(chunkBlockLocation);
-
-      if (minHorizontalDistance > MIN_PLAYER_DISTANCE
-          && minHorizontalDistance < MAX_PLAYER_DISTANCE) {
-        targetChunk = chunk;
+      final double minHorizontalDistance = getMinHorizontalDistanceToPlayers(targetLocation);
+      if (minHorizontalDistance < MIN_PLAYER_DISTANCE) {
+        continue;
       }
+      break;
     }
 
-    // calculate random offset
-    int xOffset = new Random().nextInt(16);
-    int zOffset = new Random().nextInt(16);
-
-    return targetChunk.getBlock(xOffset, 0, zOffset).getLocation();
+    return targetLocation;
   }
 
   private static double getMinHorizontalDistanceToPlayers(Location chunkBlockLocation) {
@@ -117,50 +103,10 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     return minHorizontalDistance;
   }
 
-  public static <T extends BlockRange> T chooseOnWeight(List<T> items) {
-    double totalWeight = 0.0;
-    for (T item : items) totalWeight += item.weight();
-    double r = Math.random() * totalWeight;
-    double cumulativeWeight = 0.0;
-    for (T item : items) {
-      cumulativeWeight += item.weight();
-      if (cumulativeWeight >= r) return item;
-    }
-    throw new RuntimeException("Should never be shown.");
-  }
-
-  /**
-   * Picks a truly random location inside the world border (anywhere in the square), then clamps to
-   * ground level +1.
-   */
-  private Location getRandomHorizontalBorderLocation(
-      World world, WorldBorder border, Random random) {
-    Location center = border.getCenter();
-    double halfSize = border.getSize() / 2.0;
-
-    for (int i = 0; i < 10; i++) {
-      double xOffset = (random.nextDouble() * halfSize * 2.0) - halfSize;
-      double zOffset = (random.nextDouble() * halfSize * 2.0) - halfSize;
-
-      double x = center.getX() + xOffset;
-      double z = center.getZ() + zOffset;
-
-      Location candidate = new Location(world, x, 0, z);
-      if (border.isInside(candidate)) {
-        return candidate;
-      }
-    }
-
-    // As a last resort (very unlikely), just return the center at ground level
-    return new Location(world, center.getX(), 0, center.getZ());
-  }
-
   @Override
-  public int getDelayTicks() {
-    return getBlockTeleportDelayTicks() / blocks.size();
+  protected int getDelayTicks() {
+    return 10;
   }
-
-  abstract int getBlockTeleportDelayTicks();
 
   protected B getBlockAtLocation(Location location) {
     for (B b : blocks) {
@@ -174,5 +120,3 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     return null;
   }
 }
-
-record BlockRange(int min, int max, int weight) {}
