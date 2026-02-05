@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
@@ -72,4 +73,6 @@ public abstract class AbstractKit extends AbstractModule {
   }
 
   public abstract KitDescription getDescription();
+
+  public void registerAdvancement(AdvancementAPI api){}
 }
