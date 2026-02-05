@@ -25,7 +25,7 @@ public class Bird extends AbstractKit {
         ItemEnchantments.itemEnchantments().add(Enchantment.VANISHING_CURSE, 1).build());
     player.getInventory().setChestplate(elytra);
     // Give the player 5 rockets (firework rockets)
-    player.getInventory().addItem(new ItemStack(Material.FIREWORK_ROCKET, 10));
+    player.getInventory().addItem(new ItemStack(Material.FIREWORK_ROCKET, 5));
   }
 
   @EventHandler

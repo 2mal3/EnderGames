@@ -2,6 +2,7 @@ package io.github.mal32.endergames.worlds.game.game;
 
 import io.github.mal32.endergames.EnderGames;
 import org.bukkit.Bukkit;
+import org.bukkit.HeightMap;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -13,30 +14,24 @@ import org.bukkit.entity.FallingBlock;
 
 public abstract class AbstractTeleportingBlock {
   protected Location location;
-  public boolean hasBeenUsed = false;
-  protected boolean hasBeenOpened = false;
-  private final EnderGames plugin;
+  private final World world;
+  public int ticksToLive;
 
-  public AbstractTeleportingBlock(EnderGames plugin, Location location) {
+  public AbstractTeleportingBlock(EnderGames plugin, Location location, int secondsToLive) {
     this.location = location;
-    this.plugin = plugin;
-  }
+    this.ticksToLive = secondsToLive * 20;
+    this.world = location.getWorld();
 
-  public void teleport(Location location) {
-    destroy();
-    this.location = location;
-    place();
-
-    hasBeenUsed = false;
-    hasBeenOpened = false;
-  }
-
-  public void place() {
-    if (!location.getChunk().isLoaded()) {
-      location.getChunk().load();
+    if (location.getBlock().getType() != getBlockMaterial()) {
+      place();
     }
+  }
 
-    World world = location.getWorld();
+  private void place() {
+    loadChunkIfNotLoaded();
+
+    int y = world.getHighestBlockAt(location, HeightMap.OCEAN_FLOOR).getY();
+    location.setY(y + 1);
 
     Location blockSpawnLocation = this.location.getBlock().getLocation().clone();
     blockSpawnLocation.setY(256);
@@ -47,14 +42,11 @@ public abstract class AbstractTeleportingBlock {
 
     Block block = world.getBlockAt(location);
     block.setType(getBlockMaterial());
-
-    playTeleportEffects();
   }
 
   public void destroy() {
-    if (!location.getChunk().isLoaded()) {
-      location.getChunk().load();
-    }
+    loadChunkIfNotLoaded();
+
     if (location.getBlock().getType() != getBlockMaterial()) return;
 
     location.getWorld().getBlockAt(location).setType(Material.AIR);
@@ -62,13 +54,17 @@ public abstract class AbstractTeleportingBlock {
     playTeleportEffects();
   }
 
-  public void open() {
-    if (hasBeenOpened) return;
-    hasBeenOpened = true;
+  private void loadChunkIfNotLoaded() {
+    int chunkX = location.blockX() >> 4;
+    int chunkZ = location.blockZ() >> 4;
+    boolean chunkLoaded = world.isChunkLoaded(chunkX, chunkZ);
+    if (!chunkLoaded) {
+      world.loadChunk(chunkX, chunkZ, true);
+    }
+  }
 
-    final int TELEPORT_BLOCK_TIME_SECONDS = 10;
-    Bukkit.getScheduler()
-        .runTaskLater(plugin, () -> hasBeenUsed = true, 20 * TELEPORT_BLOCK_TIME_SECONDS);
+  public void open() {
+    ticksToLive = 20 * 20;
   }
 
   private void playTeleportEffects() {

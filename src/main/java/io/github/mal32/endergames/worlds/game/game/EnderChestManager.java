@@ -18,27 +18,30 @@ import org.bukkit.loot.LootTable;
 import org.jetbrains.annotations.NotNull;
 
 public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChest> {
+
   public EnderChestManager(EnderGames plugin, Location spawnLocation) {
     super(plugin, spawnLocation);
   }
 
   @Override
-  public int getBlockTeleportDelayTicks() {
-    return 20 * 45;
+  public double getAvgBocksPerChunk() {
+    return 0.07;
   }
 
   @Override
-  protected int blocksPerPlayer() {
-    return 5;
+  protected int getBlockSecondsToLive() {
+    return 60 * 3 + 30;
   }
 
   @Override
   protected EnderChest getNewBlock(Location location) {
-    return new EnderChest(plugin, location);
+    return new EnderChest(plugin, location, getBlockSecondsToLive());
   }
 
   @EventHandler
   private void onEnderChestInteract(PlayerInteractEvent event) {
+    Player player = event.getPlayer();
+
     if (event.getAction() != Action.RIGHT_CLICK_BLOCK
         || event.getClickedBlock() == null
         || event.getClickedBlock().getType() != Material.ENDER_CHEST) {
@@ -48,36 +51,38 @@ public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChes
     Location blockLocation = event.getClickedBlock().getLocation().clone();
     EnderChest enderChest = getBlockAtLocation(blockLocation);
     if (enderChest == null) {
-      enderChest = new EnderChest(plugin, blockLocation);
+      enderChest = getNewBlock(blockLocation);
       blocks.add(enderChest);
     }
 
-    enderChest.prepareInventoryForOpen(event.getPlayer());
+    enderChest.prepareInventoryForOpen(player);
 
     EnderChest finalEnderChest = enderChest;
     Bukkit.getScheduler()
-        .runTask(plugin, () -> event.getPlayer().openInventory(finalEnderChest.getInventory()));
+        .runTask(plugin, () -> player.openInventory(finalEnderChest.getInventory()));
   }
 }
 
 class EnderChest extends AbstractTeleportingBlock implements InventoryHolder {
   private final Inventory inventory;
+  private boolean hasBeenOpened = false;
 
-  public EnderChest(EnderGames plugin, Location location) {
-    super(plugin, location);
+  public EnderChest(EnderGames plugin, Location location, int secondsToLive) {
+    super(plugin, location, secondsToLive);
 
     this.inventory = plugin.getServer().createInventory(this, 27, Component.text("Ender Chest"));
   }
 
   @Override
-  public void teleport(Location location) {
-    super.teleport(location);
+  public void destroy() {
+    super.destroy();
 
     new ArrayList<>(inventory.getViewers()).forEach(HumanEntity::closeInventory);
   }
 
   public void prepareInventoryForOpen(Player player) {
     if (hasBeenOpened) return;
+    hasBeenOpened = true;
 
     inventory.clear();
 
