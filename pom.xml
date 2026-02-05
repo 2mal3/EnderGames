@@ -28,6 +28,10 @@
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>modrinth</id>
+            <url>https://api.modrinth.com/maven/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -43,6 +47,12 @@
             <artifactId>bstats-bukkit</artifactId>
             <version>3.0.2</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>maven.modrinth</groupId>
+            <artifactId>advancementlib</artifactId>
+            <version>0.3.2</version>
         </dependency>
     </dependencies>
 
