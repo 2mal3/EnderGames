@@ -74,5 +74,5 @@ public abstract class AbstractKit extends AbstractModule {
 
   public abstract KitDescription getDescription();
 
-  public void registerAdvancement(AdvancementAPI api){}
+  public void registerAdvancement(AdvancementAPI api) {}
 }
