@@ -64,6 +64,10 @@ public class EnderGames extends JavaPlugin implements Listener {
     return gameWorld;
   }
 
+  public LobbyWorld getLobbyWorld() {
+    return lobbyWorld;
+  }
+
   public void teleportPlayerToGame(Player player) {
     player.getPersistentDataContainer().set(playerWorldKey, PersistentDataType.STRING, "game");
     gameWorld.initPlayer(player);

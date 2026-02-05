@@ -106,6 +106,10 @@ public class LobbyWorld extends AbstractWorld {
     }
   }
 
+  public void onGameEnd() {
+    menuManager.onGameEnd();
+  }
+
   @EventHandler
   public void onPlayerDamage(EntityDamageEvent event) {
     if (!(event.getEntity() instanceof Player player)) return;

@@ -41,6 +41,10 @@ public class GameWorld extends AbstractWorld {
     nextPhase();
   }
 
+  public boolean isGameRunning() {
+    return currentPhase instanceof GamePhase;
+  }
+
   public void nextPhase() {
     currentPhase.disable();
 
@@ -61,6 +65,7 @@ public class GameWorld extends AbstractWorld {
       plugin.getComponentLogger().info("Spawn location: " + spawnLocation);
 
       currentPhase = new LoadPhase(plugin, this, spawnLocation);
+      plugin.getLobbyWorld().onGameEnd();
     }
   }
 
