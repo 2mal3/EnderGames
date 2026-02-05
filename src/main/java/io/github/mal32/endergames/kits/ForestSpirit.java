@@ -1,8 +1,16 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+
+import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.ItemEnchantments;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -30,6 +38,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -40,7 +49,6 @@ public class ForestSpirit extends AbstractKit {
     // --- ability tuning ---
     private static final int GROWTH_COOLDOWN_SECONDS = 25;
     private static final double GROWTH_RADIUS = 6.0;
-    private static final int TREE_PRISON_DURATION_TICKS = 20 * 4; // 4s
 
     // --- stillness / rooted tree tuning ---
     private static final int ROOTS_TRIGGER_TICKS = 20 * 10; // 10s standing still
@@ -76,6 +84,17 @@ public class ForestSpirit extends AbstractKit {
     public void start(Player player) {
         Color biomeColor = getArmorColorForBiome(player.getLocation().getBlock().getBiome());
 
+        ItemStack green_dye = new ItemStack(Material.GREEN_DYE);
+        ItemMeta meta = green_dye.getItemMeta();
+        meta.displayName(
+                Component.text("Growth").color(NamedTextColor.DARK_GREEN).decoration(TextDecoration.ITALIC, false));
+        green_dye.setItemMeta(meta);
+        green_dye.setData(
+                DataComponentTypes.ENCHANTMENTS,
+                ItemEnchantments.itemEnchantments().add(Enchantment.VANISHING_CURSE, 1).build());
+        player.getInventory().addItem(green_dye);
+
+
         player.getInventory().setHelmet(createSpiritArmorPiece(Material.LEATHER_HELMET, biomeColor));
         player.getInventory().setChestplate(createSpiritArmorPiece(Material.LEATHER_CHESTPLATE, biomeColor));
         player.getInventory().setLeggings(createSpiritArmorPiece(Material.LEATHER_LEGGINGS, biomeColor));
@@ -100,15 +119,13 @@ public class ForestSpirit extends AbstractKit {
 
     @EventHandler
     private void onUseGrowth(PlayerInteractEvent event) {
-        if (event.getHand() != EquipmentSlot.HAND) return;
-        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-
         Player player = event.getPlayer();
         if (!playerCanUseThisKit(player)) return;
-        if (isOnGrowthCooldown(player)) return;
-
+        ItemStack item = event.getItem();
+        if (item == null || item.getType() != Material.GREEN_DYE) return;
+        if (player.hasCooldown(Material.GREEN_DYE)) return;
+        player.setCooldown(Material.GREEN_DYE, GROWTH_COOLDOWN_SECONDS * 20);
         activateGrowth(player);
-        setGrowthCooldown(player);
     }
 
     private void activateGrowth(Player caster) {
@@ -479,7 +496,7 @@ public class ForestSpirit extends AbstractKit {
     // ---------------------------------------------------------------------------
 
     private Material getLogForBiome(Biome biome) {
-        String name = biome.name();
+        String name = biome.toString();
 
         if (name.contains("JUNGLE")) return Material.JUNGLE_LOG;
         if (name.contains("BIRCH")) return Material.BIRCH_LOG;
@@ -497,7 +514,7 @@ public class ForestSpirit extends AbstractKit {
     }
 
     private Material getLeavesForBiome(Biome biome) {
-        String name = biome.name();
+        String name = biome.toString();
 
         if (name.contains("JUNGLE")) return Material.JUNGLE_LEAVES;
         if (name.contains("BIRCH")) return Material.BIRCH_LEAVES;
@@ -523,7 +540,7 @@ public class ForestSpirit extends AbstractKit {
     }
 
     private Color getArmorColorForBiome(Biome biome) {
-        String name = biome.name();
+        String name = biome.toString();
         if (name.contains("DARK_FOREST")) return Color.fromRGB(0x0B3D0B);
         if (name.contains("BIRCH")) return Color.fromRGB(0x3F7F3F);
         if (name.contains("TAIGA")
@@ -540,11 +557,6 @@ public class ForestSpirit extends AbstractKit {
     private boolean isOnGrowthCooldown(Player player) {
         long now = System.currentTimeMillis();
         return growthCooldownUntil.getOrDefault(player.getUniqueId(), 0L) > now;
-    }
-
-    private void setGrowthCooldown(Player player) {
-        long until = System.currentTimeMillis() + (GROWTH_COOLDOWN_SECONDS * 1000L);
-        growthCooldownUntil.put(player.getUniqueId(), until);
     }
 
     // ---------------------------------------------------------------------------
