@@ -5,6 +5,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
@@ -281,7 +283,9 @@ public class Lucker extends AbstractKit {
   private void applyLvL30Enchants(ItemStack item) {
     // gather all enchants that can apply
     List<Enchantment> pool =
-        Arrays.stream(Enchantment.values())
+        RegistryAccess.registryAccess()
+            .getRegistry(RegistryKey.ENCHANTMENT)
+            .stream()
             .filter(e -> e.canEnchantItem(item))
             .filter(e -> !e.isCursed())
             .collect(Collectors.toList());
