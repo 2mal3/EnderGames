@@ -16,14 +16,14 @@ public class WorldManager {
 
     WorldBorder border = this.world.getWorldBorder();
     border.setWarningDistance(32);
-    border.setWarningTime(60);
+    border.setWarningTimeTicks(60 * 20);
     border.setDamageBuffer(1);
 
     world.setStorm(false);
     world.setThundering(false);
-    world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-    world.setGameRule(GameRule.LOCATOR_BAR, false);
-    world.setGameRule(GameRule.DO_INSOMNIA, false);
+    world.setGameRule(GameRules.ADVANCE_WEATHER, false);
+    world.setGameRule(GameRules.LOCATOR_BAR, false);
+    world.setGameRule(GameRules.SPAWN_PHANTOMS, false);
 
     world.setDifficulty(Difficulty.EASY);
 

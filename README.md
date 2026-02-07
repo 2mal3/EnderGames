@@ -26,7 +26,7 @@ versions.
 
 ## Using the Plugin
 
-Install the plugin as usual on a Paper Server for Minecraft 1.21.10 of your choice. It is advisable to use a new world, as it can be damaged by the game.
+Install the plugin as usual on a Paper Server for Minecraft 1.21.11 of your choice. It is advisable to use a new world, as it can be damaged by the game.
 
 ### Recommended Server Settings
 

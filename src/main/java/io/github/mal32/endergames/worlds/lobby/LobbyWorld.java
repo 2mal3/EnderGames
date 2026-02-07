@@ -39,12 +39,12 @@ public class LobbyWorld extends AbstractWorld {
     this.menuManager = new MenuManager(this.plugin);
 
     lobbyWorld.setSpawnLocation(spawnLocation);
-    lobbyWorld.setGameRule(GameRule.SPAWN_RADIUS, 6);
-    lobbyWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-    lobbyWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+    lobbyWorld.setGameRule(GameRules.RESPAWN_RADIUS, 6);
+    lobbyWorld.setGameRule(GameRules.ADVANCE_TIME, false);
+    lobbyWorld.setGameRule(GameRules.ADVANCE_WEATHER, false);
     lobbyWorld.getWorldBorder().setSize(500);
 
-    lobbyWorld.setGameRule(GameRule.LOCATOR_BAR, false);
+    lobbyWorld.setGameRule(GameRules.LOCATOR_BAR, false);
 
     tryUpdatingLobby();
 
