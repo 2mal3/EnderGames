@@ -15,7 +15,7 @@ abstract class MenuItem {
   private final Material itemDisplay;
   private final Component name;
   private final String key;
-  private final byte slot;
+  protected final byte slot;
 
   protected MenuItem(
       EnderGames plugin, Material itemDisplay, Component name, String key, byte slot) {
@@ -46,4 +46,6 @@ abstract class MenuItem {
   }
 
   public abstract void playerInteract(PlayerInteractEvent event);
+
+  public void onGameEnd(Player player) {}
 }

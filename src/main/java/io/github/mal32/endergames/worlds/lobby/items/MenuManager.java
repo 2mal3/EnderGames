@@ -6,7 +6,6 @@ import io.github.mal32.endergames.worlds.lobby.LobbyWorld;
 import java.util.HashMap;
 import java.util.List;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,14 +19,13 @@ import org.bukkit.persistence.PersistentDataType;
 public class MenuManager extends AbstractModule {
   private final HashMap<String, MenuItem> items = new HashMap<>();
   private final NamespacedKey menuKey;
-  private final SpectatorItem spectatorItem;
 
   public MenuManager(EnderGames plugin) {
     super(plugin);
     enable();
 
-    this.spectatorItem = new SpectatorItem(plugin);
-    var rawItems = List.of(new KitSelector(plugin), new OperatorStartItem(plugin), spectatorItem);
+    var rawItems =
+        List.of(new KitSelector(plugin), new OperatorStartItem(plugin), new SpectatorItem(plugin));
     for (MenuItem item : rawItems) {
       items.put(item.getKey(), item);
     }
@@ -44,7 +42,9 @@ public class MenuManager extends AbstractModule {
   public void onGameEnd() {
     for (Player player : Bukkit.getOnlinePlayers()) {
       if (LobbyWorld.playerIsInLobbyWorld(player)) {
-        player.getInventory().setItem(4, new ItemStack(Material.AIR));
+        for (MenuItem item : items.values()) {
+          item.onGameEnd(player);
+        }
       }
     }
   }
