@@ -2,6 +2,7 @@ package io.github.mal32.endergames.worlds.lobby.items;
 
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.worlds.lobby.LobbyWorld;
 import java.util.HashMap;
 import java.util.List;
 import org.bukkit.Bukkit;
@@ -42,7 +43,7 @@ public class MenuManager extends AbstractModule {
 
   public void onGameStart() {
     for (Player player : Bukkit.getOnlinePlayers()) {
-      if (EnderGames.playerIsInLobbyWorld(player)) {
+      if (LobbyWorld.playerIsInLobbyWorld(player)) {
         spectatorItem.giveItem(player);
       }
     }
@@ -50,7 +51,7 @@ public class MenuManager extends AbstractModule {
 
   public void onGameEnd() {
     for (Player player : Bukkit.getOnlinePlayers()) {
-      if (EnderGames.playerIsInLobbyWorld(player)) {
+      if (LobbyWorld.playerIsInLobbyWorld(player)) {
         player.getInventory().setItem(4, new ItemStack(Material.AIR));
       }
     }
@@ -64,7 +65,7 @@ public class MenuManager extends AbstractModule {
   @EventHandler
   private void onPlayerInteract(PlayerInteractEvent event) {
     var player = event.getPlayer();
-    if (!EnderGames.playerIsInLobbyWorld(player)) return;
+    if (!LobbyWorld.playerIsInLobbyWorld(player)) return;
 
     ItemStack item = event.getItem();
     if (!isMenuItem(item)) return;
@@ -77,7 +78,7 @@ public class MenuManager extends AbstractModule {
   @EventHandler
   private void onInventoryClick(InventoryClickEvent event) {
     if (!(event.getWhoClicked() instanceof Player player)) return;
-    if (!EnderGames.playerIsInLobbyWorld(player)) return;
+    if (!LobbyWorld.playerIsInLobbyWorld(player)) return;
 
     ItemStack item = event.getCurrentItem();
     if (!isMenuItem(item)) return;
@@ -87,7 +88,7 @@ public class MenuManager extends AbstractModule {
 
   @EventHandler
   private void onPlayerDropItem(PlayerDropItemEvent event) {
-    if (!EnderGames.playerIsInLobbyWorld(event.getPlayer())) return;
+    if (!LobbyWorld.playerIsInLobbyWorld(event.getPlayer())) return;
 
     ItemStack item = event.getItemDrop().getItemStack();
     if (!isMenuItem(item)) return;
@@ -97,7 +98,7 @@ public class MenuManager extends AbstractModule {
 
   @EventHandler
   public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent event) {
-    if (!EnderGames.playerIsInLobbyWorld(event.getPlayer())) return;
+    if (!LobbyWorld.playerIsInLobbyWorld(event.getPlayer())) return;
 
     ItemStack item = event.getOffHandItem();
     if (!isMenuItem(item)) return;

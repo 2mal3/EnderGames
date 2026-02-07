@@ -3,10 +3,12 @@ package io.github.mal32.endergames.worlds.game;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.AbstractWorld;
 import io.github.mal32.endergames.worlds.game.game.GamePhase;
+import java.util.Objects;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.persistence.PersistentDataType;
 
 public class GameWorld extends AbstractWorld {
   private final WorldManager worldManager;
@@ -20,7 +22,22 @@ public class GameWorld extends AbstractWorld {
   }
 
   public static boolean playerIsInGame(Player player) {
-    return EnderGames.playerIsInGameWorld(player) && player.getGameMode() != GameMode.SPECTATOR;
+    return playerIsInGameWorld(player) && player.getGameMode() != GameMode.SPECTATOR;
+  }
+
+  public static boolean playerIsInGameWorld(Player player) {
+    var world =
+        player
+            .getPersistentDataContainer()
+            .get(EnderGames.playerWorldKey, PersistentDataType.STRING);
+    return Objects.equals(world, "game");
+  }
+
+  public void teleportPlayerToGame(Player player) {
+    player
+        .getPersistentDataContainer()
+        .set(EnderGames.playerWorldKey, PersistentDataType.STRING, "game");
+    initPlayer(player);
   }
 
   public static Player[] getPlayersInGame() {
@@ -31,7 +48,7 @@ public class GameWorld extends AbstractWorld {
 
   public static Player[] getPlayersInGameWorld() {
     return Bukkit.getOnlinePlayers().stream()
-        .filter(EnderGames::playerIsInGameWorld)
+        .filter(GameWorld::playerIsInGameWorld)
         .toArray(Player[]::new);
   }
 
@@ -58,7 +75,7 @@ public class GameWorld extends AbstractWorld {
       currentPhase = new EndPhase(plugin, this, spawnLocation);
     } else if (currentPhase instanceof EndPhase) {
       for (Player p : GameWorld.getPlayersInGameWorld()) {
-        plugin.teleportPlayerToLobby(p);
+        plugin.getLobbyWorld().teleportPlayerToLobby(p);
       }
 
       worldManager.findAndSaveNewSpawnLocation();
@@ -87,7 +104,7 @@ public class GameWorld extends AbstractWorld {
   @EventHandler
   public void onPlayerDamage(EntityDamageEvent event) {
     if (!(event.getEntity() instanceof Player player)) return;
-    if (!EnderGames.playerIsInGameWorld(player)) return;
+    if (!playerIsInGameWorld(player)) return;
     if (playerIsInGame(player)) return;
 
     event.setCancelled(true);
