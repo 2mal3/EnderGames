@@ -41,14 +41,6 @@ public class MenuManager extends AbstractModule {
     }
   }
 
-  public void onGameStart() {
-    for (Player player : Bukkit.getOnlinePlayers()) {
-      if (LobbyWorld.playerIsInLobbyWorld(player)) {
-        spectatorItem.giveItem(player);
-      }
-    }
-  }
-
   public void onGameEnd() {
     for (Player player : Bukkit.getOnlinePlayers()) {
       if (LobbyWorld.playerIsInLobbyWorld(player)) {
