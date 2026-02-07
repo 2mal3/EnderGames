@@ -1,6 +1,8 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import java.util.*;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
@@ -281,7 +283,7 @@ public class Lucker extends AbstractKit {
   private void applyLvL30Enchants(ItemStack item) {
     // gather all enchants that can apply
     List<Enchantment> pool =
-        Arrays.stream(Enchantment.values())
+        RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).stream()
             .filter(e -> e.canEnchantItem(item))
             .filter(e -> !e.isCursed())
             .collect(Collectors.toList());
