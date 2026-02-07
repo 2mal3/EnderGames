@@ -114,7 +114,7 @@ public class Death extends AbstractModule {
   @EventHandler
   private void onPlayerRespawn(PlayerPostRespawnEvent event) {
     Player player = event.getPlayer();
-    if (!EnderGames.playerIsInGameWorld(player)) return;
+    if (!GameWorld.playerIsInGameWorld(player)) return;
 
     Location deathPos = deathLocations.get(player.getUniqueId());
     if (deathPos == null) return;
