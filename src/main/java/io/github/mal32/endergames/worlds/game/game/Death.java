@@ -13,7 +13,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.GameRule;
+import org.bukkit.GameRules;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -43,7 +43,7 @@ public class Death extends AbstractModule {
 
     this.manager = manager;
 
-    world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
+    world.setGameRule(GameRules.IMMEDIATE_RESPAWN, true);
   }
 
   @EventHandler
@@ -114,7 +114,7 @@ public class Death extends AbstractModule {
   @EventHandler
   private void onPlayerRespawn(PlayerPostRespawnEvent event) {
     Player player = event.getPlayer();
-    if (!EnderGames.playerIsInGameWorld(player)) return;
+    if (!GameWorld.playerIsInGameWorld(player)) return;
 
     Location deathPos = deathLocations.get(player.getUniqueId());
     if (deathPos == null) return;

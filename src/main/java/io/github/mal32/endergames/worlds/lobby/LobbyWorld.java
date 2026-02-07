@@ -16,6 +16,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -38,12 +39,12 @@ public class LobbyWorld extends AbstractWorld {
     this.menuManager = new MenuManager(this.plugin);
 
     lobbyWorld.setSpawnLocation(spawnLocation);
-    lobbyWorld.setGameRule(GameRule.SPAWN_RADIUS, 6);
-    lobbyWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-    lobbyWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+    lobbyWorld.setGameRule(GameRules.RESPAWN_RADIUS, 6);
+    lobbyWorld.setGameRule(GameRules.ADVANCE_TIME, false);
+    lobbyWorld.setGameRule(GameRules.ADVANCE_WEATHER, false);
     lobbyWorld.getWorldBorder().setSize(500);
 
-    lobbyWorld.setGameRule(GameRule.LOCATOR_BAR, false);
+    lobbyWorld.setGameRule(GameRules.LOCATOR_BAR, false);
 
     tryUpdatingLobby();
 
@@ -78,6 +79,27 @@ public class LobbyWorld extends AbstractWorld {
     structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
   }
 
+  @EventHandler
+  public void onPlayerJoin(PlayerJoinEvent event) {
+    Player player = event.getPlayer();
+    Bukkit.getScheduler().runTaskLater(plugin, () -> teleportPlayerToLobby(player), 10);
+  }
+
+  public void teleportPlayerToLobby(Player player) {
+    player
+        .getPersistentDataContainer()
+        .set(EnderGames.playerWorldKey, PersistentDataType.STRING, "lobby");
+    initPlayer(player);
+  }
+
+  public static boolean playerIsInLobbyWorld(Player player) {
+    var world =
+        player
+            .getPersistentDataContainer()
+            .get(EnderGames.playerWorldKey, PersistentDataType.STRING);
+    return Objects.equals(world, "lobby");
+  }
+
   @Override
   public void initPlayer(Player player) {
     player.getInventory().clear();
@@ -106,10 +128,14 @@ public class LobbyWorld extends AbstractWorld {
     }
   }
 
+  public void onGameEnd() {
+    menuManager.onGameEnd();
+  }
+
   @EventHandler
   public void onPlayerDamage(EntityDamageEvent event) {
     if (!(event.getEntity() instanceof Player player)) return;
-    if (!EnderGames.playerIsInLobbyWorld(player)) return;
+    if (!playerIsInLobbyWorld(player)) return;
     if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) return;
 
     event.setCancelled(true);
@@ -118,7 +144,7 @@ public class LobbyWorld extends AbstractWorld {
   @EventHandler
   public void onFieldTrample(EntityChangeBlockEvent event) {
     if (!(event.getEntity() instanceof Player player)) return;
-    if (!EnderGames.playerIsInLobbyWorld(player)) return;
+    if (!playerIsInLobbyWorld(player)) return;
 
     if (event.getBlock().getType() != Material.FARMLAND) return;
 

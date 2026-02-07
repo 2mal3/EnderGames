@@ -20,7 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapCanvas;
-import org.bukkit.map.MapPalette;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
@@ -228,7 +227,7 @@ class MatrixMapRenderer extends MapRenderer {
                 : null;
 
         if (c != null) canvas.setPixelColor(px, py, c);
-        else canvas.setPixel(px, py, MapPalette.TRANSPARENT);
+        else canvas.setPixelColor(px, py, new Color(0.0f, 0.0f, 0.0f, 0.0f));
       }
     }
   }
@@ -246,7 +245,7 @@ class MatrixMapRenderer extends MapRenderer {
     while (n < MAX_PIXELS_PER_RENDER && !queue.isEmpty()) {
       QueuedPixel qp = queue.removeFirst();
       if (qp.c() != null) canvas.setPixelColor(qp.x(), qp.y(), qp.c());
-      else canvas.setPixel(qp.x(), qp.y(), MapPalette.TRANSPARENT);
+      else canvas.setPixelColor(qp.x(), qp.y(), new Color(0.0f, 0.0f, 0.0f, 0.0f));
       n++;
     }
   }
