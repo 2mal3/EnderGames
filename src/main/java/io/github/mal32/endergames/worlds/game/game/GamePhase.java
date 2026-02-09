@@ -91,7 +91,7 @@ public class GamePhase extends AbstractPhase {
 
     var worldBoarder = spawnLocation.getWorld().getWorldBorder();
 
-    worldBoarder.changeSize(50, 20 * 60 * 20);
+    worldBoarder.changeSize(50, 20 * 60 * 15);
     worldBoarder.setWarningDistance(32);
     worldBoarder.setWarningTimeTicks(60 * 20);
     worldBoarder.setDamageBuffer(1);
