@@ -2,6 +2,7 @@ package io.github.mal32.endergames.worlds.game.game;
 
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.worlds.game.GameWorld;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,7 +33,7 @@ public class FightDetection extends AbstractModule {
         || !(event.getDamager() instanceof Player damager)) {
       return;
     }
-    if (!EnderGames.playerIsInGameWorld(target) || !EnderGames.playerIsInGameWorld(damager)) {
+    if (!GameWorld.playerIsInGameWorld(target) || !GameWorld.playerIsInGameWorld(damager)) {
       return;
     }
 

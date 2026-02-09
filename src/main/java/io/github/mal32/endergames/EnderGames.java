@@ -11,32 +11,17 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.ArrayList;
-import java.util.Objects;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class EnderGames extends JavaPlugin implements Listener {
-  private static final NamespacedKey playerWorldKey = new NamespacedKey("endergames", "world");
+  public static final NamespacedKey playerWorldKey = new NamespacedKey("endergames", "world");
   private GameWorld gameWorld;
   private LobbyWorld lobbyWorld;
   private final MapManager mapManager = new MapManager();
-
-  public static boolean playerIsInLobbyWorld(Player player) {
-    var world = player.getPersistentDataContainer().get(playerWorldKey, PersistentDataType.STRING);
-    return Objects.equals(world, "lobby");
-  }
-
-  public static boolean playerIsInGameWorld(Player player) {
-    var world = player.getPersistentDataContainer().get(playerWorldKey, PersistentDataType.STRING);
-    return Objects.equals(world, "game");
-  }
 
   public void sendNewMapPixelsToLobby(ArrayList<MapPixel> pixelBatch) {
     mapManager.addToMapWall(pixelBatch);
@@ -75,14 +60,8 @@ public class EnderGames extends JavaPlugin implements Listener {
     return gameWorld;
   }
 
-  public void teleportPlayerToGame(Player player) {
-    player.getPersistentDataContainer().set(playerWorldKey, PersistentDataType.STRING, "game");
-    gameWorld.initPlayer(player);
-  }
-
-  public void teleportPlayerToLobby(Player player) {
-    player.getPersistentDataContainer().set(playerWorldKey, PersistentDataType.STRING, "lobby");
-    lobbyWorld.initPlayer(player);
+  public LobbyWorld getLobbyWorld() {
+    return lobbyWorld;
   }
 
   private LiteralCommandNode<CommandSourceStack> endergamesCommand() {
@@ -96,12 +75,6 @@ public class EnderGames extends JavaPlugin implements Listener {
                       return Command.SINGLE_SUCCESS;
                     }))
         .build();
-  }
-
-  @EventHandler
-  public void onPlayerJoin(PlayerJoinEvent event) {
-    Player player = event.getPlayer();
-    Bukkit.getScheduler().runTaskLater(this, () -> teleportPlayerToLobby(player), 10);
   }
 
   public static boolean isInDebugMode() {
