@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
+import org.joml.Random;
 
 public class Cactus extends AbstractKit {
   private final HashMap<UUID, ArrayList<BlockDisplay>> cactusPlayerMapping = new HashMap<>();
@@ -203,14 +204,25 @@ public class Cactus extends AbstractKit {
     }
 
     Location blockLocation = player.getLocation().getBlock().getLocation();
-    World world = player.getWorld();
-    for (int i = 0; i < 3; i++) {
+    int cactusBlockCount = new Random().nextInt(3) + 1;
+    int i = 0;
+    while (i < cactusBlockCount) {
       Location relativeLocation = blockLocation.clone().add(0, i, 0);
-      BlockDisplay blockDisplay =
-          (BlockDisplay) world.spawnEntity(relativeLocation, EntityType.BLOCK_DISPLAY);
-      blockDisplay.setBlock(Material.CACTUS.createBlockData());
-      cactusPlayerMapping.get(uuid).add(blockDisplay);
+      addBlockToCactus(relativeLocation, Material.CACTUS, uuid);
+
+      i++;
     }
+    if (Math.random() <= 0.3) {
+      Location relativeLocation = blockLocation.clone().add(0, i, 0);
+      addBlockToCactus(relativeLocation, Material.CACTUS_FLOWER, uuid);
+    }
+  }
+
+  private void addBlockToCactus(Location location, Material material, UUID uuid) {
+    BlockDisplay blockDisplay =
+        (BlockDisplay) location.getWorld().spawnEntity(location, EntityType.BLOCK_DISPLAY);
+    blockDisplay.setBlock(material.createBlockData());
+    cactusPlayerMapping.get(uuid).add(blockDisplay);
   }
 
   private void leaveCactus(Player player) {
