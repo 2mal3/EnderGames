@@ -1,6 +1,8 @@
 package io.github.mal32.endergames.kits;
 
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.worlds.game.GameWorld;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import java.time.LocalTime;
@@ -140,5 +142,19 @@ public class Blaze extends AbstractKit {
             + " in water. Sword or Bow hits have a 20% chance to ignite enemies",
         "Golden Sword and Burn Power",
         Difficulty.EASY);
+  }
+
+  @Override
+  public void registerAdvancement(AdvancementAPI api) {
+    api.register(PlayerInteractEvent.class)
+        .advancementKey("enga:blaze")
+        .condition(
+            (player, event) -> {
+              if (!GameWorld.playerIsInGame(player)) return false;
+              if (event.getItem() == null) return false;
+              return event.getItem().getType() == Material.FLINT_AND_STEEL;
+            })
+        .targetValue(5)
+        .build();
   }
 }
