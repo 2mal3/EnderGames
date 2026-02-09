@@ -39,7 +39,7 @@ public class WorldManager {
   // Why doesn't BiomeTagKeys.IS_OCEAN work?
   // using directly:
   // https://github.com/misode/mcmeta/blob/data/data/minecraft/tags/worldgen/biome/is_ocean.json
-  private static boolean isOcean(Biome biome) {
+  private static boolean isInvalidBiome(Biome biome) {
     return biome.equals(Biome.DEEP_FROZEN_OCEAN)
         || biome.equals(Biome.DEEP_COLD_OCEAN)
         || biome.equals(Biome.DEEP_OCEAN)
@@ -48,7 +48,10 @@ public class WorldManager {
         || biome.equals(Biome.OCEAN)
         || biome.equals(Biome.COLD_OCEAN)
         || biome.equals(Biome.LUKEWARM_OCEAN)
-        || biome.equals(Biome.WARM_OCEAN);
+        || biome.equals(Biome.WARM_OCEAN)
+        || biome.equals(Biome.JUNGLE)
+        || biome.equals(Biome.SPARSE_JUNGLE)
+        || biome.equals(Biome.BAMBOO_JUNGLE);
   }
 
   public Location getSpawnLocation() {
@@ -73,7 +76,7 @@ public class WorldManager {
     do {
       this.spawnLocation.add(1000, 0, 0);
       this.spawnLocation.getChunk().load(true);
-    } while (WorldManager.isOcean(this.spawnLocation.getBlock().getBiome()));
+    } while (WorldManager.isInvalidBiome(this.spawnLocation.getBlock().getBiome()));
 
     saveSpawnLocation();
     world.getWorldBorder().setCenter(spawnLocation);
