@@ -139,7 +139,7 @@ public class Blaze extends AbstractKit {
         Material.BLAZE_POWDER,
         "Blaze",
         "Can leave a fire trail for a short time. It is immune to fire damage, but gains Weakness I"
-            + " in water. Sword or Bow hits have a 20% chance to ignite enemies",
+            + " in water. Sword or Bow hits have a 20% chance to ignite enemies.",
         "Golden Sword and Burn Power",
         Difficulty.EASY);
   }
