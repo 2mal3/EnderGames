@@ -25,12 +25,12 @@ public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChes
 
   @Override
   public double getAvgBocksPerChunk() {
-    return 0.07;
+    return 0.05;
   }
 
   @Override
   protected int getBlockSecondsToLive() {
-    return 60 * 3 + 30;
+    return 60 * 3 + 10;
   }
 
   @Override
