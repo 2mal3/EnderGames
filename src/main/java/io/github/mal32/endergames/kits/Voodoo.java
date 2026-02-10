@@ -51,13 +51,12 @@ public class Voodoo extends AbstractKit {
     voodooTask.cancel();
   }
 
-  @EventHandler(priority = EventPriority.LOW)
+  @EventHandler(priority = EventPriority.HIGH)
   public void onPlayerDeath(PlayerDeathEvent event) {
     if (!playerCanUseThisKit(event.getPlayer())) return;
 
-    var player = event.getPlayer();
-    player.getInventory().clear();
-    player.setLevel(0);
+    event.getDrops().clear();
+    event.setShouldDropExperience(false);
   }
 
   @EventHandler
