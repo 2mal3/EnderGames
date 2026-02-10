@@ -110,9 +110,8 @@ public class Voodoo extends AbstractKit {
     return new KitDescription(
         Material.SCULK,
         "Voodoo",
-        "Doesn't drop items on death. Hitting players with arrows regenerates health. Making an"
-            + " enemy low on health gives you extra hearts for a short time. Nearby players get"
-            + " black hearts.",
+        "Hitting entities with arrows regenerates health. Critcaly damaging players gives a short"
+            + " health boost. Nearby players get black hearts.",
         "Bow with Piercing, 10 Arrows, Leather Boots",
         Difficulty.MEDIUM);
   }
