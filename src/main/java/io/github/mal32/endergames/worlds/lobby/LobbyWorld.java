@@ -82,7 +82,16 @@ public class LobbyWorld extends AbstractWorld {
   @EventHandler
   public void onPlayerJoin(PlayerJoinEvent event) {
     Player player = event.getPlayer();
-    Bukkit.getScheduler().runTaskLater(plugin, () -> teleportPlayerToLobby(player), 10);
+    Bukkit.getScheduler().runTaskLater(plugin, () -> teleportPlayerWhenReady(player), 1);
+  }
+
+  private void teleportPlayerWhenReady(Player player) {
+    boolean ready = !(player.isDead() || player.getLocation().getWorld() == null);
+    if (ready) {
+      teleportPlayerToLobby(player);
+    } else {
+      Bukkit.getScheduler().runTaskLater(plugin, () -> teleportPlayerWhenReady(player), 1);
+    }
   }
 
   public void teleportPlayerToLobby(Player player) {
