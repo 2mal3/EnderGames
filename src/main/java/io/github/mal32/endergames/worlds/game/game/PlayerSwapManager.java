@@ -38,17 +38,17 @@ public class PlayerSwapManager extends AbstractTask {
     Location player1Location = player1.getLocation().clone();
     Location player2Location = player2.getLocation().clone();
 
-    player1.teleport(player2Location);
-    player2.teleport(player1Location);
-
-    playerSwapEffects(player1);
-    playerSwapEffects(player2);
+    teleportPlayer(player1, player2Location);
+    teleportPlayer(player2, player1Location);
 
     switchIntoFightProtection(player1, player2);
   }
 
-  private void playerSwapEffects(Player player) {
-    Location location = player.getLocation();
+  private void teleportPlayer(Player player, Location location) {
+    player.getOpenInventory().close();
+
+    player.teleport(location);
+
     location.getWorld().playSound(location, Sound.ENTITY_PLAYER_TELEPORT, 1, 0.5f);
     location.getWorld().spawnParticle(Particle.PORTAL, location, 50, 0, 0, 0);
 
