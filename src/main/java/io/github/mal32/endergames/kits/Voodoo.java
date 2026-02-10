@@ -8,9 +8,11 @@ import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.Tag;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -57,6 +59,20 @@ public class Voodoo extends AbstractKit {
 
     event.getDrops().clear();
     event.setShouldDropExperience(false);
+
+    Location location = event.getEntity().getLocation();
+    World world = location.getWorld();
+    world.spawnParticle(
+        Particle.SMOKE,
+        location.getX(),
+        location.getY() + 0.5,
+        location.getZ(),
+        20,
+        0.5,
+        0.5,
+        0.5,
+        0);
+    world.playSound(location, Sound.ENTITY_GENERIC_BURN, SoundCategory.PLAYERS, 0.5f, 0.6f);
   }
 
   @EventHandler
