@@ -104,10 +104,14 @@ public class LoadPhase extends AbstractPhase {
       for (int y = 0; y < 16; y++) {
         Location blockHorizontalLocation = location.clone().add(x, 0, y);
         Block highestBlock = spawnLocation.getWorld().getHighestBlockAt(blockHorizontalLocation);
-        Block highestNonWaterBlock =
-            spawnLocation
-                .getWorld()
-                .getHighestBlockAt(blockHorizontalLocation, HeightMap.OCEAN_FLOOR);
+
+        Block highestNonWaterBlock = highestBlock;
+        if (highestBlock.getType() == Material.WATER) {
+          highestNonWaterBlock =
+              spawnLocation
+                  .getWorld()
+                  .getHighestBlockAt(blockHorizontalLocation, HeightMap.OCEAN_FLOOR);
+        }
 
         int waterBlocksAbove = highestBlock.getY() - highestNonWaterBlock.getY();
 
