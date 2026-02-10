@@ -104,7 +104,14 @@ public class LoadPhase extends AbstractPhase {
       for (int y = 0; y < 16; y++) {
         Location blockHorizontalLocation = location.clone().add(x, 0, y);
         Block highestBlock = spawnLocation.getWorld().getHighestBlockAt(blockHorizontalLocation);
-        Color color = getBlockColor(highestBlock);
+        Block highestNonWaterBlock =
+            spawnLocation
+                .getWorld()
+                .getHighestBlockAt(blockHorizontalLocation, HeightMap.OCEAN_FLOOR);
+
+        int waterBlocksAbove = highestBlock.getY() - highestNonWaterBlock.getY();
+
+        Color color = getBlockColor(highestNonWaterBlock, waterBlocksAbove);
 
         Location delta = blockHorizontalLocation.clone().subtract(spawnHorizontalLocation);
         Location inverted = delta.multiply(-1);
@@ -125,7 +132,7 @@ public class LoadPhase extends AbstractPhase {
     pendingPixels.clear();
   }
 
-  private static Color getBlockColor(Block block) {
+  private static Color getBlockColor(Block block, int waterBlocksAbove) {
     var blockBukkitColor = block.getBlockData().getMapColor();
     Color blockColor =
         new Color(
@@ -141,10 +148,35 @@ public class LoadPhase extends AbstractPhase {
         };
     for (Block adjacent : adjacentBlocks) {
       if (adjacent.isSolid() && !adjacent.isLiquid()) {
-        blockColor = blockColor.darker();
+        if (waterBlocksAbove == 0) {
+          blockColor = blockColor.darker();
+        } else {
+          blockColor = blockColor.brighter();
+        }
       }
     }
 
+    if (waterBlocksAbove != 0) {
+      blockColor = applyWaterColorEffect(blockColor, waterBlocksAbove);
+    }
+
     return blockColor;
+  }
+
+  private static Color applyWaterColorEffect(Color c, int waterBlocksAbove) {
+    double depth = 1.0 - Math.exp(-waterBlocksAbove / 12.0);
+
+    double t = 0.65 + 0.10 * depth; // more blue
+    double s = 1.00 - (0.40 + 0.07 * depth); // more dark
+
+    int r = (int) Math.round((c.getRed() + (30 - c.getRed()) * t) * s);
+    int g = (int) Math.round((c.getGreen() + (80 - c.getGreen()) * t) * s);
+    int b = (int) Math.round((c.getBlue() + (255 - c.getBlue()) * t) * s);
+
+    return new Color(colorClamp(r), colorClamp(g), colorClamp(b), c.getAlpha());
+  }
+
+  private static int colorClamp(int v) {
+    return Math.max(0, Math.min(255, v));
   }
 }
