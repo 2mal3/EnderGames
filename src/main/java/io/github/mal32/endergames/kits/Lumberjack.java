@@ -40,26 +40,33 @@ public class Lumberjack extends AbstractKit {
     if (!playerCanUseThisKit(event.getPlayer())) return;
 
     Location location = event.getBlock().getLocation().add(0, 1, 0);
-    breakTree(location, event.getPlayer());
+    breakTree(location, event.getPlayer(), 5, false);
   }
 
-  private void breakTree(Location location, Player player) {
+  private void breakTree(Location location, Player player, double leaveBudget, boolean leaveMode) {
+    if (leaveBudget <= 0) return;
     Block block = location.getBlock();
     Material material = block.getType();
     if (!Tag.LOGS.isTagged(material) && !Tag.LEAVES.isTagged(material)) return;
 
     if (Tag.LOGS.isTagged(material)) {
+      if (leaveMode) return;
       var item = new ItemStack(material);
       player.getInventory().addItem(item);
     }
 
+    if (Tag.LEAVES.isTagged(material)) {
+      leaveMode = true;
+      leaveBudget--;
+    }
+
     block.setType(Material.AIR);
 
-    breakTree(location.clone().add(1, 0, 0), player);
-    breakTree(location.clone().add(-1, 0, 0), player);
-    breakTree(location.clone().add(0, 1, 0), player);
-    breakTree(location.clone().add(0, 0, 1), player);
-    breakTree(location.clone().add(0, 0, -1), player);
+    breakTree(location.clone().add(0, 1, 0), player, leaveBudget, leaveMode);
+    breakTree(location.clone().add(1, 0, 0), player, leaveBudget, leaveMode);
+    breakTree(location.clone().add(-1, 0, 0), player, leaveBudget, leaveMode);
+    breakTree(location.clone().add(0, 0, 1), player, leaveBudget, leaveMode);
+    breakTree(location.clone().add(0, 0, -1), player, leaveBudget, leaveMode);
   }
 
   @EventHandler

@@ -3,9 +3,19 @@ package io.github.mal32.endergames.kits;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import io.github.mal32.endergames.worlds.game.game.PotionEffectsStacking;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
+import org.bukkit.Tag;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -14,7 +24,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -41,13 +53,26 @@ public class Voodoo extends AbstractKit {
     voodooTask.cancel();
   }
 
-  @EventHandler(priority = EventPriority.LOW)
+  @EventHandler(priority = EventPriority.HIGH)
   public void onPlayerDeath(PlayerDeathEvent event) {
     if (!playerCanUseThisKit(event.getPlayer())) return;
 
-    var player = event.getPlayer();
-    player.getInventory().clear();
-    player.setLevel(0);
+    event.getDrops().clear();
+    event.setShouldDropExperience(false);
+
+    Location location = event.getEntity().getLocation();
+    World world = location.getWorld();
+    world.spawnParticle(
+        Particle.SMOKE,
+        location.getX(),
+        location.getY() + 0.5,
+        location.getZ(),
+        20,
+        0.5,
+        0.5,
+        0.5,
+        0);
+    world.playSound(location, Sound.ENTITY_GENERIC_BURN, SoundCategory.PLAYERS, 0.5f, 0.6f);
   }
 
   @EventHandler
@@ -55,10 +80,11 @@ public class Voodoo extends AbstractKit {
     if (!(event.getDamager() instanceof Arrow arrow)) return;
     if (!(arrow.getShooter() instanceof Player shooter)) return;
     if (!playerCanUseThisKit(shooter)) return;
-    if (!(event.getEntity() instanceof Player)) return;
 
+    final int regeneratedHealt = 1;
     PotionEffectsStacking.addPotionEffect(
-        shooter, new PotionEffect(PotionEffectType.REGENERATION, 1, 5, true, false, false));
+        shooter,
+        new PotionEffect(PotionEffectType.REGENERATION, regeneratedHealt, 5, true, false, false));
   }
 
   @EventHandler
@@ -88,10 +114,43 @@ public class Voodoo extends AbstractKit {
     }
   }
 
+  @EventHandler
+  private void onPlayerMove(PlayerMoveEvent event) {
+    if (!event.hasChangedBlock()) return;
+    Player player = event.getPlayer();
+    if (!playerCanUseThisKit(player)) return;
+
+    Location targetLocation = event.getTo();
+    Block targetBlock = targetLocation.getBlock();
+    if (!Tag.FLOWERS.isTagged(targetBlock.getType())) return;
+    if (targetBlock.getType() == Material.WITHER_ROSE) return;
+
+    targetBlock.setType(Material.WITHER_ROSE);
+    targetLocation
+        .getWorld()
+        .playSound(
+            targetLocation, Sound.BLOCK_CACTUS_FLOWER_PLACE, SoundCategory.PLAYERS, 0.5f, 0.8f);
+  }
+
+  @EventHandler
+  private void cancelWitherRoseInfection(EntityPotionEffectEvent event) {
+    if (!(event.getEntity() instanceof Player player)) return;
+    if (!playerCanUseThisKit(player)) return;
+    if (event.getCause() != EntityPotionEffectEvent.Cause.WITHER_ROSE) return;
+
+    event.setCancelled(true);
+  }
+
   @Override
   public void start(Player player) {
     var playerInventory = player.getInventory();
-    playerInventory.addItem(new ItemStack(Material.BOW));
+
+    var bow = new ItemStack(Material.BOW);
+    bow.setData(
+        DataComponentTypes.ENCHANTMENTS,
+        ItemEnchantments.itemEnchantments().add(Enchantment.PIERCING, 1).build());
+    playerInventory.addItem(bow);
+
     playerInventory.addItem(new ItemStack(Material.ARROW, 10));
     playerInventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
   }
@@ -101,10 +160,9 @@ public class Voodoo extends AbstractKit {
     return new KitDescription(
         Material.SCULK,
         "Voodoo",
-        "Doesn't drop items on death. Hitting players with arrows regenerates health. Making an"
-            + " enemy low on health gives you extra hearts for a short time. Nearby players get"
-            + " black hearts.",
-        "Bow with 10 arrows. Leather boots.",
+        "Hitting entities with arrows regenerates health. Critcaly damaging players gives a short"
+            + " health boost. Nearby players get black hearts.",
+        "Bow with Piercing, 10 Arrows, Leather Boots",
         Difficulty.MEDIUM);
   }
 
