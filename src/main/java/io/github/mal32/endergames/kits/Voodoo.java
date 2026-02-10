@@ -6,8 +6,13 @@ import io.github.mal32.endergames.worlds.game.game.PotionEffectsStacking;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
+import org.bukkit.Tag;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -17,7 +22,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -89,6 +96,33 @@ public class Voodoo extends AbstractKit {
         }
       }
     }
+  }
+
+  @EventHandler
+  private void onPlayerMove(PlayerMoveEvent event) {
+    if (!event.hasChangedBlock()) return;
+    Player player = event.getPlayer();
+    if (!playerCanUseThisKit(player)) return;
+
+    Location targetLocation = event.getTo();
+    Block targetBlock = targetLocation.getBlock();
+    if (!Tag.FLOWERS.isTagged(targetBlock.getType())) return;
+    if (targetBlock.getType() == Material.WITHER_ROSE) return;
+
+    targetBlock.setType(Material.WITHER_ROSE);
+    targetLocation
+        .getWorld()
+        .playSound(
+            targetLocation, Sound.BLOCK_CACTUS_FLOWER_PLACE, SoundCategory.PLAYERS, 0.5f, 0.8f);
+  }
+
+  @EventHandler
+  private void cancelWitherRoseInfection(EntityPotionEffectEvent event) {
+    if (!(event.getEntity() instanceof Player player)) return;
+    if (!playerCanUseThisKit(player)) return;
+    if (event.getCause() != EntityPotionEffectEvent.Cause.WITHER_ROSE) return;
+
+    event.setCancelled(true);
   }
 
   @Override
