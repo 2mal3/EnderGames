@@ -3,9 +3,12 @@ package io.github.mal32.endergames.kits;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import io.github.mal32.endergames.worlds.game.game.PotionEffectsStacking;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -91,7 +94,13 @@ public class Voodoo extends AbstractKit {
   @Override
   public void start(Player player) {
     var playerInventory = player.getInventory();
-    playerInventory.addItem(new ItemStack(Material.BOW));
+
+    var bow = new ItemStack(Material.BOW);
+    bow.setData(
+        DataComponentTypes.ENCHANTMENTS,
+        ItemEnchantments.itemEnchantments().add(Enchantment.PIERCING, 1).build());
+    playerInventory.addItem(bow);
+
     playerInventory.addItem(new ItemStack(Material.ARROW, 10));
     playerInventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
   }
@@ -104,7 +113,7 @@ public class Voodoo extends AbstractKit {
         "Doesn't drop items on death. Hitting players with arrows regenerates health. Making an"
             + " enemy low on health gives you extra hearts for a short time. Nearby players get"
             + " black hearts.",
-        "Bow with 10 arrows. Leather boots.",
+        "Bow with Piercing, 10 Arrows, Leather Boots",
         Difficulty.MEDIUM);
   }
 
