@@ -54,6 +54,12 @@
           "quality": 2,
           "functions": [
             {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:potion_duration_scale": 0.5
+              }
+            },
+            {
               "function": "minecraft:set_potion",
               "id": "minecraft:poison"
             }
