@@ -56,10 +56,11 @@ of this plugin are solely responsible for its content and maintenance.
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/2mal3"><img src="https://avatars.githubusercontent.com/u/56305732?v=4?s=100" width="100px;" alt="2mal3"/><br /><sub><b>2mal3</b></sub></a><br /><a href="https://github.com/2mal3/EnderGames/commits?author=2mal3" title="Code">💻</a> <a href="https://github.com/2mal3/EnderGames/commits?author=2mal3" title="Documentation">📖</a> <a href="#ideas-2mal3" title="Ideas, Planning, & Feedback">🤔</a> <a href="#userTesting-2mal3" title="User Testing">📓</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/MCsharerGIT"><img src="https://avatars.githubusercontent.com/u/98043315?v=4?s=100" width="100px;" alt="Mathis Jänisch"/><br /><sub><b>Mathis Jänisch</b></sub></a><br /><a href="https://github.com/2mal3/EnderGames/commits?author=MCsharerGIT" title="Code">💻</a> <a href="#ideas-MCsharerGIT" title="Ideas, Planning, & Feedback">🤔</a> <a href="#userTesting-MCsharerGIT" title="User Testing">📓</a> <a href="https://github.com/2mal3/EnderGames/commits?author=MCsharerGIT" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/MCsharerGIT"><img src="https://avatars.githubusercontent.com/u/98043315?v=4?s=100" width="100px;" alt="Mathis Jänisch"/><br /><sub><b>Mathis Jänisch</b></sub></a><br /><a href="https://github.com/2mal3/EnderGames/commits?author=MCsharerGIT" title="Code">💻</a> <a href="#ideas-MCsharerGIT" title="Ideas, Planning, & Feedback">🤔</a> <a href="#userTesting-MCsharerGIT" title="User Testing">📓</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/EisnerCode"><img src="https://avatars.githubusercontent.com/u/100302756?v=4?s=100" width="100px;" alt="Eisner"/><br /><sub><b>Eisner</b></sub></a><br /><a href="#mentoring-EisnerCode" title="Mentoring">🧑‍🏫</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/6mal7"><img src="https://avatars.githubusercontent.com/u/184911647?v=4?s=100" width="100px;" alt="Julian"/><br /><sub><b>Julian</b></sub></a><br /><a href="https://github.com/2mal3/EnderGames/commits?author=6mal7" title="Code">💻</a> <a href="#ideas-6mal7" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Nonkki"><img src="https://avatars.githubusercontent.com/u/213216737?v=4?s=100" width="100px;" alt="Nonkki"/><br /><sub><b>Nonkki</b></sub></a><br /><a href="#content-Nonkki" title="Content">🖋</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/programmer-44"><img src="https://avatars.githubusercontent.com/u/129310925?v=4?s=100" width="100px;" alt="E44"/><br /><sub><b>E44</b></sub></a><br /><a href="https://github.com/2mal3/EnderGames/commits?author=programmer-44" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
@@ -71,7 +72,6 @@ of this plugin are solely responsible for its content and maintenance.
 
 ### Other Playtesters
 
-- [E44](https://github.com/programmer-44)
 - Sulfenir
 - BrosGamer501
 - pantaloneon

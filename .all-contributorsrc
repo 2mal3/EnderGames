@@ -30,8 +30,7 @@
       "contributions": [
         "code",
         "ideas",
-        "userTesting",
-        "doc"
+        "userTesting"
       ]
     },
     {
@@ -60,6 +59,15 @@
       "profile": "https://github.com/Nonkki",
       "contributions": [
         "content"
+      ]
+    },
+    {
+      "login": "programmer-44",
+      "name": "E44",
+      "avatar_url": "https://avatars.githubusercontent.com/u/129310925?v=4",
+      "profile": "https://github.com/programmer-44",
+      "contributions": [
+        "code"
       ]
     }
   ],
