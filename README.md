@@ -23,6 +23,7 @@ versions.
 - cheaper Anvil recipe
 - items in Furnaces smelt faster
 - potion effects stack
+- no Spear recipe
 
 ## Using the Plugin
 
