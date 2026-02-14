@@ -51,7 +51,9 @@ public class WorldManager {
         || biome.equals(Biome.WARM_OCEAN)
         || biome.equals(Biome.JUNGLE)
         || biome.equals(Biome.SPARSE_JUNGLE)
-        || biome.equals(Biome.BAMBOO_JUNGLE);
+        || biome.equals(Biome.BAMBOO_JUNGLE)
+        || biome.equals(Biome.RIVER)
+        || biome.equals(Biome.STONY_SHORE);
   }
 
   public Location getSpawnLocation() {
