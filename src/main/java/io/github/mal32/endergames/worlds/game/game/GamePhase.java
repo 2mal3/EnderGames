@@ -23,6 +23,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -216,5 +218,23 @@ public class GamePhase extends AbstractPhase {
     Furnace furnace = (Furnace) block.getState();
     furnace.setCookSpeedMultiplier(4);
     furnace.update();
+  }
+
+  @EventHandler
+  private void onPlayerTeleportIntoWorldBoarder(PlayerTeleportEvent event) {
+    if (event.getCause() != TeleportCause.ENDER_PEARL) return;
+    if (!GameWorld.playerIsInGame(event.getPlayer())) return;
+
+    Location toLocation = event.getTo();
+    var worldBoarder = toLocation.getWorld().getWorldBorder();
+    var xDiff = Math.abs(worldBoarder.getCenter().getX() - toLocation.getX()) + 1;
+    var zDiff = Math.abs(worldBoarder.getCenter().getZ() - toLocation.getZ()) + 1;
+    var worldBoarderRadius = worldBoarder.getSize() / 2;
+    if (!(xDiff >= worldBoarderRadius || zDiff >= worldBoarderRadius)) return;
+
+    int lowestBlockY =
+        toLocation.getWorld().getHighestBlockAt(toLocation).getLocation().add(0, 1, 0).getBlockY();
+    toLocation.setY(lowestBlockY);
+    event.setTo(toLocation);
   }
 }
