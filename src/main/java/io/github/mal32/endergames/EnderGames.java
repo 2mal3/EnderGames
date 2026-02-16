@@ -23,8 +23,9 @@ public class EnderGames extends JavaPlugin implements Listener {
   private LobbyWorld lobbyWorld;
   private final MapManager mapManager = new MapManager();
 
-  public void sendNewMapPixelsToLobby(ArrayList<MapPixel> pixelBatch) {
-    mapManager.addToMapWall(pixelBatch);
+  public void changeMapPixelsInLobby(
+      ArrayList<MapPixel> changedMapPixels, boolean forceFullUpdate) {
+    mapManager.addToMapWall(changedMapPixels, forceFullUpdate);
   }
 
   @Override
