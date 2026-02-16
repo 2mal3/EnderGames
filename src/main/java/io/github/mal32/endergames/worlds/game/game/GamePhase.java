@@ -223,17 +223,16 @@ public class GamePhase extends AbstractPhase {
     if (event.getCause() != TeleportCause.ENDER_PEARL) return;
     if (!GameWorld.playerIsInGame(event.getPlayer())) return;
 
-    Location location = event.getTo();
-    var worldBoarder = location.getWorld().getWorldBorder();
-    var xDiff = Math.abs(worldBoarder.getCenter().getX() - location.getX());
-    var zDiff = Math.abs(worldBoarder.getCenter().getZ() - location.getZ());
+    Location toLocation = event.getTo();
+    var worldBoarder = toLocation.getWorld().getWorldBorder();
+    var xDiff = Math.abs(worldBoarder.getCenter().getX() - toLocation.getX()) + 1;
+    var zDiff = Math.abs(worldBoarder.getCenter().getZ() - toLocation.getZ()) + 1;
     var worldBoarderRadius = worldBoarder.getSize() / 2;
     if (!(xDiff >= worldBoarderRadius || zDiff >= worldBoarderRadius)) return;
 
-    final int effectDurationSeconds = 15;
-    PotionEffectsStacking.addPotionEffect(
-        event.getPlayer(),
-        new PotionEffect(
-            PotionEffectType.SLOW_FALLING, 20 * effectDurationSeconds, 4, true, false, true));
+    int lowestBlockY =
+        toLocation.getWorld().getHighestBlockAt(toLocation).getLocation().add(0, 1, 0).getBlockY();
+    toLocation.setY(lowestBlockY);
+    event.setTo(toLocation);
   }
 }
