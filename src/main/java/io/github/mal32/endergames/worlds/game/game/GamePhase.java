@@ -92,9 +92,11 @@ public class GamePhase extends AbstractPhase {
     var worldBoarder = spawnLocation.getWorld().getWorldBorder();
 
     worldBoarder.changeSize(50, 20 * 60 * 15);
+    // Make the world boarder less frustrating
     worldBoarder.setWarningDistance(32);
     worldBoarder.setWarningTimeTicks(60 * 20);
     worldBoarder.setDamageBuffer(10);
+    worldBoarder.setDamageAmount(0.1);
 
     int spawnPlatformRemoveDelaySeconds = EnderGames.isInDebugMode() ? 60 * 10 : 30;
     plugin
