@@ -2,14 +2,7 @@ package io.github.mal32.endergames.worlds.lobby;
 
 import io.github.mal32.endergames.MapPixel;
 import java.awt.Color;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,6 +15,7 @@ import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
+import org.jspecify.annotations.NonNull;
 
 record MapTile(int x, int y) {}
 
@@ -39,34 +33,34 @@ public class MapManager {
   private static final BlockFace WALL_FACING = BlockFace.NORTH;
 
   // deterministic spiral: center -> outward
-  private static final List<MapTile> SPIRAL_ORDER = buildSpiralOrder(TILES);
-
-  private final Color[][] matrix = new Color[MATRIX_SIZE][MATRIX_SIZE];
+  private static final List<MapTile> SPIRAL_ORDER = buildSpiralOrder();
 
   // cache: create once, reuse forever
-  private final Map<MapTile, MapView> views = new HashMap<>();
   private final Map<MapTile, MatrixMapRenderer> renderers = new HashMap<>();
-  private final Map<MapTile, ItemFrame> frames = new HashMap<>();
   private boolean initialized = false;
 
-  private static List<MapTile> buildSpiralOrder(int size) {
-    int cx = size / 2;
-    int cy = size / 2;
+  private static List<MapTile> buildSpiralOrder() {
+    int cx = MapManager.TILES / 2;
+    int cy = MapManager.TILES / 2;
 
-    var out = new ArrayList<MapTile>(size * size);
+    var out = new ArrayList<MapTile>(MapManager.TILES * MapManager.TILES);
     int x = cx, y = cy;
     out.add(new MapTile(x, y));
 
     int step = 1;
-    while (out.size() < size * size) {
+    while (out.size() < MapManager.TILES * MapManager.TILES) {
       // right, down
-      for (int i = 0; i < step && out.size() < size * size; i++) out.add(new MapTile(++x, y));
-      for (int i = 0; i < step && out.size() < size * size; i++) out.add(new MapTile(x, ++y));
+      for (int i = 0; i < step && out.size() < MapManager.TILES * MapManager.TILES; i++)
+        out.add(new MapTile(++x, y));
+      for (int i = 0; i < step && out.size() < MapManager.TILES * MapManager.TILES; i++)
+        out.add(new MapTile(x, ++y));
       step++;
 
       // left, up
-      for (int i = 0; i < step && out.size() < size * size; i++) out.add(new MapTile(--x, y));
-      for (int i = 0; i < step && out.size() < size * size; i++) out.add(new MapTile(x, --y));
+      for (int i = 0; i < step && out.size() < MapManager.TILES * MapManager.TILES; i++)
+        out.add(new MapTile(--x, y));
+      for (int i = 0; i < step && out.size() < MapManager.TILES * MapManager.TILES; i++)
+        out.add(new MapTile(x, --y));
       step++;
     }
     return out;
@@ -83,8 +77,7 @@ public class MapManager {
         int worldX = WALL_START_X - tx; // tx 0..4 -> x 5..1
         int worldY = WALL_START_Y - ty; // ty 0..4 -> y 75..71
 
-        ItemFrame frame = findTargetFrame(world, worldX, worldY, WALL_Z);
-        frames.put(tile, frame);
+        ItemFrame frame = findTargetFrame(world, worldX, worldY);
 
         MapView view = Bukkit.createMap(world);
         for (var r : List.copyOf(view.getRenderers())) view.removeRenderer(r);
@@ -93,10 +86,9 @@ public class MapManager {
         view.setUnlimitedTracking(false);
         view.setLocked(true);
 
-        MatrixMapRenderer renderer = new MatrixMapRenderer(matrix, tx, ty);
+        MatrixMapRenderer renderer = new MatrixMapRenderer(tx, ty);
         view.addRenderer(renderer);
 
-        views.put(tile, view);
         renderers.put(tile, renderer);
 
         ItemStack filled = new ItemStack(Material.FILLED_MAP);
@@ -112,8 +104,8 @@ public class MapManager {
     initialized = true;
   }
 
-  private ItemFrame findTargetFrame(World world, int x, int y, int zWall) {
-    Location expected = new Location(world, x + 0.5, y + 0.5, zWall + 0.5);
+  private ItemFrame findTargetFrame(World world, int x, int y) {
+    Location expected = new Location(world, x + 0.5, y + 0.5, MapManager.WALL_Z + 0.5);
 
     return world.getNearbyEntities(expected, 1.5, 1.5, 1.5, e -> e instanceof ItemFrame).stream()
         .map(e -> (ItemFrame) e)
@@ -128,34 +120,25 @@ public class MapManager {
                         + " y="
                         + y
                         + " near z="
-                        + zWall
+                        + MapManager.WALL_Z
                         + " facing "
                         + WALL_FACING));
   }
 
-  private void addChunkPixelsToMatrix(ArrayList<MapPixel> chunkPixels) {
-    for (MapPixel pixel : chunkPixels) {
-      matrix[pixel.y()][pixel.x()] = pixel.color();
-    }
-  }
-
-  private int getTileIndexOfCoordinate(int coord) {
-    int coordWithBorder = coord + CENTER_OFFSET;
-    return coordWithBorder / TILE;
+  private int getTileIndexOfCoordinate(int cord) {
+    int cordWithBorder = cord + CENTER_OFFSET;
+    return cordWithBorder / TILE;
   }
 
   /**
    * Main entry: pushes pixels into per-tile queues so updates appear gradually without map reload
    * flicker.
    */
-  public void addToMapWall(ArrayList<MapPixel> chunkPixels) {
+  public void addToMapWall(ArrayList<MapPixel> chunkPixels, boolean forceFullUpdate) {
     World world = Bukkit.getWorld("world_enga_lobby");
     if (world == null) return;
 
     ensureInitialized(world);
-
-    // persist new pixels in the backing matrix (source of truth)
-    addChunkPixelsToMatrix(chunkPixels);
 
     // group pixels by tile (so we can enqueue them in spiral order)
     Map<MapTile, ArrayList<MapPixel>> pixelsByTile = new HashMap<>();
@@ -176,77 +159,84 @@ public class MapManager {
 
       ArrayList<MapPixel> list = pixelsByTile.get(tile);
       if (list != null && !list.isEmpty()) {
-        renderer.enqueuePixels(list);
-      }
-    }
-  }
-}
-
-class MatrixMapRenderer extends MapRenderer {
-  private static final int TILE = 128;
-  private static final int MATRIX_SIZE = 600;
-  private static final int CENTER_OFFSET = (5 * TILE - MATRIX_SIZE) / 2;
-
-  // How many pixel updates to apply per render call (controls "gradualness")
-  private static final int MAX_PIXELS_PER_RENDER = 4096;
-
-  private final Color[][] matrix;
-  private final int originX;
-  private final int originY;
-
-  private boolean initialDrawDone = false;
-
-  private record QueuedPixel(int x, int y, Color c) {}
-
-  private final ArrayDeque<QueuedPixel> queue = new ArrayDeque<>();
-
-  public MatrixMapRenderer(Color[][] matrix, int tileX, int tileY) {
-    this.matrix = matrix;
-    this.originX = tileX * TILE - CENTER_OFFSET;
-    this.originY = tileY * TILE - CENTER_OFFSET;
-  }
-
-  public void enqueuePixels(List<MapPixel> pixels) {
-    for (MapPixel p : pixels) {
-      int lx = p.x() - originX;
-      int ly = p.y() - originY;
-      if (lx < 0 || lx >= TILE || ly < 0 || ly >= TILE) continue; // safety
-      queue.addLast(new QueuedPixel(lx, ly, p.color()));
-    }
-  }
-
-  private void drawFullTile(MapCanvas canvas) {
-    for (int py = 0; py < TILE; py++) {
-      for (int px = 0; px < TILE; px++) {
-        int srcX = originX + px;
-        int srcY = originY + py;
-
-        Color c =
-            (srcX >= 0 && srcX < MATRIX_SIZE && srcY >= 0 && srcY < MATRIX_SIZE)
-                ? matrix[srcY][srcX]
-                : null;
-
-        if (c != null) canvas.setPixelColor(px, py, c);
-        else canvas.setPixelColor(px, py, new Color(0.0f, 0.0f, 0.0f, 0.0f));
+        renderer.enqueuePixels(list, forceFullUpdate);
       }
     }
   }
 
-  @Override
-  public void render(MapView mapView, MapCanvas canvas, Player player) {
-    // First time: draw whatever we have (so maps don't show vanilla/placeholder)
-    if (!initialDrawDone) {
-      drawFullTile(canvas);
-      initialDrawDone = true;
+  static class MatrixMapRenderer extends MapRenderer {
+    private static final int TILE = 128;
+    private static final int TILE_PIXELS = TILE * TILE;
+    private static final int MATRIX_SIZE = 600;
+    private static final int CENTER_OFFSET = (5 * TILE - MATRIX_SIZE) / 2;
+
+    private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
+
+    private final int originX;
+    private final int originY;
+
+    private final Color[] tile = new Color[TILE_PIXELS];
+    private final BitSet dirty = new BitSet(TILE_PIXELS);
+
+    private boolean fullRedraw = false;
+
+    public MatrixMapRenderer(int tileX, int tileY) {
+      this.originX = tileX * TILE - CENTER_OFFSET;
+      this.originY = tileY * TILE - CENTER_OFFSET;
     }
 
-    // Apply a limited number of queued pixel updates per call to make it "gradual"
-    int n = 0;
-    while (n < MAX_PIXELS_PER_RENDER && !queue.isEmpty()) {
-      QueuedPixel qp = queue.removeFirst();
-      if (qp.c() != null) canvas.setPixelColor(qp.x(), qp.y(), qp.c());
-      else canvas.setPixelColor(qp.x(), qp.y(), new Color(0.0f, 0.0f, 0.0f, 0.0f));
-      n++;
+    public void enqueuePixels(List<MapPixel> pixels, boolean forceFullUpdate) {
+      if (forceFullUpdate) {
+        for (MapPixel p : pixels) {
+          int lx = p.x() - originX;
+          int ly = p.y() - originY;
+          if ((lx | ly) < 0 || lx >= TILE || ly >= TILE) continue;
+          tile[ly * TILE + lx] = p.color();
+        }
+
+        fullRedraw = true;
+        dirty.clear();
+      } else {
+        for (MapPixel p : pixels) {
+          int lx = p.x() - originX;
+          int ly = p.y() - originY;
+          if ((lx | ly) < 0 || lx >= TILE || ly >= TILE) continue;
+
+          int idx = ly * TILE + lx;
+          tile[idx] = p.color();
+          dirty.set(idx);
+        }
+      }
+    }
+
+    @Override
+    public void render(
+        @NonNull MapView mapView, @NonNull MapCanvas canvas, @NonNull Player player) {
+
+      if (fullRedraw) {
+        // iterate linear through all pixels
+        for (int idx = 0; idx < tile.length; idx++) {
+          int x = idx % TILE;
+          int y = idx / TILE;
+
+          Color c = tile[idx];
+          canvas.setPixelColor(x, y, c != null ? c : TRANSPARENT);
+        }
+        fullRedraw = false;
+      } else {
+        // iterate just through newly changed pixels
+        int idx = dirty.nextSetBit(0);
+        while (idx >= 0) {
+          dirty.clear(idx);
+
+          int x = idx % TILE;
+          int y = idx / TILE;
+
+          Color c = tile[idx];
+          canvas.setPixelColor(x, y, c != null ? c : TRANSPARENT);
+          idx = dirty.nextSetBit(idx + 1);
+        }
+      }
     }
   }
 }
