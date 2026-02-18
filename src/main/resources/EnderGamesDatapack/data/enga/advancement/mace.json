@@ -4,7 +4,9 @@
       "id": "minecraft:mace"
     },
     "title": "Mace Kit",
-    "description": "",
+    "description": {
+      "translate": "advancements.adventure.who_needs_rockets.description"
+    },
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": false,
@@ -13,7 +15,23 @@
   "parent": "enga:root",
   "criteria": {
     "unlock": {
-      "trigger": "minecraft:impossible"
+      "trigger": "minecraft:fall_after_explosion",
+      "conditions": {
+        "cause": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "minecraft:wind_charge"
+            }
+          }
+        ],
+        "distance": {
+          "y": {
+            "min": 7.0
+          }
+        }
+      }
     }
   }
 }

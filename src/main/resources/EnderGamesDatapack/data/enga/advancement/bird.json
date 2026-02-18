@@ -4,7 +4,7 @@
       "id": "minecraft:elytra"
     },
     "title": "Bird Kit",
-    "description": "",
+    "description": "Fall at least 75 blocks",
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": false,
@@ -13,7 +13,15 @@
   "parent": "enga:root",
   "criteria": {
     "unlock": {
-      "trigger": "minecraft:impossible"
+      "trigger": "minecraft:fall_from_height",
+      "conditions": {
+        "distance": {
+          "y": {
+            "min": 75,
+            "max": 120
+          }
+        }
+      }
     }
   }
 }
