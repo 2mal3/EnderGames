@@ -17,8 +17,7 @@
       "conditions": {
         "distance": {
           "y": {
-            "min": 75,
-            "max": 120
+            "min": 75
           }
         }
       }
