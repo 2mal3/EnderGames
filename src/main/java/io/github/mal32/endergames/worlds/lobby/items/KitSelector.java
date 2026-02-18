@@ -35,7 +35,7 @@ import org.jetbrains.annotations.NotNull;
 
 class KitSelector extends MenuItem implements Listener {
   private final NamespacedKey kitStorageKey;
-  private final List<AbstractKit> availableKits;
+  protected final List<AbstractKit> availableKits;
 
   public KitSelector(EnderGames plugin) {
     super(
@@ -59,9 +59,7 @@ class KitSelector extends MenuItem implements Listener {
     Player player = event.getPlayer();
 
     player.playSound(player, Sound.BLOCK_CHEST_OPEN, 1, 1);
-    String selectedKit =
-        player.getPersistentDataContainer().get(kitStorageKey, PersistentDataType.STRING);
-    KitInventory kiInv = new KitInventory(plugin, availableKits, selectedKit, player);
+    KitInventory kiInv = new KitInventory(player);
     player.openInventory(kiInv.getInventory());
   }
 
@@ -110,7 +108,6 @@ class KitSelector extends MenuItem implements Listener {
     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1, 1);
 
     KitInventory kitInv = (KitInventory) event.getInventory().getHolder();
-    kitInv.selectedKitName = kitName;
     kitInv.updateKitItems();
   }
 
@@ -128,150 +125,145 @@ class KitSelector extends MenuItem implements Listener {
     }
     return player.getAdvancementProgress(kitAdvancement).isDone();
   }
-}
 
-class KitInventory implements InventoryHolder {
-  private final List<AbstractKit> availableKits;
-  private final Inventory inventory;
-  public String selectedKitName;
-  private final Player player;
-  private final EnderGames plugin;
+  private class KitInventory implements InventoryHolder {
+    private final Inventory inventory;
+    private final Player player;
 
-  public KitInventory(
-      EnderGames plugin, List<AbstractKit> availableKits, String selectedKitName, Player player) {
-    this.availableKits = availableKits;
-    this.selectedKitName = selectedKitName;
-    this.inventory = plugin.getServer().createInventory(this, 27, Component.text("Select Kit"));
-    this.player = player;
-    this.plugin = plugin;
+    public KitInventory(Player player) {
+      this.inventory = plugin.getServer().createInventory(this, 27, Component.text("Select Kit"));
+      this.player = player;
 
-    updateKitItems();
-  }
-
-  @Override
-  public @NotNull Inventory getInventory() {
-    return this.inventory;
-  }
-
-  public void updateKitItems() {
-    inventory.clear();
-
-    for (AbstractKit kit : availableKits) {
-      var kitDescription = kit.getDescription();
-
-      var kitItem = new ItemStack(kitDescription.item(), 1);
-      var meta = kitItem.getItemMeta();
-
-      meta.displayName(
-          Component.text(kitDescription.name())
-              .color(NamedTextColor.GOLD)
-              .decoration(TextDecoration.ITALIC, false));
-      meta.lore(getKitLore(kitDescription));
-
-      kitItem.setItemMeta(meta);
-
-      // Hightlight the selected kit with a glow effect
-      if (kit.getNameLowercase().equals(selectedKitName)) {
-        ItemMeta clickedMeta = kitItem.getItemMeta();
-        clickedMeta.addEnchant(Enchantment.INFINITY, 1, true); // dummy enchantment for glow
-        clickedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        kitItem.setItemMeta(clickedMeta);
-      }
-
-      inventory.addItem(kitItem);
+      updateKitItems();
     }
-  }
 
-  private List<TextComponent> getKitLore(KitDescription kitDescription) {
-    var lore = new ArrayList<TextComponent>();
+    @Override
+    public @NotNull Inventory getInventory() {
+      return this.inventory;
+    }
 
-    // Abilities
-    var abilitiesHeaderComponent =
-        Component.text("Abilities:")
-            .color(NamedTextColor.GRAY)
-            .decoration(TextDecoration.ITALIC, false);
-    lore.add(abilitiesHeaderComponent);
-    var abilitiesText = splitIntoLines(kitDescription.abilities());
-    lore.addAll(convertTextListToComponents(abilitiesText));
+    public void updateKitItems() {
+      inventory.clear();
 
-    lore.add(Component.text(""));
+      for (AbstractKit kit : availableKits) {
+        var kitDescription = kit.getDescription();
 
-    // Equipment
-    if (kitDescription.equipment() != null) {
-      var equipmentHeaderComponent =
-          Component.text("Equipment:")
+        var kitItem = new ItemStack(kitDescription.item(), 1);
+        var meta = kitItem.getItemMeta();
+
+        meta.displayName(
+            Component.text(kitDescription.name())
+                .color(NamedTextColor.GOLD)
+                .decoration(TextDecoration.ITALIC, false));
+        meta.lore(getKitLore(kitDescription));
+
+        kitItem.setItemMeta(meta);
+
+        // Hightlight the selected kit with a glow effect
+        var selectedKitName =
+            player.getPersistentDataContainer().get(kitStorageKey, PersistentDataType.STRING);
+        if (kit.getNameLowercase().equals(selectedKitName)) {
+          ItemMeta clickedMeta = kitItem.getItemMeta();
+          clickedMeta.addEnchant(Enchantment.INFINITY, 1, true); // dummy enchantment for glow
+          clickedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+          kitItem.setItemMeta(clickedMeta);
+        }
+
+        inventory.addItem(kitItem);
+      }
+    }
+
+    private List<TextComponent> getKitLore(KitDescription kitDescription) {
+      var lore = new ArrayList<TextComponent>();
+
+      // Abilities
+      var abilitiesHeaderComponent =
+          Component.text("Abilities:")
               .color(NamedTextColor.GRAY)
               .decoration(TextDecoration.ITALIC, false);
-      lore.add(equipmentHeaderComponent);
-      var equipmentText = splitIntoLines(kitDescription.equipment());
-      lore.addAll(convertTextListToComponents(equipmentText));
+      lore.add(abilitiesHeaderComponent);
+      var abilitiesText = splitIntoLines(kitDescription.abilities());
+      lore.addAll(convertTextListToComponents(abilitiesText));
 
       lore.add(Component.text(""));
-    }
 
-    // Difficulty
-    lore.add(
-        Component.text("Difficulty:")
-            .color(NamedTextColor.GRAY)
-            .decoration(TextDecoration.ITALIC, false));
+      // Equipment
+      if (kitDescription.equipment() != null) {
+        var equipmentHeaderComponent =
+            Component.text("Equipment:")
+                .color(NamedTextColor.GRAY)
+                .decoration(TextDecoration.ITALIC, false);
+        lore.add(equipmentHeaderComponent);
+        var equipmentText = splitIntoLines(kitDescription.equipment());
+        lore.addAll(convertTextListToComponents(equipmentText));
 
-    switch (kitDescription.difficulty()) {
-      case EASY ->
-          lore.add(
-              Component.text("█▒▒ Easy")
-                  .color(NamedTextColor.GREEN)
-                  .decoration(TextDecoration.ITALIC, false));
-      case MEDIUM ->
-          lore.add(
-              Component.text("██▒ Medium")
-                  .color(NamedTextColor.YELLOW)
-                  .decoration(TextDecoration.ITALIC, false));
-      case HARD ->
-          lore.add(
-              Component.text("███ Hard")
-                  .color(NamedTextColor.RED)
-                  .decoration(TextDecoration.ITALIC, false));
-    }
-
-    // Unlocked state
-    NamespacedKey advancementKey = new NamespacedKey("enga", kitDescription.name().toLowerCase());
-    if (!KitSelector.playerHasAdvancement(plugin, player, advancementKey)) {
-      lore.add(Component.text(""));
-      lore.add(
-          Component.text("Locked")
-              .color(NamedTextColor.RED)
-              .decoration(TextDecoration.ITALIC, false));
-    }
-    return lore;
-  }
-
-  private static ArrayList<String> splitIntoLines(String text) {
-    var lines = new ArrayList<String>();
-
-    final int maxLineLength = 20;
-    int charactersInLine = 0;
-    int lineStartIndex = 0;
-    for (int i = 0; i < text.length(); i++) {
-      charactersInLine++;
-      if (charactersInLine > maxLineLength && text.charAt(i) == ' ') {
-        var line = text.substring(lineStartIndex, i);
-        lines.add(line);
-        charactersInLine = 0;
-        lineStartIndex = i + 1;
+        lore.add(Component.text(""));
       }
+
+      // Difficulty
+      lore.add(
+          Component.text("Difficulty:")
+              .color(NamedTextColor.GRAY)
+              .decoration(TextDecoration.ITALIC, false));
+
+      switch (kitDescription.difficulty()) {
+        case EASY ->
+            lore.add(
+                Component.text("█▒▒ Easy")
+                    .color(NamedTextColor.GREEN)
+                    .decoration(TextDecoration.ITALIC, false));
+        case MEDIUM ->
+            lore.add(
+                Component.text("██▒ Medium")
+                    .color(NamedTextColor.YELLOW)
+                    .decoration(TextDecoration.ITALIC, false));
+        case HARD ->
+            lore.add(
+                Component.text("███ Hard")
+                    .color(NamedTextColor.RED)
+                    .decoration(TextDecoration.ITALIC, false));
+      }
+
+      // Unlocked state
+      NamespacedKey advancementKey = new NamespacedKey("enga", kitDescription.name().toLowerCase());
+      if (!KitSelector.playerHasAdvancement(plugin, player, advancementKey)) {
+        lore.add(Component.text(""));
+        lore.add(
+            Component.text("Locked")
+                .color(NamedTextColor.RED)
+                .decoration(TextDecoration.ITALIC, false));
+      }
+      return lore;
     }
-    lines.add(text.substring(lineStartIndex));
 
-    return lines;
-  }
+    private static ArrayList<String> splitIntoLines(String text) {
+      var lines = new ArrayList<String>();
 
-  private static List<TextComponent> convertTextListToComponents(ArrayList<String> lines) {
-    return lines.stream()
-        .map(
-            line ->
-                Component.text(line)
-                    .color(NamedTextColor.WHITE)
-                    .decoration(TextDecoration.ITALIC, false))
-        .toList();
+      final int maxLineLength = 20;
+      int charactersInLine = 0;
+      int lineStartIndex = 0;
+      for (int i = 0; i < text.length(); i++) {
+        charactersInLine++;
+        if (charactersInLine > maxLineLength && text.charAt(i) == ' ') {
+          var line = text.substring(lineStartIndex, i);
+          lines.add(line);
+          charactersInLine = 0;
+          lineStartIndex = i + 1;
+        }
+      }
+      lines.add(text.substring(lineStartIndex));
+
+      return lines;
+    }
+
+    private static List<TextComponent> convertTextListToComponents(ArrayList<String> lines) {
+      return lines.stream()
+          .map(
+              line ->
+                  Component.text(line)
+                      .color(NamedTextColor.WHITE)
+                      .decoration(TextDecoration.ITALIC, false))
+          .toList();
+    }
   }
 }
