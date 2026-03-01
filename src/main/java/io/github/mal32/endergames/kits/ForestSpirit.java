@@ -302,9 +302,15 @@ public class ForestSpirit extends AbstractKit {
         UUID id = player.getUniqueId();
         RootedTreeState state = rootedTrees.get(id);
 
-        // Update saplings in inventory to match current biome whenever the player moves with this kit
+        // Update saplings in inventory and armor color to match current biome whenever the player moves with this kit
         Biome currentBiome = player.getLocation().getBlock().getBiome();
         adaptSaplingsToBiome(player, currentBiome);
+        Color armorColor = getArmorColorForBiome(currentBiome);
+        player.getInventory().setHelmet(createSpiritArmorPiece(Material.LEATHER_HELMET, armorColor));
+        player.getInventory().setChestplate(createSpiritArmorPiece(Material.LEATHER_CHESTPLATE, armorColor));
+        player.getInventory().setLeggings(createSpiritArmorPiece(Material.LEATHER_LEGGINGS, armorColor));
+        player.getInventory().setBoots(createSpiritArmorPiece(Material.LEATHER_BOOTS, armorColor));
+
 
         if (state == null) return;
 
@@ -675,15 +681,61 @@ public class ForestSpirit extends AbstractKit {
     }
 
     private Color getArmorColorForBiome(Biome biome) {
-        String name = biome.toString();
-        if (name.contains("DARK_FOREST")) return Color.fromRGB(0x0B3D0B);
-        if (name.contains("BIRCH")) return Color.fromRGB(0x3F7F3F);
-        if (name.contains("TAIGA")
-                || name.contains("OLD_GROWTH_PINE")
-                || name.contains("OLD_GROWTH_SPRUCE")) return Color.fromRGB(0x2E5D34);
-        if (name.contains("JUNGLE")) return Color.fromRGB(0x1E7A3A);
+        String key = biome.getKey().value().toUpperCase(Locale.ROOT);
+
+        // Oceans & rivers: bluish green
+        if (key.contains("OCEAN") || key.contains("RIVER")) return Color.fromRGB(0x1B5E7A); // teal-ish
+
+        // Mushroom / caves / deep dark: muted, darker greens
+        if (key.contains("MUSHROOM"))     return Color.fromRGB(0x3E5A4A);
+        if (key.contains("DEEP_DARK"))    return Color.fromRGB(0x0B2416);
+        if (key.contains("DRIPSTONE_CAVES")) return Color.fromRGB(0x2E4634);
+        if (key.contains("LUSH_CAVES"))   return Color.fromRGB(0x2E8B57);
+
+        // Mangrove / classic swamps: dirty greens
+        if (key.contains("MANGROVE")) return Color.fromRGB(0x2F5F2F);
+        if (key.equals("SWAMP"))      return Color.fromRGB(0x3A5A2A);
+
+        // Peaks, snowy, meadows, groves, windswept: cool or fresh greens
+        if (key.contains("JAGGED_PEAKS") || key.contains("FROZEN_PEAKS") || key.contains("STONY_PEAKS")
+                || key.contains("SNOWY_SLOPES") || key.contains("SNOWY_PLAINS") || key.contains("ICE_SPIKES")) {
+            return Color.fromRGB(0x3F6F5F); // cold, desaturated green
+        }
+        if (key.contains("MEADOW") || key.contains("GROVE") || key.contains("WINDSWEPT")) {
+            return Color.fromRGB(0x4C8F3C); // bright meadow green
+        }
+
+        // Cherry grove: keep it green but a bit lighter
+        if (key.contains("CHERRY_GROVE")) return Color.fromRGB(0x6FBF8F);
+
+        // Forests: different green shades
+        if (key.equals("FOREST") || key.contains("FLOWER_FOREST")) return Color.fromRGB(0x2F6F2F);
+        if (key.contains("BIRCH"))  return Color.fromRGB(0x4FAF5F);
+        if (key.contains("DARK_FOREST") || key.contains("PALE_GARDEN")) return Color.fromRGB(0x0B3D0B);
+
+        // Taiga family (incl. snowy/old growth): conifer green
+        if (key.contains("TAIGA") || key.contains("OLD_GROWTH_PINE_TAIGA") || key.contains("OLD_GROWTH_SPRUCE_TAIGA")) {
+            return Color.fromRGB(0x2E5D34);
+        }
+
+        // Jungles: vibrant deep green
+        if (key.contains("JUNGLE")) return Color.fromRGB(0x1E7A3A);
+
+        // Plains / sunflower: softer grass green
+        if (key.equals("PLAINS") || key.contains("SUNFLOWER_PLAINS")) return Color.fromRGB(0x6BBF59);
+
+        // Arid / hot biomes
+        if (key.contains("DESERT"))   return Color.fromRGB(0xD2B48C);
+        if (key.contains("SAVANNA"))  return Color.fromRGB(0xB5A142);
+        if (key.contains("BADLANDS")) return Color.fromRGB(0xB55630);
+
+        // Beaches & shores: pale green with a hint of sand
+        if (key.contains("BEACH") || key.contains("STONY_SHORE")) return Color.fromRGB(0x9FCF8A);
+
+        // Fallback: use default dark green
         return DEFAULT_DARK_GREEN;
     }
+
 
     // ---------------------------------------------------------------------------
     // Cooldown
