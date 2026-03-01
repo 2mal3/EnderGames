@@ -62,6 +62,8 @@ public class ForestSpirit extends AbstractKit {
     private final Map<UUID, Long> growthCooldownUntil = new HashMap<>();
     private final Map<UUID, Integer> standStillTicks = new HashMap<>();
     private final Map<UUID, BlockKey> lastKnownBlockPos = new HashMap<>();
+    // per-player kit start time, used to prevent rooting on start platform for first 20 seconds
+    private final Map<UUID, Long> kitStartTimeMillis = new HashMap<>();
 
     // rooted tree state
     private final Map<UUID, RootedTreeState> rootedTrees = new HashMap<>();
@@ -106,6 +108,8 @@ public class ForestSpirit extends AbstractKit {
         UUID id = player.getUniqueId();
         standStillTicks.put(id, 0);
         lastKnownBlockPos.put(id, BlockKey.of(player.getLocation()));
+        // remember when this kit started for this player (used as a grace period)
+        kitStartTimeMillis.put(id, System.currentTimeMillis());
     }
 
     private ItemStack createSpiritArmorPiece(Material type, Color color) {
@@ -188,7 +192,12 @@ public class ForestSpirit extends AbstractKit {
                 int ticks = standStillTicks.getOrDefault(id, 0) + 1;
                 standStillTicks.put(id, ticks);
 
-                if (ticks >= ROOTS_TRIGGER_TICKS) {
+                // 20 second grace period after this kit starts for a player
+                long now = System.currentTimeMillis();
+                long startTime = kitStartTimeMillis.getOrDefault(id, now);
+                boolean inGracePeriod = (now - startTime) < 20_000L;
+
+                if (!inGracePeriod && ticks >= ROOTS_TRIGGER_TICKS) {
                     rootPlayerIntoTree(player);
                     standStillTicks.put(id, 0);
                     lastKnownBlockPos.put(id, currentPos);
@@ -208,6 +217,8 @@ public class ForestSpirit extends AbstractKit {
         Material leaves = getLeavesForBiome(biome);
 
         RootedTreeState state = new RootedTreeState(id);
+        // remember where the player was rooted (block position)
+        state.rootOrigin = BlockKey.of(base);
 
         // roots: straight down 3 blocks
         placeRooted(state, base.clone().add(0, -1, 0), log, true, true);
@@ -290,11 +301,29 @@ public class ForestSpirit extends AbstractKit {
     private void onMoveWhileRooted(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         if (!playerCanUseThisKit(player)) return;
-        if (!rootedTrees.containsKey(player.getUniqueId())) return;
+
+        UUID id = player.getUniqueId();
+        RootedTreeState state = rootedTrees.get(id);
+        if (state == null) return;
 
         Location from = event.getFrom();
         Location to = event.getTo();
         if (to == null) return;
+
+        // If the player has been teleported / moved more than 1 block away from
+        // the original rooted position, free them completely.
+        if (state.rootOrigin != null) {
+            Block originBlock = state.rootOrigin.toBlock();
+            if (originBlock != null) {
+                Location originLoc = originBlock.getLocation().add(0.5, 0, 0.5);
+                if (originLoc.getWorld() != null && to.getWorld() != null
+                        && originLoc.getWorld().equals(to.getWorld())
+                        && originLoc.distanceSquared(to) > 1.0) {
+                    freeRootedPlayer(id, true);
+                    return;
+                }
+            }
+        }
 
         boolean changedBlock =
                 from.getBlockX() != to.getBlockX()
@@ -397,6 +426,7 @@ public class ForestSpirit extends AbstractKit {
         standStillTicks.remove(id);
         lastKnownBlockPos.remove(id);
         growthCooldownUntil.remove(id);
+        kitStartTimeMillis.remove(id);
     }
 
     @EventHandler
@@ -569,6 +599,8 @@ public class ForestSpirit extends AbstractKit {
         private final UUID playerId;
         private final Map<BlockKey, Material> originalBlocks = new HashMap<>();
         private final Set<BlockKey> rootLogs = new HashSet<>();
+        // Block position where the player became rooted
+        private BlockKey rootOrigin;
 
         private RootedTreeState(UUID playerId) {
             this.playerId = playerId;
