@@ -445,23 +445,6 @@ public class ForestSpirit extends AbstractKit {
     // Placement helpers
     // ---------------------------------------------------------------------------
 
-    private void placeTemporary(TemporaryStructure structure, Location location, Material type) {
-        Block block = location.getBlock();
-        if (!canReplaceDecorationBlock(block)) return;
-
-        BlockKey key = BlockKey.of(block.getLocation());
-        structure.originalBlocks.putIfAbsent(key, block.getType());
-        block.setType(type);
-    }
-
-    private void restoreTemporaryStructure(TemporaryStructure structure) {
-        for (Map.Entry<BlockKey, Material> entry : structure.originalBlocks.entrySet()) {
-            Block block = entry.getKey().toBlock();
-            if (block == null) continue;
-            block.setType(entry.getValue());
-        }
-    }
-
     private void placeRooted(
             RootedTreeState state,
             Location location,
