@@ -11,12 +11,7 @@ import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Tag;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -102,7 +97,9 @@ public class ForestSpirit extends AbstractKit {
         player.getInventory().setLeggings(createSpiritArmorPiece(Material.LEATHER_LEGGINGS, biomeColor));
         player.getInventory().setBoots(createSpiritArmorPiece(Material.LEATHER_BOOTS, biomeColor));
 
-        player.getInventory().addItem(new ItemStack(Material.OAK_SAPLING, 20));
+        // give saplings adapted to the current biome
+        Material saplingType = getSaplingForBiome(player.getLocation().getBlock().getBiome());
+        player.getInventory().addItem(new ItemStack(saplingType, 20));
 
         // Init stillness tracking
         UUID id = player.getUniqueId();
@@ -195,7 +192,7 @@ public class ForestSpirit extends AbstractKit {
                 // 20 second grace period after this kit starts for a player
                 long now = System.currentTimeMillis();
                 long startTime = kitStartTimeMillis.getOrDefault(id, now);
-                boolean inGracePeriod = (now - startTime) < 20_000L;
+                boolean inGracePeriod = (now - startTime) < 40_000L;
 
                 if (!inGracePeriod && ticks >= ROOTS_TRIGGER_TICKS) {
                     rootPlayerIntoTree(player);
@@ -304,6 +301,11 @@ public class ForestSpirit extends AbstractKit {
 
         UUID id = player.getUniqueId();
         RootedTreeState state = rootedTrees.get(id);
+
+        // Update saplings in inventory to match current biome whenever the player moves with this kit
+        Biome currentBiome = player.getLocation().getBlock().getBiome();
+        adaptSaplingsToBiome(player, currentBiome);
+
         if (state == null) return;
 
         Location from = event.getFrom();
@@ -402,7 +404,33 @@ public class ForestSpirit extends AbstractKit {
         if (!playerCanUseThisKit(player)) return;
         if (!Tag.SAPLINGS.isTagged(event.getBlockPlaced().getType())) return;
 
-        // TODO: Instantly grow planted saplings.
+        Block saplingBlock = event.getBlockPlaced();
+        Biome biome = saplingBlock.getBiome();
+
+        // Decide what kind of tree to grow based on the biome's wood family
+        Material wood = getWoodTypeForBiome(biome);
+        TreeType treeType;
+        switch (wood) {
+            case BIRCH_LOG -> treeType = TreeType.BIRCH;
+            case SPRUCE_LOG -> treeType = TreeType.REDWOOD;
+            case JUNGLE_LOG -> treeType = TreeType.JUNGLE;
+            case ACACIA_LOG -> treeType = TreeType.ACACIA;
+            case DARK_OAK_LOG -> treeType = TreeType.DARK_OAK;
+            case MANGROVE_LOG -> treeType = TreeType.MANGROVE;
+            case CHERRY_LOG -> treeType = TreeType.CHERRY;
+            default -> treeType = TreeType.TREE; // generic oak
+        }
+
+        // Let the sapling be placed normally, but on the next tick
+        // remove it and grow a full tree at that position.
+        Location treeLocation = saplingBlock.getLocation().clone();
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            Block block = treeLocation.getBlock();
+            if (!Tag.SAPLINGS.isTagged(block.getType())) return; // something else replaced it
+            block.setType(Material.AIR);
+            Random rng = ThreadLocalRandom.current();
+            block.getWorld().generateTree(treeLocation, rng, treeType);
+        });
     }
 
     @EventHandler
@@ -508,40 +536,134 @@ public class ForestSpirit extends AbstractKit {
     // Biome material / visuals
     // ---------------------------------------------------------------------------
 
-    private Material getLogForBiome(Biome biome) {
-        String name = biome.toString();
+    // Replace all saplings in the player's inventory with the biome-appropriate sapling
+    private void adaptSaplingsToBiome(Player player, Biome biome) {
+        Material targetSapling = getSaplingForBiome(biome);
+        var inventory = player.getInventory();
+        for (int slot = 0; slot < inventory.getSize(); slot++) {
+            ItemStack stack = inventory.getItem(slot);
+            if (stack == null) continue;
+            Material type = stack.getType();
+            if (!Tag.SAPLINGS.isTagged(type)) continue;
 
-        if (name.contains("JUNGLE")) return Material.JUNGLE_LOG;
-        if (name.contains("BIRCH")) return Material.BIRCH_LOG;
-        if (name.contains("DARK_FOREST")) return Material.DARK_OAK_LOG;
+            ItemStack newStack = new ItemStack(targetSapling, stack.getAmount());
+            ItemMeta oldMeta = stack.getItemMeta();
+            if (oldMeta != null) {
+                newStack.setItemMeta(oldMeta);
+            }
+            inventory.setItem(slot, newStack);
+        }
+    }
+
+    /**
+     * Returns the base wood type (log family) to use for a biome.
+     */
+    private Material getWoodTypeForBiome(Biome biome) {
+        String name = biome.getKey().value().toUpperCase(Locale.ROOT);
+        // Oceans, rivers, beaches
+        if (name.contains("OCEAN")) return Material.OAK_LOG;
+        if (name.contains("RIVER")) return Material.OAK_LOG;
+        if (name.contains("BEACH") || name.contains("STONY_SHORE")) return Material.OAK_LOG;
+
+        // Mushroom / caves / deep dark
+        if (name.contains("MUSHROOM")) return Material.OAK_LOG;
+        if (name.contains("DEEP_DARK")) return Material.OAK_LOG;
+        if (name.contains("DRIPSTONE_CAVES")) return Material.OAK_LOG;
+        if (name.contains("LUSH_CAVES")) return Material.OAK_LOG;
+
+        // Mangrove swamps (handle before taiga/spruce matching so they don't fall through)
         if (name.contains("MANGROVE")) return materialOrDefault("MANGROVE_LOG", Material.OAK_LOG);
-        if (name.contains("CHERRY")) return materialOrDefault("CHERRY_LOG", Material.OAK_LOG);
-        if (name.contains("TAIGA")
-                || name.contains("SPRUCE")
-                || name.contains("OLD_GROWTH_PINE")
-                || name.contains("OLD_GROWTH_SPRUCE")) {
+
+        // Peaks, slopes, meadows, groves, windswept hills/forest/gravelly
+        if (name.contains("JAGGED_PEAKS")) return Material.SPRUCE_LOG;
+        if (name.contains("FROZEN_PEAKS")) return Material.SPRUCE_LOG;
+        if (name.contains("STONY_PEAKS")) return Material.SPRUCE_LOG;
+        if (name.contains("SNOWY_SLOPES")) return Material.SPRUCE_LOG;
+        if (name.contains("MEADOW")) return Material.SPRUCE_LOG;
+        if (name.contains("GROVE")) return Material.SPRUCE_LOG;
+        if (name.contains("WINDSWEPT_HILLS")) return Material.SPRUCE_LOG;
+        if (name.contains("WINDSWEPT_GRAVELLY_HILLS")) return Material.SPRUCE_LOG;
+        if (name.contains("WINDSWEPT_FOREST")) return Material.SPRUCE_LOG;
+
+        // Cherry grove
+        if (name.contains("CHERRY_GROVE")) return materialOrDefault("CHERRY_LOG", Material.OAK_LOG);
+
+        // Forests
+        if (name.equals("FOREST") || name.contains("FLOWER_FOREST")) return Material.OAK_LOG;
+        if (name.contains("BIRCH")) return Material.BIRCH_LOG;
+        if (name.contains("DARK_FOREST") || name.contains("PALE_GARDEN")) return Material.DARK_OAK_LOG;
+
+        // Taiga family
+        if (name.contains("TAIGA") || name.contains("OLD_GROWTH_PINE_TAIGA") || name.contains("OLD_GROWTH_SPRUCE_TAIGA")) {
             return Material.SPRUCE_LOG;
         }
 
+        // Jungles
+        if (name.contains("JUNGLE")) return Material.JUNGLE_LOG;
+
+        // Swamps (classic)
+        if (name.equals("SWAMP")) return Material.OAK_LOG;
+
+        // Plains / flatlands
+        if (name.equals("PLAINS")) return Material.OAK_LOG;
+        if (name.contains("SUNFLOWER_PLAINS")) return Material.OAK_LOG;
+        if (name.contains("SNOWY_PLAINS") || name.contains("ICE_SPIKES")) return Material.SPRUCE_LOG;
+
+        // Arid biomes
+        if (name.contains("DESERT")) return Material.OAK_LOG;
+        if (name.contains("SAVANNA")) return Material.ACACIA_LOG;
+        if (name.contains("BADLANDS")) return Material.OAK_LOG;
+
+        // Fallback: oak family
         return Material.OAK_LOG;
     }
 
+    // Sapling material derived from the wood type
+    private Material getSaplingForBiome(Biome biome) {
+        Material wood = getWoodTypeForBiome(biome);
+        return switch (wood) {
+            case SPRUCE_LOG -> Material.SPRUCE_SAPLING;
+            case BIRCH_LOG -> Material.BIRCH_SAPLING;
+            case JUNGLE_LOG -> Material.JUNGLE_SAPLING;
+            case ACACIA_LOG -> Material.ACACIA_SAPLING;
+            case DARK_OAK_LOG -> Material.DARK_OAK_SAPLING;
+            default -> {
+                // MANGROVE_LOG, CHERRY_LOG or anything else fall back appropriately
+                if (wood == materialOrDefault("MANGROVE_LOG", Material.OAK_LOG)) {
+                    yield materialOrDefault("MANGROVE_PROPAGULE", Material.OAK_SAPLING);
+                }
+                if (wood == materialOrDefault("CHERRY_LOG", Material.OAK_LOG)) {
+                    yield materialOrDefault("CHERRY_SAPLING", Material.OAK_SAPLING);
+                }
+                yield Material.OAK_SAPLING;
+            }
+        };
+    }
+
+    // Leaves material derived from the wood type
     private Material getLeavesForBiome(Biome biome) {
-        String name = biome.toString();
+        Material wood = getWoodTypeForBiome(biome);
+        return switch (wood) {
+            case SPRUCE_LOG -> Material.SPRUCE_LEAVES;
+            case BIRCH_LOG -> Material.BIRCH_LEAVES;
+            case JUNGLE_LOG -> Material.JUNGLE_LEAVES;
+            case ACACIA_LOG -> Material.ACACIA_LEAVES;
+            case DARK_OAK_LOG -> Material.DARK_OAK_LEAVES;
+            default -> {
+                if (wood == materialOrDefault("MANGROVE_LOG", Material.OAK_LOG)) {
+                    yield materialOrDefault("MANGROVE_LEAVES", Material.OAK_LEAVES);
+                }
+                if (wood == materialOrDefault("CHERRY_LOG", Material.OAK_LOG)) {
+                    yield materialOrDefault("CHERRY_LEAVES", Material.OAK_LEAVES);
+                }
+                yield Material.OAK_LEAVES;
+            }
+        };
+    }
 
-        if (name.contains("JUNGLE")) return Material.JUNGLE_LEAVES;
-        if (name.contains("BIRCH")) return Material.BIRCH_LEAVES;
-        if (name.contains("DARK_FOREST")) return Material.DARK_OAK_LEAVES;
-        if (name.contains("MANGROVE")) return materialOrDefault("MANGROVE_LEAVES", Material.OAK_LEAVES);
-        if (name.contains("CHERRY")) return materialOrDefault("CHERRY_LEAVES", Material.OAK_LEAVES);
-        if (name.contains("TAIGA")
-                || name.contains("SPRUCE")
-                || name.contains("OLD_GROWTH_PINE")
-                || name.contains("OLD_GROWTH_SPRUCE")) {
-            return Material.SPRUCE_LEAVES;
-        }
-
-        return Material.OAK_LEAVES;
+    // Log material is just the wood type itself
+    private Material getLogForBiome(Biome biome) {
+        return getWoodTypeForBiome(biome);
     }
 
     private Material materialOrDefault(String materialName, Material fallback) {
