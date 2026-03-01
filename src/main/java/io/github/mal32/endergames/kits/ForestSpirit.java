@@ -550,9 +550,9 @@ public class ForestSpirit extends AbstractKit {
     public KitDescription getDescription() {
         return new KitDescription(
                 Material.OAK_SAPLING,
-                "Forest Spirit",
+                "ForestSpirit",
                 "Growth: turns nearby entities into trees and deals suffocating damage. "
-                        + "If no enemy is nearby, creates a small forest instead.",
+                        + "Gets stronger in forests, turns into a tree when standing still",
                 "Full dark-green leather armor with Thorns II, 20 adaptive saplings.",
                 Difficulty.MEDIUM);
     }
