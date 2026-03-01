@@ -2,7 +2,7 @@
 
 ## Developing
 
-- setting the `EG_DEBUG` environment variable to `true` enables debug mode when the server is started
+- setting the `EG_DEBUG` environment variable to `true` enables debug mode, which speeds up various timers for faster development
 - you cant validate the code with the shell command `mvn test`
 
 ## Code
