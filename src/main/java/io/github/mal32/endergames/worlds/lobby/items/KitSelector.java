@@ -1,7 +1,5 @@
 package io.github.mal32.endergames.worlds.lobby.items;
 
-import static org.apache.commons.lang3.StringUtils.capitalize;
-
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.kits.KitDescription;
