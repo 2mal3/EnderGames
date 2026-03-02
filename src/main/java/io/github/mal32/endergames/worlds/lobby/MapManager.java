@@ -48,20 +48,15 @@ public class MapManager {
     out.add(new MapTile(x, y));
 
     int step = 1;
+    int invert = 1;
     while (out.size() < MapManager.TILES * MapManager.TILES) {
       // right, down
       for (int i = 0; i < step && out.size() < MapManager.TILES * MapManager.TILES; i++)
-        out.add(new MapTile(++x, y));
+        out.add(new MapTile(x += invert, y));
       for (int i = 0; i < step && out.size() < MapManager.TILES * MapManager.TILES; i++)
-        out.add(new MapTile(x, ++y));
+        out.add(new MapTile(x, y += invert));
       step++;
-
-      // left, up
-      for (int i = 0; i < step && out.size() < MapManager.TILES * MapManager.TILES; i++)
-        out.add(new MapTile(--x, y));
-      for (int i = 0; i < step && out.size() < MapManager.TILES * MapManager.TILES; i++)
-        out.add(new MapTile(x, --y));
-      step++;
+      invert *= -1;
     }
     return out;
   }
@@ -159,7 +154,11 @@ public class MapManager {
 
       ArrayList<MapPixel> list = pixelsByTile.get(tile);
       if (list != null && !list.isEmpty()) {
-        renderer.enqueuePixels(list, forceFullUpdate);
+        if (forceFullUpdate) {
+          renderer.updateAllPixels(list);
+        } else {
+          renderer.enqueuePixels(list);
+        }
       }
     }
   }
@@ -185,28 +184,28 @@ public class MapManager {
       this.originY = tileY * TILE - CENTER_OFFSET;
     }
 
-    public void enqueuePixels(List<MapPixel> pixels, boolean forceFullUpdate) {
-      if (forceFullUpdate) {
-        for (MapPixel p : pixels) {
-          int lx = p.x() - originX;
-          int ly = p.y() - originY;
-          if ((lx | ly) < 0 || lx >= TILE || ly >= TILE) continue;
-          tile[ly * TILE + lx] = p.color();
-        }
+    public void enqueuePixels(List<MapPixel> pixels) {
+      for (MapPixel p : pixels) {
+        int lx = p.x() - originX;
+        int ly = p.y() - originY;
+        if ((lx | ly) < 0 || lx >= TILE || ly >= TILE) continue;
 
-        fullRedraw = true;
-        dirty.clear();
-      } else {
-        for (MapPixel p : pixels) {
-          int lx = p.x() - originX;
-          int ly = p.y() - originY;
-          if ((lx | ly) < 0 || lx >= TILE || ly >= TILE) continue;
-
-          int idx = ly * TILE + lx;
-          tile[idx] = p.color();
-          dirty.set(idx);
-        }
+        int idx = ly * TILE + lx;
+        tile[idx] = p.color();
+        dirty.set(idx);
       }
+    }
+
+    public void updateAllPixels(List<MapPixel> pixels) {
+      for (MapPixel p : pixels) {
+        int lx = p.x() - originX;
+        int ly = p.y() - originY;
+        if ((lx | ly) < 0 || lx >= TILE || ly >= TILE) continue;
+        tile[ly * TILE + lx] = p.color();
+      }
+
+      fullRedraw = true;
+      dirty.clear();
     }
 
     @Override
