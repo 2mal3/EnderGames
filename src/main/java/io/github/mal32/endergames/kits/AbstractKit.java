@@ -26,6 +26,7 @@ public abstract class AbstractKit extends AbstractModule {
         new Cat(plugin),
         new Cactus(plugin),
         new Barbarian(plugin),
+        new Knight(plugin),
         new Blaze(plugin),
         new Slime(plugin),
         new Dolphin(plugin),
