@@ -305,11 +305,8 @@ public class ForestSpirit extends AbstractKit {
         // Update saplings in inventory and armor color to match current biome whenever the player moves with this kit
         Biome currentBiome = player.getLocation().getBlock().getBiome();
         adaptSaplingsToBiome(player, currentBiome);
-        Color armorColor = getArmorColorForBiome(currentBiome);
-        player.getInventory().setHelmet(createSpiritArmorPiece(Material.LEATHER_HELMET, armorColor));
-        player.getInventory().setChestplate(createSpiritArmorPiece(Material.LEATHER_CHESTPLATE, armorColor));
-        player.getInventory().setLeggings(createSpiritArmorPiece(Material.LEATHER_LEGGINGS, armorColor));
-        player.getInventory().setBoots(createSpiritArmorPiece(Material.LEATHER_BOOTS, armorColor));
+        adaptArmorToBiome(player, currentBiome);
+
 
 
         if (state == null) return;
@@ -558,6 +555,19 @@ public class ForestSpirit extends AbstractKit {
                 newStack.setItemMeta(oldMeta);
             }
             inventory.setItem(slot, newStack);
+        }
+    }
+
+    private void adaptArmorToBiome(Player player, Biome biome) {
+        Color armorColor = getArmorColorForBiome(biome);
+        var inventory = player.getInventory();
+        for (int slot = 0; slot < inventory.getSize(); slot++) {
+            ItemStack stack = inventory.getItem(slot);
+            player.getInventory().setHelmet(createSpiritArmorPiece(Material.LEATHER_HELMET, armorColor));
+            player.getInventory().setChestplate(createSpiritArmorPiece(Material.LEATHER_CHESTPLATE, armorColor));
+            player.getInventory().setLeggings(createSpiritArmorPiece(Material.LEATHER_LEGGINGS, armorColor));
+            player.getInventory().setBoots(createSpiritArmorPiece(Material.LEATHER_BOOTS, armorColor));
+
         }
     }
 
