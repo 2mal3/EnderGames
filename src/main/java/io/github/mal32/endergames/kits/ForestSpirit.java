@@ -41,7 +41,7 @@ public class ForestSpirit extends AbstractKit {
   private static final Color DEFAULT_DARK_GREEN = Color.fromRGB(0x1B5E20);
 
   // --- ability tuning ---
-  private static final int GROWTH_COOLDOWN_SECONDS = 25;
+  private static final int GROWTH_COOLDOWN_SECONDS = 20;
   private static final double GROWTH_RADIUS = 12.0;
 
   // --- stillness / rooted tree tuning ---
@@ -137,8 +137,7 @@ public class ForestSpirit extends AbstractKit {
     if (item == null || item.getType() != Material.GREEN_DYE) return;
 
     if (player.hasCooldown(Material.GREEN_DYE)) return;
-    player.setCooldown(
-        Material.GREEN_DYE, GROWTH_COOLDOWN_SECONDS * 4); // cooldown 20 seconds TODO Update back
+    player.setCooldown(Material.GREEN_DYE, GROWTH_COOLDOWN_SECONDS * 20);
     activateGrowth(player);
   }
 
