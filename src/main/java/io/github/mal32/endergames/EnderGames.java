@@ -22,8 +22,9 @@ public class EnderGames extends JavaPlugin {
   private final MapManager mapManager = new MapManager();
   private KDScoreboard kdScoreboard;
 
-  public void sendNewMapPixelsToLobby(ArrayList<MapPixel> pixelBatch) {
-    mapManager.addToMapWall(pixelBatch);
+  public void changeMapPixelsInLobby(
+      ArrayList<MapPixel> changedMapPixels, boolean forceFullUpdate) {
+    mapManager.addToMapWall(changedMapPixels, forceFullUpdate);
   }
 
   @Override
