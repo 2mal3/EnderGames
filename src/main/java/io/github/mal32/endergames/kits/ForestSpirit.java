@@ -23,11 +23,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -153,7 +149,6 @@ public class ForestSpirit extends AbstractKit {
       targets.add(living);
     }
 
-    System.console().printf("targets list: %s%n", targets);
     if (targets.isEmpty()) {
       createSmallForest(caster.getLocation());
       return;
@@ -361,7 +356,6 @@ public class ForestSpirit extends AbstractKit {
   }
 
   private void createSmallForest(Location center) {
-    System.console().printf("generating small forest%n");
     World world = center.getWorld();
     if (world == null) return;
 
@@ -391,10 +385,6 @@ public class ForestSpirit extends AbstractKit {
       }
     }
 
-    System.console()
-        .printf(
-            "Trying to grow trees during forest creation, candidate ground blocks: %d%n",
-            candidateGround.size());
 
     int minDesiredGround = 18;
     if (candidateGround.size() < minDesiredGround) {
@@ -458,17 +448,7 @@ public class ForestSpirit extends AbstractKit {
       Biome biomeAtSpot = baseBlock.getBiome();
       TreeType type = getTreeTypeforBiome(biomeAtSpot);
 
-      System.console()
-          .printf(
-              "Trying to grow a %s tree at (%d, %d, %d) during forest creation%n",
-              type, baseX, baseY, baseZ);
-
       boolean success = world.generateTree(treeBase, rng, type);
-      if (success) {
-        System.console()
-            .printf(
-                "Successfully grew a %s tree at (%d, %d, %d) during forest creation%n",
-                type, baseX, baseY, baseZ);
       }
     }
   }
@@ -943,9 +923,31 @@ public class ForestSpirit extends AbstractKit {
     if (!playerCanUseThisKit(target)) return;
     if (!isCreaking(event.getEntity())) return;
 
+    event.setTarget(null);
     event.setCancelled(true);
 
-    // TODO: buff nearby Creakings strongly.
+    // Buff nearby Creakings strongly: more speed and more damage around the target.
+    double radius = 50.0; // search radius around the Forest Spirit
+    Location center = target.getLocation();
+    World world = center.getWorld();
+    if (world == null) return;
+
+    for (Entity nearby : world.getNearbyEntities(center, radius, radius, radius)) {
+      if (!isCreaking(nearby)) continue;
+      if (!(nearby instanceof LivingEntity living)) continue;
+
+      var speedAttr = living.getAttribute(Attribute.MOVEMENT_SPEED);
+      if (speedAttr != null) {
+        // Strong speed boost; vanilla Creakings are slow.
+        speedAttr.setBaseValue(speedAttr.getBaseValue() * 2.5);
+      }
+
+      var damageAttr = living.getAttribute(Attribute.ATTACK_DAMAGE);
+      if (damageAttr != null) {
+        // Increase attack damage significantly.
+        damageAttr.setBaseValue(damageAttr.getBaseValue() * 2.5);
+      }
+    }
   }
 
   private boolean isCreaking(Entity entity) {
