@@ -31,6 +31,9 @@ public class Knight extends AbstractKit {
   private static final int HORSE_RESPAWN_INTERVAL_SECONDS = 30;
   private static final int HORSE_TETHER_INTERVAL_SECONDS = 10;
   private static final double MAX_MOUNT_DISTANCE = 32;
+  private static final double HORSE_SPEED = 0.19;
+  private static final double HORSE_JUMP_HIGHT = 0.9;
+  private static final int HORSE_HEALTH = 20;
 
   private final Map<UUID, Horse> mounts = new HashMap<>();
   private BukkitTask horseRespawnTask;
@@ -142,18 +145,18 @@ public class Knight extends AbstractKit {
     horse.setLootTable(LootTables.ENDERMITE.getLootTable());
 
     // Buffs
-    horse.setJumpStrength(0.9);
-    horse.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.35);
+    horse.setJumpStrength(HORSE_JUMP_HIGHT);
+    horse.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(HORSE_SPEED);
     PotionEffect regen =
         new PotionEffect(
             PotionEffectType.REGENERATION, PotionEffect.INFINITE_DURATION, 1, true, false, false);
     horse.addPotionEffect(regen);
     var maxHealth = horse.getAttribute(Attribute.MAX_HEALTH);
-    maxHealth.setBaseValue(40);
+    maxHealth.setBaseValue(HORSE_HEALTH);
     horse.setHealth(maxHealth.getBaseValue());
     if (start) {
       horse.addPotionEffect(
-          new PotionEffect(PotionEffectType.RESISTANCE, 20 * 60, 4, true, false, false));
+          new PotionEffect(PotionEffectType.RESISTANCE, 20 * 60 * 3, 4, true, false, false));
     }
 
     // Inventory
