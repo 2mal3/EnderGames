@@ -165,8 +165,101 @@ public class ForestSpirit extends AbstractKit {
   }
 
   private void turnEntityIntoTree(LivingEntity target, Player caster) {
-    // TODO
-    return;
+    Location baseLoc = target.getLocation().getBlock().getLocation();
+    World world = baseLoc.getWorld();
+    if (world == null) return;
+
+    // Determine biome and corresponding materials
+    Biome biome = baseLoc.getBlock().getBiome();
+    Material logType = getLogForBiome(biome);
+    Material leavesType = getLeavesForBiome(biome);
+
+    // 1) Try to generate a mega jungle tree at the entity's position
+    Random rng = ThreadLocalRandom.current();
+    boolean generated = world.generateTree(baseLoc, rng, TreeType.JUNGLE);
+
+    if (!generated) {
+      // Fallback: manually create a simple 2x2, 6-block-high log trunk with a leaf crown on top
+      int baseX = baseLoc.getBlockX();
+      int baseY = baseLoc.getBlockY();
+      int baseZ = baseLoc.getBlockZ();
+
+      // Build 2x2 trunk, 6 blocks high
+      for (int dy = 0; dy < 6; dy++) {
+        for (int dx = 0; dx < 2; dx++) {
+          for (int dz = 0; dz < 2; dz++) {
+            Block trunkBlock = world.getBlockAt(baseX + dx, baseY + dy, baseZ + dz);
+            trunkBlock.setType(logType, false);
+          }
+        }
+      }
+
+      // Simple leaf crown on top of the trunk (one layer around and one on top center)
+      int crownY = baseY + 6;
+      for (int dx = -2; dx <= 3; dx++) {
+        for (int dz = -2; dz <= 3; dz++) {
+          // Avoid making an enormous cube; keep it to a rough radius
+          double dist = Math.sqrt(Math.pow(dx - 0.5, 2) + Math.pow(dz - 0.5, 2));
+          if (dist > 3.0) continue;
+
+          Block leafBlock = world.getBlockAt(baseX + dx, crownY, baseZ + dz);
+          if (leafBlock.getType().isAir() || Tag.LEAVES.isTagged(leafBlock.getType())) {
+            leafBlock.setType(leavesType, false);
+          }
+        }
+      }
+
+      // One extra leaf block as crown tip above the center of the trunk
+      Block crownTip = world.getBlockAt(baseX + 1, crownY + 1, baseZ + 1);
+      if (crownTip.getType().isAir() || Tag.LEAVES.isTagged(crownTip.getType())) {
+        crownTip.setType(leavesType, false);
+      }
+
+      // Nothing more to adapt in this fallback case
+      return;
+    }
+
+    // 2) Adapt the generated mega jungle tree to the current biome
+
+    // Define a rough bounding box where the mega jungle tree could exist
+    // Mega jungle trees can be tall and wide; this is a conservative box
+    int radiusX = 6;
+    int radiusZ = 6;
+    int height = 25; // from baseLoc.y up to baseLoc.y + height
+
+    int baseX = baseLoc.getBlockX();
+    int baseY = baseLoc.getBlockY();
+    int baseZ = baseLoc.getBlockZ();
+
+    String biomeKey = biome.getKey().value().toLowerCase(Locale.ROOT);
+    boolean isJungleOrSwamp =
+        biomeKey.contains("jungle") || biomeKey.contains("swamp") || biomeKey.contains("mangrove");
+
+    for (int x = baseX - radiusX; x <= baseX + radiusX; x++) {
+      for (int y = baseY; y <= baseY + height; y++) {
+        for (int z = baseZ - radiusZ; z <= baseZ + radiusZ; z++) {
+          Block block = world.getBlockAt(x, y, z);
+          Material type = block.getType();
+
+          // Optionally remove vines when not in jungle/swamp biomes
+          if (!isJungleOrSwamp && type == Material.VINE) {
+            block.setType(Material.AIR, false);
+            continue;
+          }
+
+          // Replace logs with biome-appropriate log type
+          if (Tag.LOGS.isTagged(type)) {
+            block.setType(logType, false);
+            continue;
+          }
+
+          // Replace leaves with biome-appropriate leaves type
+          if (Tag.LEAVES.isTagged(type)) {
+            block.setType(leavesType, false);
+          }
+        }
+      }
+    }
   }
 
   private void createSmallForest(Location center) {
@@ -438,7 +531,7 @@ public class ForestSpirit extends AbstractKit {
     switch (wood) {
       case BIRCH_LOG -> treeType = TreeType.BIRCH;
       case SPRUCE_LOG -> treeType = TreeType.REDWOOD;
-      case JUNGLE_LOG -> treeType = TreeType.JUNGLE;
+      case JUNGLE_LOG -> treeType = TreeType.SMALL_JUNGLE;
       case ACACIA_LOG -> treeType = TreeType.ACACIA;
       case DARK_OAK_LOG -> treeType = TreeType.DARK_OAK;
       case MANGROVE_LOG -> treeType = TreeType.MANGROVE;
