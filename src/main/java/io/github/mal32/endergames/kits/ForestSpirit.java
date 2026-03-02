@@ -409,6 +409,8 @@ public class ForestSpirit extends AbstractKit {
 
         Block saplingBlock = event.getBlockPlaced();
         Biome biome = saplingBlock.getBiome();
+        Material originalSaplingType = saplingBlock.getType();
+        UUID playerId = player.getUniqueId();
 
         // Decide what kind of tree to grow based on the biome's wood family
         Material wood = getWoodTypeForBiome(biome);
@@ -429,10 +431,32 @@ public class ForestSpirit extends AbstractKit {
         Location treeLocation = saplingBlock.getLocation().clone();
         Bukkit.getScheduler().runTask(plugin, () -> {
             Block block = treeLocation.getBlock();
-            if (!Tag.SAPLINGS.isTagged(block.getType())) return; // something else replaced it
-            block.setType(Material.AIR);
+
+            // If it's still a sapling, clear it before attempting to grow the tree
+            if (Tag.SAPLINGS.isTagged(block.getType())) {
+                block.setType(Material.AIR);
+            }
+
             Random rng = ThreadLocalRandom.current();
-            block.getWorld().generateTree(treeLocation, rng, treeType);
+            boolean success = block.getWorld().generateTree(treeLocation, rng, treeType);
+
+            // If the tree failed to generate (e.g., too little space), refund one sapling
+            if (!success) {
+                Player current = Bukkit.getPlayer(playerId);
+                ItemStack refund = new ItemStack(originalSaplingType, 1);
+
+                if (current != null && current.isOnline()) {
+                    var leftover = current.getInventory().addItem(refund);
+                    // If inventory is full, drop leftover at the sapling location
+                    for (ItemStack remaining : leftover.values()) {
+                        if (remaining == null || remaining.getAmount() <= 0) continue;
+                        block.getWorld().dropItemNaturally(treeLocation.clone().add(0.5, 0.1, 0.5), remaining);
+                    }
+                } else {
+                    // Player is offline; drop the sapling at the location
+                    block.getWorld().dropItemNaturally(treeLocation.clone().add(0.5, 0.1, 0.5), refund);
+                }
+            }
         });
     }
 
@@ -561,15 +585,34 @@ public class ForestSpirit extends AbstractKit {
     private void adaptArmorToBiome(Player player, Biome biome) {
         Color armorColor = getArmorColorForBiome(biome);
         var inventory = player.getInventory();
+
         for (int slot = 0; slot < inventory.getSize(); slot++) {
             ItemStack stack = inventory.getItem(slot);
-            player.getInventory().setHelmet(createSpiritArmorPiece(Material.LEATHER_HELMET, armorColor));
-            player.getInventory().setChestplate(createSpiritArmorPiece(Material.LEATHER_CHESTPLATE, armorColor));
-            player.getInventory().setLeggings(createSpiritArmorPiece(Material.LEATHER_LEGGINGS, armorColor));
-            player.getInventory().setBoots(createSpiritArmorPiece(Material.LEATHER_BOOTS, armorColor));
+            if (stack == null) continue;
 
+            Material type = stack.getType();
+            if (type != Material.LEATHER_HELMET
+                    && type != Material.LEATHER_CHESTPLATE
+                    && type != Material.LEATHER_LEGGINGS
+                    && type != Material.LEATHER_BOOTS) {
+                continue;
+            }
+
+            // Reuse the existing stack, only change its color and keep other meta
+            ItemStack recolored = stack.clone();
+            ItemMeta meta = recolored.getItemMeta();
+            if (meta instanceof org.bukkit.inventory.meta.LeatherArmorMeta leatherMeta) {
+                leatherMeta.setColor(armorColor);
+                recolored.setItemMeta(leatherMeta);
+            }
+
+            // Ensure Thorns II is still present (or add it if missing)
+            recolored = enchantItem(recolored, Enchantment.THORNS, 2);
+
+            inventory.setItem(slot, recolored);
         }
     }
+
 
     /**
      * Returns the base wood type (log family) to use for a biome.
@@ -585,7 +628,7 @@ public class ForestSpirit extends AbstractKit {
         if (name.contains("MUSHROOM")) return Material.OAK_LOG;
         if (name.contains("DEEP_DARK")) return Material.OAK_LOG;
         if (name.contains("DRIPSTONE_CAVES")) return Material.OAK_LOG;
-        if (name.contains("LUSH_CAVES")) return Material.OAK_LOG;
+        if (name.contains("LUSH_CAVES"))   return Material.OAK_LOG;
 
         // Mangrove swamps (handle before taiga/spruce matching so they don't fall through)
         if (name.contains("MANGROVE")) return materialOrDefault("MANGROVE_LOG", Material.OAK_LOG);
@@ -694,7 +737,7 @@ public class ForestSpirit extends AbstractKit {
         String key = biome.getKey().value().toUpperCase(Locale.ROOT);
 
         // Oceans & rivers: bluish green
-        if (key.contains("OCEAN") || key.contains("RIVER")) return Color.fromRGB(0x1B5E7A); // teal-ish
+        if (key.contains("OCEAN") || key.contains("RIVER")) return Color.fromRGB(0x1BAE7A); // teal-ish
 
         // Mushroom / caves / deep dark: muted, darker greens
         if (key.contains("MUSHROOM"))     return Color.fromRGB(0x3E5A4A);
@@ -740,20 +783,10 @@ public class ForestSpirit extends AbstractKit {
         if (key.contains("BADLANDS")) return Color.fromRGB(0xB55630);
 
         // Beaches & shores: pale green with a hint of sand
-        if (key.contains("BEACH") || key.contains("STONY_SHORE")) return Color.fromRGB(0x9FCF8A);
+        if (key.contains("BEACH") || key.contains("STONY_SHORE")) return Color.fromRGB(0x9FFF8A);
 
         // Fallback: use default dark green
         return DEFAULT_DARK_GREEN;
-    }
-
-
-    // ---------------------------------------------------------------------------
-    // Cooldown
-    // ---------------------------------------------------------------------------
-
-    private boolean isOnGrowthCooldown(Player player) {
-        long now = System.currentTimeMillis();
-        return growthCooldownUntil.getOrDefault(player.getUniqueId(), 0L) > now;
     }
 
     // ---------------------------------------------------------------------------
