@@ -1,8 +1,10 @@
 package io.github.mal32.endergames.worlds.lobby;
 
+import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.AbstractWorld;
 import io.github.mal32.endergames.worlds.lobby.items.MenuManager;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import org.bukkit.*;
@@ -28,15 +30,21 @@ import org.bukkit.structure.StructureManager;
 
 public class LobbyWorld extends AbstractWorld {
   private final MenuManager menuManager;
-  private final World lobbyWorld = Objects.requireNonNull(Bukkit.getWorld("world_enga_lobby"));
+  public static World lobbyWorld = Objects.requireNonNull(Bukkit.getWorld("world_enga_lobby"));
   private final Location spawnLocation = new Location(lobbyWorld, 0, 64, 0);
   private final ParkourManager pmanager;
+  private final List<AbstractModule> modules;
 
   public LobbyWorld(EnderGames plugin) {
     super(plugin);
-    this.pmanager = new ParkourManager(plugin);
 
+    this.pmanager = new ParkourManager(plugin);
     this.menuManager = new MenuManager(this.plugin);
+
+    modules = List.of(new PlayerDifficulty(plugin));
+    for (AbstractModule module : modules) {
+      module.enable();
+    }
 
     lobbyWorld.setSpawnLocation(spawnLocation);
     lobbyWorld.setGameRule(GameRules.RESPAWN_RADIUS, 6);
