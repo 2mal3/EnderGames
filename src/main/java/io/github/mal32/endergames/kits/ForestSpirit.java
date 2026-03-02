@@ -397,7 +397,9 @@ public class ForestSpirit extends AbstractKit {
             "Trying to grow trees during forest creation, candidate ground blocks: %d%n",
             candidateGround.size());
 
-    if (candidateGround.isEmpty()) {
+    int minDesiredGround = 18; // we want up to 18 trees
+    if (candidateGround.size() < minDesiredGround) {
+      candidateGround.clear();
       for (int dx = -radius; dx <= radius; dx++) {
         for (int dz = -radius; dz <= radius; dz++) {
           if (dx * dx + dz * dz > radius * radius) continue;
