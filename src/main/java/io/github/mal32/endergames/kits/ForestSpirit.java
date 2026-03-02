@@ -397,7 +397,7 @@ public class ForestSpirit extends AbstractKit {
             "Trying to grow trees during forest creation, candidate ground blocks: %d%n",
             candidateGround.size());
 
-    int minDesiredGround = 18; // we want up to 18 trees
+    int minDesiredGround = 18;
     if (candidateGround.size() < minDesiredGround) {
       candidateGround.clear();
       for (int dx = -radius; dx <= radius; dx++) {
@@ -410,7 +410,16 @@ public class ForestSpirit extends AbstractKit {
           int topY = world.getHighestBlockYAt(x, z);
           if (topY <= world.getMinHeight()) continue;
 
-          Block surface = world.getBlockAt(x, topY - 1, z);
+          Block surface = world.getBlockAt(x, topY, z);
+
+          // Don't replace important/indestructible blocks
+          Material current = surface.getType();
+          if (current == Material.ENDER_CHEST
+              || current == Material.OBSIDIAN
+              || current == Material.ENCHANTING_TABLE
+              || current == Material.BEDROCK) {
+            continue;
+          }
 
           // Randomly choose between moss, coarse dirt and dirt
           double r = rng.nextDouble();
