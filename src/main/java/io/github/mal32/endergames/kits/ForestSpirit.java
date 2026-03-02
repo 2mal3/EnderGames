@@ -135,7 +135,6 @@ public class ForestSpirit extends AbstractKit {
     if (!playerCanUseThisKit(player)) return;
     ItemStack item = event.getItem();
     if (item == null || item.getType() != Material.GREEN_DYE) return;
-    event.setCancelled(true);
 
     if (player.hasCooldown(Material.GREEN_DYE)) return;
     player.setCooldown(
@@ -370,7 +369,6 @@ public class ForestSpirit extends AbstractKit {
     Random rng = ThreadLocalRandom.current();
     int radius = 15;
 
-    Biome baseBiome = center.getBlock().getBiome();
     int centerX = center.getBlockX();
     int centerZ = center.getBlockZ();
 
@@ -386,7 +384,8 @@ public class ForestSpirit extends AbstractKit {
         int topY = world.getHighestBlockYAt(x, z);
         if (topY <= world.getMinHeight()) continue;
 
-        Block ground = world.getBlockAt(x, topY - 1, z);
+        // Ground block is the block directly below the top exposed block
+        Block ground = world.getBlockAt(x, topY, z);
         if (isValidTreeGround(ground.getType())) {
           candidateGround.add(ground.getLocation());
         }
@@ -399,7 +398,32 @@ public class ForestSpirit extends AbstractKit {
             candidateGround.size());
 
     if (candidateGround.isEmpty()) {
-      return; // nothing to do
+      for (int dx = -radius; dx <= radius; dx++) {
+        for (int dz = -radius; dz <= radius; dz++) {
+          if (dx * dx + dz * dz > radius * radius) continue;
+
+          int x = centerX + dx;
+          int z = centerZ + dz;
+
+          int topY = world.getHighestBlockYAt(x, z);
+          if (topY <= world.getMinHeight()) continue;
+
+          Block surface = world.getBlockAt(x, topY - 1, z);
+
+          // Randomly choose between moss, coarse dirt and dirt
+          double r = rng.nextDouble();
+          Material newType;
+          if (r < 0.33) {
+            newType = Material.MOSS_BLOCK;
+          } else if (r < 0.66) {
+            newType = Material.COARSE_DIRT;
+          } else {
+            newType = Material.DIRT;
+          }
+          surface.setType(newType, false);
+          candidateGround.add(surface.getLocation());
+        }
+      }
     }
 
     // Shuffle and take up to 18 positions
@@ -417,11 +441,10 @@ public class ForestSpirit extends AbstractKit {
 
       // Optionally, set a sapling block at the tree base first (not strictly required for
       // generateTree, but keeps the world consistent if you inspect it between ticks):
-      // Block baseBlock = treeBase.getBlock();
-      // baseBlock.setType(getSaplingForBiome(baseBlock.getBiome()), false);
+      Block baseBlock = treeBase.getBlock();
 
-      // Determine the tree type based on the biome at this position (old logic)
-      Biome biomeAtSpot = treeBase.getBlock().getBiome();
+      // Grow a tree using the same biome-based tree selection as sapling placement
+      Biome biomeAtSpot = baseBlock.getBiome();
       TreeType type = getTreeTypeforBiome(biomeAtSpot);
 
       System.console()
