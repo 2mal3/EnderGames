@@ -33,7 +33,6 @@ public class LobbyWorld extends AbstractWorld {
   public static World lobbyWorld = Objects.requireNonNull(Bukkit.getWorld("world_enga_lobby"));
   private final Location spawnLocation = new Location(lobbyWorld, 0, 64, 0);
   private final ParkourManager pmanager;
-  private final List<AbstractModule> modules;
 
   public LobbyWorld(EnderGames plugin) {
     super(plugin);
@@ -41,7 +40,7 @@ public class LobbyWorld extends AbstractWorld {
     this.pmanager = new ParkourManager(plugin);
     this.menuManager = new MenuManager(this.plugin);
 
-    modules = List.of(new PlayerDifficulty(plugin));
+    var modules = List.of(new PlayerDifficulty(plugin));
     for (AbstractModule module : modules) {
       module.enable();
     }
