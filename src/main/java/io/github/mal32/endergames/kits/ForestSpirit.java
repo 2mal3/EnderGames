@@ -9,6 +9,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -134,6 +135,8 @@ public class ForestSpirit extends AbstractKit {
     if (!playerCanUseThisKit(player)) return;
     ItemStack item = event.getItem();
     if (item == null || item.getType() != Material.GREEN_DYE) return;
+    event.setCancelled(true);
+
     if (player.hasCooldown(Material.GREEN_DYE)) return;
     player.setCooldown(Material.GREEN_DYE, GROWTH_COOLDOWN_SECONDS * 20);
     activateGrowth(player);
@@ -358,8 +361,127 @@ public class ForestSpirit extends AbstractKit {
   }
 
   private void createSmallForest(Location center) {
-    // TODO
-    return;
+    World world = center.getWorld();
+    if (world == null) return;
+
+    Random rng = ThreadLocalRandom.current();
+    int radius = 15;
+
+    Biome baseBiome = center.getBlock().getBiome();
+    // Pick a forest biome that roughly fits this area
+    Biome targetForestBiome = pickForestBiomeFor(baseBiome, rng);
+
+    int centerX = center.getBlockX();
+    int centerY = center.getBlockY();
+    int centerZ = center.getBlockZ();
+
+    // First pass: scan for any valid ground blocks inside the radius
+    List<Location> candidateGround = new ArrayList<>();
+    for (int dx = -radius; dx <= radius; dx++) {
+      for (int dz = -radius; dz <= radius; dz++) {
+        if (dx * dx + dz * dz > radius * radius) continue;
+
+        int x = centerX + dx;
+        int z = centerZ + dz;
+
+        int y = world.getHighestBlockYAt(x, z);
+        if (y <= world.getMinHeight()) continue;
+
+        Block ground = world.getBlockAt(x, y - 1, z);
+        if (isValidTreeGround(ground.getType())) {
+          candidateGround.add(ground.getLocation());
+        }
+      }
+    }
+    System.out.println("Found " + candidateGround.size() + " valid ground blocks for tree growth.");
+
+    // If there is no valid ground, convert the surface in the radius into a mix of dirt / coarse
+    // dirt
+    if (candidateGround.size() < 20) {
+      for (int dx = -radius; dx <= radius; dx++) {
+        for (int dz = -radius; dz <= radius; dz++) {
+          if (dx * dx + dz * dz > radius * radius) continue;
+
+          int x = centerX + dx;
+          int z = centerZ + dz;
+
+          int y = world.getHighestBlockYAt(x, z);
+          if (y <= world.getMinHeight()) continue;
+
+          Block surface = world.getBlockAt(x, y - 1, z);
+          // Randomly choose between DIRT and COARSE_DIRT
+          surface.setType(rng.nextBoolean() ? Material.DIRT : Material.COARSE_DIRT, false);
+          candidateGround.add(surface.getLocation());
+        }
+      }
+    }
+
+    // Scatter some trees around available ground positions; failures are fine
+    int attempts = Math.min(18, candidateGround.size());
+    for (int i = 0; i < attempts; i++) {
+      Location groundLoc = candidateGround.get(rng.nextInt(candidateGround.size()));
+      int x = groundLoc.getBlockX();
+      int y = groundLoc.getBlockY() + 1; // tree base sits above ground
+      int z = groundLoc.getBlockZ();
+
+      Location treeLoc = new Location(world, x + 0.5, y, z + 0.5);
+
+      // Decide tree type from biome at this spot
+      Biome spotBiome = treeLoc.getBlock().getBiome();
+      TreeType type = getTreeTypeforBiome(spotBiome);
+
+      world.generateTree(treeLoc, rng, type);
+    }
+
+    // Change biomes in this radius to the chosen forest biome
+    for (int dx = -radius; dx <= radius; dx++) {
+      for (int dz = -radius; dz <= radius; dz++) {
+        if (dx * dx + dz * dz > radius * radius) continue;
+
+        int x = centerX + dx;
+        int z = centerZ + dz;
+
+        // Sample several vertical positions to cover surface and some underground
+        for (int dy = -5; dy <= 10; dy++) {
+          int y = centerY + dy;
+          if (y < world.getMinHeight() || y > world.getMaxHeight()) continue;
+          world.setBiome(x, y, z, targetForestBiome);
+        }
+      }
+    }
+  }
+
+  private boolean isValidTreeGround(Material type) {
+    return type == Material.DIRT
+        || type == Material.COARSE_DIRT
+        || type == Material.GRASS_BLOCK
+        || type == Material.PODZOL
+        || type == Material.ROOTED_DIRT
+        || type == Material.MOSS_BLOCK;
+  }
+
+  /**
+   * Chooses a forest-like biome that fits the given base biome. If no good match exists (e.g.
+   * ocean, caves), pick a random forest biome.
+   */
+  private Biome pickForestBiomeFor(Biome base, Random rng) {
+    String key = base.getKey().value().toUpperCase(Locale.ROOT);
+
+    // Prefer similar climate forests when possible
+    if (key.contains("JUNGLE")) return Biome.JUNGLE;
+    if (key.contains("TAIGA") || key.contains("GROVE") || key.contains("WINDSWEPT")) {
+      return Biome.TAIGA;
+    }
+    if (key.contains("BIRCH")) return Biome.BIRCH_FOREST;
+    if (key.contains("CHERRY_GROVE")) return Biome.CHERRY_GROVE;
+    if (key.contains("DARK_FOREST") || key.contains("PALE_GARDEN")) return Biome.DARK_FOREST;
+    if (key.contains("MEADOW")) return Biome.FOREST;
+
+    // Oceans, caves, deserts, etc. -> fallback to a random forest biome
+    Biome[] forestOptions = {
+      Biome.FOREST, Biome.BIRCH_FOREST, Biome.TAIGA, Biome.DARK_FOREST, Biome.CHERRY_GROVE
+    };
+    return forestOptions[rng.nextInt(forestOptions.length)];
   }
 
   // ---------------------------------------------------------------------------
@@ -548,6 +670,11 @@ public class ForestSpirit extends AbstractKit {
       locked.setYaw(to.getYaw());
       locked.setPitch(to.getPitch());
       event.setTo(locked);
+
+      // Inform the player via actionbar how to free themselves
+      player.sendActionBar(
+          Component.text("You grew roots. Remove the wood beneath you to free yourself.")
+              .color(TextColor.color(0x6B4F2A))); // greenish-brown
     }
   }
 
@@ -621,18 +748,7 @@ public class ForestSpirit extends AbstractKit {
     UUID playerId = player.getUniqueId();
 
     // Decide what kind of tree to grow based on the biome's wood family
-    Material wood = getWoodTypeForBiome(biome);
-    TreeType treeType;
-    switch (wood) {
-      case BIRCH_LOG -> treeType = TreeType.BIRCH;
-      case SPRUCE_LOG -> treeType = TreeType.REDWOOD;
-      case JUNGLE_LOG -> treeType = TreeType.SMALL_JUNGLE;
-      case ACACIA_LOG -> treeType = TreeType.ACACIA;
-      case DARK_OAK_LOG -> treeType = TreeType.DARK_OAK;
-      case MANGROVE_LOG -> treeType = TreeType.MANGROVE;
-      case CHERRY_LOG -> treeType = TreeType.CHERRY;
-      default -> treeType = TreeType.TREE; // generic oak
-    }
+    TreeType treeType = getTreeTypeforBiome(biome);
 
     // Let the sapling be placed normally, but on the next tick
     // remove it and grow a full tree at that position.
@@ -943,6 +1059,22 @@ public class ForestSpirit extends AbstractKit {
   // Log material is just the wood type itself
   private Material getLogForBiome(Biome biome) {
     return getWoodTypeForBiome(biome);
+  }
+
+  private TreeType getTreeTypeforBiome(Biome biome) {
+    Material wood = getWoodTypeForBiome(biome);
+    TreeType type;
+    switch (wood) {
+      case BIRCH_LOG -> type = TreeType.BIRCH;
+      case SPRUCE_LOG -> type = TreeType.REDWOOD;
+      case JUNGLE_LOG -> type = TreeType.SMALL_JUNGLE;
+      case ACACIA_LOG -> type = TreeType.ACACIA;
+      case DARK_OAK_LOG -> type = TreeType.DARK_OAK;
+      case MANGROVE_LOG -> type = TreeType.MANGROVE;
+      case CHERRY_LOG -> type = TreeType.CHERRY;
+      default -> type = TreeType.TREE;
+    }
+    return type;
   }
 
   private Material materialOrDefault(String materialName, Material fallback) {
