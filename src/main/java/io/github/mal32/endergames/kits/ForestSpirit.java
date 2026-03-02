@@ -138,7 +138,8 @@ public class ForestSpirit extends AbstractKit {
     event.setCancelled(true);
 
     if (player.hasCooldown(Material.GREEN_DYE)) return;
-    player.setCooldown(Material.GREEN_DYE, GROWTH_COOLDOWN_SECONDS * 20);
+    player.setCooldown(
+        Material.GREEN_DYE, GROWTH_COOLDOWN_SECONDS * 4); // cooldown 20 seconds TODO Update back
     activateGrowth(player);
   }
 
@@ -154,6 +155,7 @@ public class ForestSpirit extends AbstractKit {
       targets.add(living);
     }
 
+    System.console().printf("targets list: %s%n", targets);
     if (targets.isEmpty()) {
       createSmallForest(caster.getLocation());
       return;
@@ -361,6 +363,7 @@ public class ForestSpirit extends AbstractKit {
   }
 
   private void createSmallForest(Location center) {
+    System.console().printf("generating small forest%n");
     World world = center.getWorld();
     if (world == null) return;
 
@@ -368,14 +371,10 @@ public class ForestSpirit extends AbstractKit {
     int radius = 15;
 
     Biome baseBiome = center.getBlock().getBiome();
-    // Pick a forest biome that roughly fits this area
-    Biome targetForestBiome = pickForestBiomeFor(baseBiome, rng);
-
     int centerX = center.getBlockX();
-    int centerY = center.getBlockY();
     int centerZ = center.getBlockZ();
 
-    // First pass: scan for any valid ground blocks inside the radius
+    // Collect all valid ground blocks inside the radius
     List<Location> candidateGround = new ArrayList<>();
     for (int dx = -radius; dx <= radius; dx++) {
       for (int dz = -radius; dz <= radius; dz++) {
@@ -384,69 +383,58 @@ public class ForestSpirit extends AbstractKit {
         int x = centerX + dx;
         int z = centerZ + dz;
 
-        int y = world.getHighestBlockYAt(x, z);
-        if (y <= world.getMinHeight()) continue;
+        int topY = world.getHighestBlockYAt(x, z);
+        if (topY <= world.getMinHeight()) continue;
 
-        Block ground = world.getBlockAt(x, y - 1, z);
+        Block ground = world.getBlockAt(x, topY - 1, z);
         if (isValidTreeGround(ground.getType())) {
           candidateGround.add(ground.getLocation());
         }
       }
     }
-    System.out.println("Found " + candidateGround.size() + " valid ground blocks for tree growth.");
 
-    // If there is no valid ground, convert the surface in the radius into a mix of dirt / coarse
-    // dirt
-    if (candidateGround.size() < 20) {
-      for (int dx = -radius; dx <= radius; dx++) {
-        for (int dz = -radius; dz <= radius; dz++) {
-          if (dx * dx + dz * dz > radius * radius) continue;
+    System.console()
+        .printf(
+            "Trying to grow trees during forest creation, candidate ground blocks: %d%n",
+            candidateGround.size());
 
-          int x = centerX + dx;
-          int z = centerZ + dz;
-
-          int y = world.getHighestBlockYAt(x, z);
-          if (y <= world.getMinHeight()) continue;
-
-          Block surface = world.getBlockAt(x, y - 1, z);
-          // Randomly choose between DIRT and COARSE_DIRT
-          surface.setType(rng.nextBoolean() ? Material.DIRT : Material.COARSE_DIRT, false);
-          candidateGround.add(surface.getLocation());
-        }
-      }
+    if (candidateGround.isEmpty()) {
+      return; // nothing to do
     }
 
-    // Scatter some trees around available ground positions; failures are fine
-    int attempts = Math.min(18, candidateGround.size());
-    for (int i = 0; i < attempts; i++) {
-      Location groundLoc = candidateGround.get(rng.nextInt(candidateGround.size()));
-      int x = groundLoc.getBlockX();
-      int y = groundLoc.getBlockY() + 1; // tree base sits above ground
-      int z = groundLoc.getBlockZ();
+    // Shuffle and take up to 18 positions
+    Collections.shuffle(candidateGround, rng);
+    int saplingsToPlace = Math.min(18, candidateGround.size());
 
-      Location treeLoc = new Location(world, x + 0.5, y, z + 0.5);
+    for (int i = 0; i < saplingsToPlace; i++) {
+      Location groundLoc = candidateGround.get(i);
 
-      // Decide tree type from biome at this spot
-      Biome spotBiome = treeLoc.getBlock().getBiome();
-      TreeType type = getTreeTypeforBiome(spotBiome);
+      int baseX = groundLoc.getBlockX();
+      int baseY = groundLoc.getBlockY() + 1; // tree base is one block above the ground
+      int baseZ = groundLoc.getBlockZ();
 
-      world.generateTree(treeLoc, rng, type);
-    }
+      Location treeBase = new Location(world, baseX, baseY, baseZ);
 
-    // Change biomes in this radius to the chosen forest biome
-    for (int dx = -radius; dx <= radius; dx++) {
-      for (int dz = -radius; dz <= radius; dz++) {
-        if (dx * dx + dz * dz > radius * radius) continue;
+      // Optionally, set a sapling block at the tree base first (not strictly required for
+      // generateTree, but keeps the world consistent if you inspect it between ticks):
+      // Block baseBlock = treeBase.getBlock();
+      // baseBlock.setType(getSaplingForBiome(baseBlock.getBiome()), false);
 
-        int x = centerX + dx;
-        int z = centerZ + dz;
+      // Determine the tree type based on the biome at this position (old logic)
+      Biome biomeAtSpot = treeBase.getBlock().getBiome();
+      TreeType type = getTreeTypeforBiome(biomeAtSpot);
 
-        // Sample several vertical positions to cover surface and some underground
-        for (int dy = -5; dy <= 10; dy++) {
-          int y = centerY + dy;
-          if (y < world.getMinHeight() || y > world.getMaxHeight()) continue;
-          world.setBiome(x, y, z, targetForestBiome);
-        }
+      System.console()
+          .printf(
+              "Trying to grow a %s tree at (%d, %d, %d) during forest creation%n",
+              type, baseX, baseY, baseZ);
+
+      boolean success = world.generateTree(treeBase, rng, type);
+      if (success) {
+        System.console()
+            .printf(
+                "Successfully grew a %s tree at (%d, %d, %d) during forest creation%n",
+                type, baseX, baseY, baseZ);
       }
     }
   }
@@ -458,30 +446,6 @@ public class ForestSpirit extends AbstractKit {
         || type == Material.PODZOL
         || type == Material.ROOTED_DIRT
         || type == Material.MOSS_BLOCK;
-  }
-
-  /**
-   * Chooses a forest-like biome that fits the given base biome. If no good match exists (e.g.
-   * ocean, caves), pick a random forest biome.
-   */
-  private Biome pickForestBiomeFor(Biome base, Random rng) {
-    String key = base.getKey().value().toUpperCase(Locale.ROOT);
-
-    // Prefer similar climate forests when possible
-    if (key.contains("JUNGLE")) return Biome.JUNGLE;
-    if (key.contains("TAIGA") || key.contains("GROVE") || key.contains("WINDSWEPT")) {
-      return Biome.TAIGA;
-    }
-    if (key.contains("BIRCH")) return Biome.BIRCH_FOREST;
-    if (key.contains("CHERRY_GROVE")) return Biome.CHERRY_GROVE;
-    if (key.contains("DARK_FOREST") || key.contains("PALE_GARDEN")) return Biome.DARK_FOREST;
-    if (key.contains("MEADOW")) return Biome.FOREST;
-
-    // Oceans, caves, deserts, etc. -> fallback to a random forest biome
-    Biome[] forestOptions = {
-      Biome.FOREST, Biome.BIRCH_FOREST, Biome.TAIGA, Biome.DARK_FOREST, Biome.CHERRY_GROVE
-    };
-    return forestOptions[rng.nextInt(forestOptions.length)];
   }
 
   // ---------------------------------------------------------------------------
