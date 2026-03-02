@@ -81,7 +81,7 @@ public class Voodoo extends AbstractKit {
     if (!(arrow.getShooter() instanceof Player shooter)) return;
     if (!playerCanUseThisKit(shooter)) return;
 
-    final int regeneratedHealt = 1;
+    final int regeneratedHealt = 2;
     PotionEffectsStacking.addPotionEffect(
         shooter,
         new PotionEffect(PotionEffectType.REGENERATION, regeneratedHealt, 5, true, false, false));

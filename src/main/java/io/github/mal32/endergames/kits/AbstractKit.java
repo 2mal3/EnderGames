@@ -26,6 +26,7 @@ public abstract class AbstractKit extends AbstractModule {
         new Cat(plugin),
         new Cactus(plugin),
         new Barbarian(plugin),
+        new Knight(plugin),
         new Blaze(plugin),
         new Slime(plugin),
         new Dolphin(plugin),
@@ -37,6 +38,7 @@ public abstract class AbstractKit extends AbstractModule {
         new Lucker(plugin),
         new Rewind(plugin),
         new Voodoo(plugin),
+        new ForestSpirit(plugin),
         new Spectator(plugin));
   }
 
@@ -69,7 +71,9 @@ public abstract class AbstractKit extends AbstractModule {
   public abstract void start(Player player);
 
   public String getNameLowercase() {
-    return this.getClass().getSimpleName().toLowerCase();
+    String simpleName = this.getClass().getSimpleName();
+    String withSpaces = simpleName.replaceAll("([a-z])([A-Z])", "$1 $2"); // "Forest Spirit"
+    return withSpaces.toLowerCase();
   }
 
   public abstract KitDescription getDescription();

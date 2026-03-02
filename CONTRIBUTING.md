@@ -2,14 +2,13 @@
 
 ## Developing
 
-- setting the `EG_DEBUG` environment variable to `true` enables debug mode when the server is started
+- setting the `EG_DEBUG` environment variable to `true` enables debug mode, which speeds up various timers for faster development
 - you cant validate the code with the shell command `mvn test`
 
 ## Code
 
 - this project uses the [Google Java Style](https://google.github.io/styleguide/javaguide.html). I recommend
   using [google-java-format](https://github.com/google/google-java-format) to format your code for you.
-  cosmetic timers, allowing for faster testing and iteration.
 - don't use getter and setter methods when no other logic is involved. Just use public attributes in this case
 
 ## Adding a Kit

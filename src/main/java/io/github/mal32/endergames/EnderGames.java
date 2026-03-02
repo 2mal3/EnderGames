@@ -12,16 +12,15 @@ import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.ArrayList;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class EnderGames extends JavaPlugin implements Listener {
+public class EnderGames extends JavaPlugin {
   public static final NamespacedKey playerWorldKey = new NamespacedKey("endergames", "world");
   private GameWorld gameWorld;
   private LobbyWorld lobbyWorld;
   private final MapManager mapManager = new MapManager();
+  private KDScoreboard kdScoreboard;
 
   public void changeMapPixelsInLobby(
       ArrayList<MapPixel> changedMapPixels, boolean forceFullUpdate) {
@@ -39,13 +38,12 @@ public class EnderGames extends JavaPlugin implements Listener {
 
     gameWorld = new GameWorld(this);
     lobbyWorld = new LobbyWorld(this);
+    kdScoreboard = new KDScoreboard(this);
 
     this.getLifecycleManager()
         .registerEventHandler(
             LifecycleEvents.COMMANDS,
             commands -> commands.registrar().register(endergamesCommand()));
-
-    Bukkit.getPluginManager().registerEvents(this, this);
 
     this.registerKitAdvancements();
   }

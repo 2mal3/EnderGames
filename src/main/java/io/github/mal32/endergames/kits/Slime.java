@@ -120,15 +120,18 @@ public class Slime extends AbstractKit {
 
     if (hitEntity.isBlocking()) return;
 
+    final int EFFECT_DURATION_SECONDS = 15;
+    int amplifier = 0;
     if (hitEntity.getPotionEffect(PotionEffectType.SLOWNESS) != null) {
-      int amplifier = hitEntity.getPotionEffect(PotionEffectType.SLOWNESS).getAmplifier();
-      if (amplifier < 2) {
-        amplifier += 1;
-      }
-      hitEntity.addPotionEffect(
-          new PotionEffect(PotionEffectType.SLOWNESS, 7 * 20, amplifier, true, false));
+      amplifier = hitEntity.getPotionEffect(PotionEffectType.SLOWNESS).getAmplifier() + 1;
     }
-    hitEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 7 * 20, 0, true, false));
+    hitEntity.addPotionEffect(
+        new PotionEffect(
+            PotionEffectType.SLOWNESS,
+            EFFECT_DURATION_SECONDS * 20,
+            Math.min(amplifier, 2),
+            true,
+            false));
 
     // Play sound and particles on hit
     Location location = hitEntity.getLocation();

@@ -1,7 +1,5 @@
 package io.github.mal32.endergames.worlds.lobby.items;
 
-import static org.apache.commons.lang3.StringUtils.capitalize;
-
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.kits.KitDescription;
@@ -94,13 +92,33 @@ class KitSelector extends MenuItem implements Listener {
     player.getPersistentDataContainer().set(kitStorageKey, PersistentDataType.STRING, kitName);
     player.sendMessage(
         Component.text("You selected the ")
-            .append(Component.text(capitalize(kitName)).color(NamedTextColor.GOLD))
+            .append(Component.text(capitalizeWords(kitName)).color(NamedTextColor.GOLD))
             .append(Component.text(" kit")));
     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1, 1);
 
     KitInventory kitInv = (KitInventory) event.getInventory().getHolder();
     kitInv.selectedKitName = kitName;
     kitInv.updateKitItems();
+  }
+
+  private static String capitalizeWords(String input) {
+    if (input == null || input.isEmpty()) return input;
+
+    String[] parts = input.split("\\s+");
+    StringBuilder sb = new StringBuilder();
+
+    for (int i = 0; i < parts.length; i++) {
+      String word = parts[i];
+      if (!word.isEmpty()) {
+        sb.append(Character.toUpperCase(word.charAt(0)));
+        if (word.length() > 1) {
+          sb.append(word.substring(1).toLowerCase());
+        }
+      }
+      if (i < parts.length - 1) sb.append(' ');
+    }
+
+    return sb.toString();
   }
 
   @EventHandler
