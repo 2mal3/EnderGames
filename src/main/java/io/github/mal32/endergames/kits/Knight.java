@@ -90,8 +90,7 @@ public class Knight extends AbstractKit {
     return new KitDescription(
         Material.IRON_SPEAR,
         "Knight",
-        "Rides into battle atop a regenerating warhorse clad in iron armor while swinging a"
-            + " durable iron spear.",
+        "Rides into battle atop a regenerating warhorse clad in iron armor.",
         "Full Golden Armor, Iron Spear",
         Difficulty.HARD);
   }
