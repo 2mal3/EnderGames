@@ -125,6 +125,21 @@ public class MapManager {
     return cordWithBorder / TILE;
   }
 
+  private void renderPixelsOnMap(
+      Map<MapTile, ArrayList<MapPixel>> pixelsByTile, MapTile tile, boolean forceFullUpdate) {
+    MatrixMapRenderer renderer = renderers.get(tile);
+    if (renderer == null) return;
+
+    ArrayList<MapPixel> list = pixelsByTile.get(tile);
+    if (list != null && !list.isEmpty()) {
+      if (forceFullUpdate) {
+        renderer.updateAllPixels(list);
+      } else {
+        renderer.enqueuePixels(list);
+      }
+    }
+  }
+
   /**
    * Main entry: pushes pixels into per-tile queues so updates appear gradually without map reload
    * flicker.
@@ -149,17 +164,7 @@ public class MapManager {
     for (MapTile tile : SPIRAL_ORDER) {
       if (!changedTiles.contains(tile)) continue;
 
-      MatrixMapRenderer renderer = renderers.get(tile);
-      if (renderer == null) continue;
-
-      ArrayList<MapPixel> list = pixelsByTile.get(tile);
-      if (list != null && !list.isEmpty()) {
-        if (forceFullUpdate) {
-          renderer.updateAllPixels(list);
-        } else {
-          renderer.enqueuePixels(list);
-        }
-      }
+      renderPixelsOnMap(pixelsByTile, tile, forceFullUpdate);
     }
   }
 
