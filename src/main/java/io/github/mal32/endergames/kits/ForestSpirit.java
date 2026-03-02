@@ -385,7 +385,6 @@ public class ForestSpirit extends AbstractKit {
       }
     }
 
-
     int minDesiredGround = 18;
     if (candidateGround.size() < minDesiredGround) {
       candidateGround.clear();
@@ -449,7 +448,6 @@ public class ForestSpirit extends AbstractKit {
       TreeType type = getTreeTypeforBiome(biomeAtSpot);
 
       boolean success = world.generateTree(treeBase, rng, type);
-      }
     }
   }
 
