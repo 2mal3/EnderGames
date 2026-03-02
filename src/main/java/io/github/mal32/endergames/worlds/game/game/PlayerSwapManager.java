@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import org.bukkit.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -47,7 +48,15 @@ public class PlayerSwapManager extends AbstractTask {
   private void teleportPlayer(Player player, Location location) {
     player.getOpenInventory().close();
 
-    player.teleport(location);
+    Entity vehicle = player.getVehicle();
+    if (vehicle != null) {
+      vehicle.removePassenger(player);
+      vehicle.teleport(location);
+      player.teleport(location);
+      vehicle.addPassenger(player);
+    } else {
+      player.teleport(location);
+    }
 
     location.getWorld().playSound(location, Sound.ENTITY_PLAYER_TELEPORT, 1, 0.5f);
     location.getWorld().spawnParticle(Particle.PORTAL, location, 50, 0, 0, 0);
