@@ -2,7 +2,6 @@ package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
 
-import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -20,7 +19,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -32,7 +30,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
@@ -44,16 +41,16 @@ public class ForestSpirit extends AbstractKit {
 
   // --- ability tuning ---
   private static final int GROWTH_COOLDOWN_SECONDS = 25;
-  private static final double GROWTH_RADIUS = 6.0;
+  private static final double GROWTH_RADIUS = 12.0;
 
   // --- stillness / rooted tree tuning ---
-  private static final int ROOTS_TRIGGER_TICKS = 20 * 10; // 10s standing still
+  private static final int ROOTS_TRIGGER_TICKS = 20 * 15; // 15s standing still
   private static final int ROOTED_REGEN_LEVEL = 2; // Regen III (0=I,1=II,2=III)
   private static final int ROOTED_REGEN_DURATION_TICKS = 20 * 60 * 15; // long, removed on free
 
   // --- vulnerabilities ---
-  private static final double FIRE_DAMAGE_MULTIPLIER = 1.35D;
-  private static final double AXE_DAMAGE_MULTIPLIER = 1.25D;
+  private static final double FIRE_DAMAGE_MULTIPLIER = 2D;
+  private static final double AXE_DAMAGE_MULTIPLIER = 1.5D;
 
   private final Map<UUID, Long> growthCooldownUntil = new HashMap<>();
   private final Map<UUID, Integer> standStillTicks = new HashMap<>();
@@ -174,35 +171,39 @@ public class ForestSpirit extends AbstractKit {
     Material logType = getLogForBiome(biome);
     Material leavesType = getLeavesForBiome(biome);
 
-    // 1) Try to generate a mega jungle tree at the entity's position
+    // 1) Try to generate a jungle tree at the entity's position
     Random rng = ThreadLocalRandom.current();
     boolean generated = world.generateTree(baseLoc, rng, TreeType.JUNGLE);
 
+    int bX = baseLoc.getBlockX();
+    int bY = baseLoc.getBlockY();
+    int bZ = baseLoc.getBlockZ();
+
+    // Center position we want to keep the target at (for later, if needed)
+    Location trapCenter = new Location(world, bX + 0.5, bY, bZ + 0.5);
+
     if (!generated) {
       // Fallback: manually create a simple 2x2, 6-block-high log trunk with a leaf crown on top
-      int baseX = baseLoc.getBlockX();
-      int baseY = baseLoc.getBlockY();
-      int baseZ = baseLoc.getBlockZ();
 
       // Build 2x2 trunk, 6 blocks high
       for (int dy = 0; dy < 6; dy++) {
         for (int dx = 0; dx < 2; dx++) {
           for (int dz = 0; dz < 2; dz++) {
-            Block trunkBlock = world.getBlockAt(baseX + dx, baseY + dy, baseZ + dz);
+            Block trunkBlock = world.getBlockAt(bX + dx, bY + dy, bZ + dz);
             trunkBlock.setType(logType, false);
           }
         }
       }
 
       // Simple leaf crown on top of the trunk (one layer around and one on top center)
-      int crownY = baseY + 6;
+      int crownY = bY + 6;
       for (int dx = -2; dx <= 3; dx++) {
         for (int dz = -2; dz <= 3; dz++) {
           // Avoid making an enormous cube; keep it to a rough radius
           double dist = Math.sqrt(Math.pow(dx - 0.5, 2) + Math.pow(dz - 0.5, 2));
           if (dist > 3.0) continue;
 
-          Block leafBlock = world.getBlockAt(baseX + dx, crownY, baseZ + dz);
+          Block leafBlock = world.getBlockAt(bX + dx, crownY, bZ + dz);
           if (leafBlock.getType().isAir() || Tag.LEAVES.isTagged(leafBlock.getType())) {
             leafBlock.setType(leavesType, false);
           }
@@ -210,22 +211,36 @@ public class ForestSpirit extends AbstractKit {
       }
 
       // One extra leaf block as crown tip above the center of the trunk
-      Block crownTip = world.getBlockAt(baseX + 1, crownY + 1, baseZ + 1);
+      Block crownTip = world.getBlockAt(bX + 1, crownY + 1, bZ + 1);
       if (crownTip.getType().isAir() || Tag.LEAVES.isTagged(crownTip.getType())) {
         crownTip.setType(leavesType, false);
       }
+
+      // Build a leaf wall around the base 2x2 trunk
+      buildBaseLeafWall(world, bX, bY, bZ, leavesType);
+
+      // Teleport the target into the center of the 2x2 trunk so it suffocates inside the tree
+      Location center =
+          new Location(
+              world,
+              bX + 1.0, // middle of the 2x2 in X
+              bY,
+              bZ + 1.0, // middle of the 2x2 in Z
+              target.getLocation().getYaw(),
+              target.getLocation().getPitch());
+      target.teleport(center);
 
       // Nothing more to adapt in this fallback case
       return;
     }
 
-    // 2) Adapt the generated mega jungle tree to the current biome
+    // 2) Adapt the mega jungle tree to the current biome
 
     // Define a rough bounding box where the mega jungle tree could exist
     // Mega jungle trees can be tall and wide; this is a conservative box
-    int radiusX = 6;
-    int radiusZ = 6;
-    int height = 25; // from baseLoc.y up to baseLoc.y + height
+    int radiusX = 10;
+    int radiusZ = 10;
+    int height = 40; // from baseLoc.y up to baseLoc.y + height
 
     int baseX = baseLoc.getBlockX();
     int baseY = baseLoc.getBlockY();
@@ -257,6 +272,86 @@ public class ForestSpirit extends AbstractKit {
           if (Tag.LEAVES.isTagged(type)) {
             block.setType(leavesType, false);
           }
+        }
+      }
+    }
+
+    // Build a leaf wall around the base of the (generated) 2x2 trunk area
+    buildBaseLeafWall(world, baseX, baseY, baseZ, leavesType);
+
+    // After adaptation, also put the target roughly in the center of the trunk area
+    Location center =
+        new Location(
+            world,
+            trapCenter.getX(),
+            trapCenter.getY(),
+            trapCenter.getZ(),
+            target.getLocation().getYaw(),
+            target.getLocation().getPitch());
+    target.teleport(center);
+  }
+
+  /**
+   * Builds a ring of leaves around a 2x2 trunk at (baseX..baseX+1, baseZ..baseZ+1). Pattern (top
+   * view, one layer): . L L . L T T L L T T L . L L . The walls are 2 blocks high, with a 50%
+   * chance to add a 3rd layer. Additionally, with a small chance extra leaves are placed one block
+   * further out.
+   */
+  private void buildBaseLeafWall(
+      World world, int baseX, int baseY, int baseZ, Material leavesType) {
+    Random rng = ThreadLocalRandom.current();
+
+    // Positions around the 2x2 trunk (offsets relative to baseX/baseZ)
+    int[][] ringOffsets = {
+      // north row
+      {0, -1},
+      {1, -1},
+      {2, -1},
+      // middle rows
+      {-1, 0},
+      {-1, 1},
+      {2, 0},
+      {2, 1},
+      // south row
+      {0, 2},
+      {1, 2},
+      {2, 2}
+    };
+
+    // Build walls 2 blocks high, with 50% chance for a 3rd block
+    for (int[] off : ringOffsets) {
+      int x = baseX + off[0];
+      int z = baseZ + off[1];
+
+      int maxHeight = 2 + (rng.nextBoolean() ? 1 : 0); // 2 or 3 high
+      for (int dy = 0; dy < maxHeight; dy++) {
+        int y = baseY + dy;
+        Block b = world.getBlockAt(x, y, z);
+        Material type = b.getType();
+        if (type.isAir() || Tag.LEAVES.isTagged(type)) {
+          b.setType(leavesType, false);
+        }
+      }
+    }
+
+    // Small chance to add extra leaves one block further out for a natural look
+    int[][] outerOffsets = {
+      {0, -2}, {1, -2}, {2, -2}, {-2, 0}, {-2, 1}, {3, 0}, {3, 1}, {0, 3}, {1, 3}, {2, 3}
+    };
+
+    for (int[] off : outerOffsets) {
+      if (rng.nextDouble() > 0.35) continue; // ~35% chance to place an outer leaf column
+
+      int x = baseX + off[0];
+      int z = baseZ + off[1];
+
+      int maxHeight = 1 + (rng.nextBoolean() ? 1 : 0); // 1 or 2 blocks high
+      for (int dy = 0; dy < maxHeight; dy++) {
+        int y = baseY + dy + 1;
+        Block b = world.getBlockAt(x, y, z);
+        Material type = b.getType();
+        if (type.isAir() || Tag.LEAVES.isTagged(type)) {
+          b.setType(leavesType, false);
         }
       }
     }
@@ -590,6 +685,12 @@ public class ForestSpirit extends AbstractKit {
     }
 
     if (!playerCanUseThisKit(player)) return;
+    UUID id = event.getPlayer().getUniqueId();
+    if (rootedTrees.containsKey(id)) freeRootedPlayer(id, true);
+    standStillTicks.remove(id);
+    lastKnownBlockPos.remove(id);
+    growthCooldownUntil.remove(id);
+    kitStartTimeMillis.remove(id);
 
     // TODO: grow a tree at death location as separate passive.
   }
