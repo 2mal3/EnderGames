@@ -417,16 +417,17 @@ public class ForestSpirit extends AbstractKit {
           if (current == Material.ENDER_CHEST
               || current == Material.OBSIDIAN
               || current == Material.ENCHANTING_TABLE
-              || current == Material.BEDROCK) {
+              || current == Material.BEDROCK
+              || Tag.LEAVES.isTagged(current)) {
             continue;
           }
 
           // Randomly choose between moss, coarse dirt and dirt
           double r = rng.nextDouble();
           Material newType;
-          if (r < 0.33) {
+          if (r < 0.55) {
             newType = Material.MOSS_BLOCK;
-          } else if (r < 0.66) {
+          } else if (r < 0.8) {
             newType = Material.COARSE_DIRT;
           } else {
             newType = Material.DIRT;
@@ -480,6 +481,36 @@ public class ForestSpirit extends AbstractKit {
         || type == Material.PODZOL
         || type == Material.ROOTED_DIRT
         || type == Material.MOSS_BLOCK;
+  }
+
+  @EventHandler
+  private void onInteractEntityWithGrowthItem(
+      org.bukkit.event.player.PlayerInteractEntityEvent event) {
+    Player player = event.getPlayer();
+    if (!playerCanUseThisKit(player)) return;
+
+    ItemStack item =
+        event.getHand() == org.bukkit.inventory.EquipmentSlot.HAND
+            ? player.getInventory().getItemInMainHand()
+            : player.getInventory().getItemInOffHand();
+
+    if (!isGrowthItem(item)) return;
+
+    // Block vanilla interaction such as dyeing sheep
+    event.setCancelled(true);
+  }
+
+  private boolean isGrowthItem(ItemStack stack) {
+    if (stack == null || stack.getType() != Material.GREEN_DYE) return false;
+    ItemMeta meta = stack.getItemMeta();
+    if (meta == null || !meta.hasDisplayName()) return false;
+    Component name = meta.displayName();
+    if (name == null) return false;
+    // Simple textual check; you can tighten this if needed
+    return Component.text("Growth")
+        .color(NamedTextColor.DARK_GREEN)
+        .decoration(TextDecoration.ITALIC, false)
+        .equals(name);
   }
 
   // ---------------------------------------------------------------------------
