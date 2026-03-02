@@ -2,7 +2,6 @@ package io.github.mal32.endergames.worlds.lobby;
 
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
-import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -11,12 +10,15 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.Tag;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Display.Billboard;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
@@ -33,10 +35,19 @@ public class PlayerDifficulty extends AbstractModule {
   public PlayerDifficulty(EnderGames plugin) {
     super(plugin);
 
-    // /summon minecraft:text_display ~ ~ ~ {UUID:[I;1883270697,1892829000,-2013577149,-443118066]}
-    String uuidString = "70406e29-70d2-4748-87fb-4043e5968e0e";
-    UUID displayUuid = UUID.fromString(uuidString);
-    display = (TextDisplay) LobbyWorld.lobbyWorld.getEntity(displayUuid);
+    display = (TextDisplay) getEntityByTag(LobbyWorld.lobbyWorld, "difficulty_selector");
+    if (display == null) {
+      plugin.getComponentLogger().warn("Could not find difficulty selector text display");
+    }
+  }
+
+  private Entity getEntityByTag(World world, String tag) {
+    for (Entity entity : world.getEntities()) {
+      if (entity.getScoreboardTags().contains(tag)) {
+        return entity;
+      }
+    }
+    return null;
   }
 
   @EventHandler
@@ -51,10 +62,10 @@ public class PlayerDifficulty extends AbstractModule {
 
     var blockData = (Directional) clickedBlock.getBlockData();
     Block attachedBlock = clickedBlock.getRelative(blockData.getFacing().getOppositeFace());
-    switch (attachedBlock.getType()) {
-      case COPPER_BLOCK -> nerf(player);
-      case DIAMOND_BLOCK -> buff(player);
-      default -> {}
+    if (Tag.COPPER.isTagged(attachedBlock.getType())) {
+      nerf(player);
+    } else if (attachedBlock.getType() == Material.DIAMOND_BLOCK) {
+      buff(player);
     }
 
     updateDisplay(player);
