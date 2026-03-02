@@ -40,11 +40,6 @@ public class LobbyWorld extends AbstractWorld {
     this.pmanager = new ParkourManager(plugin);
     this.menuManager = new MenuManager(this.plugin);
 
-    var modules = List.of(new PlayerDifficulty(plugin));
-    for (AbstractModule module : modules) {
-      module.enable();
-    }
-
     lobbyWorld.setSpawnLocation(spawnLocation);
     lobbyWorld.setGameRule(GameRules.RESPAWN_RADIUS, 6);
     lobbyWorld.setGameRule(GameRules.ADVANCE_TIME, false);
@@ -54,6 +49,11 @@ public class LobbyWorld extends AbstractWorld {
     lobbyWorld.setGameRule(GameRules.LOCATOR_BAR, false);
 
     tryUpdatingLobby();
+
+    var modules = List.of(new PlayerDifficulty(plugin));
+    for (AbstractModule module : modules) {
+      module.enable();
+    }
 
     lobbyWorld.getChunkAt(0, 0).setForceLoaded(true); // ensure item frames for map wall are loaded
   }
