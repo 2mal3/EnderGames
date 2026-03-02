@@ -51,7 +51,7 @@ public class ForestSpirit extends AbstractKit {
 
   // --- vulnerabilities ---
   private static final double FIRE_DAMAGE_MULTIPLIER = 2D;
-  private static final double AXE_DAMAGE_MULTIPLIER = 1.5D;
+  private static final double AXE_DAMAGE_MULTIPLIER = 1.4D;
 
   private final Map<UUID, Long> growthCooldownUntil = new HashMap<>();
   private final Map<UUID, Integer> standStillTicks = new HashMap<>();
@@ -425,9 +425,9 @@ public class ForestSpirit extends AbstractKit {
           // Randomly choose between moss, coarse dirt and dirt
           double r = rng.nextDouble();
           Material newType;
-          if (r < 0.55) {
+          if (r < 0.62) {
             newType = Material.MOSS_BLOCK;
-          } else if (r < 0.8) {
+          } else if (r < 0.85) {
             newType = Material.COARSE_DIRT;
           } else {
             newType = Material.DIRT;
@@ -837,7 +837,68 @@ public class ForestSpirit extends AbstractKit {
     growthCooldownUntil.remove(id);
     kitStartTimeMillis.remove(id);
 
-    // TODO: grow a tree at death location as separate passive.
+    // Passive: grow a tree at death location adapted to the biome.
+    Location baseLoc = player.getLocation().getBlock().getLocation();
+    World world = baseLoc.getWorld();
+    if (world != null) {
+      Biome biome = baseLoc.getBlock().getBiome();
+      Material logType = getLogForBiome(biome);
+      Material leavesType = getLeavesForBiome(biome);
+
+      // First try to generate a mega spruce-like tree at the death position.
+      // Use TreeType.MEGA_REDWOOD as the in-game analog for minecraft:mega_spruce.
+      Random rng = ThreadLocalRandom.current();
+      boolean generated = world.generateTree(baseLoc, rng, TreeType.MEGA_REDWOOD);
+
+      if (generated) {
+        // Adapt the generated tree's logs and leaves to the biome, similar to turnEntityIntoTree.
+        int radiusX = 10;
+        int radiusZ = 10;
+        int height = 40;
+        int baseX = baseLoc.getBlockX();
+        int baseY = baseLoc.getBlockY();
+        int baseZ = baseLoc.getBlockZ();
+
+        String biomeKey = biome.getKey().value().toLowerCase(Locale.ROOT);
+        boolean isSpruceNative =
+            biomeKey.contains("taiga")
+                || biomeKey.contains("grove")
+                || biomeKey.contains("snowy")
+                || biomeKey.contains("windswept");
+
+        for (int x = baseX - radiusX; x <= baseX + radiusX; x++) {
+          for (int y = baseY; y <= baseY + height; y++) {
+            for (int z = baseZ - radiusZ; z <= baseZ + radiusZ; z++) {
+              Block block = world.getBlockAt(x, y, z);
+              Material type = block.getType();
+
+              if (!isSpruceNative && type == Material.VINE) {
+                block.setType(Material.AIR, false);
+                continue;
+              }
+
+              if (Tag.LOGS.isTagged(type)) {
+                block.setType(logType, false);
+                continue;
+              }
+
+              if (Tag.LEAVES.isTagged(type)) {
+                block.setType(leavesType, false);
+              }
+            }
+          }
+        }
+      } else {
+        // Mega tree generation failed: place sapling
+        Material saplingType = getSaplingForBiome(biome);
+        Block saplingBlock = baseLoc.getBlock();
+        Block belowSapling = saplingBlock.getRelative(0, -1, 0);
+        if (saplingBlock.getType().isAir() || Tag.LEAVES.isTagged(saplingBlock.getType())) {
+          saplingBlock.setType(saplingType, false);
+          belowSapling.setType(Material.COARSE_DIRT, false);
+        }
+      }
+    }
   }
 
   @EventHandler
