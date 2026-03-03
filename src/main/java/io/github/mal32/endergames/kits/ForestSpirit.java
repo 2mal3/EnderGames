@@ -29,6 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
 
 public class ForestSpirit extends AbstractKit {
 
@@ -56,6 +57,8 @@ public class ForestSpirit extends AbstractKit {
   // rooted tree state
   private final Map<UUID, RootedTreeState> rootedTrees = new HashMap<>();
   private final Map<BlockKey, UUID> rootLogOwner = new HashMap<>();
+  private BukkitTask stillnessTask;
+  private BukkitTask healingTask;
   private static boolean healingTaskScheduled = false;
 
   public ForestSpirit(EnderGames plugin) {
@@ -1370,5 +1373,20 @@ public class ForestSpirit extends AbstractKit {
             + "Gets stronger in forests, turns into a tree when standing still",
         "Full dark-green leather armor with Thorns II, 20 adaptive saplings.",
         Difficulty.MEDIUM);
+  }
+
+  @Override
+  public void disable() {
+    if (stillnessTask != null) {
+      stillnessTask.cancel();
+      stillnessTask = null;
+    }
+
+    if (healingTask != null) {
+      healingTask.cancel();
+      healingTask = null;
+      healingTaskScheduled = false;
+    }
+    super.disable();
   }
 }
