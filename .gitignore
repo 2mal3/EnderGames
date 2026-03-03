@@ -34,8 +34,6 @@ build/
 ### Mac OS ###
 .DS_Store
 
-### Aider ###
-.aider*
-
 ### Custom Scripts ###
 *.sh
+.env
