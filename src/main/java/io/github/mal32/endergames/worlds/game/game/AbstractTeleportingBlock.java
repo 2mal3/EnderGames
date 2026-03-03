@@ -13,7 +13,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 
 public abstract class AbstractTeleportingBlock {
-  protected Location location;
+  protected final Location location;
   private final World world;
   public int ticksToLive;
 
@@ -55,8 +55,8 @@ public abstract class AbstractTeleportingBlock {
   }
 
   private void loadChunkIfNotLoaded() {
-    int chunkX = location.blockX() >> 4;
-    int chunkZ = location.blockZ() >> 4;
+    int chunkX = location.getBlockX() >> 4;
+    int chunkZ = location.getBlockZ() >> 4;
     boolean chunkLoaded = world.isChunkLoaded(chunkX, chunkZ);
     if (!chunkLoaded) {
       world.loadChunk(chunkX, chunkZ, true);

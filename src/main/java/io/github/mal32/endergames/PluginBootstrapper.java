@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 import java.util.Objects;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class PluginBootstrapper implements PluginBootstrap {
   @Override
@@ -34,7 +35,7 @@ public class PluginBootstrapper implements PluginBootstrap {
   }
 
   @Override
-  public @NotNull JavaPlugin createPlugin(PluginProviderContext context) {
+  public @NotNull JavaPlugin createPlugin(@NonNull PluginProviderContext context) {
     return new EnderGames();
   }
 }

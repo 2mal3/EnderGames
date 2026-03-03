@@ -2,8 +2,6 @@ package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
-import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import java.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -21,12 +19,12 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 public class Rewind extends AbstractKit {
-  private final int REWIND_SECONDS = 10;
-  private final int PLAYER_STATE_INTERVAL_TICKS = 10;
-  private final int USE_COOLDOWN_SECONDS = 40;
+  private static final int REWIND_SECONDS = 10;
+  private static final int PLAYER_STATE_INTERVAL_TICKS = 10;
+  private static final int USE_COOLDOWN_SECONDS = 40;
   private final NamespacedKey rewindKey;
-  private BukkitTask task;
   private final HashMap<UUID, ArrayList<PlayerState>> playerStates = new HashMap<>();
+  private BukkitTask task;
 
   public Rewind(EnderGames plugin) {
     super(plugin);
@@ -42,9 +40,7 @@ public class Rewind extends AbstractKit {
     meta.getPersistentDataContainer().set(rewindKey, PersistentDataType.BOOLEAN, true);
     meta.itemName(Component.text("Rewind").color(NamedTextColor.GOLD));
     clock.setItemMeta(meta);
-    clock.setData(
-        DataComponentTypes.ENCHANTMENTS,
-        ItemEnchantments.itemEnchantments().add(Enchantment.VANISHING_CURSE, 1).build());
+    clock.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
     player.getInventory().addItem(clock);
 
     playerStates.put(player.getUniqueId(), new ArrayList<>());

@@ -5,8 +5,6 @@ import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.worlds.game.AbstractPhase;
 import io.github.mal32.endergames.worlds.game.GameWorld;
-import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import java.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -75,9 +73,7 @@ public class GamePhase extends AbstractPhase {
       final ItemMeta trackerMeta = trackerItem.getItemMeta();
       trackerMeta.itemName(Component.text("Tracker").color(NamedTextColor.AQUA));
       trackerItem.setItemMeta(trackerMeta);
-      trackerItem.setData(
-          DataComponentTypes.ENCHANTMENTS,
-          ItemEnchantments.itemEnchantments().add(Enchantment.VANISHING_CURSE, 1).build());
+      trackerItem.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
       player.getInventory().addItem(trackerItem);
 
       String playerKit =
@@ -117,9 +113,9 @@ public class GamePhase extends AbstractPhase {
   }
 
   private void removeSpawnPlatform() {
-    for (int x = spawnLocation.blockX() - 20; x <= spawnLocation.blockX() + 20; x++) {
-      for (int z = spawnLocation.blockZ() - 20; z <= spawnLocation.blockZ() + 20; z++) {
-        for (int y = spawnLocation.blockY() - 5; y <= spawnLocation.blockY() + 5; y++) {
+    for (int x = spawnLocation.getBlockX() - 20; x <= spawnLocation.getBlockX() + 20; x++) {
+      for (int z = spawnLocation.getBlockZ() - 20; z <= spawnLocation.getBlockZ() + 20; z++) {
+        for (int y = spawnLocation.getBlockY() - 5; y <= spawnLocation.getBlockY() + 5; y++) {
           spawnLocation.getWorld().getBlockAt(x, y, z).setType(Material.AIR);
         }
       }

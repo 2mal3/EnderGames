@@ -42,6 +42,26 @@ class KitSelector extends MenuItem implements Listener {
     Bukkit.getPluginManager().registerEvents(this, plugin);
   }
 
+  private static String capitalizeWords(String input) {
+    if (input == null || input.isEmpty()) return input;
+
+    String[] parts = input.split("\\s+");
+    StringBuilder sb = new StringBuilder();
+
+    for (int i = 0; i < parts.length; i++) {
+      String word = parts[i];
+      if (!word.isEmpty()) {
+        sb.append(Character.toUpperCase(word.charAt(0)));
+        if (word.length() > 1) {
+          sb.append(word.substring(1).toLowerCase());
+        }
+      }
+      if (i < parts.length - 1) sb.append(' ');
+    }
+
+    return sb.toString();
+  }
+
   @Override
   public void initPlayer(Player player) {
     giveItem(player);
@@ -102,26 +122,6 @@ class KitSelector extends MenuItem implements Listener {
     kitInv.updateKitItems();
   }
 
-  private static String capitalizeWords(String input) {
-    if (input == null || input.isEmpty()) return input;
-
-    String[] parts = input.split("\\s+");
-    StringBuilder sb = new StringBuilder();
-
-    for (int i = 0; i < parts.length; i++) {
-      String word = parts[i];
-      if (!word.isEmpty()) {
-        sb.append(Character.toUpperCase(word.charAt(0)));
-        if (word.length() > 1) {
-          sb.append(word.substring(1).toLowerCase());
-        }
-      }
-      if (i < parts.length - 1) sb.append(' ');
-    }
-
-    return sb.toString();
-  }
-
   @EventHandler
   public void onInventoryDrag(InventoryDragEvent event) {
     if (!(event.getInventory().getHolder() instanceof KitInventory)) return;
@@ -140,6 +140,36 @@ class KitInventory implements InventoryHolder {
     this.inventory = plugin.getServer().createInventory(this, 27, Component.text("Select Kit"));
 
     updateKitItems();
+  }
+
+  private static ArrayList<String> splitIntoLines(String text) {
+    var lines = new ArrayList<String>();
+
+    final int maxLineLength = 20;
+    int charactersInLine = 0;
+    int lineStartIndex = 0;
+    for (int i = 0; i < text.length(); i++) {
+      charactersInLine++;
+      if (charactersInLine > maxLineLength && text.charAt(i) == ' ') {
+        var line = text.substring(lineStartIndex, i);
+        lines.add(line);
+        charactersInLine = 0;
+        lineStartIndex = i + 1;
+      }
+    }
+    lines.add(text.substring(lineStartIndex));
+
+    return lines;
+  }
+
+  private static List<TextComponent> convertTextListToComponents(ArrayList<String> lines) {
+    return lines.stream()
+        .map(
+            line ->
+                Component.text(line)
+                    .color(NamedTextColor.WHITE)
+                    .decoration(TextDecoration.ITALIC, false))
+        .toList();
   }
 
   @Override
@@ -228,35 +258,5 @@ class KitInventory implements InventoryHolder {
     }
 
     return lore;
-  }
-
-  private static ArrayList<String> splitIntoLines(String text) {
-    var lines = new ArrayList<String>();
-
-    final int maxLineLength = 20;
-    int charactersInLine = 0;
-    int lineStartIndex = 0;
-    for (int i = 0; i < text.length(); i++) {
-      charactersInLine++;
-      if (charactersInLine > maxLineLength && text.charAt(i) == ' ') {
-        var line = text.substring(lineStartIndex, i);
-        lines.add(line);
-        charactersInLine = 0;
-        lineStartIndex = i + 1;
-      }
-    }
-    lines.add(text.substring(lineStartIndex));
-
-    return lines;
-  }
-
-  private static List<TextComponent> convertTextListToComponents(ArrayList<String> lines) {
-    return lines.stream()
-        .map(
-            line ->
-                Component.text(line)
-                    .color(NamedTextColor.WHITE)
-                    .decoration(TextDecoration.ITALIC, false))
-        .toList();
   }
 }

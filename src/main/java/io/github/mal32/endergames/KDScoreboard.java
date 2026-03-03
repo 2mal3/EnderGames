@@ -19,18 +19,15 @@ import org.bukkit.scoreboard.ScoreboardManager;
 public class KDScoreboard implements Listener {
   private final NamespacedKey DEATH_COUNT;
   private final NamespacedKey KILL_COUNT;
-  private final Scoreboard board;
   private final Objective objective;
-  private final EnderGames plugin;
 
   public KDScoreboard(EnderGames plugin) {
-    this.plugin = plugin;
 
     DEATH_COUNT = new NamespacedKey(plugin, "deathCount");
     KILL_COUNT = new NamespacedKey(plugin, "killCount");
 
     ScoreboardManager manager = plugin.getServer().getScoreboardManager();
-    board = manager.getMainScoreboard();
+    Scoreboard board = manager.getMainScoreboard();
     if (board.getObjective("kd") != null) {
       board.getObjective("kd").unregister();
     }

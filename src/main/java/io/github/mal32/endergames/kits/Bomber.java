@@ -2,8 +2,6 @@ package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
-import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import java.util.HashSet;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
@@ -43,9 +41,7 @@ public class Bomber extends AbstractKit {
     meta.setRarity(ItemRarity.RARE);
     meta.getPersistentDataContainer().set(isMineItemKey, PersistentDataType.BOOLEAN, true);
     mineStack.setItemMeta(meta);
-    mineStack.setData(
-        DataComponentTypes.ENCHANTMENTS,
-        ItemEnchantments.itemEnchantments().add(Enchantment.VANISHING_CURSE, 1).build());
+    mineStack.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
     player.getInventory().addItem(mineStack);
   }
 
