@@ -18,6 +18,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 public class Kangaroo extends AbstractKit {
+  private final double VERTICAL_JUMP_SPEED = 1;
+  private final double HORIZONTAL_JUMP_SPEED = 2;
+
   public Kangaroo(EnderGames plugin) {
     super(plugin);
   }
@@ -69,11 +72,20 @@ public class Kangaroo extends AbstractKit {
 
     player.setAllowFlight(false);
 
-    Vector jump = player.getLocation().getDirection().multiply(2).setY(1);
+    // The actual jump, reduced by slowness
+    int slownessLevel = 0;
+    if (player.getPotionEffect(PotionEffectType.SLOWNESS) != null) {
+      slownessLevel = player.getPotionEffect(PotionEffectType.SLOWNESS).getAmplifier() + 1;
+    }
+    double horizontalMultiplier = HORIZONTAL_JUMP_SPEED * (1 - 0.30 * slownessLevel);
+    double verticalMultiplier = VERTICAL_JUMP_SPEED * (1 - 0.30 * slownessLevel);
+    Vector jump =
+        player.getLocation().getDirection().multiply(horizontalMultiplier).setY(verticalMultiplier);
     player.setVelocity(jump);
 
     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 1, 1);
 
+    // Hunger effects
     var hungerEffect = player.getPotionEffect(PotionEffectType.HUNGER);
     final int durationSeconds = 30;
     final int startHungerLoss = 2;
