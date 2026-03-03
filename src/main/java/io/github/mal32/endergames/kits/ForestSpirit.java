@@ -63,22 +63,34 @@ public class ForestSpirit extends AbstractKit {
 
   public ForestSpirit(EnderGames plugin) {
     super(plugin);
-
-    // Tick-based stillness tracker:
-    // - works even if player doesn't move their mouse
-    // - validates roots each tick so ANY destruction cause frees the player
-    plugin.getServer().getScheduler().runTaskTimer(plugin, this::tickStillnessAndRoots, 1L, 1L);
-
-    // Passive: every 5 seconds, check for nearby logs and heal if surrounded by enough
-    if (!healingTaskScheduled) {
-      plugin.getServer().getScheduler().runTaskTimer(plugin, this::tickLogAuraHealing, 60L, 60L);
-      healingTaskScheduled = true;
-    }
   }
 
   // ---------------------------------------------------------------------------
   // STARTING KIT
   // ---------------------------------------------------------------------------
+
+  @Override
+  public void enable() {
+    super.enable();
+
+    // - validates roots each tick so ANY destruction cause frees the player
+    stillnessTask =
+        plugin
+            .getServer()
+            .getScheduler()
+            // delay 800 ticks (~40 seconds) so roots cannot trigger during the first 40s
+            .runTaskTimer(plugin, this::tickStillnessAndRoots, 800L, 1L);
+
+    // Passive: every 5 seconds, check for nearby logs and heal if surrounded by enough
+    if (!healingTaskScheduled) {
+      healingTask =
+          plugin
+              .getServer()
+              .getScheduler()
+              .runTaskTimer(plugin, this::tickLogAuraHealing, 60L, 60L);
+      healingTaskScheduled = true;
+    }
+  }
 
   @Override
   public void start(Player player) {
@@ -521,12 +533,7 @@ public class ForestSpirit extends AbstractKit {
         int ticks = standStillTicks.getOrDefault(id, 0) + 1;
         standStillTicks.put(id, ticks);
 
-        // 20 second grace period after this kit starts for a player
-        long now = System.currentTimeMillis();
-        long startTime = kitStartTimeMillis.getOrDefault(id, now);
-        boolean inGracePeriod = (now - startTime) < 40_000L;
-
-        if (!inGracePeriod && ticks >= ROOTS_TRIGGER_TICKS) {
+        if (ticks >= ROOTS_TRIGGER_TICKS) {
           rootPlayerIntoTree(player);
           standStillTicks.put(id, 0);
           lastKnownBlockPos.put(id, currentPos);
