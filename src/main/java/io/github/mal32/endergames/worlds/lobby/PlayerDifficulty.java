@@ -124,9 +124,9 @@ public class PlayerDifficulty extends AbstractModule {
 
     NamedTextColor factorColor;
     if (factor < 0) {
-      factorColor = NamedTextColor.GREEN;
-    } else if (factor > 0) {
       factorColor = NamedTextColor.RED;
+    } else if (factor > 0) {
+      factorColor = NamedTextColor.GREEN;
     } else {
       factorColor = NamedTextColor.WHITE;
     }
@@ -134,7 +134,8 @@ public class PlayerDifficulty extends AbstractModule {
     display.text(
         Component.text("")
             .append(Component.text("Armor Multiplier\n").decorate(TextDecoration.BOLD))
-            .append(Component.text(String.format("%.0f", factor * 100) + "%").color(factorColor))
+            .append(
+                Component.text(String.format("%.0f", (factor + 1) * 100) + "%").color(factorColor))
             .color(NamedTextColor.WHITE));
   }
 
