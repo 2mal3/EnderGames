@@ -131,7 +131,8 @@ public class Slime extends AbstractKit {
             EFFECT_DURATION_SECONDS * 20,
             Math.min(amplifier, 2),
             true,
-            false));
+            true,
+            true));
 
     // Play sound and particles on hit
     Location location = hitEntity.getLocation();
