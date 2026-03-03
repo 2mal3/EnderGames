@@ -16,6 +16,8 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 public abstract class AbstractKit extends AbstractModule {
+  public static final NamespacedKey kitStorageKey = new NamespacedKey("endergames", "kit");
+
   public AbstractKit(EnderGames plugin) {
     super(plugin);
   }

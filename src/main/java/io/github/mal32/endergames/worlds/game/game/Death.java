@@ -3,11 +3,13 @@ package io.github.mal32.endergames.worlds.game.game;
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -23,6 +25,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.persistence.PersistentDataType;
 
 /**
  * Strategy for handling player deaths: Use the normal player death event and dont cancel it to keep
@@ -94,10 +97,19 @@ public class Death extends AbstractModule {
               .append(Component.text(" was killed by ").color(NamedTextColor.DARK_RED))
               .append(Component.text(killer.getName()).color(NamedTextColor.RED)));
 
+      String killerKit =
+          player
+              .getPersistentDataContainer()
+              .get(AbstractKit.kitStorageKey, PersistentDataType.STRING);
+      String niceKillerKit = capitalizeFully(killerKit);
+
       player.sendMessage(
           Component.text("")
               .append(Component.text(killer.getName()).color(NamedTextColor.DARK_RED))
-              .append(Component.text(" has ").color(NamedTextColor.RED))
+              .append(Component.text(" (").color(NamedTextColor.RED))
+              .append(Component.text(niceKillerKit).color(NamedTextColor.DARK_RED))
+              .append(Component.text(") ").color(NamedTextColor.RED))
+              .append(Component.text("has ").color(NamedTextColor.RED))
               .append(
                   Component.text(String.format("%.2f", killer.getHealth()) + "❤")
                       .color(NamedTextColor.DARK_RED))
@@ -109,6 +121,10 @@ public class Death extends AbstractModule {
               .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
               .append(Component.text(player.getName()).color(NamedTextColor.RED)));
     }
+  }
+
+  private static String capitalizeFully(String text) {
+    return Pattern.compile("\\b(\\w)").matcher(text).replaceAll(m -> m.group().toUpperCase());
   }
 
   @EventHandler

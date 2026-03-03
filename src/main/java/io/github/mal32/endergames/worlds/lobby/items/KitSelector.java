@@ -12,7 +12,6 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -30,7 +29,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 class KitSelector extends MenuItem implements Listener {
-  private final NamespacedKey kitStorageKey;
   private final List<AbstractKit> availableKits;
 
   public KitSelector(EnderGames plugin) {
@@ -40,7 +38,6 @@ class KitSelector extends MenuItem implements Listener {
         Component.text("Select Kit").color(NamedTextColor.GOLD),
         "kit_selector",
         (byte) 0);
-    this.kitStorageKey = new NamespacedKey(plugin, "kit");
     this.availableKits = AbstractKit.getKits(plugin);
     Bukkit.getPluginManager().registerEvents(this, plugin);
   }
@@ -56,7 +53,9 @@ class KitSelector extends MenuItem implements Listener {
 
     player.playSound(player, Sound.BLOCK_CHEST_OPEN, 1, 1);
     String selectedKit =
-        player.getPersistentDataContainer().get(kitStorageKey, PersistentDataType.STRING);
+        player
+            .getPersistentDataContainer()
+            .get(AbstractKit.kitStorageKey, PersistentDataType.STRING);
     KitInventory kiInv = new KitInventory(plugin, availableKits, selectedKit);
     player.openInventory(kiInv.getInventory());
   }
@@ -89,7 +88,9 @@ class KitSelector extends MenuItem implements Listener {
       return;
     }
 
-    player.getPersistentDataContainer().set(kitStorageKey, PersistentDataType.STRING, kitName);
+    player
+        .getPersistentDataContainer()
+        .set(AbstractKit.kitStorageKey, PersistentDataType.STRING, kitName);
     player.sendMessage(
         Component.text("You selected the ")
             .append(Component.text(capitalizeWords(kitName)).color(NamedTextColor.GOLD))
