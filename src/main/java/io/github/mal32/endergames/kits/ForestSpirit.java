@@ -1,12 +1,10 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
-
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemEnchantments;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -447,7 +445,7 @@ public class ForestSpirit extends AbstractKit {
       Biome biomeAtSpot = baseBlock.getBiome();
       TreeType type = getTreeTypeforBiome(biomeAtSpot);
 
-      boolean success = world.generateTree(treeBase, rng, type);
+      world.generateTree(treeBase, rng, type);
     }
   }
 
@@ -1239,10 +1237,6 @@ public class ForestSpirit extends AbstractKit {
   // ---------------------------------------------------------------------------
   // Internal structs
   // ---------------------------------------------------------------------------
-
-  private static final class TemporaryStructure {
-    private final Map<BlockKey, Material> originalBlocks = new HashMap<>();
-  }
 
   private static final class RootedTreeState {
     private final UUID playerId;
