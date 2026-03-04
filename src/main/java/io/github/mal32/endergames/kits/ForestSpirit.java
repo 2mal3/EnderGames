@@ -92,7 +92,7 @@ public class ForestSpirit extends AbstractKit {
 
     // Every 3 seconds, adapt saplings and armor to the player's current biome
     biomeAdaptTask =
-        plugin.getServer().getScheduler().runTaskTimer(plugin, this::tickBiomeAdaptation, 60L, 60L);
+        plugin.getServer().getScheduler().runTaskTimer(plugin, this::tickBiomeAdaptation, 40L, 40L);
   }
 
   @Override
@@ -443,7 +443,6 @@ public class ForestSpirit extends AbstractKit {
           int maxBiomeY = Math.min(world.getMaxHeight() - 1, topY + 14);
           for (int y = minBiomeY; y <= maxBiomeY; y++) {
             world.setBiome(x, y, z, Biome.FOREST);
-            System.console().printf("Set biome at %d,%d,%d to FOREST%n", x, y, z);
           }
         }
       }
@@ -536,15 +535,6 @@ public class ForestSpirit extends AbstractKit {
       }
 
       Location loc = player.getLocation();
-      Biome biomeHere = loc.getBlock().getBiome();
-
-      if (isDesertLikeBiome(biomeHere)) {
-        standStillTicks.put(id, 0);
-        lastKnownBlockPos.put(id, BlockKey.of(loc));
-        growDesertShrubAtFeet(player);
-        continue;
-      }
-
       BlockKey currentPos = BlockKey.of(loc);
       BlockKey lastPos = lastKnownBlockPos.get(id);
 
@@ -556,7 +546,15 @@ public class ForestSpirit extends AbstractKit {
         standStillTicks.put(id, ticks);
 
         if (ticks >= ROOTS_TRIGGER_TICKS) {
-          rootPlayerIntoTree(player);
+          Biome biomeHere = loc.getBlock().getBiome();
+
+          if (isDesertLikeBiome(biomeHere)) {
+            growDesertShrubAtFeet(player);
+          } else {
+            rootPlayerIntoTree(player);
+          }
+
+          // Reset timers / position tracking after the trigger, regardless of biome.
           standStillTicks.put(id, 0);
           lastKnownBlockPos.put(id, currentPos);
         }
@@ -902,6 +900,12 @@ public class ForestSpirit extends AbstractKit {
     World world = baseLoc.getWorld();
     if (world != null) {
       Biome biome = baseLoc.getBlock().getBiome();
+
+      if (isDesertLikeBiome(biome)) {
+        generateDriedDesertMegatree(world, baseLoc);
+        return;
+      }
+
       Material logType = getLogForBiome(biome);
       Material leavesType = getLeavesForBiome(biome);
 
@@ -964,6 +968,110 @@ public class ForestSpirit extends AbstractKit {
         if (saplingBlock.getType().isAir() || Tag.LEAVES.isTagged(saplingBlock.getType())) {
           saplingBlock.setType(saplingType, false);
           belowSapling.setType(Material.COARSE_DIRT, false);
+        }
+      }
+    }
+  }
+
+  /**
+   * Generates a dried, desert-themed mega tree: a 2x2 pale oak trunk (tall) with many diagonal pale
+   * oak wood branches that get shorter towards the top, and a small cluster of oak-wood columns
+   * capping the 2x2 top.
+   */
+  private void generateDriedDesertMegatree(World world, Location baseLoc) {
+    Random rng = ThreadLocalRandom.current();
+
+    int baseX = baseLoc.getBlockX();
+    int baseY = baseLoc.getBlockY();
+    int baseZ = baseLoc.getBlockZ();
+
+    // Make the trunk significantly taller: 14..22 blocks.
+    int height = 14 + rng.nextInt(9); // 14..22 inclusive
+
+    Material trunkMat = materialOrDefault("PALE_OAK_LOG", Material.OAK_LOG);
+    Material branchMat = materialOrDefault("PALE_OAK_WOOD", trunkMat);
+
+    // Build 2x2 vertical trunk
+    for (int dy = 0; dy < height; dy++) {
+      int y = baseY + dy;
+      world.getBlockAt(baseX, y, baseZ).setType(trunkMat, false);
+      world.getBlockAt(baseX + 1, y, baseZ).setType(trunkMat, false);
+      world.getBlockAt(baseX, y, baseZ + 1).setType(trunkMat, false);
+      world.getBlockAt(baseX + 1, y, baseZ + 1).setType(trunkMat, false);
+    }
+
+    // Define potential diagonal branch directions (dx,dz) from trunk center.
+    int[][] diagonalDirs = {
+      {1, 0}, // east
+      {-1, 0}, // west
+      {0, 1}, // south
+      {0, -1}, // north
+      {1, 1}, // southeast
+      {1, -1}, // northeast
+      {-1, 1}, // southwest
+      {-1, -1} // northwest
+    };
+
+    // Place more branches along the height, lower ones being longer than upper ones.
+    int branchCount = 6 + rng.nextInt(5); // 6-10 branches
+    for (int i = 0; i < branchCount; i++) {
+      // Bias branch start towards mid/lower part but allow some high ones.
+      int branchBaseY = baseY + 2 + rng.nextInt(Math.max(3, height - 4));
+
+      // Relative height factor (0 at bottom, 1 at top)
+      double t = (branchBaseY - baseY) / (double) Math.max(1, height - 1);
+
+      // Longer at bottom (~7), shorter at top (~3)
+      int maxLenBottom = 7;
+      int minLenTop = 3;
+      int branchLen = (int) Math.round(maxLenBottom - t * (maxLenBottom - minLenTop));
+      branchLen = Math.max(minLenTop, Math.min(maxLenBottom, branchLen));
+
+      // Pick a random direction
+      int[] dir = diagonalDirs[rng.nextInt(diagonalDirs.length)];
+      int dx = dir[0];
+      int dz = dir[1];
+
+      // Start from side/edge of 2x2 trunk in that direction
+      double startX = baseX + 0.5 + 0.7 * dx;
+      double startZ = baseZ + 0.5 + 0.7 * dz;
+
+      double x = startX;
+      double y = branchBaseY;
+      double z = startZ;
+
+      for (int step = 0; step < branchLen; step++) {
+        int bx = (int) Math.round(x);
+        int by = (int) Math.round(y);
+        int bz = (int) Math.round(z);
+
+        Block b = world.getBlockAt(bx, by, bz);
+        if (b.getType().isAir() || b.isPassable() || Tag.LEAVES.isTagged(b.getType())) {
+          b.setType(branchMat, false);
+        }
+
+        // Move outward and slightly upward. Near bottom: steeper, near top: flatter.
+        double verticalStep = 1.0 - 0.5 * t; // ~1.0 at bottom, ~0.5 near top
+        x += dx;
+        z += dz;
+        y += verticalStep;
+      }
+    }
+
+    // Cap the top of the 2x2 trunk with 1-3 block high oak_wood columns.
+    Material capMat = Material.OAK_WOOD;
+    int topY = baseY + height;
+
+    for (int tx = baseX; tx <= baseX + 1; tx++) {
+      for (int tz = baseZ; tz <= baseZ + 1; tz++) {
+        int capHeight = 1 + rng.nextInt(3); // 1..3
+        for (int dy = 0; dy < capHeight; dy++) {
+          Block capBlock = world.getBlockAt(tx, topY + dy, tz);
+          if (capBlock.getType().isAir()
+              || capBlock.isPassable()
+              || Tag.LEAVES.isTagged(capBlock.getType())) {
+            capBlock.setType(capMat, false);
+          }
         }
       }
     }
@@ -1083,19 +1191,35 @@ public class ForestSpirit extends AbstractKit {
   // Replace all saplings in the player's inventory with the biome-appropriate sapling
   private void adaptSaplingsToBiome(Player player, Biome biome) {
     Material targetSapling = getSaplingForBiome(biome);
+    boolean targetIsDeadBush = (targetSapling == Material.DEAD_BUSH);
+
     var inventory = player.getInventory();
     for (int slot = 0; slot < inventory.getSize(); slot++) {
       ItemStack stack = inventory.getItem(slot);
       if (stack == null) continue;
       Material type = stack.getType();
-      if (!Tag.SAPLINGS.isTagged(type)) continue;
 
-      ItemStack newStack = new ItemStack(targetSapling, stack.getAmount());
-      ItemMeta oldMeta = stack.getItemMeta();
-      if (oldMeta != null) {
-        newStack.setItemMeta(oldMeta);
+      // When entering desert/badlands, convert any saplings to dead bushes.
+      if (targetIsDeadBush) {
+        if (Tag.SAPLINGS.isTagged(type)) {
+          ItemStack newStack = new ItemStack(targetSapling, stack.getAmount());
+          ItemMeta oldMeta = stack.getItemMeta();
+          if (oldMeta != null) {
+            newStack.setItemMeta(oldMeta);
+          }
+          inventory.setItem(slot, newStack);
+        }
+        continue;
       }
-      inventory.setItem(slot, newStack);
+
+      if (type == Material.DEAD_BUSH || Tag.SAPLINGS.isTagged(type)) {
+        ItemStack newStack = new ItemStack(targetSapling, stack.getAmount());
+        ItemMeta oldMeta = stack.getItemMeta();
+        if (oldMeta != null) {
+          newStack.setItemMeta(oldMeta);
+        }
+        inventory.setItem(slot, newStack);
+      }
     }
   }
 
@@ -1196,6 +1320,12 @@ public class ForestSpirit extends AbstractKit {
 
   // Sapling material derived from the wood type
   private Material getSaplingForBiome(Biome biome) {
+    // In desert / badlands-like biomes, always use a dead bush as the sapling type.
+    String key = biome.getKey().value().toUpperCase(Locale.ROOT);
+    if (key.contains("DESERT") || key.contains("BADLANDS")) {
+      return Material.DEAD_BUSH;
+    }
+
     Material wood = getWoodTypeForBiome(biome);
     return switch (wood) {
       case SPRUCE_LOG -> Material.SPRUCE_SAPLING;
