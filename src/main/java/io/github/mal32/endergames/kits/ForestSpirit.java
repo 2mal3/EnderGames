@@ -58,6 +58,7 @@ public class ForestSpirit extends AbstractKit {
   private final Map<BlockKey, UUID> rootLogOwner = new HashMap<>();
   private BukkitTask stillnessTask;
   private BukkitTask healingTask;
+  private BukkitTask biomeAdaptTask;
 
   public ForestSpirit(EnderGames plugin) {
     super(plugin);
@@ -88,6 +89,10 @@ public class ForestSpirit extends AbstractKit {
               .runTaskTimer(plugin, this::tickLogAuraHealing, 60L, 60L);
       healingTaskScheduled = true;
     }
+
+    // Every 3 seconds, adapt saplings and armor to the player's current biome
+    biomeAdaptTask =
+        plugin.getServer().getScheduler().runTaskTimer(plugin, this::tickBiomeAdaptation, 60L, 60L);
   }
 
   @Override
@@ -655,11 +660,7 @@ public class ForestSpirit extends AbstractKit {
     UUID id = player.getUniqueId();
     RootedTreeState state = rootedTrees.get(id);
 
-    // Update saplings in inventory and armor color to match current biome whenever the player moves
-    // with this kit
-    Biome currentBiome = player.getLocation().getBlock().getBiome();
-    adaptSaplingsToBiome(player, currentBiome);
-    adaptArmorToBiome(player, currentBiome);
+    // Biome-based adaptation is now handled by a periodic task.
 
     if (state == null) return;
 
@@ -1332,6 +1333,19 @@ public class ForestSpirit extends AbstractKit {
     }
   }
 
+  /**
+   * Periodic biome adaptation: every few seconds, update saplings and armor colors to match the
+   * player's current biome instead of doing it on every movement event.
+   */
+  private void tickBiomeAdaptation() {
+    for (Player player : plugin.getServer().getOnlinePlayers()) {
+      if (!playerCanUseThisKit(player)) continue;
+      Biome currentBiome = player.getLocation().getBlock().getBiome();
+      adaptSaplingsToBiome(player, currentBiome);
+      adaptArmorToBiome(player, currentBiome);
+    }
+  }
+
   @Override
   public KitDescription getDescription() {
     return new KitDescription(
@@ -1355,6 +1369,12 @@ public class ForestSpirit extends AbstractKit {
       healingTask = null;
       healingTaskScheduled = false;
     }
+
+    if (biomeAdaptTask != null) {
+      biomeAdaptTask.cancel();
+      biomeAdaptTask = null;
+    }
+
     super.disable();
   }
 
