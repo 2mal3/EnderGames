@@ -1000,7 +1000,7 @@ public class ForestSpirit extends AbstractKit {
       world.getBlockAt(baseX + 1, y, baseZ + 1).setType(trunkMat, false);
     }
 
-    // Define potential diagonal branch directions (dx,dz) from trunk center.
+    // Define potential diagonal/side branch directions (dx,dz) from trunk center.
     int[][] diagonalDirs = {
       {1, 0}, // east
       {-1, 0}, // west
@@ -1013,7 +1013,7 @@ public class ForestSpirit extends AbstractKit {
     };
 
     // Place more branches along the height, lower ones being longer than upper ones.
-    int branchCount = 6 + rng.nextInt(5); // 6-10 branches
+    int branchCount = 8 + rng.nextInt(5); // 8-12 branches (slightly more than before)
     for (int i = 0; i < branchCount; i++) {
       // Bias branch start towards mid/lower part but allow some high ones.
       int branchBaseY = baseY + 2 + rng.nextInt(Math.max(3, height - 4));
@@ -1021,8 +1021,8 @@ public class ForestSpirit extends AbstractKit {
       // Relative height factor (0 at bottom, 1 at top)
       double t = (branchBaseY - baseY) / (double) Math.max(1, height - 1);
 
-      // Longer at bottom (~7), shorter at top (~3)
-      int maxLenBottom = 7;
+      // Longer at bottom (~6), shorter at top (~3)
+      int maxLenBottom = 6;
       int minLenTop = 3;
       int branchLen = (int) Math.round(maxLenBottom - t * (maxLenBottom - minLenTop));
       branchLen = Math.max(minLenTop, Math.min(maxLenBottom, branchLen));
@@ -1050,8 +1050,9 @@ public class ForestSpirit extends AbstractKit {
           b.setType(branchMat, false);
         }
 
-        // Move outward and slightly upward. Near bottom: steeper, near top: flatter.
-        double verticalStep = 1.0 - 0.5 * t; // ~1.0 at bottom, ~0.5 near top
+        // Move outward and slightly upward. Make branches a bit more vertical now:
+        // previously ~1.0..0.5; now ~1.1..0.7 for a slightly steeper angle.
+        double verticalStep = 1.1 - 0.4 * t; // bottom ~1.1, top ~0.7
         x += dx;
         z += dz;
         y += verticalStep;
@@ -1059,7 +1060,7 @@ public class ForestSpirit extends AbstractKit {
     }
 
     // Cap the top of the 2x2 trunk with 1-3 block high oak_wood columns.
-    Material capMat = Material.OAK_WOOD;
+    Material capMat = Material.PALE_OAK_WOOD;
     int topY = baseY + height;
 
     for (int tx = baseX; tx <= baseX + 1; tx++) {
