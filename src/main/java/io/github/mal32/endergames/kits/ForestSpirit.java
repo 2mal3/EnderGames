@@ -837,10 +837,12 @@ public class ForestSpirit extends AbstractKit {
         // Adapt the generated tree's logs and leaves to the biome, similar to turnEntityIntoTree.
         int radiusX = 10;
         int radiusZ = 10;
-        int height = 40;
+        int height = 45;
         int baseX = baseLoc.getBlockX();
         int baseY = baseLoc.getBlockY();
         int baseZ = baseLoc.getBlockZ();
+
+        int startY = baseY - 5;
 
         String biomeKey = biome.getKey().value().toLowerCase(Locale.ROOT);
         boolean isSpruceNative =
@@ -850,10 +852,16 @@ public class ForestSpirit extends AbstractKit {
                 || biomeKey.contains("windswept");
 
         for (int x = baseX - radiusX; x <= baseX + radiusX; x++) {
-          for (int y = baseY; y <= baseY + height; y++) {
+          for (int y = startY; y <= startY + height; y++) {
             for (int z = baseZ - radiusZ; z <= baseZ + radiusZ; z++) {
               Block block = world.getBlockAt(x, y, z);
               Material type = block.getType();
+
+              // Clean up podzol ground into fresh grass.
+              if (type == Material.PODZOL) {
+                block.setType(Material.GRASS_BLOCK, false);
+                continue;
+              }
 
               if (!isSpruceNative && type == Material.VINE) {
                 block.setType(Material.AIR, false);
