@@ -438,6 +438,13 @@ public class ForestSpirit extends AbstractKit {
           }
           surface.setType(newType, false);
           candidateGround.add(surface.getLocation());
+          // set biome to forest
+          int minBiomeY = Math.max(world.getMinHeight(), topY - 2);
+          int maxBiomeY = Math.min(world.getMaxHeight() - 1, topY + 14);
+          for (int y = minBiomeY; y <= maxBiomeY; y++) {
+            world.setBiome(x, y, z, Biome.FOREST);
+            System.console().printf("Set biome at %d,%d,%d to FOREST%n", x, y, z);
+          }
         }
       }
     }
@@ -1087,7 +1094,7 @@ public class ForestSpirit extends AbstractKit {
     if (name.contains("FROZEN_PEAKS")) return Material.SPRUCE_LOG;
     if (name.contains("STONY_PEAKS")) return Material.SPRUCE_LOG;
     if (name.contains("SNOWY_SLOPES")) return Material.SPRUCE_LOG;
-    if (name.contains("MEADOW")) return Material.SPRUCE_LOG;
+    if (name.contains("MEADOW")) return Material.OAK_LOG;
     if (name.contains("WINDSWEPT_HILLS")) return Material.SPRUCE_LOG;
     if (name.contains("WINDSWEPT_GRAVELLY_HILLS")) return Material.SPRUCE_LOG;
     if (name.contains("WINDSWEPT_FOREST")) return Material.SPRUCE_LOG;
