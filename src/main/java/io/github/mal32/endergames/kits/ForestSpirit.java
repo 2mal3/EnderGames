@@ -1098,7 +1098,8 @@ public class ForestSpirit extends AbstractKit {
     // Forests
     if (name.equals("FOREST") || name.contains("FLOWER_FOREST")) return Material.OAK_LOG;
     if (name.contains("BIRCH")) return Material.BIRCH_LOG;
-    if (name.contains("DARK_FOREST") || name.contains("PALE_GARDEN")) return Material.DARK_OAK_LOG;
+    if (name.contains("DARK_FOREST")) return Material.DARK_OAK_LOG;
+    if (name.contains("PALE_GARDEN")) return Material.PALE_OAK_LOG;
 
     // Taiga family
     if (name.contains("TAIGA")
@@ -1137,6 +1138,8 @@ public class ForestSpirit extends AbstractKit {
       case JUNGLE_LOG -> Material.JUNGLE_SAPLING;
       case ACACIA_LOG -> Material.ACACIA_SAPLING;
       case DARK_OAK_LOG -> Material.DARK_OAK_SAPLING;
+      case PALE_OAK_LOG -> Material.PALE_OAK_SAPLING;
+      case MANGROVE_LOG -> Material.MANGROVE_PROPAGULE;
       default -> {
         // MANGROVE_LOG, CHERRY_LOG or anything else fall back appropriately
         if (wood == materialOrDefault("MANGROVE_LOG", Material.OAK_LOG)) {
@@ -1187,6 +1190,7 @@ public class ForestSpirit extends AbstractKit {
       case DARK_OAK_LOG -> type = TreeType.DARK_OAK;
       case MANGROVE_LOG -> type = TreeType.MANGROVE;
       case CHERRY_LOG -> type = TreeType.CHERRY;
+      case PALE_OAK_LOG -> type = TreeType.PALE_OAK;
       default -> type = TreeType.TREE;
     }
     return type;
@@ -1235,7 +1239,8 @@ public class ForestSpirit extends AbstractKit {
     // Forests: different green shades
     if (key.equals("FOREST") || key.contains("FLOWER_FOREST")) return Color.fromRGB(0x2F6F2F);
     if (key.contains("BIRCH")) return Color.fromRGB(0x4FAF5F);
-    if (key.contains("DARK_FOREST") || key.contains("PALE_GARDEN")) return Color.fromRGB(0x0B3D0B);
+    if (key.contains("DARK_FOREST")) return Color.fromRGB(0x0B3D0B);
+    if (key.contains("PALE_GARDEN")) return Color.fromRGB(0x5F9F7F);
 
     // Taiga family (incl. snowy/old growth): conifer green
     if (key.contains("TAIGA")
