@@ -844,6 +844,13 @@ public class ForestSpirit extends AbstractKit {
     World world = baseLoc.getWorld();
     if (world != null) {
       Biome biome = baseLoc.getBlock().getBiome();
+
+      // In desert/badlands biomes, grow a dried dead megatree instead.
+      if (isDesertLikeBiome(biome)) {
+        generateDriedDesertMegatree(world, baseLoc);
+        return;
+      }
+
       Material logType = getLogForBiome(biome);
       Material leavesType = getLeavesForBiome(biome);
 
@@ -1208,6 +1215,136 @@ public class ForestSpirit extends AbstractKit {
       return Material.valueOf(materialName);
     } catch (IllegalArgumentException ex) {
       return fallback;
+    }
+  }
+
+  private boolean isDesertLikeBiome(Biome biome) {
+    String key = biome.getKey().value().toUpperCase(Locale.ROOT);
+    return key.contains("DESERT") || key.contains("BADLANDS");
+  }
+
+  private void generateDriedDesertMegatree(World world, Location baseLoc) {
+    Random rng = ThreadLocalRandom.current();
+
+    int baseX = baseLoc.getBlockX();
+    int baseY = baseLoc.getBlockY();
+    int baseZ = baseLoc.getBlockZ();
+
+    // Make the trunk significantly taller: 14..22 blocks.
+    int height = 14 + rng.nextInt(9); // 14..22 inclusive
+
+    Material trunkMat = materialOrDefault("PALE_OAK_LOG", Material.OAK_LOG);
+    Material branchMat = materialOrDefault("PALE_OAK_WOOD", trunkMat);
+
+    // Build 2x2 vertical trunk
+    for (int dy = 0; dy < height; dy++) {
+      int y = baseY + dy;
+      world.getBlockAt(baseX, y, baseZ).setType(trunkMat, false);
+      world.getBlockAt(baseX + 1, y, baseZ).setType(trunkMat, false);
+      world.getBlockAt(baseX, y, baseZ + 1).setType(trunkMat, false);
+      world.getBlockAt(baseX + 1, y, baseZ + 1).setType(trunkMat, false);
+    }
+
+    int[][] branchDirections = {
+      {1, 0}, {-1, 0}, {0, 1}, {0, -1},
+      {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
+    };
+
+    // Fix 4: Distribute branches evenly — one branch every 2–5 blocks up the trunk.
+    List<Integer> branchYPositions = new ArrayList<>();
+    int walkY = baseY + 2;
+    int topBranchY = baseY + height - 2;
+    while (walkY <= topBranchY) {
+      branchYPositions.add(walkY);
+      walkY += 2 + rng.nextInt(4); // spacing: 2 to 5 blocks
+    }
+
+    // Fix 3: Track used (branchBaseY, dirIndex) pairs to avoid two branches at the
+    // same height pointing in the same direction.
+    Set<Long> usedBranchKeys = new HashSet<>();
+
+    for (int branchBaseY : branchYPositions) {
+      // Relative height factor (0 at bottom, 1 at top)
+      double t = (branchBaseY - baseY) / (double) Math.max(1, height - 1);
+
+      int maxLenBottom = 6;
+      int minLenTop = 3;
+      int branchLen = (int) Math.round(maxLenBottom - t * (maxLenBottom - minLenTop));
+      branchLen = Math.max(minLenTop, Math.min(maxLenBottom, branchLen));
+
+      // Pick a random direction, retrying up to 8 times to avoid duplicates at this Y.
+      int dirIndex = rng.nextInt(branchDirections.length);
+      long branchKey = (long) branchBaseY << 16 | dirIndex;
+      int attempts = 0;
+      while (usedBranchKeys.contains(branchKey) && attempts < branchDirections.length) {
+        dirIndex = (dirIndex + 1) % branchDirections.length;
+        branchKey = (long) branchBaseY << 16 | dirIndex;
+        attempts++;
+      }
+      usedBranchKeys.add(branchKey);
+
+      int[] dir = branchDirections[dirIndex];
+      int dx = dir[0];
+      int dz = dir[1];
+      boolean isDiagonal = (dx != 0 && dz != 0);
+
+      // Start from side/edge of 2x2 trunk in that direction
+      double startX = baseX + 0.5 + 0.7 * dx;
+      double startZ = baseZ + 0.5 + 0.7 * dz;
+
+      double x = startX;
+      double y = branchBaseY;
+      double z = startZ;
+
+      for (int step = 0; step < branchLen; step++) {
+        int bx = (int) Math.round(x);
+        int by = (int) Math.round(y);
+        int bz = (int) Math.round(z);
+
+        // Place main branch block
+        Block b = world.getBlockAt(bx, by, bz);
+        if (b.getType().isAir() || b.isPassable() || Tag.LEAVES.isTagged(b.getType())) {
+          b.setType(branchMat, false);
+        }
+
+        // Fix 1: For diagonal (XZ) branches, place a fill block so consecutive blocks
+        // connect by face rather than only by edge.
+        if (isDiagonal) {
+          Block fill = world.getBlockAt(bx + dx, by, bz);
+          if (fill.getType().isAir() || fill.isPassable() || Tag.LEAVES.isTagged(fill.getType())) {
+            fill.setType(branchMat, false);
+          }
+        }
+
+        // Fix 2: The further out on the branch, the higher the chance of stepping +2 Y
+        // at once, making branches point more steeply upward toward their tips.
+        double outFactor = step / (double) Math.max(1, branchLen - 1); // 0.0 at root, 1.0 at tip
+        double doubleStepChance = outFactor * 0.5; // 0% at root, 50% at tip
+        double baseVertical = 1.1 - 0.4 * t; // bottom ~1.1, top ~0.7
+        double verticalInc = (rng.nextDouble() < doubleStepChance) ? 2.0 : baseVertical;
+
+        x += dx;
+        z += dz;
+        y += verticalInc;
+      }
+    }
+
+    // Cap the top of the 2x2 trunk with 1-3 block high pale oak wood columns.
+    Material capMat = Material.PALE_OAK_WOOD;
+    int topY = baseY + height;
+
+    for (int tx = baseX; tx <= baseX + 1; tx++) {
+      for (int tz = baseZ; tz <= baseZ + 1; tz++) {
+        int capHeight = 1 + rng.nextInt(3); // 1..3
+        for (int dy = 0; dy < capHeight; dy++) {
+          Block capBlock = world.getBlockAt(tx, topY + dy, tz);
+          if (capBlock.getType().isAir()
+              || capBlock.isPassable()
+              || Tag.LEAVES.isTagged(capBlock.getType())) {
+            capBlock.setType(capMat, false);
+          }
+        }
+      }
     }
   }
 
