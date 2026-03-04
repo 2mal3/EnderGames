@@ -453,6 +453,8 @@ public class ForestSpirit extends AbstractKit {
       // Optionally, set a sapling block at the tree base first (not strictly required for
       // generateTree, but keeps the world consistent if you inspect it between ticks):
       Block baseBlock = treeBase.getBlock();
+      // set the block to air before tree generation in case there is snow etc
+      baseBlock.setType(Material.AIR, false);
 
       // Grow a tree using the same biome-based tree selection as sapling placement
       Biome biomeAtSpot = baseBlock.getBiome();
@@ -577,6 +579,15 @@ public class ForestSpirit extends AbstractKit {
 
     // leaves: 2 layers, circular-ish / random / not square
     buildNaturalCanopy(state, base, leaves);
+
+    Location feetLoc = base.clone();
+    Block baseBlock = feetLoc.getBlock();
+    state.originalBlocks.putIfAbsent(BlockKey.of(baseBlock.getLocation()), baseBlock.getType());
+    baseBlock.setType(Material.AIR, false);
+
+    Block eyeLoc = baseBlock.getRelative(0, 1, 0);
+    state.originalBlocks.putIfAbsent(BlockKey.of(eyeLoc.getLocation()), eyeLoc.getType());
+    eyeLoc.setType(Material.AIR, false);
 
     rootedTrees.put(id, state);
 
@@ -1076,13 +1087,12 @@ public class ForestSpirit extends AbstractKit {
     if (name.contains("STONY_PEAKS")) return Material.SPRUCE_LOG;
     if (name.contains("SNOWY_SLOPES")) return Material.SPRUCE_LOG;
     if (name.contains("MEADOW")) return Material.SPRUCE_LOG;
-    if (name.contains("GROVE")) return Material.SPRUCE_LOG;
     if (name.contains("WINDSWEPT_HILLS")) return Material.SPRUCE_LOG;
     if (name.contains("WINDSWEPT_GRAVELLY_HILLS")) return Material.SPRUCE_LOG;
     if (name.contains("WINDSWEPT_FOREST")) return Material.SPRUCE_LOG;
 
     // Cherry grove
-    if (name.contains("CHERRY_GROVE")) return materialOrDefault("CHERRY_LOG", Material.OAK_LOG);
+    if (name.contains("CHERRY")) return materialOrDefault("CHERRY_LOG", Material.OAK_LOG);
 
     // Forests
     if (name.equals("FOREST") || name.contains("FLOWER_FOREST")) return Material.OAK_LOG;
@@ -1113,6 +1123,7 @@ public class ForestSpirit extends AbstractKit {
     if (name.contains("BADLANDS")) return Material.OAK_LOG;
 
     // Fallback: oak family
+    if (name.contains("GROVE")) return Material.SPRUCE_LOG;
     return Material.OAK_LOG;
   }
 
