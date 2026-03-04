@@ -535,7 +535,17 @@ public class ForestSpirit extends AbstractKit {
         continue;
       }
 
-      BlockKey currentPos = BlockKey.of(player.getLocation());
+      Location loc = player.getLocation();
+      Biome biomeHere = loc.getBlock().getBiome();
+
+      if (isDesertLikeBiome(biomeHere)) {
+        standStillTicks.put(id, 0);
+        lastKnownBlockPos.put(id, BlockKey.of(loc));
+        growDesertShrubAtFeet(player);
+        continue;
+      }
+
+      BlockKey currentPos = BlockKey.of(loc);
       BlockKey lastPos = lastKnownBlockPos.get(id);
 
       if (lastPos == null || !lastPos.equals(currentPos)) {
@@ -551,6 +561,54 @@ public class ForestSpirit extends AbstractKit {
           lastKnownBlockPos.put(id, currentPos);
         }
       }
+    }
+  }
+
+  /** Returns true for any biome where the Forest Spirit should not root, only grow shrubs. */
+  private boolean isDesertLikeBiome(Biome biome) {
+    String key = biome.getKey().value().toUpperCase(Locale.ROOT);
+    if (key.contains("DESERT")) return true;
+    if (key.contains("BADLANDS")) return true;
+    return false;
+  }
+
+  /** Places a dead bush at the player's feet in desert-like biomes, if terrain allows it. */
+  private void growDesertShrubAtFeet(Player player) {
+    Location base = player.getLocation().getBlock().getLocation();
+    World world = base.getWorld();
+    if (world == null) return;
+
+    Block feet = base.getBlock();
+    Block below = feet.getRelative(0, -1, 0);
+
+    Material belowType = below.getType();
+    boolean validSoil =
+        belowType == Material.SAND
+            || belowType == Material.RED_SAND
+            || belowType == Material.TERRACOTTA
+            || belowType == Material.WHITE_TERRACOTTA
+            || belowType == Material.ORANGE_TERRACOTTA
+            || belowType == Material.MAGENTA_TERRACOTTA
+            || belowType == Material.LIGHT_BLUE_TERRACOTTA
+            || belowType == Material.YELLOW_TERRACOTTA
+            || belowType == Material.LIME_TERRACOTTA
+            || belowType == Material.PINK_TERRACOTTA
+            || belowType == Material.GRAY_TERRACOTTA
+            || belowType == Material.LIGHT_GRAY_TERRACOTTA
+            || belowType == Material.CYAN_TERRACOTTA
+            || belowType == Material.PURPLE_TERRACOTTA
+            || belowType == Material.BLUE_TERRACOTTA
+            || belowType == Material.BROWN_TERRACOTTA
+            || belowType == Material.GREEN_TERRACOTTA
+            || belowType == Material.RED_TERRACOTTA
+            || belowType == Material.BLACK_TERRACOTTA
+            || belowType == Material.DIRT
+            || belowType == Material.COARSE_DIRT
+            || belowType == Material.GRASS_BLOCK
+            || belowType == Material.PODZOL;
+
+    if (validSoil && (feet.getType().isAir() || feet.isPassable())) {
+      feet.setType(Material.DEAD_BUSH, false);
     }
   }
 
