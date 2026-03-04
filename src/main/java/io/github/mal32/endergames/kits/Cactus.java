@@ -33,7 +33,7 @@ public class Cactus extends AbstractKit {
   }
 
   @Override
-  public void start(Player player) {
+  public void initPlayer(Player player) {
     player
         .getInventory()
         .setLeggings(

@@ -9,7 +9,7 @@ public class Spectator extends AbstractKit {
     super(plugin);
   }
 
-  public void start(Player player) {
+  public void initPlayer(Player player) {
     player.getInventory().clear();
     player.setGameMode(org.bukkit.GameMode.SPECTATOR);
   }

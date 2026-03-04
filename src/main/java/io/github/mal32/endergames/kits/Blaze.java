@@ -33,7 +33,7 @@ public class Blaze extends AbstractKit {
   }
 
   @Override
-  public void start(Player player) {
+  public void initPlayer(Player player) {
     ItemStack blazePowder = new ItemStack(Material.BLAZE_POWDER);
     ItemMeta meta = blazePowder.getItemMeta();
     meta.displayName(

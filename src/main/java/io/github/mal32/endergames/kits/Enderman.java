@@ -23,7 +23,7 @@ public class Enderman extends AbstractKit {
   }
 
   @Override
-  public void start(Player player) {
+  public void initPlayer(Player player) {
     var enderPerls = new ItemStack(Material.ENDER_PEARL, 5);
     player.getInventory().addItem(enderPerls);
   }

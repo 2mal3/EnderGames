@@ -23,7 +23,7 @@ public class Mace extends AbstractKit {
   }
 
   @Override
-  public void start(Player player) {
+  public void initPlayer(Player player) {
     ItemStack mace = new ItemStack(Material.MACE);
     enchantItem(mace, Enchantment.WIND_BURST, 1);
     mace.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);

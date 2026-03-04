@@ -36,7 +36,7 @@ public class Kangaroo extends AbstractKit {
   }
 
   @Override
-  public void start(Player player) {
+  public void initPlayer(Player player) {
     player.setAllowFlight(true);
 
     var attribute = player.getAttribute(Attribute.SAFE_FALL_DISTANCE);

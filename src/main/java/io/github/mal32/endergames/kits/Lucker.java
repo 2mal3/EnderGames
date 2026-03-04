@@ -47,7 +47,7 @@ public class Lucker extends AbstractKit {
   }
 
   @Override
-  public void start(Player player) {
+  public void initPlayer(Player player) {
     // Give a light-green leather chestplate as starting item
     ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE);
     colorLeatherArmor(chestplate, Color.LIME);

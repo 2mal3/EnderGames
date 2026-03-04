@@ -33,7 +33,7 @@ public class Rewind extends AbstractKit {
   }
 
   @Override
-  public void start(Player player) {
+  public void initPlayer(Player player) {
     var clock = new ItemStack(Material.CLOCK);
 
     var meta = clock.getItemMeta();

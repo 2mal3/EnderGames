@@ -96,7 +96,7 @@ public class ForestSpirit extends AbstractKit {
   }
 
   @Override
-  public void start(Player player) {
+  public void initPlayer(Player player) {
     Color biomeColor = getArmorColorForBiome(player.getLocation().getBlock().getBiome());
 
     ItemStack green_dye = new ItemStack(Material.GREEN_DYE);

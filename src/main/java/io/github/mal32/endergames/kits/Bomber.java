@@ -31,7 +31,7 @@ public class Bomber extends AbstractKit {
   }
 
   @Override
-  public void start(Player player) {
+  public void initPlayer(Player player) {
     ItemStack tntStack = new ItemStack(Material.TNT, 5);
     player.getInventory().addItem(tntStack);
 

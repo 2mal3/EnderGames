@@ -15,7 +15,7 @@ public class Bird extends AbstractKit {
   }
 
   @Override
-  public void start(Player player) {
+  public void initPlayer(Player player) {
     // Give the player an Elytra
     final ItemStack elytra = new ItemStack(Material.ELYTRA);
     elytra.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);

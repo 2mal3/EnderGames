@@ -70,7 +70,7 @@ public abstract class AbstractKit extends AbstractModule {
     return playerHasKit && playerInGame;
   }
 
-  public abstract void start(Player player);
+  public abstract void initPlayer(Player player);
 
   public String getNameLowercase() {
     String simpleName = this.getClass().getSimpleName();

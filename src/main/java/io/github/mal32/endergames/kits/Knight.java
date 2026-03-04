@@ -71,7 +71,7 @@ public class Knight extends AbstractKit {
   }
 
   @Override
-  public void start(Player player) {
+  public void initPlayer(Player player) {
     var inventory = player.getInventory();
     inventory.setHelmet(new ItemStack(Material.GOLDEN_HELMET));
     inventory.setChestplate(new ItemStack(Material.GOLDEN_CHESTPLATE));

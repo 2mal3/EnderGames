@@ -140,7 +140,7 @@ public class Voodoo extends AbstractKit {
   }
 
   @Override
-  public void start(Player player) {
+  public void initPlayer(Player player) {
     var playerInventory = player.getInventory();
 
     var bow = new ItemStack(Material.BOW);
