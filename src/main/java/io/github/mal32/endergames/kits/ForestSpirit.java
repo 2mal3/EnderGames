@@ -47,19 +47,17 @@ public class ForestSpirit extends AbstractKit {
   // --- vulnerabilities ---
   private static final double FIRE_DAMAGE_MULTIPLIER = 2D;
   private static final double AXE_DAMAGE_MULTIPLIER = 1.4D;
-
+  private static boolean healingTaskScheduled = false;
   private final Map<UUID, Long> growthCooldownUntil = new HashMap<>();
   private final Map<UUID, Integer> standStillTicks = new HashMap<>();
   private final Map<UUID, BlockKey> lastKnownBlockPos = new HashMap<>();
   // per-player kit start time, used to prevent rooting on start platform for first 20 seconds
   private final Map<UUID, Long> kitStartTimeMillis = new HashMap<>();
-
   // rooted tree state
   private final Map<UUID, RootedTreeState> rootedTrees = new HashMap<>();
   private final Map<BlockKey, UUID> rootLogOwner = new HashMap<>();
   private BukkitTask stillnessTask;
   private BukkitTask healingTask;
-  private static boolean healingTaskScheduled = false;
 
   public ForestSpirit(EnderGames plugin) {
     super(plugin);
@@ -1248,58 +1246,6 @@ public class ForestSpirit extends AbstractKit {
   // Internal structs
   // ---------------------------------------------------------------------------
 
-  private static final class RootedTreeState {
-    private final UUID playerId;
-    private final Map<BlockKey, Material> originalBlocks = new HashMap<>();
-    private final Set<BlockKey> rootLogs = new HashSet<>();
-    // Block position where the player became rooted
-    private BlockKey rootOrigin;
-
-    private RootedTreeState(UUID playerId) {
-      this.playerId = playerId;
-    }
-  }
-
-  private static final class BlockKey {
-    private final UUID worldId;
-    private final int x;
-    private final int y;
-    private final int z;
-
-    private BlockKey(UUID worldId, int x, int y, int z) {
-      this.worldId = worldId;
-      this.x = x;
-      this.y = y;
-      this.z = z;
-    }
-
-    static BlockKey of(Location location) {
-      return new BlockKey(
-          Objects.requireNonNull(location.getWorld()).getUID(),
-          location.getBlockX(),
-          location.getBlockY(),
-          location.getBlockZ());
-    }
-
-    Block toBlock() {
-      World world = Bukkit.getWorld(worldId);
-      if (world == null) return null;
-      return world.getBlockAt(x, y, z);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (!(o instanceof BlockKey other)) return false;
-      return x == other.x && y == other.y && z == other.z && worldId.equals(other.worldId);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(worldId, x, y, z);
-    }
-  }
-
   /**
    * Passive: every 5 seconds, for each Forest Spirit, count nearby log blocks in a radius and grant
    * half a heart of healing if there are enough logs.
@@ -1367,10 +1313,6 @@ public class ForestSpirit extends AbstractKit {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Description
-  // ---------------------------------------------------------------------------
-
   @Override
   public KitDescription getDescription() {
     return new KitDescription(
@@ -1395,5 +1337,45 @@ public class ForestSpirit extends AbstractKit {
       healingTaskScheduled = false;
     }
     super.disable();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Description
+  // ---------------------------------------------------------------------------
+
+  private static final class RootedTreeState {
+    private final UUID playerId;
+    private final Map<BlockKey, Material> originalBlocks = new HashMap<>();
+    private final Set<BlockKey> rootLogs = new HashSet<>();
+    // Block position where the player became rooted
+    private BlockKey rootOrigin;
+
+    private RootedTreeState(UUID playerId) {
+      this.playerId = playerId;
+    }
+  }
+
+  private record BlockKey(UUID worldId, int x, int y, int z) {
+
+    static BlockKey of(Location location) {
+      return new BlockKey(
+          Objects.requireNonNull(location.getWorld()).getUID(),
+          location.getBlockX(),
+          location.getBlockY(),
+          location.getBlockZ());
+    }
+
+    Block toBlock() {
+      World world = Bukkit.getWorld(worldId);
+      if (world == null) return null;
+      return world.getBlockAt(x, y, z);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof BlockKey other)) return false;
+      return x == other.x && y == other.y && z == other.z && worldId.equals(other.worldId);
+    }
   }
 }

@@ -17,10 +17,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class EnderGames extends JavaPlugin {
   public static final NamespacedKey playerWorldKey = new NamespacedKey("endergames", "world");
+  private final MapManager mapManager = new MapManager();
   private GameWorld gameWorld;
   private LobbyWorld lobbyWorld;
-  private final MapManager mapManager = new MapManager();
-  private KDScoreboard kdScoreboard;
+
+  public static boolean isInDebugMode() {
+    String debugEnv = System.getenv("EG_DEBUG");
+    return debugEnv != null
+        && (debugEnv.equalsIgnoreCase("true") || debugEnv.equalsIgnoreCase("1"));
+  }
 
   public void changeMapPixelsInLobby(
       ArrayList<MapPixel> changedMapPixels, boolean forceFullUpdate) {
@@ -38,7 +43,7 @@ public class EnderGames extends JavaPlugin {
 
     gameWorld = new GameWorld(this);
     lobbyWorld = new LobbyWorld(this);
-    kdScoreboard = new KDScoreboard(this);
+    KDScoreboard kdScoreboard = new KDScoreboard(this);
 
     this.getLifecycleManager()
         .registerEventHandler(
@@ -74,11 +79,5 @@ public class EnderGames extends JavaPlugin {
                       return Command.SINGLE_SUCCESS;
                     }))
         .build();
-  }
-
-  public static boolean isInDebugMode() {
-    String debugEnv = System.getenv("EG_DEBUG");
-    return debugEnv != null
-        && (debugEnv.equalsIgnoreCase("true") || debugEnv.equalsIgnoreCase("1"));
   }
 }

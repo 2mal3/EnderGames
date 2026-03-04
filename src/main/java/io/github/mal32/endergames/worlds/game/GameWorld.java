@@ -33,13 +33,6 @@ public class GameWorld extends AbstractWorld {
     return Objects.equals(world, "game");
   }
 
-  public void teleportPlayerToGame(Player player) {
-    player
-        .getPersistentDataContainer()
-        .set(EnderGames.playerWorldKey, PersistentDataType.STRING, "game");
-    initPlayer(player);
-  }
-
   public static Player[] getPlayersInGame() {
     return Bukkit.getOnlinePlayers().stream()
         .filter(GameWorld::playerIsInGame)
@@ -50,6 +43,13 @@ public class GameWorld extends AbstractWorld {
     return Bukkit.getOnlinePlayers().stream()
         .filter(GameWorld::playerIsInGameWorld)
         .toArray(Player[]::new);
+  }
+
+  public void teleportPlayerToGame(Player player) {
+    player
+        .getPersistentDataContainer()
+        .set(EnderGames.playerWorldKey, PersistentDataType.STRING, "game");
+    initPlayer(player);
   }
 
   public void startGame() {
@@ -79,7 +79,7 @@ public class GameWorld extends AbstractWorld {
       }
 
       worldManager.findAndSaveNewSpawnLocation();
-      plugin.getComponentLogger().info("Spawn location: " + spawnLocation);
+      plugin.getComponentLogger().info("Spawn location: {}", spawnLocation);
 
       currentPhase = new LoadPhase(plugin, this, spawnLocation);
       plugin.getLobbyWorld().onGameEnd();

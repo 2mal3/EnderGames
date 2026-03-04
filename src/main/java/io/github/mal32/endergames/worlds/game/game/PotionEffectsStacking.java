@@ -30,20 +30,6 @@ public class PotionEffectsStacking extends AbstractModule {
     applyEffect(player, newPotionEffect, oldPotionEffect);
   }
 
-  @EventHandler
-  private void onPotionEffect(EntityPotionEffectEvent event) {
-    if (!(event.getEntity() instanceof Player player)) return;
-    if (event.getAction() != EntityPotionEffectEvent.Action.CHANGED) return;
-    if (event.getCause() == EntityPotionEffectEvent.Cause.PLUGIN) return;
-
-    var newPotionEffect = event.getNewEffect();
-    if (newPotionEffect == null) return;
-    var oldPotionEffect = event.getOldEffect();
-    if (oldPotionEffect == null) return;
-
-    applyEffect(player, newPotionEffect, oldPotionEffect);
-  }
-
   private static void applyEffect(
       Player player, PotionEffect newPotionEffect, PotionEffect oldPotionEffect) {
     var effectTypes = playerEffects.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>());
@@ -68,6 +54,20 @@ public class PotionEffectsStacking extends AbstractModule {
       // if the new effect is weaker, just add it to the list
       effectList.add(newPotionEffect);
     }
+  }
+
+  @EventHandler
+  private void onPotionEffect(EntityPotionEffectEvent event) {
+    if (!(event.getEntity() instanceof Player player)) return;
+    if (event.getAction() != EntityPotionEffectEvent.Action.CHANGED) return;
+    if (event.getCause() == EntityPotionEffectEvent.Cause.PLUGIN) return;
+
+    var newPotionEffect = event.getNewEffect();
+    if (newPotionEffect == null) return;
+    var oldPotionEffect = event.getOldEffect();
+    if (oldPotionEffect == null) return;
+
+    applyEffect(player, newPotionEffect, oldPotionEffect);
   }
 
   @EventHandler

@@ -3,8 +3,6 @@ package io.github.mal32.endergames.kits;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import io.github.mal32.endergames.worlds.game.game.PotionEffectsStacking;
-import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -146,9 +144,7 @@ public class Voodoo extends AbstractKit {
     var playerInventory = player.getInventory();
 
     var bow = new ItemStack(Material.BOW);
-    bow.setData(
-        DataComponentTypes.ENCHANTMENTS,
-        ItemEnchantments.itemEnchantments().add(Enchantment.PIERCING, 1).build());
+    bow.addEnchantment(Enchantment.PIERCING, 1);
     playerInventory.addItem(bow);
 
     playerInventory.addItem(new ItemStack(Material.ARROW, 10));

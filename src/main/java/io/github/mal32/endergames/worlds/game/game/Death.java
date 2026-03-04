@@ -28,16 +28,15 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 /**
- * Strategy for handling player deaths: Use the normal player death event and dont cancel it to keep
- * vanilla mechanics, we just store the location the player is at. Because of immediate respawn the
- * player respawns directly to which we listen with the player post respawn event to set him to
+ * Strategy for handling player deaths: Use the normal player death event and don't cancel it to
+ * keep vanilla mechanics, we just store the location the player is at. Because of immediate respawn
+ * the player respawns directly to which we listen with the player post respawn event to set him to
  * spectator mode and teleport him back.
  */
 public class Death extends AbstractModule {
-  private final World world = Objects.requireNonNull(Bukkit.getWorld("world"));
-  private GameWorld manager;
+  private final GameWorld manager;
   private final HashMap<UUID, Location> deathLocations = new HashMap<>();
-  // Immediate respawn doesnt actualy respawn the player immediately
+  // Immediate respawn doesn't actually respawn the player immediately
   private final int IMMEDIATE_RESPAWN_TICKS = 10;
   private boolean gameEnded = false;
 
@@ -46,30 +45,8 @@ public class Death extends AbstractModule {
 
     this.manager = manager;
 
+    World world = Objects.requireNonNull(Bukkit.getWorld("world"));
     world.setGameRule(GameRules.IMMEDIATE_RESPAWN, true);
-  }
-
-  @EventHandler
-  private void onPlayerDeath(PlayerDeathEvent event) {
-    Player player = event.getPlayer();
-    if (!GameWorld.playerIsInGame(player)) return;
-    Location location = player.getLocation();
-
-    event.setNewExp(0);
-    event.setNewLevel(0);
-    event.setNewTotalExp(0);
-    event.setDroppedExp(player.calculateTotalExperiencePoints());
-    event.setShouldDropExperience(true);
-
-    event.setShowDeathMessages(false);
-
-    deathLocations.put(player.getUniqueId(), location);
-
-    // game has already ended, we are currently the winning player that has been killed
-    if (gameEnded) return;
-
-    killEffects(event);
-    Bukkit.getScheduler().runTaskLater(plugin, this::checkAndGameEnd, IMMEDIATE_RESPAWN_TICKS);
   }
 
   private static void killEffects(PlayerDeathEvent event) {
@@ -125,6 +102,29 @@ public class Death extends AbstractModule {
 
   private static String capitalizeFully(String text) {
     return Pattern.compile("\\b(\\w)").matcher(text).replaceAll(m -> m.group().toUpperCase());
+  }
+
+  @EventHandler
+  private void onPlayerDeath(PlayerDeathEvent event) {
+    Player player = event.getPlayer();
+    if (!GameWorld.playerIsInGame(player)) return;
+    Location location = player.getLocation();
+
+    event.setNewExp(0);
+    event.setNewLevel(0);
+    event.setNewTotalExp(0);
+    event.setDroppedExp(player.calculateTotalExperiencePoints());
+    event.setShouldDropExperience(true);
+
+    event.setShowDeathMessages(false);
+
+    deathLocations.put(player.getUniqueId(), location);
+
+    // game has already ended, we are currently the winning player that has been killed
+    if (gameEnded) return;
+
+    killEffects(event);
+    Bukkit.getScheduler().runTaskLater(plugin, this::checkAndGameEnd, IMMEDIATE_RESPAWN_TICKS);
   }
 
   @EventHandler

@@ -22,6 +22,21 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     this.spawnLocation = spawnLocation;
   }
 
+  private static double getMinHorizontalDistanceToPlayers(Location chunkBlockLocation) {
+    double minHorizontalDistance = Double.MAX_VALUE;
+    for (Player player : GameWorld.getPlayersInGame()) {
+      var playerLocation = player.getLocation();
+      double horizontalDistance =
+          Math.sqrt(
+              Math.pow(playerLocation.getBlockX() - chunkBlockLocation.getBlockX(), 2)
+                  + Math.pow(playerLocation.getBlockZ() - chunkBlockLocation.getBlockZ(), 2));
+      if (horizontalDistance < minHorizontalDistance) {
+        minHorizontalDistance = horizontalDistance;
+      }
+    }
+    return minHorizontalDistance;
+  }
+
   protected abstract double getAvgBocksPerChunk();
 
   protected abstract int getBlockSecondsToLive();
@@ -86,21 +101,6 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     }
 
     return targetLocation;
-  }
-
-  private static double getMinHorizontalDistanceToPlayers(Location chunkBlockLocation) {
-    double minHorizontalDistance = Double.MAX_VALUE;
-    for (Player player : GameWorld.getPlayersInGame()) {
-      var playerLocation = player.getLocation();
-      double horizontalDistance =
-          Math.sqrt(
-              Math.pow(playerLocation.getBlockX() - chunkBlockLocation.getBlockX(), 2)
-                  + Math.pow(playerLocation.getBlockZ() - chunkBlockLocation.getBlockZ(), 2));
-      if (horizontalDistance < minHorizontalDistance) {
-        minHorizontalDistance = horizontalDistance;
-      }
-    }
-    return minHorizontalDistance;
   }
 
   @Override

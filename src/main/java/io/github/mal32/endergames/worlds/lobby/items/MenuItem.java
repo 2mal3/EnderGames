@@ -12,10 +12,10 @@ import org.bukkit.persistence.PersistentDataType;
 
 abstract class MenuItem {
   protected final EnderGames plugin;
+  protected final byte slot;
   private final Material itemDisplay;
   private final Component name;
   private final String key;
-  protected final byte slot;
 
   protected MenuItem(
       EnderGames plugin, Material itemDisplay, Component name, String key, byte slot) {

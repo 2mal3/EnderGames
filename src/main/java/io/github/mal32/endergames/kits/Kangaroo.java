@@ -18,8 +18,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 public class Kangaroo extends AbstractKit {
-  private final double VERTICAL_JUMP_SPEED = 1;
-  private final double HORIZONTAL_JUMP_SPEED = 2;
+  private static final double VERTICAL_JUMP_SPEED = 1;
+  private static final double HORIZONTAL_JUMP_SPEED = 2;
 
   public Kangaroo(EnderGames plugin) {
     super(plugin);

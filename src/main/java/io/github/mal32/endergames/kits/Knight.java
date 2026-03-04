@@ -1,8 +1,6 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
-import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -26,7 +24,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
-// The orphaned horses are intentionaly kept alive since they wont cause any problems
+// The orphaned horses are intentionally kept alive since they won't cause any problems
 public class Knight extends AbstractKit {
   private static final int HORSE_RESPAWN_INTERVAL_SECONDS = 30;
   private static final int HORSE_TETHER_INTERVAL_SECONDS = 10;
@@ -162,17 +160,11 @@ public class Knight extends AbstractKit {
     // Inventory
     HorseInventory inventory = horse.getInventory();
     var saddle = new ItemStack(Material.SADDLE);
-    saddle.setData(
-        DataComponentTypes.ENCHANTMENTS,
-        ItemEnchantments.itemEnchantments()
-            .add(Enchantment.VANISHING_CURSE, 1)
-            .add(Enchantment.BINDING_CURSE, 1)
-            .build());
+    saddle.addUnsafeEnchantments(
+        Map.of(Enchantment.VANISHING_CURSE, 1, Enchantment.BINDING_CURSE, 1));
     inventory.setSaddle(saddle);
     var armor = new ItemStack(Material.IRON_HORSE_ARMOR);
-    armor.setData(
-        DataComponentTypes.ENCHANTMENTS,
-        ItemEnchantments.itemEnchantments().add(Enchantment.VANISHING_CURSE, 1).build());
+    armor.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
     inventory.setArmor(armor);
 
     mounts.put(player.getUniqueId(), horse);

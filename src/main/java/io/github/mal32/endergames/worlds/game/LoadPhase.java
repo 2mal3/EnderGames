@@ -7,8 +7,6 @@ import io.github.mal32.endergames.MapPixel;
 import java.awt.Color;
 import java.util.*;
 import org.bukkit.*;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
@@ -19,8 +17,8 @@ import org.bukkit.util.BlockVector;
 
 public class LoadPhase extends AbstractPhase {
   private final int MAP_SIZE = 600;
-  private volatile boolean mapGenRunning = false;
   private final Queue<Queue<Location>> chunkLinesToLoad = new LinkedList<>();
+  private volatile boolean mapGenRunning = false;
   private Color[][] currentMatrix = new Color[MAP_SIZE][MAP_SIZE];
 
   public LoadPhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
@@ -29,6 +27,54 @@ public class LoadPhase extends AbstractPhase {
     placeSpawnPlatform();
     scheduleChunkLists();
     startMapGen();
+  }
+
+  private static Color getBlockColor(Block block, int waterBlocksAbove) {
+    var blockBukkitColor = block.getBlockData().getMapColor();
+    Color blockColor =
+        new Color(
+            blockBukkitColor.getRed(), blockBukkitColor.getGreen(), blockBukkitColor.getBlue());
+
+    Block aboveHighest = block.getRelative(0, 1, 0);
+    var adjacentBlocks =
+        new Block[] {
+          aboveHighest.getRelative(0, 0, 1),
+          aboveHighest.getRelative(1, 0, 0),
+          aboveHighest.getRelative(-1, 0, 0),
+          aboveHighest.getRelative(0, 0, -1)
+        };
+    for (Block adjacent : adjacentBlocks) {
+      if (adjacent.isSolid() && !adjacent.isLiquid()) {
+        if (waterBlocksAbove == 0) {
+          blockColor = blockColor.darker();
+        } else {
+          blockColor = blockColor.brighter();
+        }
+      }
+    }
+
+    if (waterBlocksAbove != 0) {
+      blockColor = applyWaterColorEffect(blockColor, waterBlocksAbove);
+    }
+
+    return blockColor;
+  }
+
+  private static Color applyWaterColorEffect(Color c, int waterBlocksAbove) {
+    double depth = 1.0 - Math.exp(-waterBlocksAbove / 12.0);
+
+    double t = 0.65 + 0.10 * depth; // more blue
+    double s = 1.00 - (0.40 + 0.07 * depth); // more dark
+
+    int r = (int) Math.round((c.getRed() + (30 - c.getRed()) * t) * s);
+    int g = (int) Math.round((c.getGreen() + (80 - c.getGreen()) * t) * s);
+    int b = (int) Math.round((c.getBlue() + (255 - c.getBlue()) * t) * s);
+
+    return new Color(colorClamp(r), colorClamp(g), colorClamp(b), c.getAlpha());
+  }
+
+  private static int colorClamp(int v) {
+    return Math.max(0, Math.min(255, v));
   }
 
   public void disable() {
@@ -170,54 +216,6 @@ public class LoadPhase extends AbstractPhase {
     for (MapPixel pixel : chunkPixels) {
       currentMatrix[pixel.y()][pixel.x()] = pixel.color();
     }
-  }
-
-  private static Color getBlockColor(Block block, int waterBlocksAbove) {
-    var blockBukkitColor = block.getBlockData().getMapColor();
-    Color blockColor =
-        new Color(
-            blockBukkitColor.getRed(), blockBukkitColor.getGreen(), blockBukkitColor.getBlue());
-
-    Block aboveHighest = block.getRelative(0, 1, 0);
-    var adjacentBlocks =
-        new Block[] {
-          aboveHighest.getRelative(0, 0, 1),
-          aboveHighest.getRelative(1, 0, 0),
-          aboveHighest.getRelative(-1, 0, 0),
-          aboveHighest.getRelative(0, 0, -1)
-        };
-    for (Block adjacent : adjacentBlocks) {
-      if (adjacent.isSolid() && !adjacent.isLiquid()) {
-        if (waterBlocksAbove == 0) {
-          blockColor = blockColor.darker();
-        } else {
-          blockColor = blockColor.brighter();
-        }
-      }
-    }
-
-    if (waterBlocksAbove != 0) {
-      blockColor = applyWaterColorEffect(blockColor, waterBlocksAbove);
-    }
-
-    return blockColor;
-  }
-
-  private static Color applyWaterColorEffect(Color c, int waterBlocksAbove) {
-    double depth = 1.0 - Math.exp(-waterBlocksAbove / 12.0);
-
-    double t = 0.65 + 0.10 * depth; // more blue
-    double s = 1.00 - (0.40 + 0.07 * depth); // more dark
-
-    int r = (int) Math.round((c.getRed() + (30 - c.getRed()) * t) * s);
-    int g = (int) Math.round((c.getGreen() + (80 - c.getGreen()) * t) * s);
-    int b = (int) Math.round((c.getBlue() + (255 - c.getBlue()) * t) * s);
-
-    return new Color(colorClamp(r), colorClamp(g), colorClamp(b), c.getAlpha());
-  }
-
-  private static int colorClamp(int v) {
-    return Math.max(0, Math.min(255, v));
   }
 
   private void prepareMapForNextLoadPhase() {

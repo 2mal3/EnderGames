@@ -29,8 +29,9 @@ import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
 
 public class LobbyWorld extends AbstractWorld {
+  public static final World lobbyWorld =
+      Objects.requireNonNull(Bukkit.getWorld("world_enga_lobby"));
   private final MenuManager menuManager;
-  public static World lobbyWorld = Objects.requireNonNull(Bukkit.getWorld("world_enga_lobby"));
   private final Location spawnLocation = new Location(lobbyWorld, 0, 64, 0);
   private final ParkourManager pmanager;
 
@@ -56,6 +57,14 @@ public class LobbyWorld extends AbstractWorld {
     }
 
     lobbyWorld.getChunkAt(0, 0).setForceLoaded(true); // ensure item frames for map wall are loaded
+  }
+
+  public static boolean playerIsInLobbyWorld(Player player) {
+    var world =
+        player
+            .getPersistentDataContainer()
+            .get(EnderGames.playerWorldKey, PersistentDataType.STRING);
+    return Objects.equals(world, "lobby");
   }
 
   private void tryUpdatingLobby() {
@@ -106,14 +115,6 @@ public class LobbyWorld extends AbstractWorld {
         .getPersistentDataContainer()
         .set(EnderGames.playerWorldKey, PersistentDataType.STRING, "lobby");
     initPlayer(player);
-  }
-
-  public static boolean playerIsInLobbyWorld(Player player) {
-    var world =
-        player
-            .getPersistentDataContainer()
-            .get(EnderGames.playerWorldKey, PersistentDataType.STRING);
-    return Objects.equals(world, "lobby");
   }
 
   @Override

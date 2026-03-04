@@ -3,8 +3,6 @@ package io.github.mal32.endergames.kits;
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
-import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.UUID;
@@ -41,9 +39,7 @@ public class Blaze extends AbstractKit {
     meta.displayName(
         Component.text("Burn").color(NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
     blazePowder.setItemMeta(meta);
-    blazePowder.setData(
-        DataComponentTypes.ENCHANTMENTS,
-        ItemEnchantments.itemEnchantments().add(Enchantment.VANISHING_CURSE, 1).build());
+    blazePowder.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
     player.getInventory().addItem(blazePowder);
 
     player.getInventory().addItem(new ItemStack(Material.GOLDEN_SWORD));
