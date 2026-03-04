@@ -75,7 +75,7 @@ public class Death extends AbstractModule {
               .append(Component.text(killer.getName()).color(NamedTextColor.RED)));
 
       String killerKit =
-          player
+          killer
               .getPersistentDataContainer()
               .get(AbstractKit.kitStorageKey, PersistentDataType.STRING);
       String niceKillerKit = capitalizeFully(killerKit);
