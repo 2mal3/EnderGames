@@ -34,11 +34,11 @@ public class EnderGames extends JavaPlugin {
 
   @Override
   public void onEnable() {
-    final int PLUGIN_ID = 25844;
-    var metrics = new Metrics(this, PLUGIN_ID);
-
     if (isInDebugMode()) {
       this.getComponentLogger().warn("Debug mode is enabled.");
+    } else {
+      final int PLUGIN_ID = 25844;
+      var metrics = new Metrics(this, PLUGIN_ID);
     }
 
     gameWorld = new GameWorld(this);

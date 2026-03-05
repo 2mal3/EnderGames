@@ -14,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
+// Load the endergames datapack
 public class PluginBootstrapper implements PluginBootstrap {
   @Override
   public void bootstrap(BootstrapContext context) {
