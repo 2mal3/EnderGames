@@ -48,7 +48,6 @@ public class ForestSpirit extends AbstractKit {
   private static final double FIRE_DAMAGE_MULTIPLIER = 2D;
   private static final double AXE_DAMAGE_MULTIPLIER = 1.4D;
   private static boolean healingTaskScheduled = false;
-  private final Map<UUID, Long> growthCooldownUntil = new HashMap<>();
   private final Map<UUID, Integer> standStillTicks = new HashMap<>();
   private final Map<UUID, BlockKey> lastKnownBlockPos = new HashMap<>();
   // per-player kit start time, used to prevent rooting on start platform for first 20 seconds
@@ -905,7 +904,6 @@ public class ForestSpirit extends AbstractKit {
     if (rootedTrees.containsKey(id)) freeRootedPlayer(id, true);
     standStillTicks.remove(id);
     lastKnownBlockPos.remove(id);
-    growthCooldownUntil.remove(id);
     kitStartTimeMillis.remove(id);
 
     // Passive: grow a tree at death location adapted to the biome.
@@ -1097,7 +1095,6 @@ public class ForestSpirit extends AbstractKit {
     if (rootedTrees.containsKey(id)) freeRootedPlayer(id, true);
     standStillTicks.remove(id);
     lastKnownBlockPos.remove(id);
-    growthCooldownUntil.remove(id);
     kitStartTimeMillis.remove(id);
   }
 
