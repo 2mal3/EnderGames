@@ -10,7 +10,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
-import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
 import org.bukkit.util.BlockVector;
@@ -18,15 +18,132 @@ import org.bukkit.util.BlockVector;
 public class LoadPhase extends AbstractPhase {
   private final int MAP_SIZE = 600;
   private final Queue<Queue<Location>> chunkLinesToLoad = new LinkedList<>();
-  private volatile boolean mapGenRunning = false;
+  private volatile boolean mapGenRunning = true;
   private Color[][] currentMatrix = new Color[MAP_SIZE][MAP_SIZE];
+  private double targetChunksPerTick = 1.0;
+  private double accumulatedChunkGens = 0.0;
+  private BukkitTask chunkGenTask;
 
   public LoadPhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
 
     placeSpawnPlatform();
     scheduleChunkLists();
-    startMapGen();
+    chunkGenTask = Bukkit.getScheduler().runTaskTimer(plugin, this::chunkGenWorker, 20 * 5, 1);
+  }
+
+  private void placeSpawnPlatform() {
+    StructureManager manager = Bukkit.getServer().getStructureManager();
+    Structure structure = manager.loadStructure(new NamespacedKey("enga", "spawn_platform"));
+    if (structure == null) return;
+
+    BlockVector structureSize = structure.getSize();
+    double posX = this.spawnLocation.getBlockX() - (structureSize.getBlockX() / 2.0) + 1;
+    double posZ = this.spawnLocation.getBlockZ() - (structureSize.getBlockZ() / 2.0);
+    Location location =
+        new Location(this.spawnLocation.getWorld(), posX, this.spawnLocation.getY(), posZ);
+    structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
+  }
+
+  private void scheduleChunkLists() {
+    final float LOAD_RADIUS_CHUNKS_FLOAT = ((float) MAP_SIZE) / 16; // 37.5
+    final int LOAD_RADIUS_CHUNKS_INT = (int) Math.floor((LOAD_RADIUS_CHUNKS_FLOAT)); // 37
+    var location = spawnLocation.clone();
+
+    Queue<Location> currentChunkList;
+    int invert = 1;
+
+    for (int r = 0; r < LOAD_RADIUS_CHUNKS_FLOAT + 0.99; r++) {
+      currentChunkList = new LinkedList<>();
+      for (int l1 = 0; l1 < r; l1++) {
+        currentChunkList.add(location.clone());
+        location.add(0, 0, invert * 16);
+      }
+      if (!currentChunkList.isEmpty()) {
+        chunkLinesToLoad.add(currentChunkList);
+      }
+
+      if (r <= LOAD_RADIUS_CHUNKS_INT) {
+        currentChunkList = new LinkedList<>();
+        for (int l2 = 0; l2 < r; l2++) {
+          currentChunkList.add(location.clone());
+          location.add(invert * 16, 0, 0);
+        }
+        if (!currentChunkList.isEmpty()) {
+          chunkLinesToLoad.add(currentChunkList);
+        }
+      }
+
+      invert *= -1;
+    }
+  }
+
+  private void chunkGenWorker() {
+    long[] tickTimes5Sec = Bukkit.getServer().getTickTimes();
+    long[] tickTimes1Sec = Arrays.copyOfRange(tickTimes5Sec, 95, tickTimes5Sec.length);
+    double averageTickTimeNanos = Arrays.stream(tickTimes1Sec).average().orElse(0);
+    double averageTickTime = averageTickTimeNanos / 1_000_000.0;
+
+    if (averageTickTime > 35.0) {
+      targetChunksPerTick *= 0.95;
+    } else if (averageTickTime < 25.0) {
+      targetChunksPerTick *= 1.025;
+    }
+    targetChunksPerTick = Math.max(0.1, Math.min(40.0, targetChunksPerTick));
+
+    // plugin
+    //     .getComponentLogger()
+    //     .info(String.format("mspt: %.1f; cpt: %.1f", averageTickTime, targetChunksPerTick));
+
+    accumulatedChunkGens += targetChunksPerTick;
+
+    ArrayList<MapPixel> pixelBatch = new ArrayList<>();
+
+    while (accumulatedChunkGens >= 1.0) {
+      accumulatedChunkGens -= 1.0;
+
+      var newChunkPixelBatch = chunkGenTick();
+      if (newChunkPixelBatch != null) {
+        pixelBatch.addAll(newChunkPixelBatch);
+      } else {
+        mapGenRunning = false;
+        chunkGenTask.cancel();
+        break;
+      }
+    }
+
+    plugin.changeMapPixelsInLobby(pixelBatch, false);
+  }
+
+  private ArrayList<MapPixel> chunkGenTick() {
+    if (chunkLinesToLoad.isEmpty()) { // Done with rendering
+      return null;
+    }
+    Queue<Location> currentChunkLine = chunkLinesToLoad.peek();
+    if (currentChunkLine.isEmpty()) {
+      if (!mapGenRunning) {
+        // map gen has stopped and our line is done
+        prepareMapForNextLoadPhase();
+        return null;
+      } else if (chunkLinesToLoad.size() > 1) {
+        // we are finished with our line but there are more to come
+        chunkLinesToLoad.remove();
+        currentChunkLine = chunkLinesToLoad.peek();
+      } else {
+        // we are finished with our line and there are no more to come
+        return null;
+      }
+    }
+
+    Location chunkLocation = currentChunkLine.poll();
+    ArrayList<MapPixel> newChunkPixelBatch = getPixelsOfChunk(chunkLocation);
+
+    // addChunkPixelsToMatrix
+    for (MapPixel pixel : newChunkPixelBatch) {
+      currentMatrix[pixel.y()][pixel.x()] = pixel.color();
+    }
+
+    return newChunkPixelBatch;
   }
 
   private static Color getBlockColor(Block block, int waterBlocksAbove) {
@@ -88,92 +205,7 @@ public class LoadPhase extends AbstractPhase {
     }
   }
 
-  public void startMapGen() {
-    BukkitScheduler scheduler = plugin.getServer().getScheduler();
-    final int MAP_GEN_DELAY_TICKS = 2;
-
-    mapGenRunning = true;
-
-    Runnable runner =
-        new Runnable() {
-          @Override
-          public void run() {
-
-            Queue<Location> currentChunkLine = chunkLinesToLoad.peek();
-            if (currentChunkLine != null && currentChunkLine.isEmpty()) {
-              if (!mapGenRunning) {
-                // stop only if line is completed
-                prepareMapForNextLoadPhase();
-                return;
-              }
-              chunkLinesToLoad.remove();
-              currentChunkLine = chunkLinesToLoad.peek();
-            }
-            if (currentChunkLine == null) {
-              mapGenRunning = false;
-              return;
-            }
-
-            generateMap(currentChunkLine);
-
-            scheduler.runTaskLater(plugin, this, MAP_GEN_DELAY_TICKS);
-          }
-        };
-
-    scheduler.runTask(plugin, runner);
-  }
-
-  public void placeSpawnPlatform() {
-    StructureManager manager = Bukkit.getServer().getStructureManager();
-    Structure structure = manager.loadStructure(new NamespacedKey("enga", "spawn_platform"));
-    if (structure == null) return;
-
-    BlockVector structureSize = structure.getSize();
-    double posX = this.spawnLocation.getBlockX() - (structureSize.getBlockX() / 2.0) + 1;
-    double posZ = this.spawnLocation.getBlockZ() - (structureSize.getBlockZ() / 2.0);
-    Location location =
-        new Location(this.spawnLocation.getWorld(), posX, this.spawnLocation.getY(), posZ);
-    structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
-  }
-
-  private void scheduleChunkLists() {
-    final float LOAD_RADIUS_CHUNKS_FLOAT = ((float) MAP_SIZE) / 16; // 37.5
-    final int LOAD_RADIUS_CHUNKS_INT = (int) Math.floor((LOAD_RADIUS_CHUNKS_FLOAT)); // 37
-    var location = spawnLocation.clone();
-
-    Queue<Location> currentChunkList;
-    int invert = 1;
-
-    for (int r = 0; r < LOAD_RADIUS_CHUNKS_FLOAT + 0.99; r++) {
-      currentChunkList = new LinkedList<>();
-      for (int l1 = 0; l1 < r; l1++) {
-        currentChunkList.add(location.clone());
-        location.add(0, 0, invert * 16);
-      }
-      chunkLinesToLoad.add(currentChunkList);
-
-      if (r <= LOAD_RADIUS_CHUNKS_INT) {
-        currentChunkList = new LinkedList<>();
-        for (int l2 = 0; l2 < r; l2++) {
-          currentChunkList.add(location.clone());
-          location.add(invert * 16, 0, 0);
-        }
-        chunkLinesToLoad.add(currentChunkList);
-      }
-
-      invert *= -1;
-    }
-  }
-
-  private void generateMap(Queue<Location> currentChunkLine) {
-    Location chunkLocation = currentChunkLine.poll();
-    if (chunkLocation == null) return;
-    ArrayList<MapPixel> newChunkPixelBatch = getChunkPixelBatch(chunkLocation);
-    addChunkPixelsToMatrix(newChunkPixelBatch);
-    plugin.changeMapPixelsInLobby(newChunkPixelBatch, false);
-  }
-
-  private ArrayList<MapPixel> getChunkPixelBatch(Location location) {
+  private ArrayList<MapPixel> getPixelsOfChunk(Location location) {
     Chunk chunk = location.getWorld().getChunkAt(location);
     chunk.load(true);
 
@@ -210,12 +242,6 @@ public class LoadPhase extends AbstractPhase {
     }
 
     return pixelBatch;
-  }
-
-  private void addChunkPixelsToMatrix(ArrayList<MapPixel> chunkPixels) {
-    for (MapPixel pixel : chunkPixels) {
-      currentMatrix[pixel.y()][pixel.x()] = pixel.color();
-    }
   }
 
   private void prepareMapForNextLoadPhase() {
