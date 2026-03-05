@@ -34,10 +34,10 @@ class KitSelector extends MenuItem implements Listener {
   public KitSelector(EnderGames plugin) {
     super(
         plugin,
-        Material.CHEST,
-        Component.text("Select Kit").color(NamedTextColor.GOLD),
+        (byte) 0,
         "kit_selector",
-        (byte) 0);
+        Material.CHEST,
+        Component.text("Select Kit").color(NamedTextColor.GOLD));
     this.availableKits = AbstractKit.getKits(plugin);
     Bukkit.getPluginManager().registerEvents(this, plugin);
   }
@@ -64,7 +64,7 @@ class KitSelector extends MenuItem implements Listener {
 
   @Override
   public void initPlayer(Player player) {
-    giveItem(player);
+    this.giveItem(player);
   }
 
   @Override

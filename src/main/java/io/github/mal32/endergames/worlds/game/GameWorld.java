@@ -3,6 +3,7 @@ package io.github.mal32.endergames.worlds.game;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.AbstractWorld;
 import io.github.mal32.endergames.worlds.game.game.GamePhase;
+import io.github.mal32.endergames.worlds.lobby.items.PlayItem;
 import java.util.Objects;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -55,6 +56,10 @@ public class GameWorld extends AbstractWorld {
   public void startGame() {
     if (!(currentPhase instanceof LoadPhase)) return;
 
+    if (PlayItem.getPlayingPlayers().length < 1) { // TODO: < 1 only in DEBUG?
+      plugin.getLobbyWorld().getMenuManager().resetOpItem();
+      return;
+    }
     nextPhase();
   }
 

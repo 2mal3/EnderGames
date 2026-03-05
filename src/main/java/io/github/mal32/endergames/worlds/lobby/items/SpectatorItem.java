@@ -13,16 +13,16 @@ class SpectatorItem extends MenuItem {
   public SpectatorItem(EnderGames plugin) {
     super(
         plugin,
-        Material.ENDER_EYE,
-        Component.text("Spectate Game").color(NamedTextColor.GOLD),
+        (byte) 6,
         "spectate_game",
-        (byte) 4);
+        Material.ENDER_EYE,
+        Component.text("Spectate Game").color(NamedTextColor.GOLD));
   }
 
   @Override
   public void initPlayer(Player player) {
     if (plugin.getGameWorld().isGameRunning()) {
-      giveItem(player);
+      this.giveItem(player);
     }
   }
 

@@ -22,15 +22,23 @@ public class MenuManager extends AbstractModule {
 
   public MenuManager(EnderGames plugin) {
     super(plugin);
-    enable();
+    this.enable();
 
     var rawItems =
-        List.of(new KitSelector(plugin), new OperatorStartItem(plugin), new SpectatorItem(plugin));
+        List.of(
+            new KitSelector(plugin),
+            new OperatorStartItem(plugin),
+            new SpectatorItem(plugin),
+            new PlayItem(plugin));
     for (MenuItem item : rawItems) {
       items.put(item.getKey(), item);
     }
 
     this.menuKey = new NamespacedKey(plugin, "menu");
+  }
+
+  public void resetOpItem() {
+    ((OperatorStartItem) items.get("start_game")).cancelForOp();
   }
 
   public void initPlayer(Player player) {

@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.worlds.lobby.items;
 
 import io.github.mal32.endergames.EnderGames;
+import java.util.Map;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -9,19 +10,30 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitTask;
+import org.jspecify.annotations.NonNull;
 
 class OperatorStartItem extends MenuItem {
-  private final MenuItem cancelItem;
+  String state;
   private BukkitTask startGameTask = null;
 
   public OperatorStartItem(EnderGames plugin) {
     super(
         plugin,
-        Material.NETHER_STAR,
-        Component.text("Start Game").color(NamedTextColor.GOLD),
+        (byte) 8,
         "start_game",
-        (byte) 8);
-    this.cancelItem = new CancelStartItem(this.plugin);
+        Map.of(
+            "start",
+            new ItemDisplay(
+                Material.NETHER_STAR, Component.text("Start Game").color(NamedTextColor.GOLD)),
+            "cancel",
+            new ItemDisplay(
+                Material.BARRIER, Component.text("Cancel Start").color(NamedTextColor.GOLD))));
+    this.state = "start";
+  }
+
+  @Override
+  protected @NonNull String getState(Player player) {
+    return this.state;
   }
 
   @Override
@@ -51,14 +63,29 @@ class OperatorStartItem extends MenuItem {
                 () -> {
                   this.plugin.getGameWorld().startGame();
                   this.startGameTask = null;
+                  this.state = "start";
                 },
                 startDelaySeconds * 20);
+
+    this.state = "cancel";
 
     for (Player player : Bukkit.getOnlinePlayers()) {
       if (player.isOp()) {
         player.sendActionBar(
             Component.text("The game will start in 5 seconds!").color(NamedTextColor.GREEN));
-        cancelItem.giveItem(player);
+        giveItem(player);
+      }
+    }
+  }
+
+  protected void cancelForOp() {
+    this.state = "start";
+
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      if (player.isOp()) {
+        player.sendActionBar(Component.text("Start was canceled!").color(NamedTextColor.RED));
+
+        giveItem(player);
       }
     }
   }
@@ -67,12 +94,6 @@ class OperatorStartItem extends MenuItem {
     this.startGameTask.cancel();
     this.startGameTask = null;
 
-    for (Player player : Bukkit.getOnlinePlayers()) {
-      if (player.isOp()) {
-        player.sendActionBar(Component.text("Start was canceled!").color(NamedTextColor.RED));
-
-        this.giveItem(player);
-      }
-    }
+    this.cancelForOp();
   }
 }
