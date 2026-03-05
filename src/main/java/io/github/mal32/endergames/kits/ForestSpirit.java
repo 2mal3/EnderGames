@@ -148,6 +148,19 @@ public class ForestSpirit extends AbstractKit {
     ItemStack item = event.getItem();
     if (item == null || item.getType() != Material.GREEN_DYE) return;
 
+    // Check if less than 60 seconds have passed since enable() was called
+    UUID playerId = player.getUniqueId();
+    Long kitStartTime = kitStartTimeMillis.get(playerId);
+    if (kitStartTime != null) {
+      long elapsedSeconds = (System.currentTimeMillis() - kitStartTime) / 1000;
+      if (elapsedSeconds < 60) {
+        player.sendActionBar(
+            Component.text("The Growth ability cannot be used this early in the game.")
+                .color(TextColor.color(0x6B4F2A))); // brown
+        return;
+      }
+    }
+
     if (player.hasCooldown(Material.GREEN_DYE)) return;
     player.setCooldown(Material.GREEN_DYE, GROWTH_COOLDOWN_SECONDS * 20);
     activateGrowth(player);
