@@ -10,7 +10,7 @@ versions.
 ## Features
 
 - a bunch of custom game mechanics such as player swapping, teleporting blocks and custom items
-- 16 unique kits to choose from with more coming soon
+- 18 unique kits to choose from with more coming soon
 - heavily playtested and balanced
 
 ## Vanilla Modifications
@@ -81,3 +81,13 @@ of this plugin are solely responsible for its content and maintenance.
 ## Contributing
 
 See [CONTRIBUTING.md](/CONTRIBUTING.md).
+
+## License
+
+This project is licensed under the PolyForm Noncommercial License 1.0.0.
+
+You may use, modify, and share this software for permitted noncommercial purposes under that license.
+
+Commercial use is not covered by the public license.
+If you want to use this software commercially, you must first make a separate written agreement with us.
+See [LICENSES](/LICENSES) for details.
