@@ -70,7 +70,7 @@ No. If you share the software, you must keep the required notices and license in
 
 ### How do I discuss commercial use?
 
-Please contact us through GitHub or via Mail `mcrafter_hi@mypapertown.de` and include:
+Please contact us through GitHub or via Mail `endergames.e27ft@addy.io` and include:
 - your name or company name
 - your server or project name
 - how you want to use the plugin
