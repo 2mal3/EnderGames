@@ -8,6 +8,8 @@ import java.awt.Color;
 import java.util.*;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Waterlogged;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -188,7 +190,8 @@ public class LoadPhase extends AbstractPhase {
         Block highestBlock = spawnLocation.getWorld().getHighestBlockAt(blockHorizontalLocation);
 
         Block highestNonWaterBlock = highestBlock;
-        if (highestBlock.getType() == Material.WATER) {
+
+        if (isIgnoredWaterBlock(highestBlock)) {
           highestNonWaterBlock =
               spawnLocation
                   .getWorld()
@@ -210,6 +213,19 @@ public class LoadPhase extends AbstractPhase {
     }
 
     return pixelBatch;
+  }
+
+  private boolean isIgnoredWaterBlock(Block block) {
+    Material blockMaterial = block.getType();
+    BlockData blockData = block.getBlockData();
+
+    return blockMaterial == Material.WATER
+        || blockMaterial == Material.BUBBLE_COLUMN
+        || blockMaterial == Material.SEAGRASS
+        || blockMaterial == Material.TALL_SEAGRASS
+        || blockMaterial == Material.KELP
+        || blockMaterial == Material.KELP_PLANT
+        || blockData instanceof Waterlogged && ((Waterlogged) blockData).isWaterlogged();
   }
 
   private void addChunkPixelsToMatrix(ArrayList<MapPixel> chunkPixels) {
