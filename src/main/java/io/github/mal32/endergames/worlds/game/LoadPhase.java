@@ -8,8 +8,10 @@ import java.awt.Color;
 import java.util.*;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Waterlogged;
+import org.bukkit.block.data.type.Leaves;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.scheduler.BukkitTask;
@@ -148,11 +150,32 @@ public class LoadPhase extends AbstractPhase {
     return newChunkPixelBatch;
   }
 
-  private static Color getBlockColor(Block block, int waterBlocksAbove) {
+  private static Color getDirectBukkitColor(Block block) {
     var blockBukkitColor = block.getBlockData().getMapColor();
-    Color blockColor =
-        new Color(
-            blockBukkitColor.getRed(), blockBukkitColor.getGreen(), blockBukkitColor.getBlue());
+    return new Color(
+        blockBukkitColor.getRed(), blockBukkitColor.getGreen(), blockBukkitColor.getBlue());
+  }
+
+  private static Color getBlockColorWithSnowEffect(Block block) {
+    if (block.getRelative(BlockFace.UP).getType() == Material.SNOW) {
+      if (block.getBlockData() instanceof Leaves) { // check for leaves for better contrast of trees
+        Color c = getDirectBukkitColor(block);
+        float t = 0.6f; // mixing 60% white
+
+        int r = (int) (c.getRed() + (255 - c.getRed()) * t);
+        int g = (int) (c.getGreen() + (255 - c.getGreen()) * t);
+        int b = (int) (c.getBlue() + (255 - c.getBlue()) * t);
+        return new Color(r, g, b);
+      } else {
+        return new Color(255, 255, 255); // white for snow
+      }
+    } else {
+      return getDirectBukkitColor(block);
+    }
+  }
+
+  private static Color getBlockColor(Block block, int waterBlocksAbove) {
+    Color blockColor = getBlockColorWithSnowEffect(block);
 
     Block aboveHighest = block.getRelative(0, 1, 0);
     var adjacentBlocks =
