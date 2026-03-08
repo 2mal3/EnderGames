@@ -90,4 +90,4 @@ You may use, modify, and share this software for permitted noncommercial purpose
 
 Commercial use is not covered by the public license.
 If you want to use this software commercially, you must first make a separate written agreement with us.
-See `COMMERCIAL-LICENSE.md` and `FAQ.md` for details.
+See [LICENSES](/LICENSES) for details.

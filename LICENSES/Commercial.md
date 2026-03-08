@@ -15,4 +15,4 @@ Examples of commercial use may include but are not limited to:
 
 The exact terms for commercial use are discussed individually based on the intended use case.
 
-To discuss commercial use, please contact us via E-Mail: `endergames.e27ft@addy.io`
+To discuss commercial use, please contact us via E-Mail: `endergames.e27ft at addy.io`.

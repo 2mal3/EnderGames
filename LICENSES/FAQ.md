@@ -1,7 +1,7 @@
 # Licensing FAQ
 
 This FAQ is only a plain-English explanation.
-The actual legal terms are in the `LICENSE` file and any separate written agreement for commercial use.
+The actual legal terms are in the other files and any separate written agreement for commercial use.
 
 ### What license does this plugin use?
 
@@ -70,7 +70,7 @@ No. If you share the software, you must keep the required notices and license in
 
 ### How do I discuss commercial use?
 
-Please contact us through GitHub or via Mail `endergames.e27ft@addy.io` and include:
+Please contact us through GitHub or via Mail `endergames.e27ft at addy.io` and include:
 - your name or company name
 - your server or project name
 - how you want to use the plugin
