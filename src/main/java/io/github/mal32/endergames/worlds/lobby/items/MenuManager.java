@@ -5,6 +5,7 @@ import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.lobby.LobbyWorld;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -37,24 +38,50 @@ public class MenuManager extends AbstractModule {
     this.menuKey = new NamespacedKey(plugin, "menu");
   }
 
-  public void resetOpItem() {
-    ((OperatorStartItem) items.get("start_game")).cancelForOp();
-  }
-
   public void initPlayer(Player player) {
     for (MenuItem item : items.values()) {
       item.initPlayer(player);
     }
   }
 
-  public void onGameEnd() {
+  private void forEachLobbyPlayer(Consumer<Player> action) {
     for (Player player : Bukkit.getOnlinePlayers()) {
       if (LobbyWorld.playerIsInLobbyWorld(player)) {
-        for (MenuItem item : items.values()) {
-          item.onGameEnd(player);
-        }
+        action.accept(player);
       }
     }
+  }
+
+  public void onGameStart(Player player) {
+    for (MenuItem item : items.values()) {
+      item.onGameStart(player);
+    }
+  }
+
+  public void onGameStart() {
+    forEachLobbyPlayer(this::onGameStart);
+  }
+
+  public void onGameEnd(Player player) {
+    for (MenuItem item : items.values()) {
+      item.onGameEnd(player);
+    }
+  }
+
+  public void onGameEnd() {
+    forEachLobbyPlayer(this::onGameEnd);
+  }
+
+  public void onGameStartAbort() {
+    for (MenuItem item : items.values()) {
+      item.onGameStartAbort();
+    }
+    forEachLobbyPlayer(
+        player -> {
+          for (MenuItem item : items.values()) {
+            item.onGameStartAbort(player);
+          }
+        });
   }
 
   private boolean isMenuItem(ItemStack item) {

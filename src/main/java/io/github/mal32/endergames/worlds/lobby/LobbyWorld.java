@@ -61,16 +61,16 @@ public class LobbyWorld extends AbstractWorld {
     lobbyWorld.getChunkAt(0, 0).setForceLoaded(true); // ensure item frames for map wall are loaded
   }
 
-  public MenuManager getMenuManager() {
-    return this.menuManager;
-  }
-
   public static boolean playerIsInLobbyWorld(Player player) {
     var world =
         player
             .getPersistentDataContainer()
             .get(EnderGames.playerWorldKey, PersistentDataType.STRING);
     return Objects.equals(world, "lobby");
+  }
+
+  public MenuManager getMenuManager() {
+    return this.menuManager;
   }
 
   private void tryUpdatingLobby() {
@@ -130,6 +130,12 @@ public class LobbyWorld extends AbstractWorld {
 
     menuManager.initPlayer(player);
 
+    if (this.plugin.getGameWorld().isGameRunning()) {
+      menuManager.onGameStart(player);
+    } else {
+      menuManager.onGameEnd();
+    }
+
     player.setGameMode(GameMode.ADVENTURE);
 
     for (PotionEffect effect : player.getActivePotionEffects()) {
@@ -154,10 +160,6 @@ public class LobbyWorld extends AbstractWorld {
           .getPersistentDataContainer()
           .set(AbstractKit.kitStorageKey, PersistentDataType.STRING, "lumberjack");
     }
-  }
-
-  public void onGameEnd() {
-    menuManager.onGameEnd();
   }
 
   @EventHandler

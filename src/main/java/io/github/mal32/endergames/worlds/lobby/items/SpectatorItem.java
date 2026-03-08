@@ -20,10 +20,8 @@ class SpectatorItem extends MenuItem {
   }
 
   @Override
-  public void initPlayer(Player player) {
-    if (plugin.getGameWorld().isGameRunning()) {
-      this.giveItem(player);
-    }
+  public void onGameStart(Player player) {
+    this.giveItem(player);
   }
 
   @Override

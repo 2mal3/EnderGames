@@ -71,6 +71,10 @@ public class PlayItem extends MenuItem {
           .getPersistentDataContainer()
           .set(playingStorageKey, PersistentDataType.STRING, State.PLAYING.toString());
     }
+  }
+
+  @Override
+  public void onGameEnd(Player player) {
     this.giveItem(player);
   }
 

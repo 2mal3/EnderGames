@@ -37,8 +37,21 @@ class OperatorStartItem extends MenuItem {
   }
 
   @Override
-  public void initPlayer(Player player) {
+  public void onGameEnd(Player player) {
     if (!player.isOp()) return;
+    giveItem(player);
+  }
+
+  @Override
+  public void onGameStartAbort() {
+    this.state = "start";
+  }
+
+  @Override
+  public void onGameStartAbort(Player player) {
+    if (!player.isOp()) return;
+    player.sendActionBar(Component.text("Start was canceled!").color(NamedTextColor.RED));
+
     giveItem(player);
   }
 
@@ -78,22 +91,13 @@ class OperatorStartItem extends MenuItem {
     }
   }
 
-  protected void cancelForOp() {
-    this.state = "start";
-
-    for (Player player : Bukkit.getOnlinePlayers()) {
-      if (player.isOp()) {
-        player.sendActionBar(Component.text("Start was canceled!").color(NamedTextColor.RED));
-
-        giveItem(player);
-      }
-    }
-  }
-
   private void stopGameStart() {
     this.startGameTask.cancel();
     this.startGameTask = null;
+    this.state = "start";
 
-    this.cancelForOp();
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      this.onGameStartAbort(player);
+    }
   }
 }

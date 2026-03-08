@@ -13,10 +13,10 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 abstract class MenuItem {
-  private final Map<String, ItemDisplay> display;
-
   protected final EnderGames plugin;
   protected final byte slot;
+  private final Map<String, ItemDisplay> display;
+  private final String key;
 
   protected MenuItem(EnderGames plugin, byte slot, String key, Map<String, ItemDisplay> display) {
     this.plugin = plugin;
@@ -24,8 +24,6 @@ abstract class MenuItem {
     this.key = key;
     this.slot = slot;
   }
-
-  private final String key;
 
   protected MenuItem(EnderGames plugin, byte slot, String key, Material display, Component name) {
     this.plugin = plugin;
@@ -53,15 +51,21 @@ abstract class MenuItem {
     return key;
   }
 
-  public abstract void initPlayer(Player player);
-
   protected @NotNull String getState(Player player) {
     return "";
   }
 
-  record ItemDisplay(Material display, Component name) {}
-
   public abstract void playerInteract(PlayerInteractEvent event);
 
+  public void initPlayer(Player player) {}
+
+  public void onGameStart(Player player) {}
+
   public void onGameEnd(Player player) {}
+
+  public void onGameStartAbort() {}
+
+  public void onGameStartAbort(Player player) {}
+
+  record ItemDisplay(Material display, Component name) {}
 }

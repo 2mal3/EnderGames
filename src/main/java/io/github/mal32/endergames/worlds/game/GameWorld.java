@@ -57,9 +57,10 @@ public class GameWorld extends AbstractWorld {
     if (!(currentPhase instanceof LoadPhase)) return;
 
     if (PlayItem.getPlayingPlayers().length < 1) { // TODO: < 1 only in DEBUG?
-      plugin.getLobbyWorld().getMenuManager().resetOpItem();
+      plugin.getLobbyWorld().getMenuManager().onGameStartAbort();
       return;
     }
+    plugin.getLobbyWorld().getMenuManager().onGameStart();
     nextPhase();
   }
 
@@ -82,12 +83,12 @@ public class GameWorld extends AbstractWorld {
       for (Player p : GameWorld.getPlayersInGameWorld()) {
         plugin.getLobbyWorld().teleportPlayerToLobby(p);
       }
+      plugin.getLobbyWorld().getMenuManager().onGameEnd();
 
       worldManager.findAndSaveNewSpawnLocation();
       plugin.getComponentLogger().info("Spawn location: {}", spawnLocation);
 
       currentPhase = new LoadPhase(plugin, this, spawnLocation);
-      plugin.getLobbyWorld().onGameEnd();
     }
   }
 
