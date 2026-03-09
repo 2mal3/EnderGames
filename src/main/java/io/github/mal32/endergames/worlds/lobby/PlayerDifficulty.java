@@ -93,6 +93,10 @@ public class PlayerDifficulty extends AbstractModule {
   }
 
   private void nerf(Player player) {
+    if (getArmorModifier(player) <= -1) {
+      return;
+    }
+
     player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, SoundCategory.UI, 1.0f, 1.0f);
 
     double factor = getArmorModifier(player);
@@ -101,6 +105,10 @@ public class PlayerDifficulty extends AbstractModule {
   }
 
   private void buff(Player player) {
+    if (getArmorModifier(player) >= 1) {
+      return;
+    }
+
     player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_YES, SoundCategory.UI, 1.0f, 1.0f);
 
     double factor = getArmorModifier(player);
