@@ -44,7 +44,7 @@ public class PlayItem extends MenuItem {
   public void playerInteract(PlayerInteractEvent event) {
     Player player = event.getPlayer();
 
-    player.playSound(player, Sound.ITEM_GOAT_HORN_SOUND_0, 1, 1);
+    player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
 
     final PlayerState state = PlayerState.get(player);
     final PlayerState newState;
