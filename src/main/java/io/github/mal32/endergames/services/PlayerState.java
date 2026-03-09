@@ -6,8 +6,8 @@ import org.bukkit.persistence.PersistentDataType;
 
 public enum PlayerState implements PlayerAttribute<PlayerState> {
   PLAYING,
-  OBSERVING,
-  SKIP;
+  SPECTATING,
+  IN_LOBBY;
 
   public static final NamespacedKey KEY = new NamespacedKey("endergames", "playing");
 

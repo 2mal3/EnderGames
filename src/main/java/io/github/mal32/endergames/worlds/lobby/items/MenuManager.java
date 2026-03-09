@@ -57,7 +57,7 @@ public class MenuManager extends AbstractModule {
   }
 
   public void onGameStart() {
-    for (Player player : PlayerState.SKIP.all()) {
+    for (Player player : PlayerState.IN_LOBBY.all()) {
       onGameStart(player);
     }
   }

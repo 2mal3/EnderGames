@@ -28,7 +28,7 @@ public class StartPhase extends AbstractPhase {
     for (Player player : PlayerState.PLAYING.all()) {
       PlayerInWorld.GAME.set(player);
     }
-    for (Player player : PlayerState.OBSERVING.all()) {
+    for (Player player : PlayerState.SPECTATING.all()) {
       PlayerInWorld.GAME.set(player);
     }
 
@@ -54,7 +54,7 @@ public class StartPhase extends AbstractPhase {
       teleportToPlayerSpawns(player, playerindex, totalPlayers);
       playerindex += 1;
     }
-    for (Player player : PlayerState.OBSERVING.all()) {
+    for (Player player : PlayerState.SPECTATING.all()) {
       player.setGameMode(GameMode.SPECTATOR);
       player.getInventory().clear();
       plugin.getGameWorld().teleportPlayerToGame(player);

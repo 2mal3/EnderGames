@@ -21,13 +21,15 @@ public class PlayItem extends MenuItem {
         Map.of(
             PlayerState.PLAYING.name(),
             new ItemDisplay(
-                Material.ENDER_EYE, Component.text("Play").color(NamedTextColor.DARK_AQUA)),
-            PlayerState.OBSERVING.name(),
+                Material.ENDER_EYE, Component.text("Mode: Play").color(NamedTextColor.DARK_AQUA)),
+            PlayerState.SPECTATING.name(),
             new ItemDisplay(
-                Material.SPYGLASS, Component.text("Spectate").color(NamedTextColor.DARK_AQUA)),
-            PlayerState.SKIP.name(),
+                Material.SPYGLASS,
+                Component.text("Mode: Spectate").color(NamedTextColor.DARK_AQUA)),
+            PlayerState.IN_LOBBY.name(),
             new ItemDisplay(
-                Material.OAK_DOOR, Component.text("Skip").color(NamedTextColor.DARK_AQUA))));
+                Material.DARK_OAK_DOOR,
+                Component.text("Mode: Stay in Lobby").color(NamedTextColor.DARK_AQUA))));
   }
 
   @Override
@@ -49,8 +51,8 @@ public class PlayItem extends MenuItem {
     final PlayerState state = PlayerState.get(player);
     final PlayerState newState;
     switch (state) {
-      case PLAYING -> newState = PlayerState.OBSERVING;
-      case OBSERVING -> newState = PlayerState.SKIP;
+      case PLAYING -> newState = PlayerState.SPECTATING;
+      case SPECTATING -> newState = PlayerState.IN_LOBBY;
       default -> newState = PlayerState.PLAYING;
     }
     newState.set(player);
