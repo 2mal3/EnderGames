@@ -2,6 +2,7 @@ package io.github.mal32.endergames.worlds.lobby;
 
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.PlayerInWorld;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -53,7 +54,7 @@ public class PlayerDifficulty extends AbstractModule {
   @EventHandler
   private void onButtonPress(PlayerInteractEvent event) {
     var player = event.getPlayer();
-    if (!LobbyWorld.playerIsInLobbyWorld(player)) return;
+    if (!PlayerInWorld.LOBBY.is(player)) return;
     if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return; // prevent double trigger
 
     Block clickedBlock = event.getClickedBlock();
@@ -75,7 +76,7 @@ public class PlayerDifficulty extends AbstractModule {
   private void onPlayerMove(PlayerMoveEvent event) {
     if (!event.hasChangedBlock()) return;
     Player player = event.getPlayer();
-    if (!LobbyWorld.playerIsInLobbyWorld(player)) return;
+    if (!PlayerInWorld.LOBBY.is(player)) return;
 
     final double MAX_DISTANCE_SQUARED = Math.pow(5, 2);
     Location toBlockPos = event.getTo().getBlock().getLocation();

@@ -3,6 +3,8 @@ package io.github.mal32.endergames.worlds.lobby;
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
+import io.github.mal32.endergames.services.PlayerInWorld;
+import io.github.mal32.endergames.services.PlayerState;
 import io.github.mal32.endergames.worlds.AbstractWorld;
 import io.github.mal32.endergames.worlds.lobby.items.MenuManager;
 import java.util.List;
@@ -61,14 +63,6 @@ public class LobbyWorld extends AbstractWorld {
     lobbyWorld.getChunkAt(0, 0).setForceLoaded(true); // ensure item frames for map wall are loaded
   }
 
-  public static boolean playerIsInLobbyWorld(Player player) {
-    var world =
-        player
-            .getPersistentDataContainer()
-            .get(EnderGames.playerWorldKey, PersistentDataType.STRING);
-    return Objects.equals(world, "lobby");
-  }
-
   public MenuManager getMenuManager() {
     return this.menuManager;
   }
@@ -118,15 +112,15 @@ public class LobbyWorld extends AbstractWorld {
   }
 
   public void teleportPlayerToLobby(Player player) {
-    player
-        .getPersistentDataContainer()
-        .set(EnderGames.playerWorldKey, PersistentDataType.STRING, "lobby");
+    PlayerInWorld.LOBBY.set(player);
     initPlayer(player);
   }
 
   @Override
   public void initPlayer(Player player) {
     player.getInventory().clear();
+
+    PlayerState.init(player);
 
     menuManager.initPlayer(player);
 
@@ -165,7 +159,7 @@ public class LobbyWorld extends AbstractWorld {
   @EventHandler
   public void onPlayerDamage(EntityDamageEvent event) {
     if (!(event.getEntity() instanceof Player player)) return;
-    if (!playerIsInLobbyWorld(player)) return;
+    if (!PlayerInWorld.LOBBY.is(player)) return;
     if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) return;
 
     event.setCancelled(true);
@@ -174,7 +168,7 @@ public class LobbyWorld extends AbstractWorld {
   @EventHandler
   public void onFieldTrample(EntityChangeBlockEvent event) {
     if (!(event.getEntity() instanceof Player player)) return;
-    if (!playerIsInLobbyWorld(player)) return;
+    if (!PlayerInWorld.LOBBY.is(player)) return;
 
     if (event.getBlock().getType() != Material.FARMLAND) return;
 

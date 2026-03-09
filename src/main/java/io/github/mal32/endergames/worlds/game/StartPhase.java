@@ -3,7 +3,8 @@ package io.github.mal32.endergames.worlds.game;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.kits.KitDescription;
-import io.github.mal32.endergames.worlds.lobby.items.PlayItem;
+import io.github.mal32.endergames.services.PlayerInWorld;
+import io.github.mal32.endergames.services.PlayerState;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
@@ -24,10 +25,11 @@ public class StartPhase extends AbstractPhase {
     super(plugin, manager, spawnLocation);
     World world = spawnLocation.getWorld();
 
-    for (Player player : PlayItem.getJoiningPlayers()) {
-      player
-          .getPersistentDataContainer()
-          .set(new NamespacedKey("endergames", "world"), PersistentDataType.STRING, "game");
+    for (Player player : PlayerState.PLAYING.all()) {
+      PlayerInWorld.GAME.set(player);
+    }
+    for (Player player : PlayerState.OBSERVING.all()) {
+      PlayerInWorld.GAME.set(player);
     }
 
     Bukkit.getScheduler().runTaskLater(plugin, this::distributePlayers, 20);
@@ -40,19 +42,19 @@ public class StartPhase extends AbstractPhase {
 
   public void distributePlayers() {
     int playerindex = 0;
-    final int totalPlayers = PlayItem.getPlayingPlayers().length;
+    final int totalPlayers = PlayerState.PLAYING.all().length;
     if (totalPlayers == 0) {
       System.out.println();
       // TODO!
     }
-    for (Player player : PlayItem.getPlayingPlayers()) {
+    for (Player player : PlayerState.PLAYING.all()) {
       player.setGameMode(GameMode.ADVENTURE);
       player.getInventory().clear();
 
       teleportToPlayerSpawns(player, playerindex, totalPlayers);
       playerindex += 1;
     }
-    for (Player player : PlayItem.getObservingPlayers()) {
+    for (Player player : PlayerState.OBSERVING.all()) {
       player.setGameMode(GameMode.SPECTATOR);
       player.getInventory().clear();
       plugin.getGameWorld().teleportPlayerToGame(player);
@@ -62,7 +64,7 @@ public class StartPhase extends AbstractPhase {
   private void showPlayersKitInfo() {
     var kits = AbstractKit.getKits(plugin);
 
-    for (Player player : PlayItem.getPlayingPlayers()) {
+    for (Player player : PlayerState.PLAYING.all()) {
       String playerKit =
           player
               .getPersistentDataContainer()

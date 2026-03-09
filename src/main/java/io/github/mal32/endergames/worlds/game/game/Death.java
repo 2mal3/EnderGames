@@ -4,6 +4,7 @@ import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
+import io.github.mal32.endergames.services.PlayerInWorld;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import java.time.Duration;
 import java.util.HashMap;
@@ -130,7 +131,7 @@ public class Death extends AbstractModule {
   @EventHandler
   private void onPlayerRespawn(PlayerPostRespawnEvent event) {
     Player player = event.getPlayer();
-    if (!GameWorld.playerIsInGameWorld(player)) return;
+    if (!PlayerInWorld.GAME.is(player)) return;
 
     Location deathPos = deathLocations.get(player.getUniqueId());
     if (deathPos == null) return;
@@ -190,7 +191,7 @@ public class Death extends AbstractModule {
                   Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
     }
 
-    for (Player player : GameWorld.getPlayersInGameWorld()) {
+    for (Player player : PlayerInWorld.GAME.all()) {
       player.showTitle(title);
     }
 
