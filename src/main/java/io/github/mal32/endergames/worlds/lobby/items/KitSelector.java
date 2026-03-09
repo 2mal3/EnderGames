@@ -96,7 +96,7 @@ class KitSelector extends MenuItem implements Listener {
     String nameText = LegacyComponentSerializer.legacySection().serialize(displayName);
     String kitName = nameText.length() > 2 ? nameText.substring(2).toLowerCase() : "";
 
-    NamespacedKey advancementKey = new NamespacedKey("enga", kitName);
+    NamespacedKey advancementKey = new NamespacedKey("enga", kitName.replace(" ", "_"));
     if (!playerHasAdvancement(plugin, player, advancementKey)) {
       player.sendMessage(
           Component.text("Unlock the matching advancement to use that kit.")
