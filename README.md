@@ -24,6 +24,7 @@ versions.
 - items in Furnaces smelt faster
 - potion effects stack
 - no Spear recipe
+- Nether is disabled
 
 ## Using the Plugin
 
@@ -35,7 +36,6 @@ Install the plugin as usual on a Paper Server for Minecraft 1.21.11 of your choi
 
 - `spawn-protection=0`
 - `simulation-distance` > 6
-- `allow-nether=false`
 
 #### `bukkit.yml`
 

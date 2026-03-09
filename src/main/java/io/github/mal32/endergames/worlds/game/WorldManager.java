@@ -24,6 +24,7 @@ public class WorldManager {
     world.setGameRule(GameRules.ADVANCE_WEATHER, false);
     world.setGameRule(GameRules.LOCATOR_BAR, false);
     world.setGameRule(GameRules.SPAWN_PHANTOMS, false);
+    world.setGameRule(GameRules.ALLOW_ENTERING_NETHER_USING_PORTALS, false);
 
     world.setDifficulty(Difficulty.EASY);
 
