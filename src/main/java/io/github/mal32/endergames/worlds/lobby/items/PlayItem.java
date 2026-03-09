@@ -31,7 +31,7 @@ public class PlayItem extends MenuItem {
   }
 
   @Override
-  public void onGameEnd(Player player) {
+  public void initPlayer(Player player) {
     this.giveItem(player);
   }
 
