@@ -37,6 +37,11 @@ class OperatorStartItem extends MenuItem {
   }
 
   @Override
+  public void onGameStart(Player player) {
+    player.getInventory().setItem(slot, null);
+  }
+
+  @Override
   public void onGameEnd(Player player) {
     if (!player.isOp()) return;
     giveItem(player);

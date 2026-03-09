@@ -55,6 +55,7 @@ public class StartPhase extends AbstractPhase {
     for (Player player : PlayItem.getObservingPlayers()) {
       player.setGameMode(GameMode.SPECTATOR);
       player.getInventory().clear();
+      plugin.getGameWorld().teleportPlayerToGame(player);
     }
   }
 

@@ -96,7 +96,7 @@ public class GameWorld extends AbstractWorld {
   public void initPlayer(Player player) {
     player.teleport(this.worldManager.getSpawnLocation().clone().add(0, 5, 0));
 
-    if (currentPhase instanceof StartPhase) {
+    if (currentPhase instanceof StartPhase && PlayItem.playerIsPlaying(player)) {
       player.setGameMode(GameMode.ADVENTURE);
     } else {
       player.setGameMode(GameMode.SPECTATOR);
