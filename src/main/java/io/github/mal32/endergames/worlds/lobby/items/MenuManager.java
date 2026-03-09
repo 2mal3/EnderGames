@@ -2,10 +2,11 @@ package io.github.mal32.endergames.worlds.lobby.items;
 
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.worlds.lobby.LobbyWorld;
+import io.github.mal32.endergames.services.PlayerInWorld;
+import io.github.mal32.endergames.services.PlayerState;
 import java.util.HashMap;
 import java.util.List;
-import org.bukkit.Bukkit;
+import java.util.function.Consumer;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,10 +23,14 @@ public class MenuManager extends AbstractModule {
 
   public MenuManager(EnderGames plugin) {
     super(plugin);
-    enable();
+    this.enable();
 
     var rawItems =
-        List.of(new KitSelector(plugin), new OperatorStartItem(plugin), new SpectatorItem(plugin));
+        List.of(
+            new KitSelector(plugin),
+            new OperatorStartItem(plugin),
+            new SpectatorItem(plugin),
+            new PlayItem(plugin));
     for (MenuItem item : rawItems) {
       items.put(item.getKey(), item);
     }
@@ -39,14 +44,44 @@ public class MenuManager extends AbstractModule {
     }
   }
 
-  public void onGameEnd() {
-    for (Player player : Bukkit.getOnlinePlayers()) {
-      if (LobbyWorld.playerIsInLobbyWorld(player)) {
-        for (MenuItem item : items.values()) {
-          item.onGameEnd(player);
-        }
-      }
+  private void forEachLobbyPlayer(Consumer<Player> action) {
+    for (Player player : PlayerInWorld.LOBBY.all()) {
+      action.accept(player);
     }
+  }
+
+  public void onGameStart(Player player) {
+    for (MenuItem item : items.values()) {
+      item.onGameStart(player);
+    }
+  }
+
+  public void onGameStart() {
+    for (Player player : PlayerState.SKIP.all()) {
+      onGameStart(player);
+    }
+  }
+
+  public void onGameEnd(Player player) {
+    for (MenuItem item : items.values()) {
+      item.onGameEnd(player);
+    }
+  }
+
+  public void onGameEnd() {
+    forEachLobbyPlayer(this::onGameEnd);
+  }
+
+  public void onGameStartAbort() {
+    for (MenuItem item : items.values()) {
+      item.onGameStartAbort();
+    }
+    forEachLobbyPlayer(
+        player -> {
+          for (MenuItem item : items.values()) {
+            item.onGameStartAbort(player);
+          }
+        });
   }
 
   private boolean isMenuItem(ItemStack item) {
@@ -57,7 +92,7 @@ public class MenuManager extends AbstractModule {
   @EventHandler
   private void onPlayerInteract(PlayerInteractEvent event) {
     var player = event.getPlayer();
-    if (!LobbyWorld.playerIsInLobbyWorld(player)) return;
+    if (!PlayerInWorld.LOBBY.is(player)) return;
 
     ItemStack item = event.getItem();
     if (!isMenuItem(item)) return;
@@ -70,7 +105,7 @@ public class MenuManager extends AbstractModule {
   @EventHandler
   private void onInventoryClick(InventoryClickEvent event) {
     if (!(event.getWhoClicked() instanceof Player player)) return;
-    if (!LobbyWorld.playerIsInLobbyWorld(player)) return;
+    if (!PlayerInWorld.LOBBY.is(player)) return;
 
     ItemStack item = event.getCurrentItem();
     if (!isMenuItem(item)) return;
@@ -80,7 +115,7 @@ public class MenuManager extends AbstractModule {
 
   @EventHandler
   private void onPlayerDropItem(PlayerDropItemEvent event) {
-    if (!LobbyWorld.playerIsInLobbyWorld(event.getPlayer())) return;
+    if (!PlayerInWorld.LOBBY.is(event.getPlayer())) return;
 
     ItemStack item = event.getItemDrop().getItemStack();
     if (!isMenuItem(item)) return;
@@ -90,7 +125,7 @@ public class MenuManager extends AbstractModule {
 
   @EventHandler
   public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent event) {
-    if (!LobbyWorld.playerIsInLobbyWorld(event.getPlayer())) return;
+    if (!PlayerInWorld.LOBBY.is(event.getPlayer())) return;
 
     ItemStack item = event.getOffHandItem();
     if (!isMenuItem(item)) return;

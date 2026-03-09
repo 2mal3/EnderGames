@@ -2,6 +2,9 @@ package io.github.mal32.endergames.worlds.lobby;
 
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.kits.AbstractKit;
+import io.github.mal32.endergames.services.PlayerInWorld;
+import io.github.mal32.endergames.services.PlayerState;
 import io.github.mal32.endergames.worlds.AbstractWorld;
 import io.github.mal32.endergames.worlds.lobby.items.MenuManager;
 import java.util.List;
@@ -41,6 +44,7 @@ public class LobbyWorld extends AbstractWorld {
     this.pmanager = new ParkourManager(plugin);
     this.menuManager = new MenuManager(this.plugin);
 
+    assert lobbyWorld != null;
     lobbyWorld.setSpawnLocation(spawnLocation);
     lobbyWorld.setGameRule(GameRules.RESPAWN_RADIUS, 6);
     lobbyWorld.setGameRule(GameRules.ADVANCE_TIME, false);
@@ -59,12 +63,8 @@ public class LobbyWorld extends AbstractWorld {
     lobbyWorld.getChunkAt(0, 0).setForceLoaded(true); // ensure item frames for map wall are loaded
   }
 
-  public static boolean playerIsInLobbyWorld(Player player) {
-    var world =
-        player
-            .getPersistentDataContainer()
-            .get(EnderGames.playerWorldKey, PersistentDataType.STRING);
-    return Objects.equals(world, "lobby");
+  public MenuManager getMenuManager() {
+    return this.menuManager;
   }
 
   private void tryUpdatingLobby() {
@@ -88,6 +88,7 @@ public class LobbyWorld extends AbstractWorld {
     StructureManager manager = Bukkit.getServer().getStructureManager();
     Structure structure = manager.loadStructure(new NamespacedKey("enga", "lobby"));
 
+    assert structure != null;
     Location location =
         spawnLocation
             .clone()
@@ -111,9 +112,7 @@ public class LobbyWorld extends AbstractWorld {
   }
 
   public void teleportPlayerToLobby(Player player) {
-    player
-        .getPersistentDataContainer()
-        .set(EnderGames.playerWorldKey, PersistentDataType.STRING, "lobby");
+    PlayerInWorld.LOBBY.set(player);
     initPlayer(player);
   }
 
@@ -121,7 +120,15 @@ public class LobbyWorld extends AbstractWorld {
   public void initPlayer(Player player) {
     player.getInventory().clear();
 
+    PlayerState.init(player);
+
     menuManager.initPlayer(player);
+
+    if (this.plugin.getGameWorld().isGameRunning()) {
+      menuManager.onGameStart(player);
+    } else {
+      menuManager.onGameEnd();
+    }
 
     player.setGameMode(GameMode.ADVENTURE);
 
@@ -138,21 +145,21 @@ public class LobbyWorld extends AbstractWorld {
 
     player.teleport(spawnLocation.clone().add(0, 10, 0));
 
-    var kitKey = new NamespacedKey(plugin, "kit");
-    String currentKit = player.getPersistentDataContainer().get(kitKey, PersistentDataType.STRING);
+    String currentKit =
+        player
+            .getPersistentDataContainer()
+            .get(AbstractKit.kitStorageKey, PersistentDataType.STRING);
     if (currentKit == null || currentKit.isEmpty()) {
-      player.getPersistentDataContainer().set(kitKey, PersistentDataType.STRING, "lumberjack");
+      player
+          .getPersistentDataContainer()
+          .set(AbstractKit.kitStorageKey, PersistentDataType.STRING, "lumberjack");
     }
-  }
-
-  public void onGameEnd() {
-    menuManager.onGameEnd();
   }
 
   @EventHandler
   public void onPlayerDamage(EntityDamageEvent event) {
     if (!(event.getEntity() instanceof Player player)) return;
-    if (!playerIsInLobbyWorld(player)) return;
+    if (!PlayerInWorld.LOBBY.is(player)) return;
     if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) return;
 
     event.setCancelled(true);
@@ -161,7 +168,7 @@ public class LobbyWorld extends AbstractWorld {
   @EventHandler
   public void onFieldTrample(EntityChangeBlockEvent event) {
     if (!(event.getEntity() instanceof Player player)) return;
-    if (!playerIsInLobbyWorld(player)) return;
+    if (!PlayerInWorld.LOBBY.is(player)) return;
 
     if (event.getBlock().getType() != Material.FARMLAND) return;
 
@@ -209,7 +216,7 @@ public class LobbyWorld extends AbstractWorld {
   @EventHandler
   public void onInventoryDrag(InventoryDragEvent event) {
     ItemStack item = event.getOldCursor();
-    if (item != null && (pmanager.isResetItem(item) || pmanager.isCancelItem(item))) {
+    if (pmanager.isResetItem(item) || pmanager.isCancelItem(item)) {
       event.setCancelled(true);
     }
   }

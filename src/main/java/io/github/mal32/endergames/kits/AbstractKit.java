@@ -40,8 +40,9 @@ public abstract class AbstractKit extends AbstractModule {
         new Lucker(plugin),
         new Rewind(plugin),
         new Voodoo(plugin),
-        new ForestSpirit(plugin),
-        new Spectator(plugin));
+        new ForestSpirit(plugin) // ,
+        //        new Spectator(plugin)
+        );
   }
 
   protected static ItemStack enchantItem(ItemStack item, Enchantment enchantment, int level) {

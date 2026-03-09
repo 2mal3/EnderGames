@@ -566,8 +566,7 @@ public class ForestSpirit extends AbstractKit {
   private boolean isDesertLikeBiome(Biome biome) {
     String key = biome.getKey().value().toUpperCase(Locale.ROOT);
     if (key.contains("DESERT")) return true;
-    if (key.contains("BADLANDS")) return true;
-    return false;
+    return key.contains("BADLANDS");
   }
 
   /** Places a dead bush at the player's feet in desert-like biomes, if terrain allows it. */
@@ -1614,8 +1613,8 @@ public class ForestSpirit extends AbstractKit {
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;
-      if (!(o instanceof BlockKey other)) return false;
-      return x == other.x && y == other.y && z == other.z && worldId.equals(other.worldId);
+      if (!(o instanceof BlockKey(UUID id, int x1, int y1, int z1))) return false;
+      return x == x1 && y == y1 && z == z1 && worldId.equals(id);
     }
   }
 }
