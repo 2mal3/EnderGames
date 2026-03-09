@@ -2,13 +2,13 @@ package io.github.mal32.endergames;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
+import org.bukkit.Statistic;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -17,14 +17,11 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 
 public class KDScoreboard implements Listener {
-  private final NamespacedKey DEATH_COUNT;
-  private final NamespacedKey KILL_COUNT;
   private final Objective objective;
+  private final EnderGames plugin;
 
   public KDScoreboard(EnderGames plugin) {
-
-    DEATH_COUNT = new NamespacedKey(plugin, "deathCount");
-    KILL_COUNT = new NamespacedKey(plugin, "killCount");
+    this.plugin = plugin;
 
     ScoreboardManager manager = plugin.getServer().getScoreboardManager();
     Scoreboard board = manager.getMainScoreboard();
@@ -43,23 +40,9 @@ public class KDScoreboard implements Listener {
     var player = event.getEntity();
     var killer = player.getKiller();
 
-    var deathCount =
-        player
-            .getPersistentDataContainer()
-            .getOrDefault(DEATH_COUNT, PersistentDataType.INTEGER, 0);
-    player
-        .getPersistentDataContainer()
-        .set(DEATH_COUNT, PersistentDataType.INTEGER, deathCount + 1);
     updateScoreboard(player);
 
     if (killer != null) {
-      var killCount =
-          killer
-              .getPersistentDataContainer()
-              .getOrDefault(KILL_COUNT, PersistentDataType.INTEGER, 0);
-      killer
-          .getPersistentDataContainer()
-          .set(KILL_COUNT, PersistentDataType.INTEGER, killCount + 1);
       updateScoreboard(killer);
     }
   }
@@ -71,12 +54,8 @@ public class KDScoreboard implements Listener {
   }
 
   private void updateScoreboard(Player player) {
-    var deathCount =
-        player
-            .getPersistentDataContainer()
-            .getOrDefault(DEATH_COUNT, PersistentDataType.INTEGER, 0);
-    var killCount =
-        player.getPersistentDataContainer().getOrDefault(KILL_COUNT, PersistentDataType.INTEGER, 0);
+    int deathCount = player.getStatistic(Statistic.DEATHS);
+    int killCount = player.getStatistic(Statistic.KILL_ENTITY, EntityType.PLAYER);
 
     double score;
     if (deathCount == 0) {
