@@ -3,6 +3,7 @@ package io.github.mal32.endergames.worlds.lobby.items;
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.services.PlayerInWorld;
+import io.github.mal32.endergames.services.PlayerState;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
@@ -56,7 +57,9 @@ public class MenuManager extends AbstractModule {
   }
 
   public void onGameStart() {
-    forEachLobbyPlayer(this::onGameStart);
+    for (Player player : PlayerState.SKIP.all()) {
+      onGameStart(player);
+    }
   }
 
   public void onGameEnd(Player player) {
