@@ -12,7 +12,9 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
+import org.bukkit.advancement.Advancement;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -72,11 +74,7 @@ class KitSelector extends MenuItem implements Listener {
     Player player = event.getPlayer();
 
     player.playSound(player, Sound.BLOCK_CHEST_OPEN, 1, 1);
-    String selectedKit =
-        player
-            .getPersistentDataContainer()
-            .get(AbstractKit.kitStorageKey, PersistentDataType.STRING);
-    KitInventory kiInv = new KitInventory(plugin, availableKits, selectedKit);
+    KitInventory kiInv = new KitInventory(plugin, availableKits, player);
     player.openInventory(kiInv.getInventory());
   }
 
@@ -97,6 +95,15 @@ class KitSelector extends MenuItem implements Listener {
 
     String nameText = LegacyComponentSerializer.legacySection().serialize(displayName);
     String kitName = nameText.length() > 2 ? nameText.substring(2).toLowerCase() : "";
+
+    NamespacedKey advancementKey = new NamespacedKey("enga", kitName);
+    if (!playerHasAdvancement(plugin, player, advancementKey)) {
+      player.sendMessage(
+          Component.text("Unlock the matching advancement to use that kit.")
+              .color(NamedTextColor.RED));
+      player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+      return;
+    }
 
     AbstractKit kit =
         availableKits.stream()
@@ -127,17 +134,28 @@ class KitSelector extends MenuItem implements Listener {
     if (!(event.getInventory().getHolder() instanceof KitInventory)) return;
     event.setCancelled(true);
   }
+
+  public static boolean playerHasAdvancement(EnderGames plugin, Player player, NamespacedKey key) {
+    Advancement kitAdvancement = Bukkit.getAdvancement(key);
+    if (kitAdvancement == null) {
+      return true;
+    }
+    return player.getAdvancementProgress(kitAdvancement).isDone();
+  }
 }
 
 class KitInventory implements InventoryHolder {
   private final List<AbstractKit> availableKits;
   private final Inventory inventory;
   public String selectedKitName;
+  private final Player player;
+  private final EnderGames plugin;
 
-  public KitInventory(EnderGames plugin, List<AbstractKit> availableKits, String selectedKitName) {
+  public KitInventory(EnderGames plugin, List<AbstractKit> availableKits, Player player) {
     this.availableKits = availableKits;
-    this.selectedKitName = selectedKitName;
     this.inventory = plugin.getServer().createInventory(this, 27, Component.text("Select Kit"));
+    this.plugin = plugin;
+    this.player = player;
 
     updateKitItems();
   }
@@ -255,6 +273,17 @@ class KitInventory implements InventoryHolder {
               Component.text("███ Hard")
                   .color(NamedTextColor.RED)
                   .decoration(TextDecoration.ITALIC, false));
+    }
+
+    // Unlocked state
+    NamespacedKey advancementKey =
+        new NamespacedKey("enga", kitDescription.name().toLowerCase().replace(" ", "_"));
+    if (!KitSelector.playerHasAdvancement(plugin, player, advancementKey)) {
+      lore.add(Component.text(""));
+      lore.add(
+          Component.text("Locked")
+              .color(NamedTextColor.RED)
+              .decoration(TextDecoration.ITALIC, false));
     }
 
     return lore;
