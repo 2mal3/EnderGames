@@ -207,6 +207,8 @@ class KitInventory implements InventoryHolder {
       meta.displayName(abstractKitItem.name());
       meta.lore(abstractKitItem.lore());
 
+      meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "kit_name"), PersistentDataType.STRING, type.name());
+
       kitItem.setItemMeta(meta);
 
       // Hightlight the selected kit with a glow effect
