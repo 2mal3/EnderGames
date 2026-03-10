@@ -10,6 +10,7 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.Levelled;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -71,7 +72,7 @@ public class Dolphin extends AbstractKit {
     var player = event.getPlayer();
     if (!playerCanUseThisKit(player)) return;
 
-    // Only care when the player is in or at water
+    // Only care when the player is in or at water/kelp/waterlogged source
     if (!playerIsInWater(player)) return;
 
     var from = event.getFrom();
@@ -114,17 +115,20 @@ public class Dolphin extends AbstractKit {
     // Check the block at the player's feet position.
     Block feetBlock = player.getLocation().getBlock();
 
-    switch (feetBlock.getType()) {
-      case WATER:
-      case BUBBLE_COLUMN:
-        return true;
-      default:
-        break;
+    // Direct source water (full block)
+    if (feetBlock.getType() == Material.WATER
+        && feetBlock.getBlockData() instanceof Levelled levelled) {
+      if (levelled.getLevel() == 0) return true;
     }
 
-    var data = feetBlock.getBlockData();
-    if (data instanceof Waterlogged waterlogged) {
-      return waterlogged.isWaterlogged();
+    // Waterlogged blocks (e.g. stairs, slabs) at feet or below
+    if (feetBlock.getBlockData() instanceof Waterlogged wl && wl.isWaterlogged()) {
+      return true;
+    }
+
+    // Bubble columns: treat them as valid water for dolphin jumping
+    if (feetBlock.getType() == Material.BUBBLE_COLUMN) {
+      return true;
     }
 
     return false;
