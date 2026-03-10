@@ -114,7 +114,8 @@ public class Knight extends AbstractKit {
     // check if the player is the rightfull owner
     // using .equals here since the paperapi doesnt garantee the same entity instance for the same
     // entity
-    if ((mounts.get(player.getUniqueId()).equals(horse))) return;
+    Horse playerHorse = mounts.get(player.getUniqueId());
+    if (playerHorse != null && playerHorse.equals(horse)) return;
 
     horse
         .getLocation()
