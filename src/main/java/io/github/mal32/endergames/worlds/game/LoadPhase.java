@@ -22,11 +22,11 @@ import org.bukkit.util.BlockVector;
 public class LoadPhase extends AbstractPhase {
   private final int MAP_SIZE = 600;
   private final Queue<Queue<Location>> chunkLinesToLoad = new LinkedList<>();
+  private final BukkitTask chunkGenTask;
   private volatile boolean mapGenRunning = true;
   private Color[][] currentMatrix = new Color[MAP_SIZE][MAP_SIZE];
   private double targetChunksPerTick = 1.0;
   private double accumulatedChunkGens = 0.0;
-  private final BukkitTask chunkGenTask;
 
   public LoadPhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);

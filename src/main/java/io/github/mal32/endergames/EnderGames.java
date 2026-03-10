@@ -3,7 +3,6 @@ package io.github.mal32.endergames;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
-import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.kits.KitRegistry;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import io.github.mal32.endergames.worlds.lobby.LobbyWorld;

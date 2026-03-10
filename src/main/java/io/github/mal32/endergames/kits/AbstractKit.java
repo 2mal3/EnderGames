@@ -5,8 +5,6 @@ import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.services.KitType;
 import io.github.mal32.endergames.worlds.game.GameWorld;
-import java.util.List;
-import java.util.Objects;
 import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -14,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 public abstract class AbstractKit extends AbstractModule {
   public static final NamespacedKey kitStorageKey = new NamespacedKey("endergames", "kit");

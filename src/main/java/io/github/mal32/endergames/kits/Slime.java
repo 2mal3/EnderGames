@@ -2,9 +2,8 @@ package io.github.mal32.endergames.kits;
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import io.github.mal32.endergames.EnderGames;
-import java.util.Random;
-
 import io.github.mal32.endergames.services.KitType;
+import java.util.Random;
 import org.bukkit.*;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.EntityType;

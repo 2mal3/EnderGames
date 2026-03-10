@@ -3,11 +3,10 @@ package io.github.mal32.endergames.worlds.lobby.items;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.kits.KitDescription;
-import java.util.ArrayList;
-import java.util.List;
-
 import io.github.mal32.endergames.kits.KitRegistry;
 import io.github.mal32.endergames.services.KitType;
+import java.util.ArrayList;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -32,8 +31,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
-
-import javax.naming.Name;
 
 class KitSelector extends MenuItem implements Listener {
 
@@ -107,7 +104,8 @@ class KitSelector extends MenuItem implements Listener {
     String nameText = LegacyComponentSerializer.legacySection().serialize(displayName);
     String kitName = nameText.length() > 2 ? nameText.substring(2).toLowerCase() : "";
 
-    NamespacedKey advancementKey = new NamespacedKey("enga", kitName.replace(" ", "_"));    //TODO: use kit_name
+    NamespacedKey advancementKey =
+        new NamespacedKey("enga", kitName.replace(" ", "_")); // TODO: use kit_name
     if (!playerHasAdvancement(plugin, player, advancementKey)) {
       player.sendMessage(
           Component.text("Unlock the matching advancement to use that kit.")
@@ -116,7 +114,11 @@ class KitSelector extends MenuItem implements Listener {
       return;
     }
 
-    String rawKit = clickedItem.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(plugin, "kit_name"), PersistentDataType.STRING);
+    String rawKit =
+        clickedItem
+            .getItemMeta()
+            .getPersistentDataContainer()
+            .get(new NamespacedKey(plugin, "kit_name"), PersistentDataType.STRING);
     try {
       KitType type = KitType.valueOf(rawKit);
       type.set(player);
@@ -207,7 +209,8 @@ class KitInventory implements InventoryHolder {
               .color(NamedTextColor.GOLD)
               .decoration(TextDecoration.ITALIC, false));
       meta.lore(getKitLore(kitDescription));
-      meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "kit_name"), PersistentDataType.STRING, type.name());
+      meta.getPersistentDataContainer()
+          .set(new NamespacedKey(plugin, "kit_name"), PersistentDataType.STRING, type.name());
 
       kitItem.setItemMeta(meta);
 

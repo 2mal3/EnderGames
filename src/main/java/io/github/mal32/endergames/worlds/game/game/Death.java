@@ -3,7 +3,6 @@ package io.github.mal32.endergames.worlds.game.game;
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.kits.KitRegistry;
 import io.github.mal32.endergames.services.KitType;
 import io.github.mal32.endergames.services.PlayerInWorld;
@@ -28,7 +27,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.persistence.PersistentDataType;
 
 /**
  * Strategy for handling player deaths: Use the normal player death event and don't cancel it to

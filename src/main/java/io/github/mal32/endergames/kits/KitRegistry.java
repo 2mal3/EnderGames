@@ -2,7 +2,6 @@ package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.services.KitType;
-
 import java.util.EnumMap;
 import java.util.Map;
 

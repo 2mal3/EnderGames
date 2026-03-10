@@ -1,11 +1,10 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.KitType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
-import io.github.mal32.endergames.services.KitType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
