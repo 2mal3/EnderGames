@@ -3,7 +3,7 @@ package io.github.mal32.endergames.kits;
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.phases.PhaseController;
+import io.github.mal32.endergames.game.phases.PhaseController;
 import io.github.mal32.endergames.services.KitType;
 import org.bukkit.Color;
 import org.bukkit.NamespacedKey;

@@ -3,14 +3,13 @@ package io.github.mal32.endergames;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
+import io.github.mal32.endergames.game.phases.PhaseController;
 import io.github.mal32.endergames.kits.KitRegistry;
-import io.github.mal32.endergames.minigames.MiniGameController;
-import io.github.mal32.endergames.minigames.PakourGame;
-import io.github.mal32.endergames.phases.PhaseController;
-import io.github.mal32.endergames.worlds.WorldManager;
-import io.github.mal32.endergames.worlds.lobby.MapManager;
-import io.github.mal32.endergames.worlds.lobby.PlayerDifficulty;
-import io.github.mal32.endergames.worlds.lobby.items.MenuManager;
+import io.github.mal32.endergames.lobby.MapManager;
+import io.github.mal32.endergames.lobby.PlayerDifficulty;
+import io.github.mal32.endergames.lobby.items.MenuManager;
+import io.github.mal32.endergames.lobby.minigames.MiniGameController;
+import io.github.mal32.endergames.lobby.minigames.parkour.ParkourGame;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -65,7 +64,7 @@ public class EnderGames extends JavaPlugin {
     this.worldManager = new WorldManager(this);
     this.phaseController = new PhaseController(this, worldManager.getGameWorld());
     this.miniGameController = new MiniGameController(this);
-    miniGameController.register(new PakourGame(this));
+    miniGameController.register(new ParkourGame(this));
 
     // TODO: move?
     this.menuManager = new MenuManager(this);

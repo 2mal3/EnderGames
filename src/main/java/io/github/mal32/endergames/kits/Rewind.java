@@ -1,7 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.phases.PhaseController;
+import io.github.mal32.endergames.game.phases.PhaseController;
 import io.github.mal32.endergames.services.KitType;
 import java.util.*;
 import net.kyori.adventure.text.Component;
