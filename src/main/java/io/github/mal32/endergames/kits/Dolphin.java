@@ -1,10 +1,10 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.KitType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import io.github.mal32.endergames.services.KitType;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -43,9 +43,6 @@ public class Dolphin extends AbstractKit {
     player.addPotionEffect(
         new PotionEffect(
             PotionEffectType.CONDUIT_POWER, PotionEffect.INFINITE_DURATION, 0, true, false));
-    //  player.addPotionEffect(
-    //      new PotionEffect(
-    //          PotionEffectType.DOLPHINS_GRACE, PotionEffect.INFINITE_DURATION, 0, true, false));
 
   }
 
