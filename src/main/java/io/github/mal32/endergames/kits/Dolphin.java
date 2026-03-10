@@ -23,7 +23,7 @@ import java.util.UUID;
 public class Dolphin extends AbstractKit {
   private static final double MIN_VERTICAL_JUMP_SPEED = 1.0;
   private static final double MAX_VERTICAL_JUMP_SPEED = 2.0;
-  private static final double HORIZONTAL_JUMP_SPEED = 1.5;
+  private static final double HORIZONTAL_JUMP_SPEED = 1.4;
   private static final long WATER_JUMP_COOLDOWN_MS = 500;
 
   private final Map<UUID, Long> lastWaterJump = new HashMap<>();
@@ -80,7 +80,7 @@ public class Dolphin extends AbstractKit {
 
     // Detect that the player started to move upwards (simulating a jump press)
     double dy = to.getY() - from.getY();
-    if (dy <= 0.01) return;
+    if (dy <= 0.001) return;
 
     // Cooldown so we don't trigger every tick while rising
     long now = System.currentTimeMillis();
