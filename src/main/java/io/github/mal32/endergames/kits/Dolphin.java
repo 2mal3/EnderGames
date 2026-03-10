@@ -136,7 +136,7 @@ public class Dolphin extends AbstractKit {
     return new KitDescription(
         Material.TROPICAL_FISH,
         "Dolphin",
-        "Has permanent Conduit Power and Dolphins Grace. Swimming gives Fish.",
+        "Has Dolphins Grace and can jump through the water. Swimming gives Fish.",
         "Water Bucket, Blue Leather Boots",
         Difficulty.MEDIUM);
   }
