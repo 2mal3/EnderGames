@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kits;
 
+import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import io.github.mal32.endergames.EnderGames;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -9,17 +10,23 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public class Dolphin extends AbstractKit {
-  private static final double VERTICAL_JUMP_SPEED = 1;
-  private static final double HORIZONTAL_JUMP_SPEED = 2;
+  private static final double MIN_VERTICAL_JUMP_SPEED = 1.0;
+  private static final double MAX_VERTICAL_JUMP_SPEED = 2.0;
+  private static final double HORIZONTAL_JUMP_SPEED = 1.5;
+  private static final long WATER_JUMP_COOLDOWN_MS = 500;
+
+  private final Map<UUID, Long> lastWaterJump = new HashMap<>();
 
   public Dolphin(EnderGames plugin) {
     super(plugin);
@@ -40,8 +47,6 @@ public class Dolphin extends AbstractKit {
     //      new PotionEffect(
     //          PotionEffectType.DOLPHINS_GRACE, PotionEffect.INFINITE_DURATION, 0, true, false));
 
-    player.setAllowFlight(
-        false); // unnecessary but just to be safe, we only allow flight when in water
   }
 
   @EventHandler
@@ -61,22 +66,28 @@ public class Dolphin extends AbstractKit {
         "loot give " + player.getName() + " loot minecraft:gameplay/fishing/fish");
   }
 
-  // Dolphin Jump While in water
+  // Dolphin jump while in water, triggered by moving upwards in water
   @EventHandler
-  public void onPlayerToggleFlight(PlayerToggleFlightEvent event) {
-    System.console()
-        .printf("Player %s toggled flight (event triggered)\n", event.getPlayer().getName());
+  public void OnPlayerMove(PlayerMoveEvent event) {
     var player = event.getPlayer();
     if (!playerCanUseThisKit(player)) return;
 
-    // Only allow the special jump if the player's feet are in water
+    // Only care when the player is in or at water
     if (!playerIsInWater(player)) return;
 
-    event.setCancelled(true);
-    player.setFlying(false);
+    var from = event.getFrom();
+    var to = event.getTo();
 
-    // Temporarily disable flight; it will be re-enabled only when back in water.
-    player.setAllowFlight(false);
+    // Detect that the player started to move upwards (simulating a jump press)
+    double dy = to.getY() - from.getY();
+    if (dy <= 0.01) return;
+
+    // Cooldown so we don't trigger every tick while rising
+    long now = System.currentTimeMillis();
+    UUID id = player.getUniqueId();
+    long last = lastWaterJump.getOrDefault(id, 0L);
+    if (now - last < WATER_JUMP_COOLDOWN_MS) return;
+    lastWaterJump.put(id, now);
 
     // The actual jump, reduced by slowness
     int slownessLevel = 0;
@@ -84,35 +95,20 @@ public class Dolphin extends AbstractKit {
     if (slowEffect != null) {
       slownessLevel = slowEffect.getAmplifier() + 1;
     }
+
+    // Randomized vertical speed between MIN_VERTICAL_JUMP_SPEED and MAX_VERTICAL_JUMP_SPEED
+    double rawVertical =
+        MIN_VERTICAL_JUMP_SPEED
+            + Math.random() * (MAX_VERTICAL_JUMP_SPEED - MIN_VERTICAL_JUMP_SPEED);
+
     double horizontalMultiplier = HORIZONTAL_JUMP_SPEED * (1 - 0.30 * slownessLevel);
-    double verticalMultiplier = VERTICAL_JUMP_SPEED * (1 - 0.30 * slownessLevel);
+    double verticalMultiplier = rawVertical * (1 - 0.30 * slownessLevel);
     Vector jump =
         player.getLocation().getDirection().multiply(horizontalMultiplier).setY(verticalMultiplier);
     player.setVelocity(jump);
 
-    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 1, 1);
-  }
-
-  @EventHandler(priority = EventPriority.MONITOR)
-  public void onPlayerMoveForFlight(PlayerMoveEvent event) {
-    if (!event.hasChangedBlock()) return;
-    var player = event.getPlayer();
-    if (!playerCanUseThisKit(player)) return;
-
-    // Efficiently gate flight: only when in water and not standing on solid ground.
-    boolean inWater = playerIsInWater(player);
-    if (!inWater) {
-      // Outside water, never allow flight to avoid normal flying.
-      if (player.getAllowFlight()) {
-        player.setAllowFlight(false);
-      }
-      return;
-    }
-
-    // In water: allow flight so the player can trigger the dolphin jump.
-    if (!player.getAllowFlight()) {
-      player.setAllowFlight(true);
-    }
+    // Wither shoot sound on dolphin jump
+    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 0.2f, 0.2f);
   }
 
   private boolean playerIsInWater(Player player) {
