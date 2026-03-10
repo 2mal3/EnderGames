@@ -37,11 +37,6 @@ class OperatorStartItem extends MenuItem {
   }
 
   @Override
-  public void onGameStart(Player player) {
-    player.getInventory().setItem(slot, null);
-  }
-
-  @Override
   public void onGameEnd(Player player) {
     if (!player.isOp()) return;
     giveItem(player);
@@ -79,7 +74,7 @@ class OperatorStartItem extends MenuItem {
             .runTaskLater(
                 this.plugin,
                 () -> {
-                  this.plugin.getGameWorld().startGame();
+                  this.plugin.getPhaseController().start();
                   this.startGameTask = null;
                   this.state = "start";
                 },

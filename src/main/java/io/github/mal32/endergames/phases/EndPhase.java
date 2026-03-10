@@ -1,14 +1,13 @@
-package io.github.mal32.endergames.worlds.game;
+package io.github.mal32.endergames.phases;
 
 import io.github.mal32.endergames.EnderGames;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 
 public class EndPhase extends AbstractPhase {
-  public EndPhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
-    super(plugin, manager, spawnLocation);
+  public EndPhase(EnderGames plugin, PhaseController controller) {
+    super(plugin, controller);
 
     Bukkit.getServer()
         .sendMessage(
@@ -16,6 +15,11 @@ public class EndPhase extends AbstractPhase {
                 .color(NamedTextColor.YELLOW)); // TODO: Lobby not new Game
 
     int endTimeSeconds = EnderGames.isInDebugMode() ? 5 : 30;
-    Bukkit.getScheduler().runTaskLater(plugin, manager::nextPhase, 20 * endTimeSeconds);
+    Bukkit.getScheduler().runTaskLater(plugin, controller::next, 20 * endTimeSeconds);
+  }
+
+  @Override
+  public AbstractPhase nextPhase() {
+    return new LoadPhase(plugin, controller);
   }
 }

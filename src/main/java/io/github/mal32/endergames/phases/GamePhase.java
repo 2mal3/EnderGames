@@ -1,12 +1,11 @@
-package io.github.mal32.endergames.worlds.game.game;
+package io.github.mal32.endergames.phases;
 
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.kits.KitRegistry;
 import io.github.mal32.endergames.services.KitType;
-import io.github.mal32.endergames.worlds.game.AbstractPhase;
-import io.github.mal32.endergames.worlds.game.GameWorld;
+import io.github.mal32.endergames.worlds.game.game.*;
 import java.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -35,9 +34,10 @@ import org.bukkit.util.Vector;
 public class GamePhase extends AbstractPhase {
   private final List<AbstractModule> modules;
 
-  public GamePhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
-    super(plugin, manager, spawnLocation);
+  public GamePhase(EnderGames plugin, PhaseController controller) {
+    super(plugin, controller);
 
+    final Location spawnLocation = controller.getGameWorld().getSpawnLocation();
     this.modules =
         List.of(
             new EnchanterManager(plugin, spawnLocation),
@@ -51,7 +51,7 @@ public class GamePhase extends AbstractPhase {
             new SpeedObsidianManager(plugin, spawnLocation),
             new FightDetection(plugin),
             new PotionEffectsStacking(plugin),
-            new Death(plugin, manager));
+            new Death(plugin, controller));
 
     List<NamespacedKey> allRecipeKeys = new ArrayList<>();
     Iterator<Recipe> it = Bukkit.recipeIterator();
@@ -62,7 +62,7 @@ public class GamePhase extends AbstractPhase {
       }
     }
 
-    for (Player player : GameWorld.getPlayersInGame()) {
+    for (Player player : PhaseController.getPlayersInGame()) {
       player.setGameMode(GameMode.SURVIVAL);
 
       player.discoverRecipes(allRecipeKeys);
@@ -103,7 +103,13 @@ public class GamePhase extends AbstractPhase {
     }
   }
 
+  @Override
+  public AbstractPhase nextPhase() {
+    return new EndPhase(plugin, controller);
+  }
+
   private void removeSpawnPlatform() {
+    final Location spawnLocation = controller.getGameWorld().getSpawnLocation();
     for (int x = spawnLocation.getBlockX() - 20; x <= spawnLocation.getBlockX() + 20; x++) {
       for (int z = spawnLocation.getBlockZ() - 20; z <= spawnLocation.getBlockZ() + 20; z++) {
         for (int y = spawnLocation.getBlockY() - 5; y <= spawnLocation.getBlockY() + 5; y++) {
@@ -129,7 +135,7 @@ public class GamePhase extends AbstractPhase {
     Bukkit.getScheduler()
         .runTaskLater(plugin, protectionTimeBar::removeAll, 20 * protectionTimeDurationSeconds);
 
-    for (Player player : GameWorld.getPlayersInGame()) {
+    for (Player player : PhaseController.getPlayersInGame()) {
       protectionTimeBar.addPlayer(player); // TODO: disable when leaving?
 
       player.addPotionEffect(
@@ -152,7 +158,7 @@ public class GamePhase extends AbstractPhase {
 
   @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
   private void onPlayerPlaceTNT(BlockPlaceEvent event) {
-    if (!GameWorld.playerIsInGame(event.getPlayer())) return;
+    if (!PhaseController.playerIsInGame(event.getPlayer())) return;
     if (event.getBlock().getType() != Material.TNT) return;
 
     if (event.getPlayer().isSneaking()) return;
@@ -174,7 +180,7 @@ public class GamePhase extends AbstractPhase {
     Player player = event.getPlayer();
 
     if (event.getAction() != Action.RIGHT_CLICK_AIR) return;
-    if (!GameWorld.playerIsInGame(player)) return;
+    if (!PhaseController.playerIsInGame(player)) return;
 
     ItemStack item = event.getItem();
     if (item == null
@@ -196,7 +202,7 @@ public class GamePhase extends AbstractPhase {
   @EventHandler
   public void onFurnacePlace(BlockPlaceEvent event) {
     var player = event.getPlayer();
-    if (!GameWorld.playerIsInGame(player)) return;
+    if (!PhaseController.playerIsInGame(player)) return;
 
     var block = event.getBlock();
     if (block.getType() != Material.FURNACE
@@ -210,7 +216,7 @@ public class GamePhase extends AbstractPhase {
   @EventHandler
   private void onPlayerTeleportIntoWorldBoarder(PlayerTeleportEvent event) {
     if (event.getCause() != TeleportCause.ENDER_PEARL) return;
-    if (!GameWorld.playerIsInGame(event.getPlayer())) return;
+    if (!PhaseController.playerIsInGame(event.getPlayer())) return;
 
     Location toLocation = event.getTo();
     var worldBoarder = toLocation.getWorld().getWorldBorder();

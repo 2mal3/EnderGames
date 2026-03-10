@@ -3,8 +3,8 @@ package io.github.mal32.endergames.kits;
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.phases.PhaseController;
 import io.github.mal32.endergames.services.KitType;
-import io.github.mal32.endergames.worlds.game.GameWorld;
 import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -37,7 +37,7 @@ public abstract class AbstractKit extends AbstractModule {
   }
 
   protected boolean playerCanUseThisKit(Player player) {
-    return GameWorld.playerIsInGame(player) && KitType.get(player).equals(this.type);
+    return PhaseController.playerIsInGame(player) && KitType.get(player).equals(this.type);
   }
 
   public abstract void initPlayer(Player player);

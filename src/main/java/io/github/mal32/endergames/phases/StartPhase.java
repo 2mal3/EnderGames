@@ -1,4 +1,4 @@
-package io.github.mal32.endergames.worlds.game;
+package io.github.mal32.endergames.phases;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
@@ -21,9 +21,8 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.BlockVector;
 
 public class StartPhase extends AbstractPhase {
-  public StartPhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
-    super(plugin, manager, spawnLocation);
-    World world = spawnLocation.getWorld();
+  public StartPhase(EnderGames plugin, PhaseController controller) {
+    super(plugin, controller);
 
     for (Player player : PlayerState.PLAYING.all()) {
       PlayerInWorld.GAME.set(player);
@@ -36,8 +35,14 @@ public class StartPhase extends AbstractPhase {
     Bukkit.getScheduler().runTaskLater(plugin, this::showPlayersKitInfo, 20);
     Bukkit.getScheduler().runTaskLater(plugin, this::runCountdown, 25);
 
+    final World world = controller.getGameWorld().getWorld();
     world.setTime(0);
     world.getWorldBorder().setSize(600);
+  }
+
+  @Override
+  public AbstractPhase nextPhase() {
+    return new GamePhase(plugin, controller);
   }
 
   public void distributePlayers() {
@@ -57,7 +62,7 @@ public class StartPhase extends AbstractPhase {
     for (Player player : PlayerState.SPECTATING.all()) {
       player.setGameMode(GameMode.SPECTATOR);
       player.getInventory().clear();
-      plugin.getGameWorld().teleportPlayerToGame(player);
+      controller.getGameWorld().initPlayer(player);
     }
   }
 
@@ -95,7 +100,7 @@ public class StartPhase extends AbstractPhase {
   public void disable() {
     super.disable();
 
-    for (Player player : GameWorld.getPlayersInGame()) {
+    for (Player player : PhaseController.getPlayersInGame()) {
       player.clearActivePotionEffects();
     }
   }
@@ -114,7 +119,7 @@ public class StartPhase extends AbstractPhase {
       scheduler.runTaskLater(
           plugin,
           () -> {
-            for (Player player : GameWorld.getPlayersInGame()) {
+            for (Player player : PhaseController.getPlayersInGame()) {
               showTitleToPlayerWithSound(
                   player,
                   Component.text(titleTime + "").color(NamedTextColor.YELLOW),
@@ -128,7 +133,7 @@ public class StartPhase extends AbstractPhase {
     scheduler.runTaskLater(
         plugin,
         () -> {
-          for (Player player : GameWorld.getPlayersInGame()) {
+          for (Player player : PhaseController.getPlayersInGame()) {
             showTitleToPlayerWithSound(
                 player,
                 Component.text("Start").color(NamedTextColor.GOLD),
@@ -136,7 +141,7 @@ public class StartPhase extends AbstractPhase {
           }
         },
         totalCountdownTimeSeconds * 20);
-    scheduler.runTaskLater(plugin, manager::nextPhase, totalCountdownTimeSeconds * 20);
+    scheduler.runTaskLater(plugin, controller::next, totalCountdownTimeSeconds * 20);
   }
 
   private void showTitleToPlayerWithSound(Player player, Component text, Sound sound) {
@@ -156,15 +161,14 @@ public class StartPhase extends AbstractPhase {
     int offsetIndex = (playerIndex * offsets.size()) / totalPlayers;
     BlockVector offset = offsets.get(offsetIndex);
 
-    World world = spawnLocation.getWorld();
+    final World world = controller.getGameWorld().getWorld();
+    final Location spawnLocation = controller.getGameWorld().getSpawnLocation();
     double x = spawnLocation.getX() + offset.getX();
     double y = spawnLocation.getY();
     double z = spawnLocation.getZ() + offset.getZ();
     var dest = new Location(world, x, y + 1.5, z);
 
-    double dx = spawnLocation.getX() - x;
-    double dz = spawnLocation.getZ() - z;
-    float yaw = (float) (Math.toDegrees(Math.atan2(dz, dx)) - 90.0);
+    float yaw = (float) (Math.toDegrees(Math.atan2(offset.getZ(), offset.getX())) - 90.0);
     dest.setYaw(yaw);
     dest.setPitch(0);
 
@@ -203,7 +207,7 @@ public class StartPhase extends AbstractPhase {
 
   @EventHandler
   private void onPlayerMove(PlayerMoveEvent event) {
-    if (!GameWorld.playerIsInGame(event.getPlayer())) return;
+    if (!PhaseController.playerIsInGame(event.getPlayer())) return;
 
     Location startLocation = event.getFrom();
     event.getTo().setX(startLocation.getX());

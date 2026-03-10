@@ -1,7 +1,7 @@
 package io.github.mal32.endergames.worlds.game.game;
 
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.worlds.game.GameWorld;
+import io.github.mal32.endergames.phases.PhaseController;
 import java.util.*;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -24,7 +24,7 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
 
   private static double getMinHorizontalDistanceToPlayers(Location chunkBlockLocation) {
     double minHorizontalDistance = Double.MAX_VALUE;
-    for (Player player : GameWorld.getPlayersInGame()) {
+    for (Player player : PhaseController.getPlayersInGame()) {
       var playerLocation = player.getLocation();
       double horizontalDistance =
           Math.sqrt(

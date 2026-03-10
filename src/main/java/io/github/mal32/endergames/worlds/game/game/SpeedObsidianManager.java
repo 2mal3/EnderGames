@@ -1,7 +1,7 @@
 package io.github.mal32.endergames.worlds.game.game;
 
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.worlds.game.GameWorld;
+import io.github.mal32.endergames.phases.PhaseController;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -36,7 +36,7 @@ public class SpeedObsidianManager extends AbstractTeleportingBlockManager<SpeedO
     if (event.getClickedBlock() == null || event.getClickedBlock().getType() != Material.OBSIDIAN)
       return;
     var player = event.getPlayer();
-    if (!GameWorld.playerIsInGame(player)) return;
+    if (!PhaseController.playerIsInGame(player)) return;
 
     var block = event.getClickedBlock();
     SpeedObsidian speedObsidian = getBlockAtLocation(block.getLocation());

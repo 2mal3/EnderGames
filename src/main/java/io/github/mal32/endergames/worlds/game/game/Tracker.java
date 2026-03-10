@@ -2,7 +2,7 @@ package io.github.mal32.endergames.worlds.game.game;
 
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.worlds.game.GameWorld;
+import io.github.mal32.endergames.phases.PhaseController;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
 import net.kyori.adventure.text.Component;
@@ -25,7 +25,7 @@ public class Tracker extends AbstractModule {
   @EventHandler
   private void onTrackerClick(PlayerInteractEvent event) {
     Player player = event.getPlayer();
-    if (!GameWorld.playerIsInGame(player)) return;
+    if (!PhaseController.playerIsInGame(player)) return;
     ItemStack item = event.getItem();
     if (item == null || item.getType() != Material.COMPASS) {
       return;
@@ -56,7 +56,7 @@ public class Tracker extends AbstractModule {
     double nearestDistance = Double.MAX_VALUE;
     Location executorLocation = executor.getLocation();
 
-    for (Player other : GameWorld.getPlayersInGame()) {
+    for (Player other : PhaseController.getPlayersInGame()) {
       if (other.equals(executor)) continue;
 
       if (other.hasPotionEffect(PotionEffectType.INVISIBILITY)) continue;

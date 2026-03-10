@@ -1,8 +1,8 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.phases.PhaseController;
 import io.github.mal32.endergames.services.KitType;
-import io.github.mal32.endergames.worlds.game.GameWorld;
 import java.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -75,7 +75,7 @@ public class Rewind extends AbstractKit {
   }
 
   private void tick() {
-    for (Player player : GameWorld.getPlayersInGame()) {
+    for (Player player : PhaseController.getPlayersInGame()) {
       if (!playerCanUseThisKit(player)) continue;
 
       var playerState =

@@ -36,7 +36,10 @@ public class PlayerDifficulty extends AbstractModule {
   public PlayerDifficulty(EnderGames plugin) {
     super(plugin);
 
-    display = (TextDisplay) getEntityByTag(LobbyWorld.lobbyWorld, "difficulty_selector");
+    display =
+        (TextDisplay)
+            getEntityByTag(
+                plugin.getWorldManager().getLobbyWorld().getWorld(), "difficulty_selector");
     if (display == null) {
       plugin.getComponentLogger().warn("Could not find difficulty selector text display");
     }

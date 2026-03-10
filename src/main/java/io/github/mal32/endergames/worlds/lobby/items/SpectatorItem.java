@@ -31,14 +31,9 @@ class SpectatorItem extends MenuItem {
   }
 
   @Override
-  public void onGameEnd(Player player) {
-    player.getInventory().setItem(slot, null);
-  }
-
-  @Override
   public void playerInteract(PlayerInteractEvent event) {
     Player player = event.getPlayer();
     player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
-    plugin.getGameWorld().teleportPlayerToGame(player);
+    plugin.getWorldManager().sendToGame(player);
   }
 }

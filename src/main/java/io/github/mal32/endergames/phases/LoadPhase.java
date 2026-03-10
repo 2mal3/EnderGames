@@ -1,9 +1,10 @@
-package io.github.mal32.endergames.worlds.game;
+package io.github.mal32.endergames.phases;
 
 import static io.github.mal32.endergames.worlds.game.GaussBlur.gaussianBlurAndDim;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.MapPixel;
+import io.github.mal32.endergames.services.PlayerInWorld;
 import java.awt.Color;
 import java.util.*;
 import org.bukkit.*;
@@ -14,6 +15,7 @@ import org.bukkit.block.data.Waterlogged;
 import org.bukkit.block.data.type.Leaves;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
@@ -28,8 +30,15 @@ public class LoadPhase extends AbstractPhase {
   private double targetChunksPerTick = 1.0;
   private double accumulatedChunkGens = 0.0;
 
-  public LoadPhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
-    super(plugin, manager, spawnLocation);
+  public LoadPhase(EnderGames plugin, PhaseController controller) {
+    super(plugin, controller);
+
+    for (Player p : PlayerInWorld.GAME.all()) {
+      plugin.getWorldManager().sendToLobby(p);
+    }
+
+    controller.getGameWorld().findAndSaveNewSpawnLocation();
+    plugin.getComponentLogger().info("Spawn location: {}", controller.getGameWorld().getSpawnLocation());
 
     placeSpawnPlatform();
     scheduleChunkLists();
@@ -105,23 +114,29 @@ public class LoadPhase extends AbstractPhase {
     return Math.max(0, Math.min(255, v));
   }
 
+  @Override
+  public AbstractPhase nextPhase() {
+    return new StartPhase(plugin, controller);
+  }
+
   private void placeSpawnPlatform() {
     StructureManager manager = Bukkit.getServer().getStructureManager();
     Structure structure = manager.loadStructure(new NamespacedKey("enga", "spawn_platform"));
     if (structure == null) return;
 
     BlockVector structureSize = structure.getSize();
-    double posX = this.spawnLocation.getBlockX() - (structureSize.getBlockX() / 2.0) + 1;
-    double posZ = this.spawnLocation.getBlockZ() - (structureSize.getBlockZ() / 2.0);
+    Location spawnLocation = controller.getGameWorld().getSpawnLocation();
+    double posX = spawnLocation.getBlockX() - (structureSize.getBlockX() / 2.0) + 1;
+    double posZ = spawnLocation.getBlockZ() - (structureSize.getBlockZ() / 2.0);
     Location location =
-        new Location(this.spawnLocation.getWorld(), posX, this.spawnLocation.getY(), posZ);
+        new Location(spawnLocation.getWorld(), posX, spawnLocation.getY(), posZ);
     structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
   }
 
   private void scheduleChunkLists() {
     final float LOAD_RADIUS_CHUNKS_FLOAT = ((float) MAP_SIZE) / 16; // 37.5
     final int LOAD_RADIUS_CHUNKS_INT = (int) Math.floor((LOAD_RADIUS_CHUNKS_FLOAT)); // 37
-    var location = spawnLocation.clone();
+    var location = controller.getGameWorld().getSpawnLocation();
 
     Queue<Location> currentChunkList;
     int invert = 1;
@@ -234,7 +249,7 @@ public class LoadPhase extends AbstractPhase {
     Chunk chunk = location.getWorld().getChunkAt(location);
     chunk.load(true);
 
-    Location spawnHorizontalLocation = spawnLocation.clone();
+    Location spawnHorizontalLocation = controller.getGameWorld().getSpawnLocation();
     spawnHorizontalLocation.setY(0);
 
     ArrayList<MapPixel> pixelBatch = new ArrayList<>();
@@ -242,15 +257,13 @@ public class LoadPhase extends AbstractPhase {
     for (int x = 0; x < 16; x++) {
       for (int y = 0; y < 16; y++) {
         Location blockHorizontalLocation = location.clone().add(x, 0, y);
-        Block highestBlock = spawnLocation.getWorld().getHighestBlockAt(blockHorizontalLocation);
+        Block highestBlock = controller.getGameWorld().getWorld().getHighestBlockAt(blockHorizontalLocation);
 
         Block highestNonWaterBlock = highestBlock;
 
         if (isIgnoredWaterBlock(highestBlock)) {
           highestNonWaterBlock =
-              spawnLocation
-                  .getWorld()
-                  .getHighestBlockAt(blockHorizontalLocation, HeightMap.OCEAN_FLOOR);
+              controller.getGameWorld().getWorld().getHighestBlockAt(blockHorizontalLocation, HeightMap.OCEAN_FLOOR);
         }
 
         int waterBlocksAbove = highestBlock.getY() - highestNonWaterBlock.getY();

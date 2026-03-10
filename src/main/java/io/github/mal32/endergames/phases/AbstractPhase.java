@@ -1,23 +1,21 @@
-package io.github.mal32.endergames.worlds.game;
+package io.github.mal32.endergames.phases;
 
 import io.github.mal32.endergames.EnderGames;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
 public abstract class AbstractPhase implements Listener {
   protected final EnderGames plugin;
-  protected final Location spawnLocation;
-  protected final GameWorld manager;
+  protected final PhaseController controller;
 
-  public AbstractPhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
+  public AbstractPhase(EnderGames plugin, PhaseController controller) {
     this.plugin = plugin;
-    this.spawnLocation = spawnLocation;
-    this.manager = manager;
-
+    this.controller = controller;
     Bukkit.getPluginManager().registerEvents(this, plugin);
   }
+
+  public abstract AbstractPhase nextPhase();
 
   public void disable() {
     HandlerList.unregisterAll(this);

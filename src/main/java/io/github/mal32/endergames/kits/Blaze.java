@@ -2,8 +2,8 @@ package io.github.mal32.endergames.kits;
 
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.phases.PhaseController;
 import io.github.mal32.endergames.services.KitType;
-import io.github.mal32.endergames.worlds.game.GameWorld;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.UUID;
@@ -147,7 +147,7 @@ public class Blaze extends AbstractKit {
         .advancementKey("enga:blaze")
         .condition(
             (player, event) -> {
-              if (!GameWorld.playerIsInGame(player)) return false;
+              if (!PhaseController.playerIsInGame(player)) return false;
               if (event.getItem() == null) return false;
               return event.getItem().getType() == Material.FLINT_AND_STEEL;
             })

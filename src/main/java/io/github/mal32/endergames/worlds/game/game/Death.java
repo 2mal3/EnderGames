@@ -4,9 +4,9 @@ import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.KitRegistry;
+import io.github.mal32.endergames.phases.PhaseController;
 import io.github.mal32.endergames.services.KitType;
 import io.github.mal32.endergames.services.PlayerInWorld;
-import io.github.mal32.endergames.worlds.game.GameWorld;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Objects;
@@ -35,16 +35,16 @@ import org.bukkit.event.player.PlayerQuitEvent;
  * spectator mode and teleport him back.
  */
 public class Death extends AbstractModule {
-  private final GameWorld manager;
+  private final PhaseController controller;
   private final HashMap<UUID, Location> deathLocations = new HashMap<>();
   // Immediate respawn doesn't actually respawn the player immediately
   private final int IMMEDIATE_RESPAWN_TICKS = 10;
   private boolean gameEnded = false;
 
-  public Death(EnderGames plugin, GameWorld manager) {
+  public Death(EnderGames plugin, PhaseController controller) {
     super(plugin);
 
-    this.manager = manager;
+    this.controller = controller;
 
     World world = Objects.requireNonNull(Bukkit.getWorld("world"));
     world.setGameRule(GameRules.IMMEDIATE_RESPAWN, true);
@@ -105,7 +105,7 @@ public class Death extends AbstractModule {
   @EventHandler
   private void onPlayerDeath(PlayerDeathEvent event) {
     Player player = event.getPlayer();
-    if (!GameWorld.playerIsInGame(player)) return;
+    if (!PhaseController.playerIsInGame(player)) return;
     Location location = player.getLocation();
 
     event.setNewExp(0);
@@ -141,13 +141,13 @@ public class Death extends AbstractModule {
   @EventHandler
   private void onPlayerQuit(PlayerQuitEvent event) {
     Player player = event.getPlayer();
-    if (!GameWorld.playerIsInGame(player)) return;
+    if (!PhaseController.playerIsInGame(player)) return;
 
     player.setHealth(0);
   }
 
   private void checkAndGameEnd() {
-    Player[] survivalPlayers = GameWorld.getPlayersInGame();
+    Player[] survivalPlayers = PhaseController.getPlayersInGame();
     if (survivalPlayers.length > 1) return;
     // prevent re-triggering this when the final player gets killed to reset him
     if (gameEnded) return;
@@ -192,6 +192,6 @@ public class Death extends AbstractModule {
       player.showTitle(title);
     }
 
-    Bukkit.getScheduler().runTaskLater(plugin, manager::nextPhase, IMMEDIATE_RESPAWN_TICKS);
+    Bukkit.getScheduler().runTaskLater(plugin, controller::next, IMMEDIATE_RESPAWN_TICKS);
   }
 }
