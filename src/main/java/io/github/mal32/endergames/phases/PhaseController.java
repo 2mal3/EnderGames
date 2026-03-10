@@ -34,9 +34,8 @@ public class PhaseController {
   }
 
   public void start() {
-    if (!(current instanceof LoadPhase)) return;
-
-    if (PlayerState.PLAYING.all().length < 1) { // TODO: < 1 only in DEBUG?
+    if (!(current instanceof LoadPhase)
+        || PlayerState.PLAYING.all().length < 1) { // TODO: < 1 only in DEBUG?
       plugin.getMenuManager().onGameStartAbort();
       return;
     }
@@ -47,6 +46,11 @@ public class PhaseController {
   public void next() {
     current.disable();
     current = current.nextPhase();
+    if (current instanceof LoadPhase) {
+      for (Player p : PlayerInWorld.GAME.all()) {
+        plugin.getWorldManager().sendToLobby(p);
+      }
+    }
   }
 
   public GameWorld getGameWorld() {

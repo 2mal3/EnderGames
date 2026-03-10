@@ -76,6 +76,7 @@ public class LobbyWorld extends AbstractWorld{
 
     final MenuManager menuManager = plugin.getMenuManager();
     menuManager.initPlayer(player);
+    
     if (plugin.getPhaseController().isLoading()) {
       menuManager.onGameEnd(player);
     } else {

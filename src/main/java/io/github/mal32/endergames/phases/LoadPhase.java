@@ -4,7 +4,6 @@ import static io.github.mal32.endergames.worlds.game.GaussBlur.gaussianBlurAndDi
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.MapPixel;
-import io.github.mal32.endergames.services.PlayerInWorld;
 import java.awt.Color;
 import java.util.*;
 import org.bukkit.*;
@@ -15,7 +14,6 @@ import org.bukkit.block.data.Waterlogged;
 import org.bukkit.block.data.type.Leaves;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
@@ -33,11 +31,7 @@ public class LoadPhase extends AbstractPhase {
   public LoadPhase(EnderGames plugin, PhaseController controller) {
     super(plugin, controller);
 
-    for (Player p : PlayerInWorld.GAME.all()) {
-      plugin.getWorldManager().sendToLobby(p);
-    }
-
-    controller.getGameWorld().findAndSaveNewSpawnLocation();
+    controller.getGameWorld().findAndSaveNewSpawnLocation(); // TODO run scheduler?
     plugin.getComponentLogger().info("Spawn location: {}", controller.getGameWorld().getSpawnLocation());
 
     placeSpawnPlatform();

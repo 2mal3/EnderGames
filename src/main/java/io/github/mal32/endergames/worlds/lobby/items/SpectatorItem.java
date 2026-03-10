@@ -1,7 +1,9 @@
 package io.github.mal32.endergames.worlds.lobby.items;
 
 import io.github.mal32.endergames.EnderGames;
+import io.papermc.paper.persistence.PersistentDataContainerView;
 import java.util.Map;
+import java.util.Objects;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
@@ -9,6 +11,9 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.Nullable;
 
 class SpectatorItem extends MenuItem {
 
@@ -28,6 +33,18 @@ class SpectatorItem extends MenuItem {
   @Override
   public void onGameStart(Player player) {
     this.giveItem(player);
+  }
+
+  @Override
+  public void onGameEnd(Player player) {
+    @Nullable ItemStack item = player.getInventory().getItem(slot);
+    if (item == null) return;
+    PersistentDataContainerView pdc = item.getItemMeta().getPersistentDataContainer();
+    if (!pdc.has(new NamespacedKey(plugin, "menu"))
+        || !Objects.equals(
+            pdc.get(new NamespacedKey(plugin, "menu"), PersistentDataType.STRING), "spectate_game"))
+      return;
+    player.getInventory().clear(slot);
   }
 
   @Override
