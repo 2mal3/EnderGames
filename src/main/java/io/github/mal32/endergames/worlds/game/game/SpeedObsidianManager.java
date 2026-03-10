@@ -4,6 +4,9 @@ import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -41,17 +44,26 @@ public class SpeedObsidianManager extends AbstractTeleportingBlockManager<SpeedO
     var block = event.getClickedBlock();
     SpeedObsidian speedObsidian = getBlockAtLocation(block.getLocation());
     if (speedObsidian == null) return;
+    removeBlock(speedObsidian);
 
-    if (player.isInWater()) {
-      var dolphinGraceEffect =
-          new PotionEffect(PotionEffectType.DOLPHINS_GRACE, 20 * 10, 0, false, false, true);
-      PotionEffectsStacking.addPotionEffect(player, dolphinGraceEffect);
-    } else {
-      var speedEffect = new PotionEffect(PotionEffectType.SPEED, 20 * 20, 1, false, false, true);
-      PotionEffectsStacking.addPotionEffect(player, speedEffect);
+    giveSpeed(player);
+  }
+
+  private void giveSpeed(Player player) {
+    LivingEntity target = player;
+    Entity vehicle = player.getVehicle();
+    if (vehicle != null && vehicle instanceof LivingEntity) {
+      target = (LivingEntity) vehicle;
     }
 
-    removeBlock(speedObsidian);
+    if (target.isInWater()) {
+      var dolphinGraceEffect =
+          new PotionEffect(PotionEffectType.DOLPHINS_GRACE, 20 * 10, 0, false, false, true);
+      PotionEffectsStacking.addPotionEffect(target, dolphinGraceEffect);
+    } else {
+      var speedEffect = new PotionEffect(PotionEffectType.SPEED, 20 * 20, 1, false, false, true);
+      PotionEffectsStacking.addPotionEffect(target, speedEffect);
+    }
   }
 }
 
