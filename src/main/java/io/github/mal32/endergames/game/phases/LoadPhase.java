@@ -32,7 +32,9 @@ public class LoadPhase extends AbstractPhase {
     super(plugin, controller);
 
     controller.getGameWorld().findAndSaveNewSpawnLocation(); // TODO run scheduler?
-    plugin.getComponentLogger().info("Spawn location: {}", controller.getGameWorld().getSpawnLocation());
+    plugin
+        .getComponentLogger()
+        .info("Spawn location: {}", controller.getGameWorld().getSpawnLocation());
 
     placeSpawnPlatform();
     scheduleChunkLists();
@@ -122,8 +124,7 @@ public class LoadPhase extends AbstractPhase {
     Location spawnLocation = controller.getGameWorld().getSpawnLocation();
     double posX = spawnLocation.getBlockX() - (structureSize.getBlockX() / 2.0) + 1;
     double posZ = spawnLocation.getBlockZ() - (structureSize.getBlockZ() / 2.0);
-    Location location =
-        new Location(spawnLocation.getWorld(), posX, spawnLocation.getY(), posZ);
+    Location location = new Location(spawnLocation.getWorld(), posX, spawnLocation.getY(), posZ);
     structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
   }
 
@@ -255,13 +256,17 @@ public class LoadPhase extends AbstractPhase {
     for (int x = 0; x < 16; x++) {
       for (int y = 0; y < 16; y++) {
         Location blockHorizontalLocation = location.clone().add(x, 0, y);
-        Block highestBlock = controller.getGameWorld().getWorld().getHighestBlockAt(blockHorizontalLocation);
+        Block highestBlock =
+            controller.getGameWorld().getWorld().getHighestBlockAt(blockHorizontalLocation);
 
         Block highestNonWaterBlock = highestBlock;
 
         if (isIgnoredWaterBlock(highestBlock)) {
           highestNonWaterBlock =
-              controller.getGameWorld().getWorld().getHighestBlockAt(blockHorizontalLocation, HeightMap.OCEAN_FLOOR);
+              controller
+                  .getGameWorld()
+                  .getWorld()
+                  .getHighestBlockAt(blockHorizontalLocation, HeightMap.OCEAN_FLOOR);
         }
 
         int waterBlocksAbove = highestBlock.getY() - highestNonWaterBlock.getY();

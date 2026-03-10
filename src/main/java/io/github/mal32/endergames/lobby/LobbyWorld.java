@@ -77,7 +77,7 @@ public class LobbyWorld extends AbstractWorld {
 
     final MenuManager menuManager = plugin.getMenuManager();
     menuManager.initPlayer(player);
-    
+
     if (plugin.getPhaseController().isLoading()) {
       menuManager.onGameEnd(player);
     } else {
@@ -111,12 +111,12 @@ public class LobbyWorld extends AbstractWorld {
     final int currentLobbyVersion = 1;
 
     var placedLobbyVersion =
-        world.getPersistentDataContainer()
-            .get(placedLobbyVersionKey, PersistentDataType.INTEGER);
+        world.getPersistentDataContainer().get(placedLobbyVersionKey, PersistentDataType.INTEGER);
     if (placedLobbyVersion == null || placedLobbyVersion != currentLobbyVersion) {
       plugin.getComponentLogger().info("Loading lobby, this could take a few seconds ...");
       placeLobby();
-      world.getPersistentDataContainer()
+      world
+          .getPersistentDataContainer()
           .set(placedLobbyVersionKey, PersistentDataType.INTEGER, currentLobbyVersion);
     }
   }
