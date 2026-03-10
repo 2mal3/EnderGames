@@ -84,8 +84,12 @@ public class LoadPhase extends AbstractPhase {
 
   private void chunkGenWorker() {
     long[] tickTimes5Sec = Bukkit.getServer().getTickTimes();
-    long[] tickTimes1Sec = Arrays.copyOfRange(tickTimes5Sec, 95, tickTimes5Sec.length);
-    double averageTickTimeNanos = Arrays.stream(tickTimes1Sec).average().orElse(0);
+    if (tickTimes5Sec.length < 5) {
+      return;
+    }
+    long[] shortTickTimes =
+        Arrays.copyOfRange(tickTimes5Sec, tickTimes5Sec.length - 5, tickTimes5Sec.length);
+    double averageTickTimeNanos = Arrays.stream(shortTickTimes).average().orElse(0);
     double averageTickTime = averageTickTimeNanos / 1_000_000.0;
 
     if (averageTickTime > 35.0) {
