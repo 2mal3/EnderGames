@@ -21,8 +21,8 @@ import java.util.Map;
 import java.util.UUID;
 
 public class Dolphin extends AbstractKit {
-  private static final double MIN_VERTICAL_JUMP_SPEED = 1.0;
-  private static final double MAX_VERTICAL_JUMP_SPEED = 2.0;
+  private static final double MIN_VERTICAL_JUMP_SPEED = 1.2;
+  private static final double MAX_VERTICAL_JUMP_SPEED = 1.8;
   private static final double HORIZONTAL_JUMP_SPEED = 1.4;
   private static final long WATER_JUMP_COOLDOWN_MS = 500;
 
