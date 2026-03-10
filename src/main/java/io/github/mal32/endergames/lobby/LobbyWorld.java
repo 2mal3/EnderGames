@@ -4,6 +4,7 @@ import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.AbstractWorld;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.lobby.items.MenuManager;
+import io.github.mal32.endergames.lobby.minigames.EndlessParkour;
 import io.github.mal32.endergames.lobby.minigames.parkour.ParkourGame;
 import io.github.mal32.endergames.services.KitType;
 import io.github.mal32.endergames.services.PlayerInWorld;
@@ -28,7 +29,8 @@ import org.bukkit.structure.StructureManager;
 public class LobbyWorld extends AbstractWorld {
   private final World world;
   private final Location spawnLocation;
-  private final List<AbstractModule> modules = List.of(new ParkourGame(plugin));
+  private final List<AbstractModule> modules =
+      List.of(new ParkourGame(plugin), new EndlessParkour(plugin));
 
   public LobbyWorld(EnderGames plugin) {
     super(plugin);
