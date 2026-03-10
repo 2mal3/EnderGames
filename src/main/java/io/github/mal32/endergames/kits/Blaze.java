@@ -2,7 +2,8 @@ package io.github.mal32.endergames.kits;
 
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.worlds.game.GameWorld;
+import io.github.mal32.endergames.game.phases.PhaseController;
+import io.github.mal32.endergames.services.KitType;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.UUID;
@@ -29,7 +30,7 @@ public class Blaze extends AbstractKit {
   private final HashMap<UUID, LocalTime> burnTime = new HashMap<>();
 
   public Blaze(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.BLAZE);
   }
 
   @Override
@@ -146,7 +147,7 @@ public class Blaze extends AbstractKit {
         .advancementKey("enga:blaze")
         .condition(
             (player, event) -> {
-              if (!GameWorld.playerIsInGame(player)) return false;
+              if (!PhaseController.playerIsInGame(player)) return false;
               if (event.getItem() == null) return false;
               return event.getItem().getType() == Material.FLINT_AND_STEEL;
             })

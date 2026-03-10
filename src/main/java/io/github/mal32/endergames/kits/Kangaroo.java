@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.KitType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
@@ -22,7 +23,7 @@ public class Kangaroo extends AbstractKit {
   private static final double HORIZONTAL_JUMP_SPEED = 2;
 
   public Kangaroo(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.KANGAROO);
   }
 
   @Override

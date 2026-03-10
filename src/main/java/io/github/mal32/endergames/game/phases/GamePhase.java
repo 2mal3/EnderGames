@@ -1,0 +1,237 @@
+package io.github.mal32.endergames.game.phases;
+
+import io.github.mal32.endergames.AbstractModule;
+import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.game.game.*;
+import io.github.mal32.endergames.kits.AbstractKit;
+import io.github.mal32.endergames.kits.KitRegistry;
+import io.github.mal32.endergames.services.KitType;
+import java.util.*;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.Furnace;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
+
+public class GamePhase extends AbstractPhase {
+  private final List<AbstractModule> modules;
+
+  public GamePhase(EnderGames plugin, PhaseController controller) {
+    super(plugin, controller);
+
+    final Location spawnLocation = controller.getGameWorld().getSpawnLocation();
+    this.modules =
+        List.of(
+            new EnchanterManager(plugin, spawnLocation),
+            new EnderChestManager(plugin, spawnLocation),
+            new PlayerRegenerationManager(plugin),
+            new PlayerSwapManager(plugin),
+            new SwapperItem(plugin),
+            new SmithingTemplateManager(plugin),
+            new SpectatorParticles(plugin),
+            new Tracker(plugin),
+            new SpeedObsidianManager(plugin, spawnLocation),
+            new FightDetection(plugin),
+            new PotionEffectsStacking(plugin),
+            new Death(plugin, controller));
+
+    List<NamespacedKey> allRecipeKeys = new ArrayList<>();
+    Iterator<Recipe> it = Bukkit.recipeIterator();
+    while (it.hasNext()) {
+      org.bukkit.inventory.Recipe recipe = it.next();
+      if (recipe instanceof Keyed) {
+        allRecipeKeys.add(((Keyed) recipe).getKey());
+      }
+    }
+
+    for (Player player : PhaseController.getPlayersInGame()) {
+      playerInit(player, allRecipeKeys);
+    }
+
+    var worldBoarder = spawnLocation.getWorld().getWorldBorder();
+
+    worldBoarder.changeSize(50, 20 * 60 * 15);
+    // Make the world boarder less frustrating
+    worldBoarder.setWarningDistance(32);
+    worldBoarder.setWarningTimeTicks(60 * 20);
+    worldBoarder.setDamageBuffer(10);
+    worldBoarder.setDamageAmount(0.1);
+
+    int spawnPlatformRemoveDelaySeconds = EnderGames.isInDebugMode() ? 60 * 10 : 30;
+    plugin
+        .getServer()
+        .getScheduler()
+        .runTaskLater(plugin, this::removeSpawnPlatform, spawnPlatformRemoveDelaySeconds * 20);
+
+    initProtectionTime();
+
+    for (AbstractModule module : modules) {
+      module.enable();
+    }
+    for (AbstractKit kit : KitRegistry.getKits()) {
+      kit.enable();
+    }
+  }
+
+  private void playerInit(Player player, List<NamespacedKey> allRecipeKeys) {
+    player.setGameMode(GameMode.SURVIVAL);
+
+    player.discoverRecipes(allRecipeKeys);
+
+    final ItemStack trackerItem = new ItemStack(Material.COMPASS);
+    final ItemMeta trackerMeta = trackerItem.getItemMeta();
+    trackerMeta.itemName(Component.text("Tracker").color(NamedTextColor.AQUA));
+    trackerItem.setItemMeta(trackerMeta);
+    trackerItem.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
+    player.getInventory().addItem(trackerItem);
+
+    KitType kit = KitType.get(player);
+    KitRegistry.get(kit).initPlayer(player);
+  }
+
+  @Override
+  public AbstractPhase nextPhase() {
+    return new EndPhase(plugin, controller);
+  }
+
+  private void removeSpawnPlatform() {
+    final Location spawnLocation = controller.getGameWorld().getSpawnLocation();
+    for (int x = spawnLocation.getBlockX() - 20; x <= spawnLocation.getBlockX() + 20; x++) {
+      for (int z = spawnLocation.getBlockZ() - 20; z <= spawnLocation.getBlockZ() + 20; z++) {
+        for (int y = spawnLocation.getBlockY() - 5; y <= spawnLocation.getBlockY() + 5; y++) {
+          spawnLocation.getWorld().getBlockAt(x, y, z).setType(Material.AIR);
+        }
+      }
+    }
+  }
+
+  private void initProtectionTime() {
+    final int protectionTimeDurationSeconds = 60 * 3;
+
+    final BossBar protectionTimeBar =
+        Bukkit.createBossBar("Protection Time", BarColor.GREEN, BarStyle.SEGMENTED_6);
+    protectionTimeBar.setProgress(0.0);
+
+    for (int i = 0; i < protectionTimeDurationSeconds; i += 10) {
+      final double progress = 1 - ((double) i / protectionTimeDurationSeconds);
+      Bukkit.getScheduler()
+          .runTaskLater(plugin, () -> protectionTimeBar.setProgress(progress), i * 20L);
+    }
+
+    Bukkit.getScheduler()
+        .runTaskLater(plugin, protectionTimeBar::removeAll, 20 * protectionTimeDurationSeconds);
+
+    for (Player player : PhaseController.getPlayersInGame()) {
+      protectionTimeBar.addPlayer(player); // TODO: disable when leaving?
+
+      player.addPotionEffect(
+          new PotionEffect(
+              PotionEffectType.RESISTANCE, 20 * protectionTimeDurationSeconds, 4, true, false));
+    }
+  }
+
+  @Override
+  public void disable() {
+    super.disable();
+
+    for (AbstractModule module : modules) {
+      module.disable();
+    }
+    for (AbstractKit kit : KitRegistry.getKits()) {
+      kit.disable();
+    }
+  }
+
+  @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+  private void onPlayerPlaceTNT(BlockPlaceEvent event) {
+    if (!PhaseController.playerIsInGame(event.getPlayer())) return;
+    if (event.getBlock().getType() != Material.TNT) return;
+
+    if (event.getPlayer().isSneaking()) return;
+
+    Block block = event.getBlock();
+
+    block.setType(Material.AIR);
+
+    TNTPrimed tnt =
+        (TNTPrimed)
+            block
+                .getWorld()
+                .spawnEntity(block.getLocation().clone().add(0.5, 0, 0.5), EntityType.TNT);
+    tnt.setFuseTicks(30);
+  }
+
+  @EventHandler
+  public void onPlayerArrowClick(PlayerInteractEvent event) {
+    Player player = event.getPlayer();
+
+    if (event.getAction() != Action.RIGHT_CLICK_AIR) return;
+    if (!PhaseController.playerIsInGame(player)) return;
+
+    ItemStack item = event.getItem();
+    if (item == null
+        || (item.getType() != Material.ARROW && item.getType() != Material.SPECTRAL_ARROW)) return;
+
+    item.setAmount(item.getAmount() - 1);
+
+    final double speedMultiplier = 1.5;
+    Vector direction = player.getEyeLocation().getDirection();
+    Vector customVelocity = direction.normalize().multiply(speedMultiplier);
+
+    var arrowClass = item.getType() == Material.ARROW ? Arrow.class : SpectralArrow.class;
+
+    AbstractArrow arrow = event.getPlayer().launchProjectile(arrowClass, customVelocity);
+    arrow.setShooter(event.getPlayer());
+    arrow.setDamage(1);
+  }
+
+  @EventHandler
+  public void onFurnacePlace(BlockPlaceEvent event) {
+    var player = event.getPlayer();
+    if (!PhaseController.playerIsInGame(player)) return;
+
+    var block = event.getBlock();
+    if (block.getType() != Material.FURNACE
+        && block.getType() != Material.BLAST_FURNACE
+        && block.getType() != Material.SMOKER) return;
+    Furnace furnace = (Furnace) block.getState();
+    furnace.setCookSpeedMultiplier(4);
+    furnace.update();
+  }
+
+  @EventHandler
+  private void onPlayerTeleportIntoWorldBoarder(PlayerTeleportEvent event) {
+    if (event.getCause() != TeleportCause.ENDER_PEARL) return;
+    if (!PhaseController.playerIsInGame(event.getPlayer())) return;
+
+    Location toLocation = event.getTo();
+    var worldBoarder = toLocation.getWorld().getWorldBorder();
+    var xDiff = Math.abs(worldBoarder.getCenter().getX() - toLocation.getX()) + 1;
+    var zDiff = Math.abs(worldBoarder.getCenter().getZ() - toLocation.getZ()) + 1;
+    var worldBoarderRadius = worldBoarder.getSize() / 2;
+    if (!(xDiff >= worldBoarderRadius || zDiff >= worldBoarderRadius)) return;
+
+    int lowestBlockY =
+        toLocation.getWorld().getHighestBlockAt(toLocation).getLocation().add(0, 1, 0).getBlockY();
+    toLocation.setY(lowestBlockY);
+    event.setTo(toLocation);
+  }
+}

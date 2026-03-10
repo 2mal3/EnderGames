@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.KitType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,7 +30,7 @@ public class Cactus extends AbstractKit {
   private final HashMap<UUID, PlayerInventory> cactusPlayerInventory = new HashMap<>();
 
   public Cactus(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.CACTUS);
   }
 
   @Override

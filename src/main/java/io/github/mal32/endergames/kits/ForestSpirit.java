@@ -1,6 +1,8 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.services.PlayerInWorld;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import java.util.*;
@@ -60,7 +62,7 @@ public class ForestSpirit extends AbstractKit {
   private BukkitTask biomeAdaptTask;
 
   public ForestSpirit(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.FOREST_SPIRIT);
   }
 
   // ---------------------------------------------------------------------------
@@ -531,7 +533,7 @@ public class ForestSpirit extends AbstractKit {
   // ---------------------------------------------------------------------------
 
   private void tickStillnessAndRoots() {
-    for (Player player : plugin.getServer().getOnlinePlayers()) {
+    for (Player player : PlayerInWorld.GAME.all()) {
       if (!playerCanUseThisKit(player)) continue;
       if (player.isDead()) continue;
 
@@ -578,8 +580,7 @@ public class ForestSpirit extends AbstractKit {
   private boolean isDesertLikeBiome(Biome biome) {
     String key = biome.getKey().value().toUpperCase(Locale.ROOT);
     if (key.contains("DESERT")) return true;
-    if (key.contains("BADLANDS")) return true;
-    return false;
+    return key.contains("BADLANDS");
   }
 
   /** Places a dead bush at the player's feet in desert-like biomes, if terrain allows it. */
@@ -1624,8 +1625,8 @@ public class ForestSpirit extends AbstractKit {
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;
-      if (!(o instanceof BlockKey other)) return false;
-      return x == other.x && y == other.y && z == other.z && worldId.equals(other.worldId);
+      if (!(o instanceof BlockKey(UUID id, int x1, int y1, int z1))) return false;
+      return x == x1 && y == y1 && z == z1 && worldId.equals(id);
     }
   }
 }

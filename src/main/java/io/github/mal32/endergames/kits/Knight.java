@@ -1,9 +1,12 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.KitType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.HeightMap;
 import org.bukkit.Location;
@@ -15,6 +18,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityMountEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.ItemStack;
@@ -38,7 +42,7 @@ public class Knight extends AbstractKit {
   private BukkitTask horseTetherTask;
 
   public Knight(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.KNIGHT);
   }
 
   @Override
@@ -99,6 +103,30 @@ public class Knight extends AbstractKit {
   @EventHandler
   public void onPlayerDeath(PlayerDeathEvent event) {
     mounts.remove(event.getPlayer().getUniqueId());
+  }
+
+  @EventHandler
+  public void onPlayerMount(EntityMountEvent event) {
+    if (!(event.getEntity() instanceof Player player)) return;
+    if (!(event.getMount() instanceof Horse horse)) return;
+
+    // dont protect horses from non-knight players
+    if (!mounts.containsValue(horse)) return;
+    // check if the player is the rightfull owner
+    // using .equals here since the paperapi doesnt garantee the same entity instance for the same
+    // entity
+    Horse playerHorse = mounts.get(player.getUniqueId());
+    if (playerHorse != null && playerHorse.equals(horse)) return;
+
+    horse
+        .getLocation()
+        .getWorld()
+        .playSound(horse.getLocation(), Sound.ENTITY_HORSE_ANGRY, SoundCategory.NEUTRAL, 1, 1);
+    Component actionBarMessage =
+        Component.text("You are not noble enough to ride this steed!").color(NamedTextColor.RED);
+    player.sendActionBar(actionBarMessage);
+
+    event.setCancelled(true);
   }
 
   private void horseRespawn() {

@@ -3,23 +3,24 @@ package io.github.mal32.endergames;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
-import io.github.mal32.endergames.kits.AbstractKit;
-import io.github.mal32.endergames.worlds.game.GameWorld;
-import io.github.mal32.endergames.worlds.lobby.LobbyWorld;
-import io.github.mal32.endergames.worlds.lobby.MapManager;
+import io.github.mal32.endergames.game.phases.PhaseController;
+import io.github.mal32.endergames.kits.KitRegistry;
+import io.github.mal32.endergames.lobby.MapManager;
+import io.github.mal32.endergames.lobby.PlayerDifficulty;
+import io.github.mal32.endergames.lobby.items.MenuManager;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.ArrayList;
+import java.util.List;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class EnderGames extends JavaPlugin {
-  public static final NamespacedKey playerWorldKey = new NamespacedKey("endergames", "world");
   private final MapManager mapManager = new MapManager();
-  private GameWorld gameWorld;
-  private LobbyWorld lobbyWorld;
+  private WorldManager worldManager;
+  private PhaseController phaseController;
+  private MenuManager menuManager;
 
   public static boolean isInDebugMode() {
     String debugEnv = System.getenv("EG_DEBUG");
@@ -32,6 +33,22 @@ public class EnderGames extends JavaPlugin {
     mapManager.addToMapWall(changedMapPixels, forceFullUpdate);
   }
 
+  public WorldManager getWorldManager() {
+    return worldManager;
+  }
+
+  public PhaseController getPhaseController() {
+    return phaseController;
+  }
+
+  public MenuManager getMenuManager() {
+    return menuManager;
+  }
+
+  public void setMenuManager(MenuManager menuManager) {
+    this.menuManager = menuManager;
+  }
+
   @Override
   public void onEnable() {
     if (isInDebugMode()) {
@@ -41,8 +58,18 @@ public class EnderGames extends JavaPlugin {
       var metrics = new Metrics(this, PLUGIN_ID);
     }
 
-    gameWorld = new GameWorld(this);
-    lobbyWorld = new LobbyWorld(this);
+    this.worldManager = new WorldManager(this);
+    this.phaseController = new PhaseController(this, worldManager.getGameWorld());
+
+    // TODO: move?
+    this.menuManager = new MenuManager(this);
+    var modules = List.of(new PlayerDifficulty(this));
+    for (AbstractModule module : modules) {
+      module.enable();
+    }
+
+    KitRegistry.registerKits(this);
+
     KDScoreboard kdScoreboard = new KDScoreboard(this);
 
     this.getLifecycleManager()
@@ -55,17 +82,9 @@ public class EnderGames extends JavaPlugin {
 
   private void registerKitAdvancements() {
     AdvancementAPI advancementAPI = new AdvancementAPI(this);
-    for (var kit : AbstractKit.getKits(this)) {
+    for (var kit : KitRegistry.getKits()) {
       kit.registerAdvancement(advancementAPI);
     }
-  }
-
-  public GameWorld getGameWorld() {
-    return gameWorld;
-  }
-
-  public LobbyWorld getLobbyWorld() {
-    return lobbyWorld;
   }
 
   private LiteralCommandNode<CommandSourceStack> endergamesCommand() {
@@ -75,9 +94,14 @@ public class EnderGames extends JavaPlugin {
                 .requires(sender -> sender.getSender().isOp())
                 .executes(
                     ctx -> {
-                      gameWorld.startGame();
+                      phaseController.start();
                       return Command.SINGLE_SUCCESS;
                     }))
         .build();
+  }
+
+  @Override
+  public void onDisable() {
+    worldManager.disable();
   }
 }

@@ -2,6 +2,7 @@ package io.github.mal32.endergames.kits;
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.KitType;
 import java.util.Random;
 import org.bukkit.*;
 import org.bukkit.entity.EnderPearl;
@@ -22,7 +23,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class Slime extends AbstractKit {
   public Slime(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.SLIME);
   }
 
   @Override

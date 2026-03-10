@@ -1,7 +1,8 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.worlds.game.GameWorld;
+import io.github.mal32.endergames.game.phases.PhaseController;
+import io.github.mal32.endergames.services.KitType;
 import java.util.HashSet;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
@@ -27,7 +28,7 @@ public class Bomber extends AbstractKit {
   private final HashSet<String> mineLocations = new HashSet<>();
 
   public Bomber(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.BOMBER);
   }
 
   @Override
@@ -98,7 +99,7 @@ public class Bomber extends AbstractKit {
   @EventHandler
   private void onStepOnMine(PlayerMoveEvent event) {
     if (!event.hasChangedBlock()) return;
-    if (!GameWorld.playerIsInGame(event.getPlayer())) return;
+    if (!PhaseController.playerIsInGame(event.getPlayer())) return;
 
     var blockLocation = event.getTo().getBlock().getLocation();
     var key =

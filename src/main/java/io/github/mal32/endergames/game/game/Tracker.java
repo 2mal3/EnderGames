@@ -1,0 +1,72 @@
+package io.github.mal32.endergames.game.game;
+
+import io.github.mal32.endergames.AbstractModule;
+import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.game.phases.PhaseController;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.LodestoneTracker;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.Nullable;
+
+public class Tracker extends AbstractModule {
+  public Tracker(EnderGames plugin) {
+    super(plugin);
+  }
+
+  @EventHandler
+  private void onTrackerClick(PlayerInteractEvent event) {
+    Player player = event.getPlayer();
+    if (!PhaseController.playerIsInGame(player)) return;
+    ItemStack item = event.getItem();
+    if (item == null || item.getType() != Material.COMPASS) {
+      return;
+    }
+
+    Player nearestPlayer = getNearestValidPlayer(player);
+    if (nearestPlayer == null) return;
+
+    Location targetLocation = nearestPlayer.getLocation();
+    Location currentLocation = player.getLocation();
+    int distance = (int) currentLocation.distance(targetLocation);
+    Component actionBarMessage =
+        Component.text()
+            .append(Component.text("Tracking ", NamedTextColor.YELLOW))
+            .append(Component.text(nearestPlayer.getName(), NamedTextColor.GOLD))
+            .append(Component.text(" - ", NamedTextColor.YELLOW))
+            .append(Component.text(distance, NamedTextColor.GOLD))
+            .append(Component.text(" Blocks", NamedTextColor.YELLOW))
+            .build();
+    player.sendActionBar(actionBarMessage);
+    item.setData(
+        DataComponentTypes.LODESTONE_TRACKER,
+        LodestoneTracker.lodestoneTracker().tracked(false).location(targetLocation).build());
+  }
+
+  @Nullable
+  private Player getNearestValidPlayer(Player executor) {
+    Player nearest = null;
+    double nearestDistance = Double.MAX_VALUE;
+    Location executorLocation = executor.getLocation();
+
+    for (Player other : PhaseController.getPlayersInGame()) {
+      if (other.equals(executor)) continue;
+
+      if (other.hasPotionEffect(PotionEffectType.INVISIBILITY)) continue;
+
+      double distance = executorLocation.distance(other.getLocation());
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearest = other;
+      }
+    }
+    return nearest;
+  }
+}

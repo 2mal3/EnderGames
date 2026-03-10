@@ -3,9 +3,8 @@ package io.github.mal32.endergames.kits;
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.worlds.game.GameWorld;
-import java.util.List;
-import java.util.Objects;
+import io.github.mal32.endergames.game.phases.PhaseController;
+import io.github.mal32.endergames.services.KitType;
 import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -13,35 +12,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 public abstract class AbstractKit extends AbstractModule {
   public static final NamespacedKey kitStorageKey = new NamespacedKey("endergames", "kit");
+  private final KitType type;
 
-  public AbstractKit(EnderGames plugin) {
+  public AbstractKit(EnderGames plugin, KitType type) {
     super(plugin);
-  }
-
-  public static List<AbstractKit> getKits(EnderGames plugin) {
-    return List.of(
-        new Lumberjack(plugin),
-        new Cat(plugin),
-        new Cactus(plugin),
-        new Barbarian(plugin),
-        new Knight(plugin),
-        new Blaze(plugin),
-        new Slime(plugin),
-        new Dolphin(plugin),
-        new Mace(plugin),
-        new Bird(plugin),
-        new Bomber(plugin),
-        new Kangaroo(plugin),
-        new Enderman(plugin),
-        new Lucker(plugin),
-        new Rewind(plugin),
-        new Voodoo(plugin),
-        new ForestSpirit(plugin),
-        new Spectator(plugin));
+    this.type = type;
   }
 
   protected static ItemStack enchantItem(ItemStack item, Enchantment enchantment, int level) {
@@ -59,15 +37,7 @@ public abstract class AbstractKit extends AbstractModule {
   }
 
   protected boolean playerCanUseThisKit(Player player) {
-    var playerInGame = GameWorld.playerIsInGame(player);
-    var playerHasKit =
-        Objects.equals(
-            player
-                .getPersistentDataContainer()
-                .get(new NamespacedKey(plugin, "kit"), PersistentDataType.STRING),
-            getNameLowercase());
-
-    return playerHasKit && playerInGame;
+    return PhaseController.playerIsInGame(player) && KitType.get(player).equals(this.type);
   }
 
   public abstract void initPlayer(Player player);

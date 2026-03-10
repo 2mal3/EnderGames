@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.KitType;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import java.util.*;
@@ -43,7 +44,7 @@ public class Lucker extends AbstractKit {
   private final Random random = new Random();
 
   public Lucker(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.LUCKER);
   }
 
   @Override
