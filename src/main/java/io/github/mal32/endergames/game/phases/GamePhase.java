@@ -63,19 +63,7 @@ public class GamePhase extends AbstractPhase {
     }
 
     for (Player player : PhaseController.getPlayersInGame()) {
-      player.setGameMode(GameMode.SURVIVAL);
-
-      player.discoverRecipes(allRecipeKeys);
-
-      final ItemStack trackerItem = new ItemStack(Material.COMPASS);
-      final ItemMeta trackerMeta = trackerItem.getItemMeta();
-      trackerMeta.itemName(Component.text("Tracker").color(NamedTextColor.AQUA));
-      trackerItem.setItemMeta(trackerMeta);
-      trackerItem.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
-      player.getInventory().addItem(trackerItem);
-
-      KitType kit = KitType.get(player);
-      KitRegistry.get(kit).initPlayer(player);
+      playerInit(player, allRecipeKeys);
     }
 
     var worldBoarder = spawnLocation.getWorld().getWorldBorder();
@@ -101,6 +89,22 @@ public class GamePhase extends AbstractPhase {
     for (AbstractKit kit : KitRegistry.getKits()) {
       kit.enable();
     }
+  }
+
+  private void playerInit(Player player, List<NamespacedKey> allRecipeKeys) {
+    player.setGameMode(GameMode.SURVIVAL);
+
+    player.discoverRecipes(allRecipeKeys);
+
+    final ItemStack trackerItem = new ItemStack(Material.COMPASS);
+    final ItemMeta trackerMeta = trackerItem.getItemMeta();
+    trackerMeta.itemName(Component.text("Tracker").color(NamedTextColor.AQUA));
+    trackerItem.setItemMeta(trackerMeta);
+    trackerItem.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
+    player.getInventory().addItem(trackerItem);
+
+    KitType kit = KitType.get(player);
+    KitRegistry.get(kit).initPlayer(player);
   }
 
   @Override
