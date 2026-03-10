@@ -7,7 +7,6 @@ import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -40,9 +39,10 @@ public class Tracker extends AbstractModule {
     Component actionBarMessage =
         Component.text()
             .append(Component.text("Tracking ", NamedTextColor.YELLOW))
-            .append(Component.text(nearestPlayer.getName(), TextColor.fromHexString("#FFBA43")))
-            .append(Component.text(": ", NamedTextColor.YELLOW))
-            .append(Component.text(distance + " blocks", NamedTextColor.GREEN))
+            .append(Component.text(nearestPlayer.getName(), NamedTextColor.GOLD))
+            .append(Component.text(" - ", NamedTextColor.YELLOW))
+            .append(Component.text(distance, NamedTextColor.GOLD))
+            .append(Component.text(" Blocks", NamedTextColor.YELLOW))
             .build();
     player.sendActionBar(actionBarMessage);
     item.setData(
