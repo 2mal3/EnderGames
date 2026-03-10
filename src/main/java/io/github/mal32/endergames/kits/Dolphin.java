@@ -1,7 +1,9 @@
 package io.github.mal32.endergames.kits;
 
-import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import io.github.mal32.endergames.EnderGames;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -15,10 +17,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 public class Dolphin extends AbstractKit {
   private static final double MIN_VERTICAL_JUMP_SPEED = 1.2;
