@@ -43,7 +43,6 @@ public class Dolphin extends AbstractKit {
     player.addPotionEffect(
         new PotionEffect(
             PotionEffectType.CONDUIT_POWER, PotionEffect.INFINITE_DURATION, 0, true, false));
-
   }
 
   @EventHandler
