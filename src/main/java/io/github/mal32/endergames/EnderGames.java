@@ -4,6 +4,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.kits.AbstractKit;
+import io.github.mal32.endergames.kits.KitRegistry;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import io.github.mal32.endergames.worlds.lobby.LobbyWorld;
 import io.github.mal32.endergames.worlds.lobby.MapManager;
@@ -41,6 +42,8 @@ public class EnderGames extends JavaPlugin {
       var metrics = new Metrics(this, PLUGIN_ID);
     }
 
+    KitRegistry.registerKits(this);
+
     gameWorld = new GameWorld(this);
     lobbyWorld = new LobbyWorld(this);
     KDScoreboard kdScoreboard = new KDScoreboard(this);
@@ -55,7 +58,7 @@ public class EnderGames extends JavaPlugin {
 
   private void registerKitAdvancements() {
     AdvancementAPI advancementAPI = new AdvancementAPI(this);
-    for (var kit : AbstractKit.getKits(this)) {
+    for (var kit : KitRegistry.getKits()) {
       kit.registerAdvancement(advancementAPI);
     }
   }

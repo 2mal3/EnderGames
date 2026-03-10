@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.KitType;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import java.util.HashSet;
 import net.kyori.adventure.text.Component;
@@ -27,7 +28,7 @@ public class Bomber extends AbstractKit {
   private final HashSet<String> mineLocations = new HashSet<>();
 
   public Bomber(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.BOMBER);
   }
 
   @Override

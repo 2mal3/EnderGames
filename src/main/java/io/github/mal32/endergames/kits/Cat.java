@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.KitType;
 import io.github.mal32.endergames.worlds.game.game.PotionEffectsStacking;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.FoodProperties;
@@ -24,7 +25,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class Cat extends AbstractKit {
   public Cat(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.CAT);
   }
 
   @Override

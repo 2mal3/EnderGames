@@ -3,6 +3,7 @@ package io.github.mal32.endergames.worlds.lobby;
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
+import io.github.mal32.endergames.services.KitType;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import io.github.mal32.endergames.services.PlayerState;
 import io.github.mal32.endergames.worlds.AbstractWorld;
@@ -145,15 +146,7 @@ public class LobbyWorld extends AbstractWorld {
 
     player.teleport(spawnLocation.clone().add(0, 10, 0));
 
-    String currentKit =
-        player
-            .getPersistentDataContainer()
-            .get(AbstractKit.kitStorageKey, PersistentDataType.STRING);
-    if (currentKit == null || currentKit.isEmpty()) {
-      player
-          .getPersistentDataContainer()
-          .set(AbstractKit.kitStorageKey, PersistentDataType.STRING, "lumberjack");
-    }
+    KitType.init(player);
   }
 
   @EventHandler

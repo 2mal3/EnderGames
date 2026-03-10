@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.KitType;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -11,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 public class Bird extends AbstractKit {
 
   public Bird(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.BIRD);
   }
 
   @Override

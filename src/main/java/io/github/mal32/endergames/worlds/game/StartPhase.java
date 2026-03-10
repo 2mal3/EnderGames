@@ -3,6 +3,8 @@ package io.github.mal32.endergames.worlds.game;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.kits.KitDescription;
+import io.github.mal32.endergames.kits.KitRegistry;
+import io.github.mal32.endergames.services.KitType;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import io.github.mal32.endergames.services.PlayerState;
 import java.time.Duration;
@@ -62,39 +64,32 @@ public class StartPhase extends AbstractPhase {
   }
 
   private void showPlayersKitInfo() {
-    var kits = AbstractKit.getKits(plugin);
-
     for (Player player : PlayerState.PLAYING.all()) {
-      String playerKit =
-          player
-              .getPersistentDataContainer()
-              .get(new NamespacedKey(plugin, "kit"), PersistentDataType.STRING);
+      KitType playerKit = KitType.get(player);
+      AbstractKit kit = KitRegistry.get(playerKit);
 
-      for (AbstractKit kit : kits) {
-        if (!Objects.equals(kit.getNameLowercase(), playerKit)) continue;
-        KitDescription kitDescription = kit.getDescription();
+      KitDescription kitDescription = kit.getDescription();
 
-        Component nameMessage =
-            Component.text()
-                .append(Component.text("\nYou are playing as ", NamedTextColor.YELLOW))
-                .append(
-                    Component.text(kitDescription.name())
-                        .color(NamedTextColor.GOLD)
-                        .decorate(TextDecoration.BOLD))
-                .build();
-        Component abilitiesMessage =
-            Component.text()
-                .append(
-                    Component.text("\nAbilities\n")
-                        .color(NamedTextColor.GOLD)
-                        .decorate(TextDecoration.BOLD))
-                .append(
-                    Component.text(kitDescription.abilities() + "\n").color(NamedTextColor.YELLOW))
-                .build();
+      Component nameMessage =
+          Component.text()
+              .append(Component.text("\nYou are playing as ", NamedTextColor.YELLOW))
+              .append(
+                  Component.text(kitDescription.name())
+                      .color(NamedTextColor.GOLD)
+                      .decorate(TextDecoration.BOLD))
+              .build();
+      Component abilitiesMessage =
+          Component.text()
+              .append(
+                  Component.text("\nAbilities\n")
+                      .color(NamedTextColor.GOLD)
+                      .decorate(TextDecoration.BOLD))
+              .append(
+                  Component.text(kitDescription.abilities() + "\n").color(NamedTextColor.YELLOW))
+              .build();
 
-        player.sendMessage(nameMessage);
-        player.sendMessage(abilitiesMessage);
-      }
+      player.sendMessage(nameMessage);
+      player.sendMessage(abilitiesMessage);
     }
   }
 

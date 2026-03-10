@@ -26,7 +26,7 @@ public class LoadPhase extends AbstractPhase {
   private Color[][] currentMatrix = new Color[MAP_SIZE][MAP_SIZE];
   private double targetChunksPerTick = 1.0;
   private double accumulatedChunkGens = 0.0;
-  private BukkitTask chunkGenTask;
+  private final BukkitTask chunkGenTask;
 
   public LoadPhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
@@ -34,6 +34,75 @@ public class LoadPhase extends AbstractPhase {
     placeSpawnPlatform();
     scheduleChunkLists();
     chunkGenTask = Bukkit.getScheduler().runTaskTimer(plugin, this::chunkGenWorker, 20 * 5, 1);
+  }
+
+  private static Color getDirectBukkitColor(Block block) {
+    var blockBukkitColor = block.getBlockData().getMapColor();
+    return new Color(
+        blockBukkitColor.getRed(), blockBukkitColor.getGreen(), blockBukkitColor.getBlue());
+  }
+
+  private static Color getBlockColorWithSnowEffect(Block block) {
+    if (block.getRelative(BlockFace.UP).getType() == Material.SNOW) {
+      if (block.getBlockData() instanceof Leaves) { // check for leaves for better contrast of trees
+        Color c = getDirectBukkitColor(block);
+        float t = 0.6f; // mixing 60% white
+
+        int r = (int) (c.getRed() + (255 - c.getRed()) * t);
+        int g = (int) (c.getGreen() + (255 - c.getGreen()) * t);
+        int b = (int) (c.getBlue() + (255 - c.getBlue()) * t);
+        return new Color(r, g, b);
+      } else {
+        return new Color(255, 255, 255); // white for snow
+      }
+    } else {
+      return getDirectBukkitColor(block);
+    }
+  }
+
+  private static Color getBlockColor(Block block, int waterBlocksAbove) {
+    Color blockColor = getBlockColorWithSnowEffect(block);
+
+    Block aboveHighest = block.getRelative(0, 1, 0);
+    var adjacentBlocks =
+        new Block[] {
+          aboveHighest.getRelative(0, 0, 1),
+          aboveHighest.getRelative(1, 0, 0),
+          aboveHighest.getRelative(-1, 0, 0),
+          aboveHighest.getRelative(0, 0, -1)
+        };
+    for (Block adjacent : adjacentBlocks) {
+      if (adjacent.isSolid() && !adjacent.isLiquid()) {
+        if (waterBlocksAbove == 0) {
+          blockColor = blockColor.darker();
+        } else {
+          blockColor = blockColor.brighter();
+        }
+      }
+    }
+
+    if (waterBlocksAbove != 0) {
+      blockColor = applyWaterColorEffect(blockColor, waterBlocksAbove);
+    }
+
+    return blockColor;
+  }
+
+  private static Color applyWaterColorEffect(Color c, int waterBlocksAbove) {
+    double depth = 1.0 - Math.exp(-waterBlocksAbove / 12.0);
+
+    double t = 0.65 + 0.10 * depth; // more blue
+    double s = 1.00 - (0.40 + 0.07 * depth); // more dark
+
+    int r = (int) Math.round((c.getRed() + (30 - c.getRed()) * t) * s);
+    int g = (int) Math.round((c.getGreen() + (80 - c.getGreen()) * t) * s);
+    int b = (int) Math.round((c.getBlue() + (255 - c.getBlue()) * t) * s);
+
+    return new Color(colorClamp(r), colorClamp(g), colorClamp(b), c.getAlpha());
+  }
+
+  private static int colorClamp(int v) {
+    return Math.max(0, Math.min(255, v));
   }
 
   private void placeSpawnPlatform() {
@@ -148,75 +217,6 @@ public class LoadPhase extends AbstractPhase {
     }
 
     return newChunkPixelBatch;
-  }
-
-  private static Color getDirectBukkitColor(Block block) {
-    var blockBukkitColor = block.getBlockData().getMapColor();
-    return new Color(
-        blockBukkitColor.getRed(), blockBukkitColor.getGreen(), blockBukkitColor.getBlue());
-  }
-
-  private static Color getBlockColorWithSnowEffect(Block block) {
-    if (block.getRelative(BlockFace.UP).getType() == Material.SNOW) {
-      if (block.getBlockData() instanceof Leaves) { // check for leaves for better contrast of trees
-        Color c = getDirectBukkitColor(block);
-        float t = 0.6f; // mixing 60% white
-
-        int r = (int) (c.getRed() + (255 - c.getRed()) * t);
-        int g = (int) (c.getGreen() + (255 - c.getGreen()) * t);
-        int b = (int) (c.getBlue() + (255 - c.getBlue()) * t);
-        return new Color(r, g, b);
-      } else {
-        return new Color(255, 255, 255); // white for snow
-      }
-    } else {
-      return getDirectBukkitColor(block);
-    }
-  }
-
-  private static Color getBlockColor(Block block, int waterBlocksAbove) {
-    Color blockColor = getBlockColorWithSnowEffect(block);
-
-    Block aboveHighest = block.getRelative(0, 1, 0);
-    var adjacentBlocks =
-        new Block[] {
-          aboveHighest.getRelative(0, 0, 1),
-          aboveHighest.getRelative(1, 0, 0),
-          aboveHighest.getRelative(-1, 0, 0),
-          aboveHighest.getRelative(0, 0, -1)
-        };
-    for (Block adjacent : adjacentBlocks) {
-      if (adjacent.isSolid() && !adjacent.isLiquid()) {
-        if (waterBlocksAbove == 0) {
-          blockColor = blockColor.darker();
-        } else {
-          blockColor = blockColor.brighter();
-        }
-      }
-    }
-
-    if (waterBlocksAbove != 0) {
-      blockColor = applyWaterColorEffect(blockColor, waterBlocksAbove);
-    }
-
-    return blockColor;
-  }
-
-  private static Color applyWaterColorEffect(Color c, int waterBlocksAbove) {
-    double depth = 1.0 - Math.exp(-waterBlocksAbove / 12.0);
-
-    double t = 0.65 + 0.10 * depth; // more blue
-    double s = 1.00 - (0.40 + 0.07 * depth); // more dark
-
-    int r = (int) Math.round((c.getRed() + (30 - c.getRed()) * t) * s);
-    int g = (int) Math.round((c.getGreen() + (80 - c.getGreen()) * t) * s);
-    int b = (int) Math.round((c.getBlue() + (255 - c.getBlue()) * t) * s);
-
-    return new Color(colorClamp(r), colorClamp(g), colorClamp(b), c.getAlpha());
-  }
-
-  private static int colorClamp(int v) {
-    return Math.max(0, Math.min(255, v));
   }
 
   public void disable() {

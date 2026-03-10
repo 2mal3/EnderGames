@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
+
+import io.github.mal32.endergames.services.KitType;
 import org.bukkit.*;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Damageable;
@@ -29,7 +31,7 @@ public class Cactus extends AbstractKit {
   private final HashMap<UUID, PlayerInventory> cactusPlayerInventory = new HashMap<>();
 
   public Cactus(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.CACTUS);
   }
 
   @Override

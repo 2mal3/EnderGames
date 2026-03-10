@@ -2,6 +2,7 @@ package io.github.mal32.endergames.kits;
 
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.KitType;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public class Blaze extends AbstractKit {
   private final HashMap<UUID, LocalTime> burnTime = new HashMap<>();
 
   public Blaze(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.BLAZE);
   }
 
   @Override

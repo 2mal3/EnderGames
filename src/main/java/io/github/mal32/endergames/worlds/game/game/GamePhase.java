@@ -3,6 +3,8 @@ package io.github.mal32.endergames.worlds.game.game;
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
+import io.github.mal32.endergames.kits.KitRegistry;
+import io.github.mal32.endergames.services.KitType;
 import io.github.mal32.endergames.worlds.game.AbstractPhase;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import java.util.*;
@@ -33,12 +35,9 @@ import org.bukkit.util.Vector;
 
 public class GamePhase extends AbstractPhase {
   private final List<AbstractModule> modules;
-  private final List<AbstractKit> kits;
 
   public GamePhase(EnderGames plugin, GameWorld manager, Location spawnLocation) {
     super(plugin, manager, spawnLocation);
-
-    kits = AbstractKit.getKits(plugin);
 
     this.modules =
         List.of(
@@ -76,15 +75,8 @@ public class GamePhase extends AbstractPhase {
       trackerItem.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
       player.getInventory().addItem(trackerItem);
 
-      String playerKit =
-          player
-              .getPersistentDataContainer()
-              .get(new NamespacedKey(plugin, "kit"), PersistentDataType.STRING);
-      for (AbstractKit kit : kits) {
-        if (Objects.equals(kit.getNameLowercase(), playerKit)) {
-          kit.initPlayer(player);
-        }
-      }
+      KitType kit = KitType.get(player);
+      KitRegistry.get(kit).initPlayer(player);
     }
 
     var worldBoarder = spawnLocation.getWorld().getWorldBorder();
@@ -107,7 +99,7 @@ public class GamePhase extends AbstractPhase {
     for (AbstractModule module : modules) {
       module.enable();
     }
-    for (AbstractKit kit : kits) {
+    for (AbstractKit kit : KitRegistry.getKits()) {
       kit.enable();
     }
   }
@@ -154,7 +146,7 @@ public class GamePhase extends AbstractPhase {
     for (AbstractModule module : modules) {
       module.disable();
     }
-    for (AbstractKit kit : kits) {
+    for (AbstractKit kit : KitRegistry.getKits()) {
       kit.disable();
     }
   }

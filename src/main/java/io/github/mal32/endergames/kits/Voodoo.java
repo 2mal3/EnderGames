@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.KitType;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import io.github.mal32.endergames.worlds.game.game.PotionEffectsStacking;
 import org.bukkit.Bukkit;
@@ -34,7 +35,7 @@ public class Voodoo extends AbstractKit {
   private BukkitTask voodooTask;
 
   public Voodoo(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.VOODOO);
   }
 
   @Override

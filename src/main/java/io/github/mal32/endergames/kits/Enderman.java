@@ -2,6 +2,8 @@ package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
 import java.util.Set;
+
+import io.github.mal32.endergames.services.KitType;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -19,7 +21,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class Enderman extends AbstractKit {
   public Enderman(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.ENDERMAN);
   }
 
   @Override

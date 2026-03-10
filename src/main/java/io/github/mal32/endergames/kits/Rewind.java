@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.KitType;
 import io.github.mal32.endergames.worlds.game.GameWorld;
 import java.util.*;
 import net.kyori.adventure.text.Component;
@@ -27,7 +28,7 @@ public class Rewind extends AbstractKit {
   private BukkitTask task;
 
   public Rewind(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.REWIND);
 
     rewindKey = new NamespacedKey(plugin, "rewind");
   }
