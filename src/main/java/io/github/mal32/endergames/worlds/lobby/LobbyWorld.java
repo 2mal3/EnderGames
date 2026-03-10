@@ -127,7 +127,7 @@ public class LobbyWorld extends AbstractWorld {
     if (this.plugin.getGameWorld().isGameRunning()) {
       menuManager.onGameStart(player);
     } else {
-      menuManager.onGameEnd();
+      menuManager.onGameEnd(player);
     }
 
     player.setGameMode(GameMode.ADVENTURE);

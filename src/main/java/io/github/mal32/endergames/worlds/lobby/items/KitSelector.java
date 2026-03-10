@@ -38,7 +38,7 @@ class KitSelector extends MenuItem implements Listener {
         plugin,
         (byte) 0,
         "kit_selector",
-        Material.CHEST,
+        Material.ENDER_CHEST,
         Component.text("Select Kit").color(NamedTextColor.GOLD));
     this.availableKits = AbstractKit.getKits(plugin);
     Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -62,6 +62,14 @@ class KitSelector extends MenuItem implements Listener {
     }
 
     return sb.toString();
+  }
+
+  public static boolean playerHasAdvancement(EnderGames plugin, Player player, NamespacedKey key) {
+    Advancement kitAdvancement = Bukkit.getAdvancement(key);
+    if (kitAdvancement == null) {
+      return true;
+    }
+    return player.getAdvancementProgress(kitAdvancement).isDone();
   }
 
   @Override
@@ -134,22 +142,14 @@ class KitSelector extends MenuItem implements Listener {
     if (!(event.getInventory().getHolder() instanceof KitInventory)) return;
     event.setCancelled(true);
   }
-
-  public static boolean playerHasAdvancement(EnderGames plugin, Player player, NamespacedKey key) {
-    Advancement kitAdvancement = Bukkit.getAdvancement(key);
-    if (kitAdvancement == null) {
-      return true;
-    }
-    return player.getAdvancementProgress(kitAdvancement).isDone();
-  }
 }
 
 class KitInventory implements InventoryHolder {
   private final List<AbstractKit> availableKits;
   private final Inventory inventory;
-  public String selectedKitName;
   private final Player player;
   private final EnderGames plugin;
+  public String selectedKitName;
 
   public KitInventory(EnderGames plugin, List<AbstractKit> availableKits, Player player) {
     this.availableKits = availableKits;

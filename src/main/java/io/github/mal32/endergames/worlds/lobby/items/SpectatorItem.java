@@ -1,9 +1,11 @@
 package io.github.mal32.endergames.worlds.lobby.items;
 
 import io.github.mal32.endergames.EnderGames;
+import java.util.Map;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -13,10 +15,14 @@ class SpectatorItem extends MenuItem {
   public SpectatorItem(EnderGames plugin) {
     super(
         plugin,
-        (byte) 6,
+        (byte) 8,
         "spectate_game",
-        Material.ENDER_EYE,
-        Component.text("Spectate Game").color(NamedTextColor.GOLD));
+        Map.of(
+            "",
+            new ItemDisplay(
+                Material.ENDER_EYE,
+                Component.text("Spectate Game").color(NamedTextColor.GOLD),
+                NamespacedKey.minecraft("spyglass"))));
   }
 
   @Override

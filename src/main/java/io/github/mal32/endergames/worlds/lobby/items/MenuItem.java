@@ -39,6 +39,9 @@ abstract class MenuItem {
     ItemMeta meta = item.getItemMeta();
     if (meta == null) return;
     meta.itemName(this.display.get(key).name);
+    if (this.display.get(key).itemModelKey != null) {
+      meta.setItemModel(this.display.get(key).itemModelKey);
+    }
 
     meta.getPersistentDataContainer()
         .set(new NamespacedKey(plugin, "menu"), PersistentDataType.STRING, this.key);
@@ -67,5 +70,9 @@ abstract class MenuItem {
 
   public void onGameStartAbort(Player player) {}
 
-  record ItemDisplay(Material display, Component name) {}
+  record ItemDisplay(Material display, Component name, NamespacedKey itemModelKey) {
+    ItemDisplay(Material display, Component name) {
+      this(display, name, null);
+    }
+  }
 }

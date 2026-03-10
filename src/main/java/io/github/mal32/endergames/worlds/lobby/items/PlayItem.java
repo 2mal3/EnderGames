@@ -6,6 +6,7 @@ import java.util.Map;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -21,11 +22,12 @@ public class PlayItem extends MenuItem {
         Map.of(
             PlayerState.PLAYING.name(),
             new ItemDisplay(
-                Material.ENDER_EYE, Component.text("Mode: Play").color(NamedTextColor.DARK_AQUA)),
+                Material.END_CRYSTAL, Component.text("Mode: Play").color(NamedTextColor.DARK_AQUA)),
             PlayerState.SPECTATING.name(),
             new ItemDisplay(
-                Material.SPYGLASS,
-                Component.text("Mode: Spectate").color(NamedTextColor.DARK_AQUA)),
+                Material.ENDER_EYE,
+                Component.text("Mode: Spectate").color(NamedTextColor.DARK_AQUA),
+                NamespacedKey.minecraft("spyglass")),
             PlayerState.IN_LOBBY.name(),
             new ItemDisplay(
                 Material.DARK_OAK_DOOR,
