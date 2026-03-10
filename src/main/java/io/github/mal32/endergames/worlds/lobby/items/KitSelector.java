@@ -200,17 +200,12 @@ class KitInventory implements InventoryHolder {
     for (KitType type : KitType.values()) {
       AbstractKit kit = KitRegistry.get(type);
       var kitDescription = kit.getDescription();
+      KitItem abstractKitItem = getKitItem(kitDescription);
 
-      var kitItem = new ItemStack(kitDescription.item(), 1);
+      var kitItem = new ItemStack(abstractKitItem.item(), 1);
       var meta = kitItem.getItemMeta();
-
-      meta.displayName(
-          Component.text(kitDescription.name())
-              .color(NamedTextColor.GOLD)
-              .decoration(TextDecoration.ITALIC, false));
-      meta.lore(getKitLore(kitDescription));
-      meta.getPersistentDataContainer()
-          .set(new NamespacedKey(plugin, "kit_name"), PersistentDataType.STRING, type.name());
+      meta.displayName(abstractKitItem.name());
+      meta.lore(abstractKitItem.lore());
 
       kitItem.setItemMeta(meta);
 
@@ -226,7 +221,12 @@ class KitInventory implements InventoryHolder {
     }
   }
 
-  private List<TextComponent> getKitLore(KitDescription kitDescription) {
+  private KitItem getKitItem(KitDescription kitDescription) {
+
+    NamespacedKey advancementKey =
+        new NamespacedKey("enga", kitDescription.name().toLowerCase().replace(" ", "_"));
+    boolean kitUnlocked = KitSelector.playerHasAdvancement(plugin, player, advancementKey);
+
     var lore = new ArrayList<TextComponent>();
 
     // Abilities
@@ -278,16 +278,25 @@ class KitInventory implements InventoryHolder {
     }
 
     // Unlocked state
-    NamespacedKey advancementKey =
-        new NamespacedKey("enga", kitDescription.name().toLowerCase().replace(" ", "_"));
-    if (!KitSelector.playerHasAdvancement(plugin, player, advancementKey)) {
+    if (!kitUnlocked) {
       lore.add(Component.text(""));
       lore.add(
           Component.text("Locked")
               .color(NamedTextColor.RED)
               .decoration(TextDecoration.ITALIC, false));
+      lore.add(
+          Component.text("See Advancement Tab")
+              .color(NamedTextColor.RED)
+              .decoration(TextDecoration.ITALIC, false));
     }
 
-    return lore;
+    var name =
+        Component.text(kitDescription.name())
+            .color(kitUnlocked ? NamedTextColor.GOLD : NamedTextColor.RED)
+            .decoration(TextDecoration.ITALIC, false);
+
+    return new KitItem(name, lore, kitUnlocked ? kitDescription.item() : Material.BARRIER);
   }
 }
+
+record KitItem(TextComponent name, List<TextComponent> lore, Material item) {}

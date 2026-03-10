@@ -4,7 +4,7 @@ import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import java.util.*;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.potion.PotionEffect;
@@ -20,19 +20,19 @@ public class PotionEffectsStacking extends AbstractModule {
     super(plugin);
   }
 
-  public static void addPotionEffect(Player player, PotionEffect newPotionEffect) {
-    var oldPotionEffect = player.getPotionEffect(newPotionEffect.getType());
+  public static void addPotionEffect(LivingEntity entity, PotionEffect newPotionEffect) {
+    var oldPotionEffect = entity.getPotionEffect(newPotionEffect.getType());
     if (oldPotionEffect == null) {
-      player.addPotionEffect(newPotionEffect);
+      entity.addPotionEffect(newPotionEffect);
       return;
     }
 
-    applyEffect(player, newPotionEffect, oldPotionEffect);
+    applyEffect(entity, newPotionEffect, oldPotionEffect);
   }
 
   private static void applyEffect(
-      Player player, PotionEffect newPotionEffect, PotionEffect oldPotionEffect) {
-    var effectTypes = playerEffects.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>());
+      LivingEntity entity, PotionEffect newPotionEffect, PotionEffect oldPotionEffect) {
+    var effectTypes = playerEffects.computeIfAbsent(entity.getUniqueId(), k -> new HashMap<>());
     var effectList =
         effectTypes.computeIfAbsent(
             newPotionEffect.getType(), k -> new PriorityQueue<>(comparator));
@@ -40,15 +40,15 @@ public class PotionEffectsStacking extends AbstractModule {
     if (newPotionEffect.getAmplifier() > oldPotionEffect.getAmplifier()) {
       // if the new effect is stronger, replace the old one
       effectList.add(oldPotionEffect);
-      player.addPotionEffect(newPotionEffect);
+      entity.addPotionEffect(newPotionEffect);
     } else if (newPotionEffect.getAmplifier() == oldPotionEffect.getAmplifier()) {
       // if the new effect has the same strength, merge durations
       if (newPotionEffect.getDuration() == PotionEffect.INFINITE_DURATION
           || oldPotionEffect.getDuration() == PotionEffect.INFINITE_DURATION) {
-        player.addPotionEffect(newPotionEffect.withDuration(PotionEffect.INFINITE_DURATION));
+        entity.addPotionEffect(newPotionEffect.withDuration(PotionEffect.INFINITE_DURATION));
       } else {
         int mergedDuration = oldPotionEffect.getDuration() + newPotionEffect.getDuration();
-        player.addPotionEffect(oldPotionEffect.withDuration(mergedDuration));
+        entity.addPotionEffect(oldPotionEffect.withDuration(mergedDuration));
       }
     } else {
       // if the new effect is weaker, just add it to the list
@@ -58,7 +58,7 @@ public class PotionEffectsStacking extends AbstractModule {
 
   @EventHandler
   private void onPotionEffect(EntityPotionEffectEvent event) {
-    if (!(event.getEntity() instanceof Player player)) return;
+    if (!(event.getEntity() instanceof LivingEntity livingEntity)) return;
     if (event.getAction() != EntityPotionEffectEvent.Action.CHANGED) return;
     if (event.getCause() == EntityPotionEffectEvent.Cause.PLUGIN) return;
 
@@ -67,12 +67,12 @@ public class PotionEffectsStacking extends AbstractModule {
     var oldPotionEffect = event.getOldEffect();
     if (oldPotionEffect == null) return;
 
-    applyEffect(player, newPotionEffect, oldPotionEffect);
+    applyEffect(livingEntity, newPotionEffect, oldPotionEffect);
   }
 
   @EventHandler
   private void onPotionEffectExpiration(EntityPotionEffectEvent event) {
-    if (!(event.getEntity() instanceof Player player)) return;
+    if (!(event.getEntity() instanceof LivingEntity livingEntity)) return;
     if (event.getCause() != EntityPotionEffectEvent.Cause.EXPIRATION
         || event.getAction() != EntityPotionEffectEvent.Action.REMOVED) return;
 
@@ -82,13 +82,13 @@ public class PotionEffectsStacking extends AbstractModule {
         .runTask(
             plugin,
             () -> {
-              var effectTypes = playerEffects.get(player.getUniqueId());
+              var effectTypes = playerEffects.get(livingEntity.getUniqueId());
               if (effectTypes == null) return;
               var effectList = effectTypes.get(oldPotionEffectType);
               if (effectList == null || effectList.isEmpty()) return;
 
               var nextStrongestEffect = effectList.remove();
-              player.addPotionEffect(nextStrongestEffect);
+              livingEntity.addPotionEffect(nextStrongestEffect);
             });
   }
 }
