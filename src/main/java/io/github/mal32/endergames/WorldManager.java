@@ -32,8 +32,8 @@ public class WorldManager {
     gameWorld.initPlayer(player);
   }
 
-  public void shutdown() {
-    gameWorld.shutdown();
-    lobbyWorld.shutdown();
+  public void disable() {
+    gameWorld.disable();
+    lobbyWorld.disable();
   }
 }

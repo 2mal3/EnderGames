@@ -1,12 +1,9 @@
 package io.github.mal32.endergames.lobby.minigames.parkour;
 
+import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.lobby.minigames.MiniGame;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -15,28 +12,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
-public class ParkourGame implements MiniGame, Listener {
-  private final EnderGames plugin;
+public class ParkourGame extends AbstractModule {
   private final ParkourManager manager;
 
   public ParkourGame(EnderGames plugin) {
-    this.plugin = plugin;
+    super(plugin);
+
     this.manager = new ParkourManager(plugin);
-  }
-
-  @Override
-  public void enable() {
-    Bukkit.getPluginManager().registerEvents(this, plugin);
-  }
-
-  @Override
-  public void disable() {
-    HandlerList.unregisterAll(this);
-  }
-
-  @Override
-  public boolean isActive(Player player) {
-    return manager.isInParkour(player);
   }
 
   @EventHandler

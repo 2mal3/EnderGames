@@ -51,6 +51,4 @@ public abstract class AbstractWorld implements Listener {
   protected void teleport(Player player, Location location) {
     player.teleportAsync(location);
   }
-
-  public abstract void shutdown();
 }

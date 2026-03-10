@@ -1,10 +1,13 @@
 package io.github.mal32.endergames.lobby;
 
+import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.AbstractWorld;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.lobby.items.MenuManager;
+import io.github.mal32.endergames.lobby.minigames.parkour.ParkourGame;
 import io.github.mal32.endergames.services.KitType;
 import io.github.mal32.endergames.services.PlayerInWorld;
+import java.util.List;
 import java.util.Random;
 import org.bukkit.*;
 import org.bukkit.block.structure.Mirror;
@@ -25,6 +28,7 @@ import org.bukkit.structure.StructureManager;
 public class LobbyWorld extends AbstractWorld {
   private final World world;
   private final Location spawnLocation;
+  private final List<AbstractModule> modules = List.of(new ParkourGame(plugin));
 
   public LobbyWorld(EnderGames plugin) {
     super(plugin);
@@ -36,6 +40,19 @@ public class LobbyWorld extends AbstractWorld {
     world.getChunkAt(spawnLocation).setForceLoaded(true);
 
     tryUpdatingLobby();
+
+    for (AbstractModule module : modules) {
+      module.enable();
+    }
+  }
+
+  @Override
+  public void disable() {
+    super.disable();
+
+    for (AbstractModule module : modules) {
+      module.disable();
+    }
   }
 
   @Override
@@ -93,11 +110,6 @@ public class LobbyWorld extends AbstractWorld {
   @Override
   protected boolean isInThisWorld(Player player) {
     return PlayerInWorld.LOBBY.is(player);
-  }
-
-  @Override
-  public void shutdown() {
-    disable();
   }
 
   @EventHandler

@@ -112,11 +112,6 @@ public class GameWorld extends AbstractWorld {
     return PlayerInWorld.GAME.is(player);
   }
 
-  @Override
-  public void shutdown() {
-    disable();
-  }
-
   @EventHandler
   public void onPlayerDamage(EntityDamageEvent event) {
     if (!(event.getEntity() instanceof Player player)) return;
