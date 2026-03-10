@@ -1,8 +1,9 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.worlds.game.GameWorld;
-import io.github.mal32.endergames.worlds.game.game.PotionEffectsStacking;
+import io.github.mal32.endergames.game.game.PotionEffectsStacking;
+import io.github.mal32.endergames.game.phases.PhaseController;
+import io.github.mal32.endergames.services.KitType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -34,7 +35,7 @@ public class Voodoo extends AbstractKit {
   private BukkitTask voodooTask;
 
   public Voodoo(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.VOODOO);
   }
 
   @Override
@@ -100,7 +101,7 @@ public class Voodoo extends AbstractKit {
   }
 
   private void witherTask() {
-    for (Player player : GameWorld.getPlayersInGame()) {
+    for (Player player : PhaseController.getPlayersInGame()) {
       if (!playerCanUseThisKit(player)) continue;
 
       for (Entity entity : player.getNearbyEntities(10, 10, 10)) {

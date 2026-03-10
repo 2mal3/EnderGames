@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.KitType;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class Lumberjack extends AbstractKit {
   public Lumberjack(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.LUMBERJACK);
   }
 
   @Override

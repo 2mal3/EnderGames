@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.KitType;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -13,7 +14,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class Dolphin extends AbstractKit {
   public Dolphin(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.DOLPHIN);
   }
 
   @Override

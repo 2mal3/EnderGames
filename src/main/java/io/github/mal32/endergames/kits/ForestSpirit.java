@@ -1,6 +1,8 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.services.PlayerInWorld;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import java.util.*;
@@ -61,7 +63,7 @@ public class ForestSpirit extends AbstractKit {
   private BukkitTask biomeAdaptTask;
 
   public ForestSpirit(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.FOREST_SPIRIT);
   }
 
   // ---------------------------------------------------------------------------
@@ -519,7 +521,7 @@ public class ForestSpirit extends AbstractKit {
   // ---------------------------------------------------------------------------
 
   private void tickStillnessAndRoots() {
-    for (Player player : plugin.getServer().getOnlinePlayers()) {
+    for (Player player : PlayerInWorld.GAME.all()) {
       if (!playerCanUseThisKit(player)) continue;
       if (player.isDead()) continue;
 

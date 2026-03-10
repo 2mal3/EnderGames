@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.services.KitType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -41,7 +42,7 @@ public class Knight extends AbstractKit {
   private BukkitTask horseTetherTask;
 
   public Knight(EnderGames plugin) {
-    super(plugin);
+    super(plugin, KitType.KNIGHT);
   }
 
   @Override
@@ -110,7 +111,7 @@ public class Knight extends AbstractKit {
     if (!(event.getMount() instanceof Horse horse)) return;
 
     // dont protect horses from non-knight players
-    if (!mounts.values().contains(horse)) return;
+    if (!mounts.containsValue(horse)) return;
     // check if the player is the rightfull owner
     // using .equals here since the paperapi doesnt garantee the same entity instance for the same
     // entity
