@@ -7,7 +7,10 @@ import io.github.mal32.endergames.lobby.minigames.parkour.ParkourGame;
 import io.github.mal32.endergames.services.KitType;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import java.util.List;
+import java.util.Random;
 import org.bukkit.*;
+import org.bukkit.block.structure.Mirror;
+import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
@@ -17,6 +20,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.structure.Structure;
+import org.bukkit.structure.StructureManager;
 
 public class LobbyWorld extends AbstractWorld {
   private final World world;
@@ -118,16 +123,15 @@ public class LobbyWorld extends AbstractWorld {
   }
 
   private void placeLobby() {
-    //    StructureManager manager = Bukkit.getServer().getStructureManager();
-    //    Structure structure = manager.loadStructure(new NamespacedKey("enga", "lobby"));
-    //
-    //    assert structure != null;
-    //    Location location =
-    //        spawnLocation
-    //            .clone()
-    //            .add(-structure.getSize().getX() / 2, 0, -structure.getSize().getZ() / 2);
-    //    structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new
-    // Random());
+    StructureManager manager = Bukkit.getServer().getStructureManager();
+    Structure structure = manager.loadStructure(new NamespacedKey("enga", "lobby"));
+
+    assert structure != null;
+    Location location =
+        spawnLocation
+            .clone()
+            .add(-structure.getSize().getX() / 2, 0, -structure.getSize().getZ() / 2);
+    structure.place(location, true, StructureRotation.NONE, Mirror.NONE, 0, 1.0f, new Random());
   }
 
   private void teleportPlayerWhenReady(Player player) {
