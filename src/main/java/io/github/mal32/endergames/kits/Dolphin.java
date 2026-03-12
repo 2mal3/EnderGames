@@ -2,17 +2,32 @@ package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.services.KitType;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.Levelled;
+import org.bukkit.block.data.Waterlogged;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 public class Dolphin extends AbstractKit {
+  private static final double MIN_VERTICAL_JUMP_SPEED = 1.2;
+  private static final double MAX_VERTICAL_JUMP_SPEED = 1.8;
+  private static final double HORIZONTAL_JUMP_SPEED = 1.4;
+  private static final long WATER_JUMP_COOLDOWN_MS = 500;
+
+  private final Map<UUID, Long> lastWaterJump = new HashMap<>();
+
   public Dolphin(EnderGames plugin) {
     super(plugin, KitType.DOLPHIN);
   }
@@ -28,9 +43,6 @@ public class Dolphin extends AbstractKit {
     player.addPotionEffect(
         new PotionEffect(
             PotionEffectType.CONDUIT_POWER, PotionEffect.INFINITE_DURATION, 0, true, false));
-    player.addPotionEffect(
-        new PotionEffect(
-            PotionEffectType.DOLPHINS_GRACE, PotionEffect.INFINITE_DURATION, 0, true, false));
   }
 
   @EventHandler
@@ -50,12 +62,80 @@ public class Dolphin extends AbstractKit {
         "loot give " + player.getName() + " loot minecraft:gameplay/fishing/fish");
   }
 
+  // Dolphin jump while in water, triggered by moving upwards in water
+  @EventHandler
+  public void OnPlayerMove(PlayerMoveEvent event) {
+    var player = event.getPlayer();
+    if (!playerCanUseThisKit(player)) return;
+
+    // Only care when the player is in or at water/kelp/waterlogged source
+    if (!playerIsInWater(player)) return;
+
+    var from = event.getFrom();
+    var to = event.getTo();
+
+    // Detect that the player started to move upwards (simulating a jump press)
+    double dy = to.getY() - from.getY();
+    if (dy <= 0.001) return;
+
+    // Cooldown so we don't trigger every tick while rising
+    long now = System.currentTimeMillis();
+    UUID id = player.getUniqueId();
+    long last = lastWaterJump.getOrDefault(id, 0L);
+    if (now - last < WATER_JUMP_COOLDOWN_MS) return;
+    lastWaterJump.put(id, now);
+
+    // The actual jump, reduced by slowness
+    int slownessLevel = 0;
+    var slowEffect = player.getPotionEffect(PotionEffectType.SLOWNESS);
+    if (slowEffect != null) {
+      slownessLevel = slowEffect.getAmplifier() + 1;
+    }
+
+    // Randomized vertical speed between MIN_VERTICAL_JUMP_SPEED and MAX_VERTICAL_JUMP_SPEED
+    double rawVertical =
+        MIN_VERTICAL_JUMP_SPEED
+            + Math.random() * (MAX_VERTICAL_JUMP_SPEED - MIN_VERTICAL_JUMP_SPEED);
+
+    double horizontalMultiplier = HORIZONTAL_JUMP_SPEED * (1 - 0.30 * slownessLevel);
+    double verticalMultiplier = rawVertical * (1 - 0.30 * slownessLevel);
+    Vector jump =
+        player.getLocation().getDirection().multiply(horizontalMultiplier).setY(verticalMultiplier);
+    player.setVelocity(jump);
+
+    // Wither shoot sound on dolphin jump
+    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 0.2f, 0.2f);
+  }
+
+  private boolean playerIsInWater(Player player) {
+    // Check the block at the player's feet position.
+    Block feetBlock = player.getLocation().getBlock();
+
+    // Direct source water (full block)
+    if (feetBlock.getType() == Material.WATER
+        && feetBlock.getBlockData() instanceof Levelled levelled) {
+      if (levelled.getLevel() == 0) return true;
+    }
+
+    // Waterlogged blocks (e.g. stairs, slabs) at feet or below
+    if (feetBlock.getBlockData() instanceof Waterlogged wl && wl.isWaterlogged()) {
+      return true;
+    }
+
+    // Bubble columns: treat them as valid water for dolphin jumping
+    if (feetBlock.getType() == Material.BUBBLE_COLUMN) {
+      return true;
+    }
+
+    return false;
+  }
+
   @Override
   public KitDescription getDescription() {
     return new KitDescription(
         Material.TROPICAL_FISH,
         "Dolphin",
-        "Has permanent Conduit Power and Dolphins Grace. Swimming gives Fish.",
+        "Has Dolphins Grace and can jump through the water. Swimming gives Fish.",
         "Water Bucket, Blue Leather Boots",
         Difficulty.MEDIUM);
   }

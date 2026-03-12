@@ -51,6 +51,8 @@ public class EnderGames extends JavaPlugin {
 
   @Override
   public void onEnable() {
+    saveDefaultConfig();
+
     if (isInDebugMode()) {
       this.getComponentLogger().warn("Debug mode is enabled.");
     } else {
