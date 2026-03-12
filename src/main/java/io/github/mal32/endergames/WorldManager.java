@@ -1,7 +1,7 @@
 package io.github.mal32.endergames;
 
-import io.github.mal32.endergames.game.GameWorld;
-import io.github.mal32.endergames.lobby.LobbyWorld;
+import io.github.mal32.endergames.world.*;
+import io.github.mal32.endergames.world.LobbyWorld;
 import org.bukkit.entity.Player;
 
 public class WorldManager {
@@ -9,8 +9,18 @@ public class WorldManager {
   private final GameWorld gameWorld;
 
   public WorldManager(EnderGames plugin) {
-    this.lobbyWorld = new LobbyWorld(plugin);
-    this.gameWorld = new GameWorld(plugin);
+
+    WorldSpawnService spawnService = new WorldSpawnService();
+    WorldPersistenceService persistenceService = new WorldPersistenceService(plugin);
+    WorldBorderService borderService = new WorldBorderService();
+    GamePlayerInitService gamePlayerInitService = new GamePlayerInitService();
+
+    LobbyPlayerInitService lobbyPlayerInitService = new LobbyPlayerInitService();
+
+    this.lobbyWorld = new LobbyWorld(plugin, lobbyPlayerInitService);
+    this.gameWorld =
+        new GameWorld(
+            plugin, gamePlayerInitService, spawnService, persistenceService, borderService);
 
     lobbyWorld.setupWorld();
     gameWorld.setupWorld();
