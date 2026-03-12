@@ -33,6 +33,15 @@ public class EndlessParkour extends AbstractModule {
     super(plugin);
   }
 
+  @Override
+  public void disable() {
+    super.disable();
+
+    for (UUID uuid : players.keySet()) {
+      leave(uuid);
+    }
+  }
+
   @EventHandler
   private void onStart(PlayerInteractEvent event) {
     Player player = event.getPlayer();
@@ -45,7 +54,7 @@ public class EndlessParkour extends AbstractModule {
 
     DyeColor randomColor = DyeColor.values()[(int) (Math.random() * DyeColor.values().length)];
 
-    BlockLocation startLocation = getRandomJumpLocation(new BlockLocation(player.getLocation()));
+    BlockLocation startLocation = getRandomJumpLocation(new BlockLocation(player.getLocation()), 2);
     startLocation.getBlock().setType(getWoolForColor(randomColor));
 
     Location teleportLocation = startLocation.toLocation();
@@ -63,7 +72,7 @@ public class EndlessParkour extends AbstractModule {
   private void onDisconnect(PlayerQuitEvent event) {
     Player player = event.getPlayer();
     if (players.containsKey(player.getUniqueId())) {
-      leave(player);
+      leave(player.getUniqueId());
     }
   }
 
@@ -86,7 +95,6 @@ public class EndlessParkour extends AbstractModule {
     ParkourSession session = players.get(player.getUniqueId());
     if (session == null) return;
 
-    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.UI, 1.0f, 2.0f);
     session.jumps++;
     Component actionBarText =
         Component.text("")
@@ -102,8 +110,10 @@ public class EndlessParkour extends AbstractModule {
       }
     }
 
-    BlockLocation nextLocation = getRandomJumpLocation(session.nextBlock);
+    BlockLocation nextLocation = getRandomJumpLocation(session.nextBlock, 1);
     nextLocation.getBlock().setType(getWoolForColor(session.color));
+    player.playSound(
+        nextLocation.toLocation(), Sound.ENTITY_ITEM_PICKUP, SoundCategory.UI, 1.0f, 0.5f);
 
     session.currentBlock = session.nextBlock;
     session.nextBlock = nextLocation;
@@ -111,48 +121,71 @@ public class EndlessParkour extends AbstractModule {
     session.currentBlock.getBlock().setType(getTerracotaForColor(session.color));
   }
 
-  private BlockLocation getRandomJumpLocation(BlockLocation startLocation) {
-    BlockLocation randomLocation = startLocation.clone();
-    while (randomLocation.getBlock().getType() != Material.AIR) {
+  private BlockLocation getRandomJumpLocation(BlockLocation startLocation, double scale) {
+    BlockLocation randomLocation;
+    do {
       randomLocation = startLocation.clone();
 
+      double angle = Math.random() * 2 * Math.PI;
+      double distance;
+      double hight = 0;
       if (Math.random() > 0.80) {
         // one higher
-        double angle = Math.random() * 2 * Math.PI;
-        double distance = 2.5 + Math.random() * 1.9;
-        randomLocation.setX((int) (startLocation.getX() + 0.5 + Math.cos(angle) * distance));
-        randomLocation.setZ((int) (startLocation.getZ() + 0.5 + Math.sin(angle) * distance));
-        randomLocation.add(0, 1, 0);
+        distance = 2 + (Math.random() * 2);
+        hight = 1;
       } else {
         // same level
-        double angle = Math.random() * 2 * Math.PI;
-        double distance = 2 + Math.random() * 3.5;
-        randomLocation.setX((int) (startLocation.getX() + 0.5 + Math.cos(angle) * distance));
-        randomLocation.setZ((int) (startLocation.getZ() + 0.5 + Math.sin(angle) * distance));
+        distance = 2 + (Math.random() * 3);
       }
-    }
+      distance *= scale;
+
+      randomLocation.setX((int) roundN((startLocation.getX() + (Math.cos(angle) * distance)), 0));
+      randomLocation.setZ((int) roundN((startLocation.getZ() + (Math.sin(angle) * distance)), 0));
+      randomLocation.add(0, (int) roundN(hight + (scale - 1), 0), 0);
+    } while (!blockIsFree(randomLocation.clone()));
 
     return randomLocation;
+  }
+
+  // Why does Java havent build in this???
+  private static double roundN(double value, int places) {
+    double scale = Math.pow(10, places);
+    return Math.round(value * scale) / scale;
+  }
+
+  private boolean blockIsFree(BlockLocation location) {
+    return location.getBlock().getType() == Material.AIR
+        && location.add(0, 1, 0).getBlock().getType() == Material.AIR
+        && location.add(1, 0, 0).getBlock().getType() == Material.AIR
+        && location.add(-1, 0, 0).getBlock().getType() == Material.AIR
+        && location.add(0, 0, 1).getBlock().getType() == Material.AIR
+        && location.add(0, 0, -1).getBlock().getType() == Material.AIR;
   }
 
   @EventHandler
   private void onTeleport(PlayerTeleportEvent event) {
     if (event.getCause() != TeleportCause.PLUGIN) return;
     Player player = event.getPlayer();
-    if (players.containsKey(player.getUniqueId())) leave(player);
+    if (players.containsKey(player.getUniqueId())) leave(player.getUniqueId());
   }
 
   private void fail(Player player) {
-    player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.UI, 1.0f, 0.5f);
+    player.playSound(player, Sound.ENTITY_ITEM_BREAK, SoundCategory.UI, 1.0f, 1.0f);
 
     ParkourSession session = players.get(player.getUniqueId());
     if (session == null) return;
 
-    leave(player);
+    player.sendMessage(
+        Component.text("")
+            .append(Component.text("You have achieved ", NamedTextColor.YELLOW))
+            .append(Component.text(session.jumps, NamedTextColor.GOLD))
+            .append(Component.text(" jumps", NamedTextColor.YELLOW)));
+
+    leave(player.getUniqueId());
   }
 
-  private void leave(Player player) {
-    ParkourSession session = players.get(player.getUniqueId());
+  private void leave(UUID uuid) {
+    ParkourSession session = players.get(uuid);
     if (session == null) return;
 
     if (session.currentBlock != null) {
@@ -168,7 +201,7 @@ public class EndlessParkour extends AbstractModule {
       }
     }
 
-    players.remove(player.getUniqueId());
+    players.remove(uuid);
   }
 
   private Material getWoolForColor(DyeColor color) {

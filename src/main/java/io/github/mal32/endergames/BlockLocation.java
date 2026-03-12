@@ -52,14 +52,17 @@ public class BlockLocation {
     this.z = z;
   }
 
+  @Override
   public BlockLocation clone() {
     return new BlockLocation(getWorld(), getX(), getY(), getZ());
   }
 
-  public void add(int x, int y, int z) {
+  public BlockLocation add(int x, int y, int z) {
     this.x += x;
     this.y += y;
     this.z += z;
+
+    return this.clone();
   }
 
   public Block getBlock() {
