@@ -9,18 +9,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.MockBukkit;
-import org.mockbukkit.mockbukkit.ServerMock;
-import org.mockbukkit.mockbukkit.plugin.PluginMock;
 import org.mockbukkit.mockbukkit.world.WorldMock;
 
 class WorldSpawnServiceTest {
-  private ServerMock server;
-  private PluginMock plugin;
 
   @BeforeEach
   void setUp() {
-    server = MockBukkit.mock();
-    plugin = MockBukkit.createMockPlugin();
+    MockBukkit.mock();
   }
 
   @AfterEach
