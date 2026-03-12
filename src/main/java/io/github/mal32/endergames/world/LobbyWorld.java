@@ -26,7 +26,7 @@ import org.bukkit.structure.StructureManager;
 public class LobbyWorld extends AbstractWorld {
   private final World world;
   private final Location spawnLocation;
-  private final List<AbstractModule> modules = List.of(new EndlessParkour(plugin));
+  private final List<AbstractModule> modules = List.of(new EndlessParkour((EnderGames) plugin));
 
   public LobbyWorld(JavaPlugin plugin, LobbyPlayerInitService playerInitService) {
     super(plugin, playerInitService);
