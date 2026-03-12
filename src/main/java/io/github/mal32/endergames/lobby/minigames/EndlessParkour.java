@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -87,7 +88,7 @@ public class EndlessParkour extends AbstractModule {
     if (session.nextBlock.equals(groundBlock.getLocation())) {
       nextBlock(player);
     } else if (((double) (session.currentBlock.getY()) - player.getLocation().getY()) > 0.5) {
-      fail(player);
+      end(player);
     }
   }
 
@@ -169,17 +170,34 @@ public class EndlessParkour extends AbstractModule {
     if (players.containsKey(player.getUniqueId())) leave(player.getUniqueId());
   }
 
-  private void fail(Player player) {
-    player.playSound(player, Sound.ENTITY_ITEM_BREAK, SoundCategory.UI, 1.0f, 1.0f);
-
+  private void end(Player player) {
     ParkourSession session = players.get(player.getUniqueId());
     if (session == null) return;
 
-    player.sendMessage(
-        Component.text("")
-            .append(Component.text("You have achieved ", NamedTextColor.YELLOW))
-            .append(Component.text(session.jumps, NamedTextColor.GOLD))
-            .append(Component.text(" jumps", NamedTextColor.YELLOW)));
+    final String key = "minigames.endless_parkour." + player.getUniqueId();
+    final int highScore = plugin.getConfig().getInt(key);
+    if (highScore < session.jumps) {
+      plugin.getConfig().set(key, session.jumps);
+      Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> plugin.saveConfig());
+      player.playSound(player, Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.UI, 1.0f, 1.0f);
+      player.sendMessage(
+          Component.text("")
+              .append(Component.text("You have achieved ", NamedTextColor.YELLOW))
+              .append(Component.text(session.jumps, NamedTextColor.GOLD))
+              .append(
+                  Component.text(" jumps which broke your hight score of ", NamedTextColor.YELLOW))
+              .append(Component.text(highScore, NamedTextColor.GOLD))
+              .append(Component.text(" jumps", NamedTextColor.YELLOW)));
+    } else {
+      player.sendMessage(
+          Component.text("")
+              .append(Component.text("You have achieved ", NamedTextColor.YELLOW))
+              .append(Component.text(session.jumps, NamedTextColor.GOLD))
+              .append(Component.text(" jumps (high score of ", NamedTextColor.YELLOW))
+              .append(Component.text(highScore, NamedTextColor.GOLD))
+              .append(Component.text(" jumps)", NamedTextColor.YELLOW)));
+      player.playSound(player, Sound.ENTITY_ITEM_BREAK, SoundCategory.UI, 1.0f, 1.0f);
+    }
 
     leave(player.getUniqueId());
   }
