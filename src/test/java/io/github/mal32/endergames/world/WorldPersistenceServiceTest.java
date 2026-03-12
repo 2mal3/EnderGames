@@ -2,7 +2,6 @@ package io.github.mal32.endergames.world;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.github.mal32.endergames.EnderGames;
 import org.junit.jupiter.api.*;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;

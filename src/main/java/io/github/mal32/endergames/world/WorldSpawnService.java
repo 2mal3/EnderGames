@@ -6,22 +6,23 @@ import org.bukkit.Location;
 import org.bukkit.block.Biome;
 
 public class WorldSpawnService {
-  private static final Set<Biome> VALID_BIOMES = new HashSet<>(Set.of(
-      Biome.DEEP_FROZEN_OCEAN,
-      Biome.DEEP_COLD_OCEAN,
-      Biome.DEEP_OCEAN,
-      Biome.DEEP_LUKEWARM_OCEAN,
-      Biome.FROZEN_OCEAN,
-      Biome.OCEAN,
-      Biome.COLD_OCEAN,
-      Biome.LUKEWARM_OCEAN,
-      Biome.WARM_OCEAN,
-      Biome.JUNGLE,
-      Biome.SPARSE_JUNGLE,
-      Biome.BAMBOO_JUNGLE,
-      Biome.RIVER,
-      Biome.STONY_SHORE
-  ));
+  private static final Set<Biome> VALID_BIOMES =
+      new HashSet<>(
+          Set.of(
+              Biome.DEEP_FROZEN_OCEAN,
+              Biome.DEEP_COLD_OCEAN,
+              Biome.DEEP_OCEAN,
+              Biome.DEEP_LUKEWARM_OCEAN,
+              Biome.FROZEN_OCEAN,
+              Biome.OCEAN,
+              Biome.COLD_OCEAN,
+              Biome.LUKEWARM_OCEAN,
+              Biome.WARM_OCEAN,
+              Biome.JUNGLE,
+              Biome.SPARSE_JUNGLE,
+              Biome.BAMBOO_JUNGLE,
+              Biome.RIVER,
+              Biome.STONY_SHORE));
 
   public void registerInvalidBiome(Biome biome) {
     VALID_BIOMES.add(biome);

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import io.github.mal32.endergames.services.PlayerInWorld;
+import java.util.concurrent.CompletableFuture;
 import org.bukkit.Difficulty;
 import org.bukkit.GameRules;
 import org.bukkit.Location;
@@ -15,8 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;
 import org.mockbukkit.mockbukkit.plugin.PluginMock;
-
-import java.util.concurrent.CompletableFuture;
 
 class GameWorldTest {
   private ServerMock server;
