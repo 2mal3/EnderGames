@@ -79,7 +79,9 @@ class GameWorldTest {
   @Test
   void initPlayer() {
     Player player = spy(server.addPlayer());
-    doReturn(CompletableFuture.completedFuture(true)).when(player).teleportAsync(any(Location.class));
+    doReturn(CompletableFuture.completedFuture(true))
+        .when(player)
+        .teleportAsync(any(Location.class));
 
     gameWorld.initPlayer(player);
 

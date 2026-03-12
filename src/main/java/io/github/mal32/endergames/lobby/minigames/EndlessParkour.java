@@ -28,10 +28,16 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.jetbrains.annotations.Nullable;
 
 public class EndlessParkour extends AbstractModule {
-  private Map<UUID, ParkourSession> players = new HashMap<>();
+  private final Map<UUID, ParkourSession> players = new HashMap<>();
 
   public EndlessParkour(EnderGames plugin) {
     super(plugin);
+  }
+
+  // Why does Java havent build in this???
+  private static double roundN(double value, int places) {
+    double scale = Math.pow(10, places);
+    return Math.round(value * scale) / scale;
   }
 
   @Override
@@ -146,12 +152,6 @@ public class EndlessParkour extends AbstractModule {
     } while (!blockIsFree(randomLocation.clone()));
 
     return randomLocation;
-  }
-
-  // Why does Java havent build in this???
-  private static double roundN(double value, int places) {
-    double scale = Math.pow(10, places);
-    return Math.round(value * scale) / scale;
   }
 
   private boolean blockIsFree(BlockLocation location) {

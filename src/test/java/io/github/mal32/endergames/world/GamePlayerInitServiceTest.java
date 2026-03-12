@@ -33,11 +33,14 @@ class GamePlayerInitServiceTest {
     GamePlayerInitService service = new GamePlayerInitService();
 
     PlayerMock player = spy(server.addPlayer());
-    doAnswer(invocation -> {
-      Location loc = invocation.getArgument(0);
-      player.teleport(loc);
-      return null;
-    }).when(player).teleportAsync(any(Location.class));
+    doAnswer(
+            invocation -> {
+              Location loc = invocation.getArgument(0);
+              player.teleport(loc);
+              return null;
+            })
+        .when(player)
+        .teleportAsync(any(Location.class));
 
     player.setGameMode(GameMode.SPECTATOR);
     Location spawn = new Location(player.getWorld(), 100, 64, 200);

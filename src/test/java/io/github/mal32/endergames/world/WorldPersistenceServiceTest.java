@@ -4,17 +4,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.*;
 import org.mockbukkit.mockbukkit.MockBukkit;
-import org.mockbukkit.mockbukkit.ServerMock;
 import org.mockbukkit.mockbukkit.plugin.PluginMock;
 import org.mockbukkit.mockbukkit.world.WorldMock;
 
 class WorldPersistenceServiceTest {
-  private ServerMock server;
   private PluginMock plugin;
 
   @BeforeEach
   void setUp() {
-    server = MockBukkit.mock();
+    MockBukkit.mock();
     plugin = MockBukkit.createMockPlugin();
   }
 
