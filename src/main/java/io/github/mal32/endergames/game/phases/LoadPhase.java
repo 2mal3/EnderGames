@@ -31,6 +31,8 @@ public class LoadPhase extends AbstractPhase {
   public LoadPhase(EnderGames plugin, PhaseController controller) {
     super(plugin, controller);
 
+    Bukkit.getPluginManager().callEvent(new GameEndEvent());
+
     controller.getGameWorld().findNewSpawn(); // TODO run scheduler?
     plugin
         .getComponentLogger()

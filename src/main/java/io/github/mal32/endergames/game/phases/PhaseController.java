@@ -36,10 +36,9 @@ public class PhaseController {
   public void start() {
     if (!(current instanceof LoadPhase)
         || PlayerState.PLAYING.all().length < 1) { // TODO: < 1 only in DEBUG?
-      plugin.getMenuManager().onGameStartAbort();
+      Bukkit.getPluginManager().callEvent(new GameStartAbortEvent());
       return;
     }
-    plugin.getMenuManager().onGameStart();
     next();
   }
 
