@@ -53,7 +53,7 @@ class LobbyPlayerInitServiceTest {
 
     assertThat(
         server.getPluginManager(),
-        PluginManagerFiredEventClassMatcher.hasFiredEventInstance(PlayerEnteredGameEvent.class));
+        PluginManagerFiredEventClassMatcher.hasFiredEventInstance(PlayerEnteredLobbyEvent.class));
 
     assertTrue(player.hasTeleported());
     assertTrue(PlayerInWorld.LOBBY.is(player));
