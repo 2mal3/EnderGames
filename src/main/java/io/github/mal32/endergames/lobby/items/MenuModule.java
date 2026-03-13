@@ -1,12 +1,12 @@
 package io.github.mal32.endergames.lobby.items;
 
-import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.game.phases.GameEndEvent;
 import io.github.mal32.endergames.game.phases.GameStartAbortEvent;
 import io.github.mal32.endergames.game.phases.GameStartEvent;
 import io.github.mal32.endergames.lobby.LobbyModule;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import io.github.mal32.endergames.services.PlayerState;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
@@ -19,14 +19,26 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class MenuModule extends LobbyModule {
   private final HashMap<String, MenuItem> items = new HashMap<>();
   private final NamespacedKey menuKey;
 
-  public MenuModule(EnderGames plugin) {
+  public MenuModule(JavaPlugin plugin) {
     super(plugin);
 
+    this.menuKey = new NamespacedKey(plugin, "menu");
+  }
+
+  @Override
+  public void onRegister() {
+    super.onRegister();
+
+    registerDefaultItems();
+  }
+
+  void registerDefaultItems() {
     List<MenuItem> rawItems =
         List.of(
             new KitSelector(plugin),
@@ -35,10 +47,12 @@ public class MenuModule extends LobbyModule {
             new PlayItem(plugin));
 
     for (MenuItem item : rawItems) {
-      items.put(item.getKey(), item);
+      registerItem(item);
     }
+  }
 
-    this.menuKey = new NamespacedKey(plugin, "menu");
+  void registerItem(MenuItem item) {
+    items.put(item.getKey(), item);
   }
 
   @Override
