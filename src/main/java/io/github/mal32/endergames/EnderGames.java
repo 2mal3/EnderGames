@@ -5,9 +5,10 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.game.phases.PhaseController;
 import io.github.mal32.endergames.kits.KitRegistry;
+import io.github.mal32.endergames.lobby.LobbyManager;
+import io.github.mal32.endergames.lobby.LobbyModules;
 import io.github.mal32.endergames.lobby.MapManager;
 import io.github.mal32.endergames.lobby.PlayerDifficulty;
-import io.github.mal32.endergames.lobby.items.MenuManager;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -20,7 +21,7 @@ public class EnderGames extends JavaPlugin {
   private final MapManager mapManager = new MapManager();
   private WorldManager worldManager;
   private PhaseController phaseController;
-  private MenuManager menuManager;
+  private LobbyManager lobbyManager;
 
   public static boolean isInDebugMode() {
     String debugEnv = System.getenv("EG_DEBUG");
@@ -41,12 +42,8 @@ public class EnderGames extends JavaPlugin {
     return phaseController;
   }
 
-  public MenuManager getMenuManager() {
-    return menuManager;
-  }
-
-  public void setMenuManager(MenuManager menuManager) {
-    this.menuManager = menuManager;
+  public LobbyManager getLobbyManager() {
+    return lobbyManager;
   }
 
   @Override
@@ -63,8 +60,10 @@ public class EnderGames extends JavaPlugin {
     this.worldManager = new WorldManager(this);
     this.phaseController = new PhaseController(this, worldManager.getGameWorld());
 
+    this.lobbyManager = new LobbyManager(this);
+    LobbyModules.registerAll(this);
+
     // TODO: move?
-    this.menuManager = new MenuManager(this);
     var modules = List.of(new PlayerDifficulty(this));
     for (AbstractModule module : modules) {
       module.enable();
@@ -104,6 +103,7 @@ public class EnderGames extends JavaPlugin {
 
   @Override
   public void onDisable() {
+    lobbyManager.disable();
     worldManager.disable();
   }
 }

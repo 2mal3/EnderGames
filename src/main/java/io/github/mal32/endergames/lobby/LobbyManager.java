@@ -1,0 +1,43 @@
+package io.github.mal32.endergames.lobby;
+
+import io.github.mal32.endergames.world.PlayerEnteredLobbyEvent;
+import java.util.ArrayList;
+import java.util.List;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class LobbyManager implements Listener {
+  private final JavaPlugin plugin;
+  private final List<LobbyModule> modules = new ArrayList<>();
+
+  public LobbyManager(JavaPlugin plugin) {
+    this.plugin = plugin;
+
+    Bukkit.getPluginManager().registerEvents(this, plugin);
+  }
+
+  public void registerModule(LobbyModule module) {
+    modules.add(module);
+    module.onRegister();
+  }
+
+  @EventHandler
+  public void onLobbyEnter(PlayerEnteredLobbyEvent event) {
+    Player player = event.getPlayer();
+
+    for (LobbyModule module : modules) {
+      module.onPlayerJoinLobby(player);
+    }
+  }
+
+  public void disable() {
+    HandlerList.unregisterAll(this);
+    for (LobbyModule module : modules) {
+      module.onDisable();
+    }
+  }
+}

@@ -1,12 +1,7 @@
 package io.github.mal32.endergames.world;
 
-import io.github.mal32.endergames.AbstractModule;
-import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.lobby.items.MenuManager;
-import io.github.mal32.endergames.lobby.minigames.EndlessParkour;
 import io.github.mal32.endergames.services.KitType;
 import io.github.mal32.endergames.services.PlayerInWorld;
-import java.util.List;
 import java.util.Random;
 import org.bukkit.*;
 import org.bukkit.block.structure.Mirror;
@@ -26,7 +21,6 @@ import org.bukkit.structure.StructureManager;
 public class LobbyWorld extends AbstractWorld {
   private final World world;
   private final Location spawnLocation;
-  private final List<AbstractModule> modules = List.of(new EndlessParkour((EnderGames) plugin));
 
   public LobbyWorld(JavaPlugin plugin, LobbyPlayerInitService playerInitService) {
     super(plugin, playerInitService);
@@ -39,19 +33,6 @@ public class LobbyWorld extends AbstractWorld {
     world.getChunkAt(spawnLocation).setForceLoaded(true);
 
     tryUpdatingLobby();
-
-    for (AbstractModule module : modules) {
-      module.enable();
-    }
-  }
-
-  @Override
-  public void disable() {
-    super.disable();
-
-    for (AbstractModule module : modules) {
-      module.disable();
-    }
   }
 
   @Override
@@ -79,17 +60,6 @@ public class LobbyWorld extends AbstractWorld {
   @Override
   public void initPlayer(Player player) {
     playerInitService.init(player, spawnLocation);
-
-    EnderGames plugin = (EnderGames) this.plugin;
-
-    final MenuManager menuManager = plugin.getMenuManager();
-    menuManager.initPlayer(player);
-
-    if (plugin.getPhaseController().isLoading()) {
-      menuManager.onGameEnd(player);
-    } else {
-      menuManager.onGameStart(player);
-    }
 
     // TODO generic player init?
     KitType.init(player);

@@ -1,8 +1,7 @@
 package io.github.mal32.endergames.lobby.minigames;
 
-import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.BlockLocation;
-import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.lobby.LobbyModule;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,12 +24,13 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
-public class EndlessParkour extends AbstractModule {
+public class EndlessParkour extends LobbyModule {
   private final Map<UUID, ParkourSession> players = new HashMap<>();
 
-  public EndlessParkour(EnderGames plugin) {
+  public EndlessParkour(JavaPlugin plugin) {
     super(plugin);
   }
 
@@ -41,8 +41,8 @@ public class EndlessParkour extends AbstractModule {
   }
 
   @Override
-  public void disable() {
-    super.disable();
+  public void onDisable() {
+    super.onDisable();
 
     for (UUID uuid : players.keySet()) {
       leave(uuid);
@@ -56,6 +56,7 @@ public class EndlessParkour extends AbstractModule {
     if (event.getAction() != Action.PHYSICAL) return;
     if (players.containsKey(player.getUniqueId())) return;
     Block block = event.getClickedBlock();
+    if (block == null) return;
     if (block.getType() != Material.HEAVY_WEIGHTED_PRESSURE_PLATE) return;
     if (block.getLocation().add(0, -1, 0).getBlock().getType() != Material.WHITE_WOOL) return;
 
@@ -178,7 +179,7 @@ public class EndlessParkour extends AbstractModule {
     final int highScore = plugin.getConfig().getInt(key);
     if (highScore < session.jumps) {
       plugin.getConfig().set(key, session.jumps);
-      Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> plugin.saveConfig());
+      Bukkit.getScheduler().runTaskAsynchronously(plugin, plugin::saveConfig);
       player.playSound(player, Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.UI, 1.0f, 1.0f);
       player.sendMessage(
           Component.text("")

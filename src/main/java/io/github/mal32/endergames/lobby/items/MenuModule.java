@@ -1,7 +1,10 @@
 package io.github.mal32.endergames.lobby.items;
 
-import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.game.phases.GameEndEvent;
+import io.github.mal32.endergames.game.phases.GameStartAbortEvent;
+import io.github.mal32.endergames.game.phases.GameStartEvent;
+import io.github.mal32.endergames.lobby.LobbyModule;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import io.github.mal32.endergames.services.PlayerState;
 import java.util.HashMap;
@@ -17,20 +20,20 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
-public class MenuManager extends AbstractModule {
+public class MenuModule extends LobbyModule {
   private final HashMap<String, MenuItem> items = new HashMap<>();
   private final NamespacedKey menuKey;
 
-  public MenuManager(EnderGames plugin) {
+  public MenuModule(EnderGames plugin) {
     super(plugin);
-    this.enable();
 
-    var rawItems =
+    List<MenuItem> rawItems =
         List.of(
             new KitSelector(plugin),
             new OperatorStartItem(plugin),
             new SpectatorItem(plugin),
             new PlayItem(plugin));
+
     for (MenuItem item : rawItems) {
       items.put(item.getKey(), item);
     }
@@ -38,7 +41,8 @@ public class MenuManager extends AbstractModule {
     this.menuKey = new NamespacedKey(plugin, "menu");
   }
 
-  public void initPlayer(Player player) {
+  @Override
+  public void onPlayerJoinLobby(Player player) {
     for (MenuItem item : items.values()) {
       item.initPlayer(player);
     }
@@ -56,7 +60,8 @@ public class MenuManager extends AbstractModule {
     }
   }
 
-  public void onGameStart() {
+  @EventHandler
+  public void onGameStart(GameStartEvent ignoredE) {
     for (Player player : PlayerState.IN_LOBBY.all()) {
       onGameStart(player);
     }
@@ -68,11 +73,13 @@ public class MenuManager extends AbstractModule {
     }
   }
 
-  public void onGameEnd() {
+  @EventHandler
+  public void onGameEnd(GameEndEvent ignoredE) {
     forEachLobbyPlayer(this::onGameEnd);
   }
 
-  public void onGameStartAbort() {
+  @EventHandler
+  public void onGameStartAbort(GameStartAbortEvent ignoredE) {
     for (MenuItem item : items.values()) {
       item.onGameStartAbort();
     }
@@ -86,7 +93,7 @@ public class MenuManager extends AbstractModule {
 
   private boolean isMenuItem(ItemStack item) {
     if (item == null) return false;
-    return item.getPersistentDataContainer().has(this.menuKey, PersistentDataType.STRING);
+    return item.getPersistentDataContainer().has(menuKey, PersistentDataType.STRING);
   }
 
   @EventHandler
@@ -96,6 +103,7 @@ public class MenuManager extends AbstractModule {
 
     ItemStack item = event.getItem();
     if (!isMenuItem(item)) return;
+
     String itemKey = item.getPersistentDataContainer().get(this.menuKey, PersistentDataType.STRING);
     items.get(itemKey).playerInteract(event);
 
