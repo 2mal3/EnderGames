@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.world;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;
 import org.mockbukkit.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.matcher.plugin.PluginManagerFiredEventClassMatcher;
 
 class LobbyPlayerInitServiceTest {
   private ServerMock server;
@@ -48,6 +50,10 @@ class LobbyPlayerInitServiceTest {
     Location spawn = new Location(player.getWorld(), 100, 64, 200);
 
     service.init(player, spawn);
+
+    assertThat(
+        server.getPluginManager(),
+        PluginManagerFiredEventClassMatcher.hasFiredEventInstance(PlayerEnteredGameEvent.class));
 
     assertTrue(player.hasTeleported());
     assertTrue(PlayerInWorld.LOBBY.is(player));

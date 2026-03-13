@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.world;
 
 import io.github.mal32.endergames.services.PlayerInWorld;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -23,5 +24,7 @@ public class LobbyPlayerInitService extends PlayerInitService {
     player.addPotionEffect(
         new PotionEffect(
             PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 0, true, false, false));
+
+    Bukkit.getPluginManager().callEvent(new PlayerEnteredLobbyEvent(player));
   }
 }
