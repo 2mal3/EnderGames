@@ -11,7 +11,6 @@ public class GameWorld extends AbstractWorld {
   private final World world;
   private final FindWorldSpawnService spawnService;
   private final WorldPersistenceService persistenceService;
-  private final WorldBorderService borderService;
 
   private Location spawnLocation;
 
@@ -19,14 +18,12 @@ public class GameWorld extends AbstractWorld {
       JavaPlugin plugin,
       GamePlayerInitService playerInitService,
       FindWorldSpawnService spawnService,
-      WorldPersistenceService persistenceService,
-      WorldBorderService borderService) {
+      WorldPersistenceService persistenceService) {
     super(plugin, playerInitService);
 
     this.world = Bukkit.getWorld("world"); // TODO: service?
     this.spawnService = spawnService;
     this.persistenceService = persistenceService;
-    this.borderService = borderService;
 
     assert world != null;
     Integer savedX = persistenceService.loadSpawn(world);
@@ -48,7 +45,10 @@ public class GameWorld extends AbstractWorld {
     world.setGameRule(GameRules.SPAWN_PHANTOMS, false);
     world.setGameRule(GameRules.ALLOW_ENTERING_NETHER_USING_PORTALS, false);
 
-    borderService.configureBorder(world);
+    WorldBorder border = world.getWorldBorder();
+    border.setWarningDistance(32);
+    border.setWarningTimeTicks(60 * 20);
+    border.setDamageBuffer(1);
 
     world.setStorm(false);
     world.setThundering(false);
@@ -75,7 +75,8 @@ public class GameWorld extends AbstractWorld {
   public void findNewSpawn() {
     spawnLocation = spawnService.findNextValidSpawn(spawnLocation);
     persistenceService.saveSpawn(world, spawnLocation.getBlockX());
-    borderService.centerBorder(world, spawnLocation);
+    WorldBorder border = world.getWorldBorder();
+    border.setCenter(spawnLocation);
   }
 
   @EventHandler

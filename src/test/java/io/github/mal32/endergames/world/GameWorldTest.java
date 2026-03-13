@@ -23,7 +23,6 @@ class GameWorldTest {
 
   private FindWorldSpawnService spawnService;
   private WorldPersistenceService persistenceService;
-  private WorldBorderService borderService;
 
   private World world;
 
@@ -36,15 +35,13 @@ class GameWorldTest {
 
     spawnService = mock(FindWorldSpawnService.class);
     persistenceService = mock(WorldPersistenceService.class);
-    borderService = spy(new WorldBorderService());
 
     when(persistenceService.loadSpawn(world)).thenReturn(null);
     when(spawnService.findNextValidSpawn(any(Location.class)))
         .thenReturn(new Location(world, 1000, 200, 0));
 
     gameWorld =
-        new GameWorld(
-            plugin, new GamePlayerInitService(), spawnService, persistenceService, borderService);
+        new GameWorld(plugin, new GamePlayerInitService(), spawnService, persistenceService);
   }
 
   @AfterEach
@@ -73,7 +70,8 @@ class GameWorldTest {
 
     assertEquals(2000, gameWorld.getSpawnLocation().getBlockX());
     verify(persistenceService).saveSpawn(eq(world), eq(2000));
-    verify(borderService).centerBorder(eq(world), eq(newSpawn));
+    assertEquals(newSpawn.getBlockX(), world.getWorldBorder().getCenter().getBlockX());
+    assertEquals(newSpawn.getBlockZ(), world.getWorldBorder().getCenter().getBlockZ());
   }
 
   @Test
