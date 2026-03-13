@@ -11,12 +11,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class LobbyManager implements Listener {
-  private final JavaPlugin plugin;
   private final List<LobbyModule> modules = new ArrayList<>();
 
   public LobbyManager(JavaPlugin plugin) {
-    this.plugin = plugin;
-
     Bukkit.getPluginManager().registerEvents(this, plugin);
   }
 
