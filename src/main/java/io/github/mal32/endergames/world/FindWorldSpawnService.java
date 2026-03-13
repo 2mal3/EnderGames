@@ -5,7 +5,7 @@ import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.block.Biome;
 
-public class WorldSpawnService {
+public class FindWorldSpawnService {
   private static final Set<Biome> VALID_BIOMES =
       new HashSet<>(
           Set.of(

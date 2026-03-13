@@ -9,7 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class GameWorld extends AbstractWorld {
   private final World world;
-  private final WorldSpawnService spawnService;
+  private final FindWorldSpawnService spawnService;
   private final WorldPersistenceService persistenceService;
   private final WorldBorderService borderService;
 
@@ -18,7 +18,7 @@ public class GameWorld extends AbstractWorld {
   public GameWorld(
       JavaPlugin plugin,
       GamePlayerInitService playerInitService,
-      WorldSpawnService spawnService,
+      FindWorldSpawnService spawnService,
       WorldPersistenceService persistenceService,
       WorldBorderService borderService) {
     super(plugin, playerInitService);

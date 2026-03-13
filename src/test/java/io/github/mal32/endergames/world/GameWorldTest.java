@@ -21,7 +21,7 @@ class GameWorldTest {
   private ServerMock server;
   private GameWorld gameWorld;
 
-  private WorldSpawnService spawnService;
+  private FindWorldSpawnService spawnService;
   private WorldPersistenceService persistenceService;
   private WorldBorderService borderService;
 
@@ -34,7 +34,7 @@ class GameWorldTest {
 
     world = server.addSimpleWorld("world");
 
-    spawnService = mock(WorldSpawnService.class);
+    spawnService = mock(FindWorldSpawnService.class);
     persistenceService = mock(WorldPersistenceService.class);
     borderService = spy(new WorldBorderService());
 

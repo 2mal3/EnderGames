@@ -10,7 +10,7 @@ public class WorldManager {
 
   public WorldManager(EnderGames plugin) {
 
-    WorldSpawnService spawnService = new WorldSpawnService();
+    FindWorldSpawnService spawnService = new FindWorldSpawnService();
     WorldPersistenceService persistenceService = new WorldPersistenceService(plugin);
     WorldBorderService borderService = new WorldBorderService();
     GamePlayerInitService gamePlayerInitService = new GamePlayerInitService();

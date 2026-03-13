@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.world.WorldMock;
 
-class WorldSpawnServiceTest {
+class FindWorldSpawnServiceTest {
 
   @BeforeEach
   void setUp() {
@@ -25,7 +25,7 @@ class WorldSpawnServiceTest {
 
   @Test
   void isInvalidBiome() {
-    WorldSpawnService service = new WorldSpawnService();
+    FindWorldSpawnService service = new FindWorldSpawnService();
 
     assertTrue(service.isInvalidBiome(Biome.OCEAN));
     assertTrue(service.isInvalidBiome(Biome.JUNGLE));
@@ -34,7 +34,7 @@ class WorldSpawnServiceTest {
 
   @Test
   void findNextValidSpawn() {
-    WorldSpawnService service = new WorldSpawnService();
+    FindWorldSpawnService service = new FindWorldSpawnService();
 
     WorldMock world = new WorldMock(Material.STONE, 256, 0);
     world.setBiome(0, 200, 0, Biome.WARM_OCEAN);
