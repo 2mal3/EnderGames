@@ -92,23 +92,6 @@
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>false</filtering>
-                <excludes>
-                    <exclude>paper-plugin.yml</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>paper-plugin.yml</include>
-                </includes>
-            </resource>
-        </resources>
-
         <plugins>
             <!-- Compiler -->
             <plugin>
@@ -187,4 +170,82 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources/release</directory>
+                        <filtering>true</filtering>
+                        <includes>
+                            <include>paper-plugin.yml</include>
+                        </includes>
+                    </resource>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <filtering>false</filtering>
+                        <excludes>
+                            <exclude>release/**</exclude>
+                            <exclude>dev/**</exclude>
+                        </excludes>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+
+        <profile>
+            <id>dev</id>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources/dev</directory>
+                        <filtering>true</filtering>
+                        <includes>
+                            <include>paper-plugin.yml</include>
+                        </includes>
+                    </resource>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <filtering>false</filtering>
+                        <excludes>
+                            <exclude>release/**</exclude>
+                            <exclude>dev/**</exclude>
+                            <exclude>EnderGamesDatapack/**</exclude>
+                        </excludes>
+                    </resource>
+                </resources>
+
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>3.8.0</version>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/assembly/datapack.xml</descriptor>
+                            </descriptors>
+
+                            <finalName>EnderGamesDataPack</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <id>zip-datapack</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
