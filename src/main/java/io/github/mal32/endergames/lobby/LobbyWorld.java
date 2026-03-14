@@ -1,8 +1,10 @@
-package io.github.mal32.endergames.world;
+package io.github.mal32.endergames.lobby;
 
+import io.github.mal32.endergames.AbstractWorld;
 import io.github.mal32.endergames.services.KitType;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import java.util.Random;
+
 import org.bukkit.*;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;

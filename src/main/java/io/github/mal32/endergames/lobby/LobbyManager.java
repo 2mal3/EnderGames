@@ -4,7 +4,7 @@ import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.lobby.items.MenuModule;
 import io.github.mal32.endergames.lobby.minigames.EndlessParkour;
 import io.github.mal32.endergames.lobby.minigames.parkour.ParkourGame;
-import io.github.mal32.endergames.world.PlayerEnteredLobbyEvent;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Bukkit;

@@ -1,5 +1,6 @@
-package io.github.mal32.endergames.world;
+package io.github.mal32.endergames.game;
 
+import io.github.mal32.endergames.AbstractWorld;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import org.bukkit.*;
 import org.bukkit.entity.Player;

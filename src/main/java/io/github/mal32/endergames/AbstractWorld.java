@@ -1,4 +1,4 @@
-package io.github.mal32.endergames.world;
+package io.github.mal32.endergames;
 
 import java.util.Objects;
 import org.bukkit.Bukkit;

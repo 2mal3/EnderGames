@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
+import io.github.mal32.endergames.lobby.LobbyWorld;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import java.util.concurrent.CompletableFuture;
 import org.bukkit.GameMode;

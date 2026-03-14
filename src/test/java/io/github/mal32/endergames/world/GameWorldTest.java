@@ -3,6 +3,8 @@ package io.github.mal32.endergames.world;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import io.github.mal32.endergames.game.FindWorldSpawnService;
+import io.github.mal32.endergames.game.GameWorld;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import java.util.concurrent.CompletableFuture;
 import org.bukkit.Difficulty;

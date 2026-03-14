@@ -1,4 +1,4 @@
-package io.github.mal32.endergames.world;
+package io.github.mal32.endergames.game;
 
 import java.util.HashSet;
 import java.util.Set;

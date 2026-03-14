@@ -1,15 +1,15 @@
-package io.github.mal32.endergames.world;
+package io.github.mal32.endergames.lobby;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class PlayerEnteredGameEvent extends Event {
+public class PlayerEnteredLobbyEvent extends Event {
   private static final HandlerList HANDLER_LIST = new HandlerList();
   private final Player player;
 
-  public PlayerEnteredGameEvent(@NotNull Player player) {
+  public PlayerEnteredLobbyEvent(@NotNull Player player) {
     this.player = player;
   }
 
@@ -17,7 +17,7 @@ public class PlayerEnteredGameEvent extends Event {
     return HANDLER_LIST;
   }
 
-  public Player getPlayer() {
+  public @NotNull Player getPlayer() {
     return player;
   }
 

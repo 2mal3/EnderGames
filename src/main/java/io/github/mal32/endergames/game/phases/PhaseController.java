@@ -3,7 +3,7 @@ package io.github.mal32.endergames.game.phases;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import io.github.mal32.endergames.services.PlayerState;
-import io.github.mal32.endergames.world.GameWorld;
+import io.github.mal32.endergames.game.GameWorld;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
