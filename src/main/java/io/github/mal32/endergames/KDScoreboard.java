@@ -18,11 +18,8 @@ import org.bukkit.scoreboard.ScoreboardManager;
 
 public class KDScoreboard implements Listener {
   private final Objective objective;
-  private final EnderGames plugin;
 
   public KDScoreboard(EnderGames plugin) {
-    this.plugin = plugin;
-
     ScoreboardManager manager = plugin.getServer().getScoreboardManager();
     Scoreboard board = manager.getMainScoreboard();
     if (board.getObjective("kd") != null) {

@@ -110,10 +110,10 @@ public class Knight extends AbstractKit {
     if (!(event.getEntity() instanceof Player player)) return;
     if (!(event.getMount() instanceof Horse horse)) return;
 
-    // dont protect horses from non-knight players
+    // don't protect horses from non-knight players
     if (!mounts.containsValue(horse)) return;
-    // check if the player is the rightfull owner
-    // using .equals here since the paperapi doesnt garantee the same entity instance for the same
+    // check if the player is the rightful owner
+    // using .equals here since the paperapi doesn't guarantee the same entity instance for the same
     // entity
     Horse playerHorse = mounts.get(player.getUniqueId());
     if (playerHorse != null && playerHorse.equals(horse)) return;

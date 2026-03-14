@@ -34,7 +34,7 @@ public class EndlessParkour extends LobbyModule {
     super(plugin);
   }
 
-  // Why does Java havent build in this???
+  // Why does Java haven't build in this???
   private static double roundN(double value, int places) {
     double scale = Math.pow(10, places);
     return Math.round(value * scale) / scale;
@@ -224,81 +224,45 @@ public class EndlessParkour extends LobbyModule {
   }
 
   private Material getWoolForColor(DyeColor color) {
-    switch (color) {
-      case BLACK:
-        return Material.BLACK_WOOL;
-      case BLUE:
-        return Material.BLUE_WOOL;
-      case BROWN:
-        return Material.BROWN_WOOL;
-      case CYAN:
-        return Material.CYAN_WOOL;
-      case GRAY:
-        return Material.GRAY_WOOL;
-      case GREEN:
-        return Material.GREEN_WOOL;
-      case LIGHT_BLUE:
-        return Material.LIGHT_BLUE_WOOL;
-      case LIGHT_GRAY:
-        return Material.LIGHT_GRAY_WOOL;
-      case LIME:
-        return Material.LIME_WOOL;
-      case MAGENTA:
-        return Material.MAGENTA_WOOL;
-      case ORANGE:
-        return Material.ORANGE_WOOL;
-      case PINK:
-        return Material.PINK_WOOL;
-      case PURPLE:
-        return Material.PURPLE_WOOL;
-      case RED:
-        return Material.RED_WOOL;
-      case WHITE:
-        return Material.WHITE_WOOL;
-      case YELLOW:
-        return Material.YELLOW_WOOL;
-      default:
-        return Material.WHITE_WOOL;
-    }
+    return switch (color) {
+      case BLACK -> Material.BLACK_WOOL;
+      case BLUE -> Material.BLUE_WOOL;
+      case BROWN -> Material.BROWN_WOOL;
+      case CYAN -> Material.CYAN_WOOL;
+      case GRAY -> Material.GRAY_WOOL;
+      case GREEN -> Material.GREEN_WOOL;
+      case LIGHT_BLUE -> Material.LIGHT_BLUE_WOOL;
+      case LIGHT_GRAY -> Material.LIGHT_GRAY_WOOL;
+      case LIME -> Material.LIME_WOOL;
+      case MAGENTA -> Material.MAGENTA_WOOL;
+      case ORANGE -> Material.ORANGE_WOOL;
+      case PINK -> Material.PINK_WOOL;
+      case PURPLE -> Material.PURPLE_WOOL;
+      case RED -> Material.RED_WOOL;
+      case WHITE -> Material.WHITE_WOOL;
+      case YELLOW -> Material.YELLOW_WOOL;
+    };
   }
 
   private Material getTerracotaForColor(DyeColor color) {
-    switch (color) {
-      case BLACK:
-        return Material.BLACK_TERRACOTTA;
-      case BLUE:
-        return Material.BLUE_TERRACOTTA;
-      case BROWN:
-        return Material.BROWN_TERRACOTTA;
-      case CYAN:
-        return Material.CYAN_TERRACOTTA;
-      case GRAY:
-        return Material.GRAY_TERRACOTTA;
-      case GREEN:
-        return Material.GREEN_TERRACOTTA;
-      case LIGHT_BLUE:
-        return Material.LIGHT_BLUE_TERRACOTTA;
-      case LIGHT_GRAY:
-        return Material.LIGHT_GRAY_TERRACOTTA;
-      case LIME:
-        return Material.LIME_TERRACOTTA;
-      case MAGENTA:
-        return Material.MAGENTA_TERRACOTTA;
-      case ORANGE:
-        return Material.ORANGE_TERRACOTTA;
-      case PINK:
-        return Material.PINK_TERRACOTTA;
-      case PURPLE:
-        return Material.PURPLE_TERRACOTTA;
-      case RED:
-        return Material.RED_TERRACOTTA;
-      case WHITE:
-        return Material.WHITE_TERRACOTTA;
-      case YELLOW:
-        return Material.YELLOW_TERRACOTTA;
-      default:
-        return Material.WHITE_TERRACOTTA;
-    }
+    return switch (color) {
+      case BLACK -> Material.BLACK_TERRACOTTA;
+      case BLUE -> Material.BLUE_TERRACOTTA;
+      case BROWN -> Material.BROWN_TERRACOTTA;
+      case CYAN -> Material.CYAN_TERRACOTTA;
+      case GRAY -> Material.GRAY_TERRACOTTA;
+      case GREEN -> Material.GREEN_TERRACOTTA;
+      case LIGHT_BLUE -> Material.LIGHT_BLUE_TERRACOTTA;
+      case LIGHT_GRAY -> Material.LIGHT_GRAY_TERRACOTTA;
+      case LIME -> Material.LIME_TERRACOTTA;
+      case MAGENTA -> Material.MAGENTA_TERRACOTTA;
+      case ORANGE -> Material.ORANGE_TERRACOTTA;
+      case PINK -> Material.PINK_TERRACOTTA;
+      case PURPLE -> Material.PURPLE_TERRACOTTA;
+      case RED -> Material.RED_TERRACOTTA;
+      case WHITE -> Material.WHITE_TERRACOTTA;
+      case YELLOW -> Material.YELLOW_TERRACOTTA;
+    };
   }
 }
 

@@ -52,7 +52,7 @@ public class SpeedObsidianManager extends AbstractTeleportingBlockManager<SpeedO
   private void giveSpeed(Player player) {
     LivingEntity target = player;
     Entity vehicle = player.getVehicle();
-    if (vehicle != null && vehicle instanceof LivingEntity) {
+    if (vehicle instanceof LivingEntity) {
       target = (LivingEntity) vehicle;
     }
 
