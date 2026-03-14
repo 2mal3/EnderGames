@@ -17,7 +17,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;
@@ -47,7 +46,6 @@ class LobbyWorldTest {
   }
 
   @Test
-  @Disabled("FIXME")
   void setupWorld() {
     lobbyWorld.setupWorld();
 

@@ -21,16 +21,20 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class EnderGames extends JavaPlugin {
   private final MapManager mapManager = new MapManager();
+  private final FindWorldSpawnService spawnService = new FindWorldSpawnService();
   private PhaseController phaseController;
   private LobbyManager lobbyManager;
   private LobbyWorld lobbyWorld;
   private GameWorld gameWorld;
-  FindWorldSpawnService spawnService = new FindWorldSpawnService();
 
   public static boolean isInDebugMode() {
     String debugEnv = System.getenv("EG_DEBUG");
     return debugEnv != null
         && (debugEnv.equalsIgnoreCase("true") || debugEnv.equalsIgnoreCase("1"));
+  }
+
+  public LobbyWorld getLobbyWorld() {
+    return lobbyWorld;
   }
 
   public void changeMapPixelsInLobby(

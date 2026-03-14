@@ -6,7 +6,6 @@ import io.github.mal32.endergames.game.phases.GameStartEvent;
 import io.github.mal32.endergames.lobby.LobbyModule;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import io.github.mal32.endergames.services.PlayerState;
-import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
