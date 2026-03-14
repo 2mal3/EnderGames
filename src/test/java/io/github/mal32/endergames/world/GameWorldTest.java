@@ -40,8 +40,7 @@ class GameWorldTest {
     when(spawnService.findNextValidSpawn(any(Location.class)))
         .thenReturn(new Location(world, 1000, 200, 0));
 
-    gameWorld =
-        new GameWorld(plugin, new GamePlayerInitService(), spawnService, persistenceService);
+    gameWorld = new GameWorld(plugin, spawnService, persistenceService);
   }
 
   @AfterEach

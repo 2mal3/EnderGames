@@ -12,12 +12,9 @@ public class WorldManager {
 
     FindWorldSpawnService spawnService = new FindWorldSpawnService();
     WorldPersistenceService persistenceService = new WorldPersistenceService(plugin);
-    GamePlayerInitService gamePlayerInitService = new GamePlayerInitService();
 
-    LobbyPlayerInitService lobbyPlayerInitService = new LobbyPlayerInitService();
-
-    this.lobbyWorld = new LobbyWorld(plugin, lobbyPlayerInitService);
-    this.gameWorld = new GameWorld(plugin, gamePlayerInitService, spawnService, persistenceService);
+    this.lobbyWorld = new LobbyWorld(plugin);
+    this.gameWorld = new GameWorld(plugin, spawnService, persistenceService);
 
     lobbyWorld.setupWorld();
     gameWorld.setupWorld();

@@ -7,12 +7,14 @@ import static org.mockito.Mockito.spy;
 
 import io.github.mal32.endergames.services.PlayerInWorld;
 import java.util.concurrent.CompletableFuture;
+import org.bukkit.GameMode;
 import org.bukkit.GameRules;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffectType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +37,7 @@ class LobbyWorldTest {
     final NamespacedKey placedLobbyVersionKey = new NamespacedKey(plugin, "placed_lobby_version");
     world.getPersistentDataContainer().set(placedLobbyVersionKey, PersistentDataType.INTEGER, 1);
 
-    lobbyWorld = new LobbyWorld(plugin, new LobbyPlayerInitService());
+    lobbyWorld = new LobbyWorld(plugin);
   }
 
   @AfterEach
@@ -64,5 +66,8 @@ class LobbyWorldTest {
 
     assertEquals(PlayerInWorld.LOBBY, PlayerInWorld.get(player));
     assertEquals(world, player.getWorld());
+    assertEquals(GameMode.ADVENTURE, player.getGameMode());
+    assertTrue(player.hasPotionEffect(PotionEffectType.SATURATION));
+    assertTrue(player.hasPotionEffect(PotionEffectType.RESISTANCE));
   }
 }

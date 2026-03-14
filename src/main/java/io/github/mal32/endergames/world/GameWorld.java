@@ -16,10 +16,9 @@ public class GameWorld extends AbstractWorld {
 
   public GameWorld(
       JavaPlugin plugin,
-      GamePlayerInitService playerInitService,
       FindWorldSpawnService spawnService,
       WorldPersistenceService persistenceService) {
-    super(plugin, playerInitService);
+    super(plugin);
 
     this.world = Bukkit.getWorld("world"); // TODO: service?
     this.spawnService = spawnService;
@@ -87,5 +86,14 @@ public class GameWorld extends AbstractWorld {
     if (player.getGameMode() == GameMode.SPECTATOR) {
       event.setCancelled(true);
     }
+  }
+
+  @Override
+  public void initPlayer(Player player) {
+    super.initPlayer(player);
+
+    player.teleportAsync(spawnLocation.clone().add(0, 5, 0));
+    PlayerInWorld.GAME.set(player);
+    Bukkit.getPluginManager().callEvent(new PlayerEnteredGameEvent(player));
   }
 }

@@ -15,6 +15,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
 
@@ -22,8 +24,8 @@ public class LobbyWorld extends AbstractWorld {
   private final World world;
   private final Location spawnLocation;
 
-  public LobbyWorld(JavaPlugin plugin, LobbyPlayerInitService playerInitService) {
-    super(plugin, playerInitService);
+  public LobbyWorld(JavaPlugin plugin) {
+    super(plugin);
 
     this.world = Bukkit.getWorld("world_enga_lobby");
     this.spawnLocation = new Location(world, 0, 64, 0);
@@ -59,9 +61,22 @@ public class LobbyWorld extends AbstractWorld {
 
   @Override
   public void initPlayer(Player player) {
-    playerInitService.init(player, spawnLocation);
+    super.initPlayer(player);
 
-    // TODO generic player init?
+    player.setGameMode(GameMode.ADVENTURE);
+
+    player.teleportAsync(spawnLocation.clone().add(0, 10, 0));
+    PlayerInWorld.LOBBY.set(player);
+
+    player.addPotionEffect(
+        new PotionEffect(
+            PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, true, false, false));
+    player.addPotionEffect(
+        new PotionEffect(
+            PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 0, true, false, false));
+
+    Bukkit.getPluginManager().callEvent(new PlayerEnteredLobbyEvent(player));
+
     KitType.init(player);
   }
 
