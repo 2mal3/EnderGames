@@ -67,7 +67,7 @@ public class EnderGames extends JavaPlugin {
     this.phaseController = new PhaseController(this, gameWorld);
 
     this.lobbyManager = new LobbyManager(this);
-    lobbyManager.registerAllModules(this);
+    LobbyManager.registerDefaultModules(this);
 
     KitRegistry.registerKits(this);
 
