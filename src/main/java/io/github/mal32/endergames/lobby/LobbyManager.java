@@ -1,5 +1,9 @@
 package io.github.mal32.endergames.lobby;
 
+import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.lobby.items.MenuModule;
+import io.github.mal32.endergames.lobby.minigames.EndlessParkour;
+import io.github.mal32.endergames.lobby.minigames.parkour.ParkourGame;
 import io.github.mal32.endergames.world.PlayerEnteredLobbyEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +24,13 @@ public class LobbyManager implements Listener {
   public void registerModule(LobbyModule module) {
     modules.add(module);
     module.onRegister();
+  }
+
+  public void registerAllModules(EnderGames plugin) {
+    registerModule(new MenuModule(plugin));
+    registerModule(new EndlessParkour(plugin));
+    registerModule(new PlayerDifficulty(plugin, plugin.getLobbyWorld().getWorld()));
+    registerModule(new ParkourGame(plugin));
   }
 
   @EventHandler

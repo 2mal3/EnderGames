@@ -6,7 +6,6 @@ import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.game.phases.PhaseController;
 import io.github.mal32.endergames.kits.KitRegistry;
 import io.github.mal32.endergames.lobby.LobbyManager;
-import io.github.mal32.endergames.lobby.LobbyModules;
 import io.github.mal32.endergames.lobby.MapManager;
 import io.github.mal32.endergames.world.FindWorldSpawnService;
 import io.github.mal32.endergames.world.GameWorld;
@@ -68,7 +67,7 @@ public class EnderGames extends JavaPlugin {
     this.phaseController = new PhaseController(this, gameWorld);
 
     this.lobbyManager = new LobbyManager(this);
-    LobbyModules.registerAll(this);
+    lobbyManager.registerAllModules(this);
 
     KitRegistry.registerKits(this);
 
