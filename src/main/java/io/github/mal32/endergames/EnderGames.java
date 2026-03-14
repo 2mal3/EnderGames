@@ -108,6 +108,7 @@ public class EnderGames extends JavaPlugin {
 
   @Override
   public void onDisable() {
+    lobbyManager.disable();
     gameWorld.disable();
     lobbyWorld.disable();
   }
