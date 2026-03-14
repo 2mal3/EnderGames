@@ -11,10 +11,9 @@ public class WorldManager {
   public WorldManager(EnderGames plugin) {
 
     FindWorldSpawnService spawnService = new FindWorldSpawnService();
-    WorldPersistenceService persistenceService = new WorldPersistenceService(plugin);
 
     this.lobbyWorld = new LobbyWorld(plugin);
-    this.gameWorld = new GameWorld(plugin, spawnService, persistenceService);
+    this.gameWorld = new GameWorld(plugin, spawnService);
 
     lobbyWorld.setupWorld();
     gameWorld.setupWorld();

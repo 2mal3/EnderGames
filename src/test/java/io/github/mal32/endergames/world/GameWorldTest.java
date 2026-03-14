@@ -22,7 +22,6 @@ class GameWorldTest {
   private GameWorld gameWorld;
 
   private FindWorldSpawnService spawnService;
-  private WorldPersistenceService persistenceService;
 
   private World world;
 
@@ -34,13 +33,11 @@ class GameWorldTest {
     world = server.addSimpleWorld("world");
 
     spawnService = mock(FindWorldSpawnService.class);
-    persistenceService = mock(WorldPersistenceService.class);
 
-    when(persistenceService.loadSpawn(world)).thenReturn(null);
     when(spawnService.findNextValidSpawn(any(Location.class)))
         .thenReturn(new Location(world, 1000, 200, 0));
 
-    gameWorld = new GameWorld(plugin, spawnService, persistenceService);
+    gameWorld = new GameWorld(plugin, spawnService);
   }
 
   @AfterEach
@@ -68,7 +65,6 @@ class GameWorldTest {
     gameWorld.findNewSpawn();
 
     assertEquals(2000, gameWorld.getSpawnLocation().getBlockX());
-    verify(persistenceService).saveSpawn(eq(world), eq(2000));
     assertEquals(newSpawn.getBlockX(), world.getWorldBorder().getCenter().getBlockX());
     assertEquals(newSpawn.getBlockZ(), world.getWorldBorder().getCenter().getBlockZ());
   }
@@ -84,5 +80,23 @@ class GameWorldTest {
 
     assertEquals(PlayerInWorld.GAME, PlayerInWorld.get(player));
     assertEquals(world, player.getWorld());
+  }
+
+  @Test
+  void saveAndLoadSpawn() {
+    // First GameWorld creates and saves spawn at x=1000
+    // Now create a new spawn location
+    Location newSpawn = new Location(world, 2000, 200, 0);
+    when(spawnService.findNextValidSpawn(any(Location.class))).thenReturn(newSpawn);
+
+    gameWorld.findNewSpawn();
+
+    assertEquals(2000, gameWorld.getSpawnLocation().getBlockX());
+
+    // Create a new GameWorld instance to test that spawn is persisted
+    PluginMock plugin = (PluginMock) server.getPluginManager().getPlugin("MockPlugin");
+    GameWorld newGameWorld = new GameWorld(plugin, spawnService);
+
+    assertEquals(2000, newGameWorld.getSpawnLocation().getBlockX());
   }
 }

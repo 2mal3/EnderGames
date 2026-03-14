@@ -5,31 +5,29 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class GameWorld extends AbstractWorld {
   private final World world;
   private final FindWorldSpawnService spawnService;
-  private final WorldPersistenceService persistenceService;
+  private final NamespacedKey spawnKey;
 
   private Location spawnLocation;
 
-  public GameWorld(
-      JavaPlugin plugin,
-      FindWorldSpawnService spawnService,
-      WorldPersistenceService persistenceService) {
+  public GameWorld(JavaPlugin plugin, FindWorldSpawnService spawnService) {
     super(plugin);
 
     this.world = Bukkit.getWorld("world"); // TODO: service?
     this.spawnService = spawnService;
-    this.persistenceService = persistenceService;
+    this.spawnKey = new NamespacedKey(plugin, "spawnLocation");
 
     assert world != null;
-    Integer savedX = persistenceService.loadSpawn(world);
+    Integer savedX = loadSpawn(world);
     if (savedX == null) {
       plugin.getComponentLogger().info("Creating spawn location");
       spawnLocation = spawnService.findNextValidSpawn(new Location(world, 0, 200, 0));
-      persistenceService.saveSpawn(world, spawnLocation.getBlockX());
+      saveSpawn(world, spawnLocation.getBlockX());
     } else {
       spawnLocation = new Location(world, savedX, 200, 0);
     }
@@ -73,9 +71,17 @@ public class GameWorld extends AbstractWorld {
 
   public void findNewSpawn() {
     spawnLocation = spawnService.findNextValidSpawn(spawnLocation);
-    persistenceService.saveSpawn(world, spawnLocation.getBlockX());
+    saveSpawn(world, spawnLocation.getBlockX());
     WorldBorder border = world.getWorldBorder();
     border.setCenter(spawnLocation);
+  }
+
+  private void saveSpawn(World world, int x) {
+    world.getPersistentDataContainer().set(spawnKey, PersistentDataType.INTEGER, x);
+  }
+
+  private Integer loadSpawn(World world) {
+    return world.getPersistentDataContainer().get(spawnKey, PersistentDataType.INTEGER);
   }
 
   @EventHandler
