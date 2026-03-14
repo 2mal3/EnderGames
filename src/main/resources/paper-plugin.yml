@@ -6,6 +6,6 @@ authors:
   - MCsharerGIT
   - lambdaphoenix
 api-version: '${project.api.version}'
-bootstrapper: io.github.mal32.endergames.PluginBootstrapper
+${bootstrapperLine}
 description: ${project.description}
 website: ${project.url}

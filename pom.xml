@@ -27,6 +27,9 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.api.version>1.21.11</project.api.version>
+
+        <!-- bootstrapper for release -->
+        <bootstrapperLine>bootstrapper: io.github.mal32.endergames.PluginBootstrapper</bootstrapperLine>
     </properties>
 
     <repositories>
@@ -92,6 +95,23 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>paper-plugin.yml</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>paper-plugin.yml</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <!-- Compiler -->
             <plugin>
@@ -173,33 +193,11 @@
 
     <profiles>
         <profile>
-            <id>release</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <resources>
-                    <resource>
-                        <directory>src/main/resources/release</directory>
-                        <filtering>true</filtering>
-                        <includes>
-                            <include>paper-plugin.yml</include>
-                        </includes>
-                    </resource>
-                    <resource>
-                        <directory>src/main/resources</directory>
-                        <filtering>false</filtering>
-                        <excludes>
-                            <exclude>release/**</exclude>
-                            <exclude>dev/**</exclude>
-                        </excludes>
-                    </resource>
-                </resources>
-            </build>
-        </profile>
-
-        <profile>
             <id>dev</id>
+            <properties>
+                <bootstrapperLine/>
+            </properties>
+
             <build>
                 <resources>
                     <resource>
@@ -213,8 +211,6 @@
                         <directory>src/main/resources</directory>
                         <filtering>false</filtering>
                         <excludes>
-                            <exclude>release/**</exclude>
-                            <exclude>dev/**</exclude>
                             <exclude>EnderGamesDatapack/**</exclude>
                         </excludes>
                     </resource>
