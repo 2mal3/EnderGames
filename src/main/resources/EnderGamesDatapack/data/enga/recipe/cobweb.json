@@ -1,7 +1,11 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": ["# #", " # ", "# #"],
+  "pattern": [
+    "# #",
+    " # ",
+    "# #"
+  ],
   "key": {
     "#": "minecraft:string"
   },

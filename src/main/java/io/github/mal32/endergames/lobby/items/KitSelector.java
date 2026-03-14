@@ -1,6 +1,5 @@
 package io.github.mal32.endergames.lobby.items;
 
-import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.kits.KitDescription;
 import io.github.mal32.endergames.kits.KitRegistry;
@@ -30,11 +29,12 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 class KitSelector extends MenuItem implements Listener {
 
-  public KitSelector(EnderGames plugin) {
+  public KitSelector(JavaPlugin plugin) {
     super(
         plugin,
         (byte) 0,
@@ -64,7 +64,7 @@ class KitSelector extends MenuItem implements Listener {
     return sb.toString();
   }
 
-  public static boolean playerHasAdvancement(EnderGames plugin, Player player, NamespacedKey key) {
+  public static boolean playerHasAdvancement(Player player, NamespacedKey key) {
     Advancement kitAdvancement = Bukkit.getAdvancement(key);
     if (kitAdvancement == null) {
       return true;
@@ -106,7 +106,7 @@ class KitSelector extends MenuItem implements Listener {
 
     NamespacedKey advancementKey =
         new NamespacedKey("enga", kitName.replace(" ", "_")); // TODO: use kit_name
-    if (!playerHasAdvancement(plugin, player, advancementKey)) {
+    if (!playerHasAdvancement(player, advancementKey)) {
       player.sendMessage(
           Component.text("Unlock the matching advancement to use that kit.")
               .color(NamedTextColor.RED));
@@ -148,10 +148,10 @@ class KitSelector extends MenuItem implements Listener {
 class KitInventory implements InventoryHolder {
   private final Inventory inventory;
   private final Player player;
-  private final EnderGames plugin;
+  private final JavaPlugin plugin;
   public String selectedKitName;
 
-  public KitInventory(EnderGames plugin, Player player) {
+  public KitInventory(JavaPlugin plugin, Player player) {
     this.inventory = plugin.getServer().createInventory(this, 27, Component.text("Select Kit"));
     this.plugin = plugin;
     this.player = player;
@@ -228,7 +228,7 @@ class KitInventory implements InventoryHolder {
 
     NamespacedKey advancementKey =
         new NamespacedKey("enga", kitDescription.name().toLowerCase().replace(" ", "_"));
-    boolean kitUnlocked = KitSelector.playerHasAdvancement(plugin, player, advancementKey);
+    boolean kitUnlocked = KitSelector.playerHasAdvancement(player, advancementKey);
 
     var lore = new ArrayList<TextComponent>();
 

@@ -1,33 +1,42 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<project
-    xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
->
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.mal32.endergames</groupId>
     <artifactId>endergames</artifactId>
     <version>0.9.0</version>
-
     <name>EnderGames</name>
-    <description
-    >Teleporting themed Kit SurivialGames for small player sizes on a random generated map with post 1.8
-        PvP.
+    <description>
+        Teleporting themed Kit SurivialGames for small player sizes on a random generated map with post 1.8 PvP.
     </description>
     <url>https://github.com/2mal3/EnderGames</url>
 
+
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <java.version>21</java.version>
+        <paper.version>1.21.11-R0.1-SNAPSHOT</paper.version>
+        <bstats.version>3.0.2</bstats.version>
+        <advancementlib.version>0.3.2</advancementlib.version>
+
+        <junit.version>5.10.2</junit.version>
+        <mockito.version>5.12.0</mockito.version>
+        <mockbukkit.version>4.107.0</mockbukkit.version>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.api.version>1.21.11</project.api.version>
     </properties>
 
     <repositories>
+        <!-- PapaerMC Repository -->
         <repository>
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
+
+        <!-- Modrinth (AdvancementLib) -->
         <repository>
             <id>modrinth</id>
             <url>https://api.modrinth.com/maven/</url>
@@ -35,24 +44,50 @@
     </repositories>
 
     <dependencies>
+        <!-- Paper API -->
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21.11-R0.1-SNAPSHOT</version>
+            <version>${paper.version}</version>
             <scope>provided</scope>
         </dependency>
 
+        <!-- Bstats -->
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>3.0.2</version>
-            <scope>compile</scope>
+            <version>${bstats.version}</version>
         </dependency>
 
+        <!-- AdvancementLib -->
         <dependency>
             <groupId>maven.modrinth</groupId>
             <artifactId>advancementlib</artifactId>
-            <version>0.3.2</version>
+            <version>${advancementlib.version}</version>
+        </dependency>
+
+        <!-- JUnit 5 -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- mockito -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- MockBukkit -->
+        <dependency>
+            <groupId>org.mockbukkit.mockbukkit</groupId>
+            <artifactId>mockbukkit-v1.21</artifactId>
+            <version>${mockbukkit.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -60,33 +95,82 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>paper-plugin.yml</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
                 <filtering>false</filtering>
                 <excludes>
                     <exclude>paper-plugin.yml</exclude>
                 </excludes>
             </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>paper-plugin.yml</include>
+                </includes>
+            </resource>
         </resources>
+
         <plugins>
+            <!-- Compiler -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.15.0</version>
+                <configuration>
+                    <release>${java.version}</release>
+                    <parameters>true</parameters>
+                    <compilerArgs>
+                        <arg>-Xlint:deprecation</arg>
+                        <arg>-Werror</arg>                  <!-- Treat warnings as errors -->
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+
+            <!-- Tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.5</version>
+                <configuration>
+                    <useModulePath>false</useModulePath>
+                </configuration>
+            </plugin>
+
+            <!-- Shading -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.6.0</version>
                 <configuration>
+                    <shadedArtifactAttached>false</shadedArtifactAttached>
+
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern
-                            >io.github.mal32.endergames</shadedPattern>
+                            <shadedPattern>io.github.mal32.endergames.shaded.bstats</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>io.github.lambdaphoenix.advancementLib</pattern>
+                            <shadedPattern>io.github.mal32.endergames.shaded.advancementlib</shadedPattern>
                         </relocation>
                     </relocations>
+
+                    <filters>
+                        <filter>
+                            <artifact>org.bstats:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/MANIFEST.MF</exclude>
+                            </excludes>
+                        </filter>
+                        <filter>
+                            <artifact>maven.modrinth:advancementlib</artifact>
+                            <excludes>
+                                <exclude>META-INF/MANIFEST.MF</exclude>
+                                <exclude>plugin.yml</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
                 </configuration>
+
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -94,35 +178,12 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <createDependencyReducedPom
-                            >false</createDependencyReducedPom>
-                            <!-- Prevents creation of "original" plugin file -->
-                            <outputFile
-                            >${project.build.directory}/${project.build.finalName}.jar</outputFile>
-                            <!-- Prevents waring about duplicated files -->
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/MANIFEST.MF</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <!-- Correctly places plugin jar into build folder for testing -->
+                            <outputFile>${project.build.directory}/${project.build.finalName}.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.15.0</version>
-                <configuration>
-                    <compilerArgs>
-                        <arg>-Xlint:deprecation</arg>
-                        <arg>-Werror</arg> <!-- Treat warnings as errors -->
-                    </compilerArgs>
-                </configuration>
             </plugin>
         </plugins>
     </build>

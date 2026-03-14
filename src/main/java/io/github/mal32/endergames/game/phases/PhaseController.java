@@ -1,9 +1,9 @@
 package io.github.mal32.endergames.game.phases;
 
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.game.GameWorld;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import io.github.mal32.endergames.services.PlayerState;
+import io.github.mal32.endergames.game.GameWorld;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -36,10 +36,9 @@ public class PhaseController {
   public void start() {
     if (!(current instanceof LoadPhase)
         || PlayerState.PLAYING.all().length < 1) { // TODO: < 1 only in DEBUG?
-      plugin.getMenuManager().onGameStartAbort();
+      Bukkit.getPluginManager().callEvent(new GameStartAbortEvent());
       return;
     }
-    plugin.getMenuManager().onGameStart();
     next();
   }
 
@@ -48,7 +47,7 @@ public class PhaseController {
     current = current.nextPhase();
     if (current instanceof LoadPhase) {
       for (Player p : PlayerInWorld.GAME.all()) {
-        plugin.getWorldManager().sendToLobby(p);
+        plugin.sendToLobby(p);
       }
     }
   }

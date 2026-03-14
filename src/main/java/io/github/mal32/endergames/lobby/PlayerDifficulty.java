@@ -1,7 +1,5 @@
 package io.github.mal32.endergames.lobby;
 
-import io.github.mal32.endergames.AbstractModule;
-import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -26,20 +24,18 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
-public class PlayerDifficulty extends AbstractModule {
+public class PlayerDifficulty extends LobbyModule {
   private static final NamespacedKey ATTRIBUTE_NAME =
       new NamespacedKey("endergames", "difficulty_armor_modifier");
   private final TextDisplay display;
 
-  public PlayerDifficulty(EnderGames plugin) {
+  public PlayerDifficulty(JavaPlugin plugin, World lobby) {
     super(plugin);
 
-    display =
-        (TextDisplay)
-            getEntityByTag(
-                plugin.getWorldManager().getLobbyWorld().getWorld(), "difficulty_selector");
+    display = (TextDisplay) getEntityByTag(lobby, "difficulty_selector");
     if (display == null) {
       plugin.getComponentLogger().warn("Could not find difficulty selector text display");
     }
@@ -121,6 +117,7 @@ public class PlayerDifficulty extends AbstractModule {
   }
 
   private void updateDisplay(@Nullable Player player) {
+    if (display == null) return;
     display.setBillboard(Billboard.CENTER);
     display.setGlowing(true);
 

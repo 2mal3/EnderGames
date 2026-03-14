@@ -1,6 +1,5 @@
 package io.github.mal32.endergames.lobby.items;
 
-import io.github.mal32.endergames.EnderGames;
 import java.util.Map;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
@@ -10,22 +9,23 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 abstract class MenuItem {
-  protected final EnderGames plugin;
+  protected final JavaPlugin plugin;
   protected final byte slot;
   private final Map<String, ItemDisplay> display;
   private final String key;
 
-  protected MenuItem(EnderGames plugin, byte slot, String key, Map<String, ItemDisplay> display) {
+  protected MenuItem(JavaPlugin plugin, byte slot, String key, Map<String, ItemDisplay> display) {
     this.plugin = plugin;
     this.display = display;
     this.key = key;
     this.slot = slot;
   }
 
-  protected MenuItem(EnderGames plugin, byte slot, String key, Material display, Component name) {
+  protected MenuItem(JavaPlugin plugin, byte slot, String key, Material display, Component name) {
     this.plugin = plugin;
     this.display = Map.of("", new ItemDisplay(display, name));
     this.key = key;
