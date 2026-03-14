@@ -52,6 +52,6 @@ class SpectatorItem extends MenuItem {
   public void playerInteract(PlayerInteractEvent event) {
     Player player = event.getPlayer();
     player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
-    ((EnderGames) plugin).getWorldManager().sendToGame(player); // TODO: event?
+    ((EnderGames) plugin).sendToGame(player); // TODO: event?
   }
 }

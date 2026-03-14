@@ -169,7 +169,6 @@
                             </excludes>
                         </filter>
                     </filters>
-
                 </configuration>
 
                 <executions>
@@ -180,7 +179,8 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-<!--&lt;!&ndash;                            <outputFile>${project.build.directory}/${project.build.finalName}.jar</outputFile>&ndash;&gt;-->
+                            <!-- Correctly places plugin jar into build folder for testing -->
+                            <outputFile>${project.build.directory}/${project.build.finalName}.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>

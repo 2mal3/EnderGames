@@ -47,7 +47,7 @@ public class PhaseController {
     current = current.nextPhase();
     if (current instanceof LoadPhase) {
       for (Player p : PlayerInWorld.GAME.all()) {
-        plugin.getWorldManager().sendToLobby(p);
+        plugin.sendToLobby(p);
       }
     }
   }

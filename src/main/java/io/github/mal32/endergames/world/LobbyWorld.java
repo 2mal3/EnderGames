@@ -21,13 +21,12 @@ import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
 
 public class LobbyWorld extends AbstractWorld {
-  private final World world;
+  public static final World world = Bukkit.getWorld("world_enga_lobby");
   private final Location spawnLocation;
 
   public LobbyWorld(JavaPlugin plugin) {
     super(plugin);
 
-    this.world = Bukkit.getWorld("world_enga_lobby");
     this.spawnLocation = new Location(world, 0, 64, 0);
 
     assert world != null;

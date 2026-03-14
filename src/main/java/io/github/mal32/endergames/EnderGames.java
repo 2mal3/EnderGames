@@ -8,18 +8,24 @@ import io.github.mal32.endergames.kits.KitRegistry;
 import io.github.mal32.endergames.lobby.LobbyManager;
 import io.github.mal32.endergames.lobby.LobbyModules;
 import io.github.mal32.endergames.lobby.MapManager;
+import io.github.mal32.endergames.world.FindWorldSpawnService;
+import io.github.mal32.endergames.world.GameWorld;
+import io.github.mal32.endergames.world.LobbyWorld;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.ArrayList;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class EnderGames extends JavaPlugin {
   private final MapManager mapManager = new MapManager();
-  private WorldManager worldManager;
   private PhaseController phaseController;
   private LobbyManager lobbyManager;
+  private LobbyWorld lobbyWorld;
+  private GameWorld gameWorld;
+  FindWorldSpawnService spawnService = new FindWorldSpawnService();
 
   public static boolean isInDebugMode() {
     String debugEnv = System.getenv("EG_DEBUG");
@@ -30,10 +36,6 @@ public class EnderGames extends JavaPlugin {
   public void changeMapPixelsInLobby(
       ArrayList<MapPixel> changedMapPixels, boolean forceFullUpdate) {
     mapManager.addToMapWall(changedMapPixels, forceFullUpdate);
-  }
-
-  public WorldManager getWorldManager() {
-    return worldManager;
   }
 
   public PhaseController getPhaseController() {
@@ -55,8 +57,11 @@ public class EnderGames extends JavaPlugin {
       var metrics = new Metrics(this, PLUGIN_ID);
     }
 
-    this.worldManager = new WorldManager(this);
-    this.phaseController = new PhaseController(this, worldManager.getGameWorld());
+    this.lobbyWorld = new LobbyWorld(this);
+    this.gameWorld = new GameWorld(this, spawnService);
+    lobbyWorld.setupWorld();
+    gameWorld.setupWorld();
+    this.phaseController = new PhaseController(this, gameWorld);
 
     this.lobbyManager = new LobbyManager(this);
     LobbyModules.registerAll(this);
@@ -80,6 +85,14 @@ public class EnderGames extends JavaPlugin {
     }
   }
 
+  public void sendToLobby(Player player) {
+    lobbyWorld.initPlayer(player);
+  }
+
+  public void sendToGame(Player player) {
+    gameWorld.initPlayer(player);
+  }
+
   private LiteralCommandNode<CommandSourceStack> endergamesCommand() {
     return Commands.literal("endergames")
         .then(
@@ -95,7 +108,7 @@ public class EnderGames extends JavaPlugin {
 
   @Override
   public void onDisable() {
-    lobbyManager.disable();
-    worldManager.disable();
+    gameWorld.disable();
+    lobbyWorld.disable();
   }
 }
