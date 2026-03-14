@@ -8,12 +8,10 @@ import io.github.mal32.endergames.kits.KitRegistry;
 import io.github.mal32.endergames.lobby.LobbyManager;
 import io.github.mal32.endergames.lobby.LobbyModules;
 import io.github.mal32.endergames.lobby.MapManager;
-import io.github.mal32.endergames.lobby.PlayerDifficulty;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.ArrayList;
-import java.util.List;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -62,12 +60,6 @@ public class EnderGames extends JavaPlugin {
 
     this.lobbyManager = new LobbyManager(this);
     LobbyModules.registerAll(this);
-
-    // TODO: move?
-    var modules = List.of(new PlayerDifficulty(this));
-    for (AbstractModule module : modules) {
-      module.enable();
-    }
 
     KitRegistry.registerKits(this);
 
