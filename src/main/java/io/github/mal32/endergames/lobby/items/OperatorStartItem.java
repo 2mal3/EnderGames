@@ -38,6 +38,12 @@ class OperatorStartItem extends MenuItem {
   }
 
   @Override
+  public void initPlayer(Player player) {
+    if (!player.isOp()) return;
+    giveItem(player);
+  }
+
+  @Override
   public void onGameEnd(Player player) {
     if (!player.isOp()) return;
     giveItem(player);

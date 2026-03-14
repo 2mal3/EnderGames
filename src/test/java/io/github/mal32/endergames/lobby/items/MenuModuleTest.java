@@ -65,6 +65,28 @@ class MenuModuleTest {
   }
 
   @Test
+  void onPlayerJoinLobby_withOpPlayer() {
+    PlayerMock opPlayer = server.addPlayer();
+    opPlayer.setOp(true);
+
+    module.onPlayerJoinLobby(opPlayer);
+
+    assertEquals(1, itemA.initCount);
+    assertEquals(1, itemB.initCount);
+  }
+
+  @Test
+  void onPlayerJoinLobby_withNonOpPlayer() {
+    PlayerMock nonOpPlayer = server.addPlayer();
+    nonOpPlayer.setOp(false);
+
+    module.onPlayerJoinLobby(nonOpPlayer);
+
+    assertEquals(1, itemA.initCount);
+    assertEquals(1, itemB.initCount);
+  }
+
+  @Test
   void onGameStart() {
     PlayerMock player1 = server.addPlayer();
     PlayerState.IN_LOBBY.set(player1);
