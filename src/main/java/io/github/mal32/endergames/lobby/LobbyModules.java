@@ -3,6 +3,7 @@ package io.github.mal32.endergames.lobby;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.lobby.items.MenuModule;
 import io.github.mal32.endergames.lobby.minigames.EndlessParkour;
+import io.github.mal32.endergames.lobby.minigames.parkour.ParkourGame;
 
 public final class LobbyModules {
   public static void registerAll(EnderGames plugin) {
@@ -10,5 +11,6 @@ public final class LobbyModules {
     lobbyManager.registerModule(new MenuModule(plugin));
     lobbyManager.registerModule(new EndlessParkour(plugin));
     lobbyManager.registerModule(new PlayerDifficulty(plugin, plugin.getLobbyWorld().getWorld()));
+    lobbyManager.registerModule(new ParkourGame(plugin));
   }
 }

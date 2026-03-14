@@ -1,7 +1,6 @@
 package io.github.mal32.endergames.lobby.minigames.parkour;
 
-import io.github.mal32.endergames.AbstractModule;
-import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.lobby.LobbyModule;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -11,11 +10,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
-public class ParkourGame extends AbstractModule {
+public class ParkourGame extends LobbyModule {
   private final ParkourManager manager;
 
-  public ParkourGame(EnderGames plugin) {
+  public ParkourGame(JavaPlugin plugin) {
     super(plugin);
 
     this.manager = new ParkourManager(plugin);
@@ -64,5 +64,11 @@ public class ParkourGame extends AbstractModule {
     if (manager.isResetItem(item) || manager.isCancelItem(item)) {
       event.setCancelled(true);
     }
+  }
+
+  @Override
+  public void onDisable() {
+    manager.shutdown();
+    super.onDisable();
   }
 }
