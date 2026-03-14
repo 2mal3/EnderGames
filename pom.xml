@@ -226,7 +226,7 @@
                                 <descriptor>src/assembly/datapack.xml</descriptor>
                             </descriptors>
 
-                            <finalName>EnderGamesDataPack</finalName>
+                            <finalName>EnderGames</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
 

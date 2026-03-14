@@ -1,7 +1,8 @@
 {
   "pack": {
     "pack_format": 48,
-    "description": "Ender Games Datapack"
+    "description": "Ender Games Datapack",
+    "required": true
   },
   "filter": {
     "block": [

@@ -12,9 +12,12 @@ import io.github.mal32.endergames.world.GameWorld;
 import io.github.mal32.endergames.world.LobbyWorld;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.datapack.Datapack;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.ArrayList;
+import java.util.Optional;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -52,6 +55,13 @@ public class EnderGames extends JavaPlugin {
   @Override
   public void onEnable() {
     saveDefaultConfig();
+
+    Optional<Datapack> dataPack = this.getServer().getDatapackManager().getEnabledPacks().stream().filter(pack -> pack.getName().equalsIgnoreCase("EnderGames/endergames") || pack.getName().equalsIgnoreCase("file/endergames")).findAny();
+    if (dataPack.isEmpty() || dataPack.get().isEnabled()) {
+      getComponentLogger().error("Datapack is missing. Cancel Enabling!");
+      Bukkit.getPluginManager().disablePlugin(this);
+      return;
+    }
 
     if (isInDebugMode()) {
       this.getComponentLogger().warn("Debug mode is enabled.");
@@ -111,8 +121,8 @@ public class EnderGames extends JavaPlugin {
 
   @Override
   public void onDisable() {
-    lobbyManager.disable();
-    gameWorld.disable();
-    lobbyWorld.disable();
+    if (lobbyManager != null) lobbyManager.disable();
+    if (gameWorld != null) gameWorld.disable();
+    if (lobbyWorld != null) lobbyWorld.disable();
   }
 }
