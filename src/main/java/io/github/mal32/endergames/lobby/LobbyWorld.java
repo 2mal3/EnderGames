@@ -43,6 +43,7 @@ public class LobbyWorld extends AbstractWorld {
   @Override
   public void setupWorld() {
     world.setGameRule(GameRules.RESPAWN_RADIUS, 6);
+    world.setGameRule(GameRules.SPAWN_MOBS, false);
     world.setGameRule(GameRules.ADVANCE_TIME, false);
     world.setGameRule(GameRules.ADVANCE_WEATHER, false);
     world.setGameRule(GameRules.LOCATOR_BAR, false);

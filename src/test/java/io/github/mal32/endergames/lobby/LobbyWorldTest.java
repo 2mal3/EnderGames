@@ -1,11 +1,10 @@
-package io.github.mal32.endergames.world;
+package io.github.mal32.endergames.lobby;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
-import io.github.mal32.endergames.lobby.LobbyWorld;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import java.util.concurrent.CompletableFuture;
 import org.bukkit.GameMode;
@@ -50,6 +49,7 @@ class LobbyWorldTest {
   void setupWorld() {
     lobbyWorld.setupWorld();
 
+    assertNotEquals(Boolean.TRUE, world.getGameRuleValue(GameRules.SPAWN_MOBS));
     assertNotEquals(Boolean.TRUE, world.getGameRuleValue(GameRules.ADVANCE_TIME));
     assertNotEquals(Boolean.TRUE, world.getGameRuleValue(GameRules.ADVANCE_WEATHER));
     assertNotEquals(Boolean.TRUE, world.getGameRuleValue(GameRules.LOCATOR_BAR));
