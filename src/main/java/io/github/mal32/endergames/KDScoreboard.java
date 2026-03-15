@@ -63,6 +63,6 @@ public class KDScoreboard implements Listener {
       score = ((double) killCount) / ((double) deathCount);
     }
 
-    objective.getScore(player.getName()).setScore((int) (score * 100));
+    objective.getScore(player.getName()).setScore((int) (MoreMath.roundN(score * 100, 0)));
   }
 }
