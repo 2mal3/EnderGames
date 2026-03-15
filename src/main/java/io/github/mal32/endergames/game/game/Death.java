@@ -76,7 +76,7 @@ public class Death extends AbstractModule {
               .append(Component.text(killer.getName()).color(NamedTextColor.RED)));
 
       KitType killerKit = KitType.get(killer);
-      String niceKillerKit = capitalizeFully(KitRegistry.get(killerKit).getClass().getName());
+      String niceKillerKit = capitalizeFully(KitRegistry.get(killerKit).getNameLowercase());
 
       player.sendMessage(
           Component.text("")
