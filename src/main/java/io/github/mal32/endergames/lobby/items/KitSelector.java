@@ -119,8 +119,10 @@ class KitSelector extends MenuItem implements Listener {
             .getItemMeta()
             .getPersistentDataContainer()
             .get(new NamespacedKey(plugin, "kit_name"), PersistentDataType.STRING);
+
+    KitType type;
     try {
-      KitType type = KitType.valueOf(rawKit);
+      type = KitType.valueOf(rawKit);
       type.set(player);
     } catch (IllegalArgumentException e) {
       plugin.getComponentLogger().warn("Invalid kit selected: {}", kitName);
@@ -134,7 +136,7 @@ class KitSelector extends MenuItem implements Listener {
     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1, 1);
 
     KitInventory kitInv = (KitInventory) event.getInventory().getHolder();
-    kitInv.selectedKitName = kitName;
+    kitInv.selectedKitName = type.name();
     kitInv.updateKitItems();
   }
 
@@ -213,7 +215,7 @@ class KitInventory implements InventoryHolder {
       kitItem.setItemMeta(meta);
 
       // Hightlight the selected kit with a glow effect
-      if (kit.getNameLowercase().equals(selectedKitName)) {
+      if (type.name().equals(selectedKitName)) {
         ItemMeta clickedMeta = kitItem.getItemMeta();
         clickedMeta.addEnchant(Enchantment.INFINITY, 1, true); // dummy enchantment for glow
         clickedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
