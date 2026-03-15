@@ -1,8 +1,7 @@
-package io.github.mal32.endergames.world;
+package io.github.mal32.endergames.game;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.github.mal32.endergames.game.FindWorldSpawnService;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
