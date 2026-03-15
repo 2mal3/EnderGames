@@ -54,16 +54,16 @@ public class ParkourManager implements Listener {
     enable();
   }
 
-  void enable() {
-    Bukkit.getPluginManager().registerEvents(this, plugin);
-    loadRecords();
-  }
-
   private static String formatTime(long ms) {
     long minutes = (ms / 1000) / 60;
     long seconds = (ms / 1000) % 60;
     long millis = ms % 1000;
     return String.format("%d:%02d.%03d", minutes, seconds, millis);
+  }
+
+  void enable() {
+    Bukkit.getPluginManager().registerEvents(this, plugin);
+    loadRecords();
   }
 
   private void loadRecords() {

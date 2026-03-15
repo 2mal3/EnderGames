@@ -4,7 +4,6 @@ import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.lobby.items.MenuModule;
 import io.github.mal32.endergames.lobby.minigames.EndlessParkour;
 import io.github.mal32.endergames.lobby.minigames.parkour.ParkourGame;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Bukkit;
@@ -21,17 +20,17 @@ public class LobbyManager implements Listener {
     Bukkit.getPluginManager().registerEvents(this, plugin);
   }
 
-  public void registerModule(LobbyModule module) {
-    modules.add(module);
-    module.onRegister();
-  }
-
   public static void registerDefaultModules(EnderGames plugin) {
     final LobbyManager lobbyManager = plugin.getLobbyManager();
     lobbyManager.registerModule(new MenuModule(plugin));
     lobbyManager.registerModule(new EndlessParkour(plugin));
     lobbyManager.registerModule(new PlayerDifficulty(plugin, plugin.getLobbyWorld().getWorld()));
     lobbyManager.registerModule(new ParkourGame(plugin));
+  }
+
+  public void registerModule(LobbyModule module) {
+    modules.add(module);
+    module.onRegister();
   }
 
   @EventHandler
