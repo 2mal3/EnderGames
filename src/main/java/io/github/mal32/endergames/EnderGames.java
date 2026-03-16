@@ -98,11 +98,11 @@ public class EnderGames extends JavaPlugin {
 
   private LiteralCommandNode<CommandSourceStack> endergamesCommand() {
     return Commands.literal("endergames")
-        .then(Commands.literal("version").executes(this::getVersionCommant))
+        .then(Commands.literal("version").executes(this::getVersionCommand))
         .build();
   }
 
-  private int getVersionCommant(CommandContext<CommandSourceStack> ctx) {
+  private int getVersionCommand(CommandContext<CommandSourceStack> ctx) {
     if (!(ctx.getSource().getSender() instanceof Player player)) return -1;
 
     Component versionText = getExactVersion();
