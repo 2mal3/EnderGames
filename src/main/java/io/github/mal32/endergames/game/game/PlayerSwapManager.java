@@ -13,18 +13,29 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class PlayerSwapManager extends AbstractTask {
+  private final int SWAP_COOLDOWN = 60 * 3;
+  private final int CLOCK_SPEED_SECONDS = 5;
+  private int swapCooldown = SWAP_COOLDOWN;
+
   public PlayerSwapManager(EnderGames plugin) {
     super(plugin);
   }
 
   @Override
   public int getDelayTicks() {
-    int playerCount = PhaseController.getPlayersInGame().length;
-    return 20 * 60 * 3 / playerCount;
+    return 20 * CLOCK_SPEED_SECONDS;
   }
 
   @Override
   public void task() {
+    swapCooldown -= 5 * PhaseController.getPlayersInGame().length;
+    if (swapCooldown <= 0) {
+      swapCooldown = SWAP_COOLDOWN;
+      swap();
+    }
+  }
+
+  private void swap() {
     // get two distinct players
     List<Player> players =
         new ArrayList<>(Arrays.stream(PhaseController.getPlayersInGame()).toList());
