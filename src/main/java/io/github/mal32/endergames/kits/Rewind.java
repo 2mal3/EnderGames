@@ -102,18 +102,29 @@ public class Rewind extends AbstractKit {
       return;
     if (player.hasCooldown(Material.CLOCK)) return;
 
-    player.setCooldown(Material.CLOCK, USE_COOLDOWN_SECONDS * 20);
+    if (EnderGames.isInDebugMode()) {
+      player.setCooldown(Material.CLOCK, 1 * 20);
+    } else {
+      player.setCooldown(Material.CLOCK, USE_COOLDOWN_SECONDS * 20);
+    }
 
     player
         .getLocation()
         .getWorld()
-        .playSound(player.getLocation(), Sound.ENTITY_ENDER_EYE_DEATH, 1, 1);
+        .playSound(
+            player, Sound.ENTITY_ENDER_EYE_DEATH, SoundCategory.PLAYERS, Integer.MAX_VALUE, 1);
+    player
+        .getLocation()
+        .getWorld()
+        .playSound(
+            player, Sound.ENTITY_ENDERMAN_AMBIENT, SoundCategory.PLAYERS, Float.MAX_VALUE, 1.5f);
 
     // teleport player back with nice animation
     Enderman enderman = player.getWorld().spawn(player.getLocation(), Enderman.class);
     enderman.setAI(false);
     enderman.setInvulnerable(true);
     enderman.setInvisible(true);
+    enderman.setSilent(true);
 
     rewindStart(player, enderman);
 
