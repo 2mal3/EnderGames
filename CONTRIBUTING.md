@@ -13,6 +13,7 @@
 - experimental paper apis can be used if neccecary
 - deprecated apis are not allowed
 - use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for the commit messages
+- use [Conventional Branch](https://conventional-branch.github.io/) for branches
 
 ### Kit API
 
