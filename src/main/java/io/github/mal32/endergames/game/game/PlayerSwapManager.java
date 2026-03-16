@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.game.game;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.MoreMath;
 import io.github.mal32.endergames.game.phases.PhaseController;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +29,9 @@ public class PlayerSwapManager extends AbstractTask {
 
   @Override
   public void task() {
-    swapCooldown -= 5 * PhaseController.getPlayersInGame().length;
+    swapCooldown -=
+        MoreMath.roundN(
+            CLOCK_SPEED_SECONDS * (1 + PhaseController.getPlayersInGame().length * 0.5), 0);
     if (swapCooldown <= 0) {
       swapCooldown = SWAP_COOLDOWN;
       swap();
