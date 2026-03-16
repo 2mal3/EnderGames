@@ -26,7 +26,8 @@
 1. create a new class in the [`io.github.mal32.endergames.kits`](/src/main/java/io/github/mal32/endergames/kits) package
    that extends the `AbstractKit` class
 2. add a reference to the list in the method `getKits` of the `AbstractKit` class
-3. test if you can select the kit in-game and if it works as expected
+3. if you want players to unlock the kit first, add the corresponding advancement to [`/src/main/resources/EnderGamesDatapack/data/enga/advancement`](/src/main/resources/EnderGamesDatapack/data/enga/advancement)
+4. test if you can select the kit in-game and if it works as expected
 
 ## Design
 
