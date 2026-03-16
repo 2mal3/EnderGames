@@ -32,7 +32,7 @@
 
 ## Design
 
-- game is intended for at most 12 players
+- game is intended for at most 24 players
 
 ### Color Style
 
