@@ -4,6 +4,7 @@
 
 - setting the `EG_DEBUG` environment variable to `true` enables debug mode, which speeds up various timers for faster development
 - you cant validate the code with the shell command `mvn test`
+- you can get the exact current version of the plugin by running the command `/endergames version` in-game
 
 ### Conventions
 
@@ -18,7 +19,7 @@
 - the constructor is called at plugin init; don't put per-game logic there
 - `enable()` is called at the start of every game; here you can put your timer inits etc.
 - `disable()` is called when a game ends; use this to stop all running tasks
-- to deregister a player, you only have to listen for the `playerDeath` and not for the `playerDisconnect`  event as a disconnect automatically results in a death
+- to deregister a player, you only have to listen for the `playerDeath` and not for the `playerDisconnect` event as a disconnect automatically results in a death
 
 ### Adding a Kit
 
