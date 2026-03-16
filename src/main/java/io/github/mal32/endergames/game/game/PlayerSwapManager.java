@@ -14,9 +14,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class PlayerSwapManager extends AbstractTask {
-  private final int SWAP_COOLDOWN = 60 * 3;
-  private final int CLOCK_SPEED_SECONDS = 5;
-  private int swapCooldown = SWAP_COOLDOWN;
+  private static final int SWAP_COOLDOWN_SECONDS = 60 * 3;
+  private static final int CLOCK_SPEED_SECONDS = 5;
+  private int swapCooldown = SWAP_COOLDOWN_SECONDS;
 
   public PlayerSwapManager(EnderGames plugin) {
     super(plugin);
@@ -33,7 +33,7 @@ public class PlayerSwapManager extends AbstractTask {
         MoreMath.roundN(
             CLOCK_SPEED_SECONDS * (1 + PhaseController.getPlayersInGame().length * 0.5), 0);
     if (swapCooldown <= 0) {
-      swapCooldown = SWAP_COOLDOWN;
+      swapCooldown = SWAP_COOLDOWN_SECONDS;
       swap();
     }
   }
