@@ -59,7 +59,8 @@ public class EnderGames extends JavaPlugin {
 
     if (isInDebugMode()) {
       this.getComponentLogger().warn("Debug mode is enabled.");
-      this.getComponentLogger().info(Component.text("Loaded Version " + this.getPluginMeta().getVersion()));
+      this.getComponentLogger()
+          .info(Component.text("Loaded Version " + this.getPluginMeta().getVersion()));
     } else {
       final int PLUGIN_ID = 25844;
       var metrics = new Metrics(this, PLUGIN_ID);
@@ -103,7 +104,8 @@ public class EnderGames extends JavaPlugin {
   private int getVersionCommand(CommandContext<CommandSourceStack> ctx) {
     if (!(ctx.getSource().getSender() instanceof Player player)) return -1;
 
-    final Component versionText = Component.text(this.getPluginMeta().getVersion()).color(NamedTextColor.GOLD);
+    final Component versionText =
+        Component.text(this.getPluginMeta().getVersion()).color(NamedTextColor.GOLD);
     Component text = Component.text("EnderGames Version: ", NamedTextColor.YELLOW);
     player.sendMessage(text.append(versionText));
 
