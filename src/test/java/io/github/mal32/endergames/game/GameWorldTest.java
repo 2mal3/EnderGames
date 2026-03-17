@@ -50,11 +50,12 @@ class GameWorldTest {
     gameWorld.setupWorld();
 
     assertEquals(Difficulty.EASY, world.getDifficulty());
-    assertNotEquals(Boolean.TRUE, world.getGameRuleValue(GameRules.ADVANCE_WEATHER));
-    assertNotEquals(Boolean.TRUE, world.getGameRuleValue(GameRules.LOCATOR_BAR));
-    assertNotEquals(Boolean.TRUE, world.getGameRuleValue(GameRules.SPAWN_PHANTOMS));
-    assertNotEquals(
-        Boolean.TRUE, world.getGameRuleValue(GameRules.ALLOW_ENTERING_NETHER_USING_PORTALS));
+    assertEquals(Boolean.FALSE, world.getGameRuleValue(GameRules.ADVANCE_WEATHER));
+    assertEquals(Boolean.FALSE, world.getGameRuleValue(GameRules.LOCATOR_BAR));
+    assertEquals(Boolean.FALSE, world.getGameRuleValue(GameRules.SPAWN_PHANTOMS));
+    assertEquals(
+        Boolean.FALSE, world.getGameRuleValue(GameRules.ALLOW_ENTERING_NETHER_USING_PORTALS));
+    assertEquals(Boolean.FALSE, world.getGameRuleValue(GameRules.SPECTATORS_GENERATE_CHUNKS));
   }
 
   @Test

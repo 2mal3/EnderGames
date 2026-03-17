@@ -49,10 +49,10 @@ class LobbyWorldTest {
   void setupWorld() {
     lobbyWorld.setupWorld();
 
-    assertNotEquals(Boolean.TRUE, world.getGameRuleValue(GameRules.SPAWN_MOBS));
-    assertNotEquals(Boolean.TRUE, world.getGameRuleValue(GameRules.ADVANCE_TIME));
-    assertNotEquals(Boolean.TRUE, world.getGameRuleValue(GameRules.ADVANCE_WEATHER));
-    assertNotEquals(Boolean.TRUE, world.getGameRuleValue(GameRules.LOCATOR_BAR));
+    assertEquals(Boolean.FALSE, world.getGameRuleValue(GameRules.SPAWN_MOBS));
+    assertEquals(Boolean.FALSE, world.getGameRuleValue(GameRules.ADVANCE_TIME));
+    assertEquals(Boolean.FALSE, world.getGameRuleValue(GameRules.ADVANCE_WEATHER));
+    assertEquals(Boolean.FALSE, world.getGameRuleValue(GameRules.LOCATOR_BAR));
     assertEquals(6, world.getGameRuleValue(GameRules.RESPAWN_RADIUS));
   }
 
