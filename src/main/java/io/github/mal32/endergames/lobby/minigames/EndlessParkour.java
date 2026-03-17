@@ -133,11 +133,11 @@ public class EndlessParkour extends AbstractModule {
       double hight = 0;
       if (Math.random() > 0.80) {
         // one higher
-        distance = 2 + (Math.random() * 2);
+        distance = 2 + (Math.random() * 1.8);
         hight = 1;
       } else {
         // same level
-        distance = 2 + (Math.random() * 3);
+        distance = 2 + (Math.random() * 2.8);
       }
       distance *= scale;
 
