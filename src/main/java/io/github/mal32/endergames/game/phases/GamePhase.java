@@ -33,6 +33,7 @@ import org.bukkit.util.Vector;
 
 public class GamePhase extends AbstractPhase {
   private final List<AbstractModule> modules;
+  private static final int MIN_WORLDBOARDER_SIZE = 40;
 
   public GamePhase(EnderGames plugin, PhaseController controller) {
     super(plugin, controller);
@@ -68,7 +69,7 @@ public class GamePhase extends AbstractPhase {
 
     var worldBoarder = spawnLocation.getWorld().getWorldBorder();
 
-    worldBoarder.changeSize(50, 20 * 60 * 15);
+    worldBoarder.changeSize(MIN_WORLDBOARDER_SIZE, 20 * 60 * 15);
     // Make the world boarder less frustrating
     worldBoarder.setWarningDistance(32);
     worldBoarder.setWarningTimeTicks(60 * 20);

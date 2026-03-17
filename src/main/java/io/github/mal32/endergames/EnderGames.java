@@ -1,7 +1,5 @@
 package io.github.mal32.endergames;
 
-import com.mojang.brigadier.Command;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.game.FindWorldSpawnService;
 import io.github.mal32.endergames.game.GameWorld;
@@ -10,9 +8,6 @@ import io.github.mal32.endergames.kits.KitRegistry;
 import io.github.mal32.endergames.lobby.LobbyManager;
 import io.github.mal32.endergames.lobby.LobbyWorld;
 import io.github.mal32.endergames.lobby.MapManager;
-import io.papermc.paper.command.brigadier.CommandSourceStack;
-import io.papermc.paper.command.brigadier.Commands;
-import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.ArrayList;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.entity.Player;
@@ -73,11 +68,6 @@ public class EnderGames extends JavaPlugin {
 
     KDScoreboard kdScoreboard = new KDScoreboard(this);
 
-    this.getLifecycleManager()
-        .registerEventHandler(
-            LifecycleEvents.COMMANDS,
-            commands -> commands.registrar().register(endergamesCommand()));
-
     this.registerKitAdvancements();
   }
 
@@ -94,19 +84,6 @@ public class EnderGames extends JavaPlugin {
 
   public void sendToGame(Player player) {
     gameWorld.initPlayer(player);
-  }
-
-  private LiteralCommandNode<CommandSourceStack> endergamesCommand() {
-    return Commands.literal("endergames")
-        .then(
-            Commands.literal("start")
-                .requires(sender -> sender.getSender().isOp())
-                .executes(
-                    ctx -> {
-                      phaseController.start();
-                      return Command.SINGLE_SUCCESS;
-                    }))
-        .build();
   }
 
   @Override

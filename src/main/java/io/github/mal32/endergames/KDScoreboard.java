@@ -3,7 +3,6 @@ package io.github.mal32.endergames;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -52,7 +51,7 @@ public class KDScoreboard implements Listener {
 
   private void updateScoreboard(Player player) {
     int deathCount = player.getStatistic(Statistic.DEATHS);
-    int killCount = player.getStatistic(Statistic.KILL_ENTITY, EntityType.PLAYER);
+    int killCount = player.getStatistic(Statistic.PLAYER_KILLS);
 
     double score;
     if (deathCount == 0) {
@@ -61,6 +60,6 @@ public class KDScoreboard implements Listener {
       score = ((double) killCount) / ((double) deathCount);
     }
 
-    objective.getScore(player.getName()).setScore((int) (score * 100));
+    objective.getScore(player.getName()).setScore((int) (MoreMath.roundN(score * 100, 0)));
   }
 }

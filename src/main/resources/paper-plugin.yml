@@ -1,5 +1,5 @@
 name: ${project.name}
-version: ${project.version}
+version: "${project.version}-${git.commit.id.abbrev}-'${git.branch}'"
 main: io.github.mal32.endergames.EnderGames
 authors:
   - 2mal3

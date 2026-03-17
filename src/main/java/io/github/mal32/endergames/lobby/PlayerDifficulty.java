@@ -4,6 +4,7 @@ import io.github.mal32.endergames.services.PlayerInWorld;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -76,6 +77,7 @@ public class PlayerDifficulty extends LobbyModule {
     if (!event.hasChangedBlock()) return;
     Player player = event.getPlayer();
     if (!PlayerInWorld.LOBBY.is(player)) return;
+    if (!player.getWorld().equals(Bukkit.getWorld("world_enga_lobby"))) return;
 
     final double MAX_DISTANCE_SQUARED = Math.pow(5, 2);
     Location toBlockPos = event.getTo().getBlock().getLocation();

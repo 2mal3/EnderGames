@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.lobby.minigames;
 
 import io.github.mal32.endergames.BlockLocation;
+import io.github.mal32.endergames.MoreMath;
 import io.github.mal32.endergames.lobby.LobbyModule;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import java.util.HashMap;
@@ -147,9 +148,11 @@ public class EndlessParkour extends LobbyModule {
       }
       distance *= scale;
 
-      randomLocation.setX((int) roundN((startLocation.getX() + (Math.cos(angle) * distance)), 0));
-      randomLocation.setZ((int) roundN((startLocation.getZ() + (Math.sin(angle) * distance)), 0));
-      randomLocation.add(0, (int) roundN(hight + (scale - 1), 0), 0);
+      randomLocation.setX(
+          (int) MoreMath.roundN((startLocation.getX() + (Math.cos(angle) * distance)), 0));
+      randomLocation.setZ(
+          (int) MoreMath.roundN((startLocation.getZ() + (Math.sin(angle) * distance)), 0));
+      randomLocation.add(0, (int) MoreMath.roundN(hight + (scale - 1), 0), 0);
     } while (!blockIsFree(randomLocation.clone()));
 
     return randomLocation;
@@ -158,6 +161,7 @@ public class EndlessParkour extends LobbyModule {
   private boolean blockIsFree(BlockLocation location) {
     return location.getBlock().getType() == Material.AIR
         && location.add(0, 1, 0).getBlock().getType() == Material.AIR
+        && location.add(0, 2, 0).getBlock().getType() == Material.AIR
         && location.add(1, 0, 0).getBlock().getType() == Material.AIR
         && location.add(-1, 0, 0).getBlock().getType() == Material.AIR
         && location.add(0, 0, 1).getBlock().getType() == Material.AIR

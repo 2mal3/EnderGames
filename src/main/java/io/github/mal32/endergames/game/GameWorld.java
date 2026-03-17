@@ -42,6 +42,7 @@ public class GameWorld extends AbstractWorld {
     world.setGameRule(GameRules.LOCATOR_BAR, false);
     world.setGameRule(GameRules.SPAWN_PHANTOMS, false);
     world.setGameRule(GameRules.ALLOW_ENTERING_NETHER_USING_PORTALS, false);
+    world.setGameRule(GameRules.SPECTATORS_GENERATE_CHUNKS, false);
 
     WorldBorder border = world.getWorldBorder();
     border.setWarningDistance(32);
