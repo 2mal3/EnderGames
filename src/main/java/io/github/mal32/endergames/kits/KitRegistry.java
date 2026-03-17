@@ -30,6 +30,7 @@ public final class KitRegistry {
     register(KitType.REWIND, new Rewind(plugin));
     register(KitType.VOODOO, new Voodoo(plugin));
     register(KitType.FOREST_SPIRIT, new ForestSpirit(plugin));
+    register(KitType.NO_ABILITY, new NoAbility(plugin));
   }
 
   public static AbstractKit[] getKits() {
