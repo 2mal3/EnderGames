@@ -10,15 +10,12 @@ public class NoAbility extends AbstractKit {
     super(plugin, KitType.NO_ABILITY);
   }
 
+  @Override
   public void initPlayer(Player player) {}
 
   @Override
   public KitDescription getDescription() {
     return new KitDescription(
-        Material.ITEM_FRAME,
-        "No Ability",
-        "A kit that does nothing",
-        "None",
-        Difficulty.HARD);
+        Material.ITEM_FRAME, "No Ability", "A kit that does nothing", "None", Difficulty.HARD);
   }
 }
