@@ -4,7 +4,7 @@
 
 - setting the `EG_DEBUG` environment variable to `true` enables debug mode, which speeds up various timers for faster development
 - you cant validate the code with the shell command `mvn test`
-- you can get the exact current version of the plugin by running the command `/endergames version` in-game
+- you can get the exact current version of the plugin by running the command `/version endergames` in-game
 
 ### Conventions
 
