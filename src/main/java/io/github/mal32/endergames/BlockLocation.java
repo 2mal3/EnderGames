@@ -62,7 +62,7 @@ public class BlockLocation {
     this.y += y;
     this.z += z;
 
-    return this.clone();
+    return this;
   }
 
   public Block getBlock() {
