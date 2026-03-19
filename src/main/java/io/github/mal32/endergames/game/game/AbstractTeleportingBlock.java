@@ -2,7 +2,6 @@ package io.github.mal32.endergames.game.game;
 
 import io.github.mal32.endergames.EnderGames;
 import org.bukkit.Bukkit;
-import org.bukkit.HeightMap;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -29,9 +28,6 @@ public abstract class AbstractTeleportingBlock {
 
   private void place() {
     loadChunkIfNotLoaded();
-
-    int y = world.getHighestBlockAt(location, HeightMap.OCEAN_FLOOR).getY();
-    location.setY(y + 1);
 
     Location blockSpawnLocation = this.location.getBlock().getLocation().clone();
     blockSpawnLocation.setY(256);
