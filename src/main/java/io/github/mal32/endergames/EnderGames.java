@@ -48,7 +48,7 @@ public class EnderGames extends JavaPlugin {
       Bukkit.getScheduler().runTaskAsynchronously(this, () -> this.saveConfig());
     }
 
-    final String POSTHOG_API_KEY = "phc_410WhGEu4C930lfm2TAFRmucTFYJsUXyYxjOLzYCUNA";
+    final String POSTHOG_PUBLIC_API_KEY = "phc_410WhGEu4C930lfm2TAFRmucTFYJsUXyYxjOLzYCUNA";
     final String POSTHOG_HOST = "eu.i.posthog.com";
     String iso8601Time = Instant.now().toString();
 
@@ -57,7 +57,7 @@ public class EnderGames extends JavaPlugin {
         String.format(
             "{\"api_key\": \"%s\", \"event\": \"%s\", \"timestamp\": \"%s\", \"properties\":"
                 + " {\"distinct_id\": \"%s\"",
-            POSTHOG_API_KEY, event, iso8601Time, id);
+            POSTHOG_PUBLIC_API_KEY, event, iso8601Time, id);
     if (props != null) {
       for (Map.Entry<String, String> entry : props.entrySet()) {
         jsonBody += String.format(", \"%s\": \"%s\"", entry.getKey(), entry.getValue());
