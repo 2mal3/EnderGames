@@ -35,6 +35,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class EndlessParkour extends AbstractModule {
   private Map<UUID, ParkourSession> players = new HashMap<>();
+  private final StructureManager manager = Bukkit.getServer().getStructureManager();
+  private final Structure structure =
+      manager.loadStructure(new NamespacedKey("enga", "parkour_mask"));
+  private final int structureSize = structure.getSize().getBlockX();
+  private final List<BlockState> possibleBlocks =
+      structure.getPalettes().getFirst().getBlocks().stream()
+          .filter(b -> b.getType() == Material.IRON_BLOCK)
+          .toList();
 
   public EndlessParkour(EnderGames plugin) {
     super(plugin);
@@ -129,15 +137,6 @@ public class EndlessParkour extends AbstractModule {
   }
 
   private BlockLocation getRandomJumpLocation(BlockLocation startLocation, double scale) {
-    StructureManager manager = Bukkit.getServer().getStructureManager();
-    Structure structure = manager.loadStructure(new NamespacedKey("enga", "parkour_mask"));
-    int structureSize = structure.getSize().getBlockX();
-
-    List<BlockState> possibleBlocks =
-        structure.getPalettes().getFirst().getBlocks().stream()
-            .filter(b -> b.getType() == Material.IRON_BLOCK)
-            .toList();
-
     BlockLocation randomLocation;
 
     int i = 100;
