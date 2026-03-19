@@ -111,13 +111,10 @@ public class Spy extends AbstractKit {
   }
 
   private void enterSpyMode(Player player, SpyPlayerData data) {
-    data.armorItems = player.getInventory().getArmorContents();
-    data.spyModeActive = true;
+    data.inventory = player.getInventory().getContents();
+    player.getInventory().clear();
 
-    player.getInventory().setHelmet(null);
-    player.getInventory().setChestplate(null);
-    player.getInventory().setLeggings(null);
-    player.getInventory().setBoots(null);
+    data.spyModeActive = true;
 
     player.addPotionEffect(
         new PotionEffect(
@@ -127,15 +124,15 @@ public class Spy extends AbstractKit {
   }
 
   private void exitSpyMode(Player player, SpyPlayerData data) {
-    if (data.armorItems != null) {
-      player.getInventory().setArmorContents(data.armorItems);
+    if (data.inventory != null) {
+      player.getInventory().setContents(data.inventory);
     }
 
     data.spyModeActive = false;
 
     player.removePotionEffect(PotionEffectType.INVISIBILITY);
 
-    data.armorItems = null;
+    data.inventory = null;
 
     playSound(player.getLocation());
   }
@@ -158,12 +155,12 @@ public class Spy extends AbstractKit {
 }
 
 class SpyPlayerData {
-  ItemStack[] armorItems;
+  ItemStack[] inventory;
   long lastHitTime;
   boolean spyModeActive;
 
   SpyPlayerData() {
-    this.armorItems = null;
+    this.inventory = null;
     this.lastHitTime = 0;
     this.spyModeActive = false;
   }
