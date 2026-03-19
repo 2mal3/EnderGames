@@ -23,8 +23,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Spy extends AbstractKit {
-  private final HashMap<UUID, SpyPlayerData> spyData = new HashMap<>();
   private static final int HIT_COOLDOWN_SECONDS = 2;
+  private final HashMap<UUID, SpyPlayerData> spyData = new HashMap<>();
 
   public Spy(EnderGames plugin) {
     super(plugin, KitType.SPY);
