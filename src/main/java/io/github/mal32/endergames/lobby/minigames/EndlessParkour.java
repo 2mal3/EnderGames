@@ -3,10 +3,11 @@ package io.github.mal32.endergames.lobby.minigames;
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.BlockLocation;
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.MoreMath;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -14,10 +15,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
@@ -26,6 +29,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.structure.Structure;
+import org.bukkit.structure.StructureManager;
 import org.jetbrains.annotations.Nullable;
 
 public class EndlessParkour extends AbstractModule {
@@ -124,29 +129,28 @@ public class EndlessParkour extends AbstractModule {
   }
 
   private BlockLocation getRandomJumpLocation(BlockLocation startLocation, double scale) {
+    StructureManager manager = Bukkit.getServer().getStructureManager();
+    Structure structure = manager.loadStructure(new NamespacedKey("enga", "parkour_mask"));
+    int structureSize = structure.getSize().getBlockX();
+
+    List<BlockState> possibleBlocks =
+        structure.getPalettes().getFirst().getBlocks().stream()
+            .filter(b -> b.getType() == Material.IRON_BLOCK)
+            .toList();
+
     BlockLocation randomLocation;
+
+    int i = 100;
     do {
+      BlockState randomBlock = possibleBlocks.get((new Random()).nextInt(possibleBlocks.size()));
+      BlockLocation structureAbsolutePos = new BlockLocation(randomBlock.getLocation());
       randomLocation = startLocation.clone();
-
-      double angle = Math.random() * 2 * Math.PI;
-      double distance;
-      double hight = 0;
-      if (Math.random() > 0.80) {
-        // one higher
-        distance = 2 + (Math.random() * 1.8);
-        hight = 1;
-      } else {
-        // same level
-        distance = 2 + (Math.random() * 2.8);
-      }
-      distance *= scale;
-
-      randomLocation.setX(
-          (int) MoreMath.roundN((startLocation.getX() + (Math.cos(angle) * distance)), 0));
-      randomLocation.setZ(
-          (int) MoreMath.roundN((startLocation.getZ() + (Math.sin(angle) * distance)), 0));
-      randomLocation.add(0, (int) MoreMath.roundN(hight + (scale - 1), 0), 0);
-    } while (!blockIsFree(randomLocation.clone()));
+      randomLocation.add(
+          (int) ((structureAbsolutePos.getX() - (structureSize / 2)) * scale),
+          (int) (structureAbsolutePos.getY() + scale - 1),
+          (int) ((structureAbsolutePos.getZ() - (structureSize / 2)) * scale));
+      i--;
+    } while (!(blockIsFree(randomLocation.clone())) && i > 0);
 
     return randomLocation;
   }

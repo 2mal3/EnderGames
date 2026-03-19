@@ -80,4 +80,8 @@ public class BlockLocation {
         && location.getWorld() != null
         && location.getWorld().equals(world);
   }
+
+  public String toString() {
+    return String.format("BlockLocation{x=%d, y=%d, z=%d}", x, y, z);
+  }
 }
