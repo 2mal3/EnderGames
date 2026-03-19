@@ -54,7 +54,12 @@ public class Spy extends AbstractKit {
     UUID uuid = player.getUniqueId();
     SpyPlayerData data = spyData.computeIfAbsent(uuid, k -> new SpyPlayerData());
 
-    if (event.isSneaking() && !data.spyModeActive) {
+    // Intentonaly rough check to make it easier for players to enter spy mode
+    boolean standingOnGround =
+        !player.getLocation().clone().add(0, -2, 0).getBlock().isPassable()
+            || !player.getLocation().clone().add(0, -0.1, 0).getBlock().isPassable();
+
+    if (event.isSneaking() && !data.spyModeActive && standingOnGround) {
       if (System.currentTimeMillis() - data.lastHitTime < 1000 * HIT_COOLDOWN_SECONDS) {
         player.sendActionBar(Component.text("Can't use that right now", NamedTextColor.RED));
         return;
