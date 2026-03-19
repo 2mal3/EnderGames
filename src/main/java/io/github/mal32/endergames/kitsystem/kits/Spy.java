@@ -70,12 +70,7 @@ public class Spy extends AbstractKit {
     if (!playerCanUseThisKit(player)) return;
 
     UUID uuid = player.getUniqueId();
-    SpyPlayerData data = spyData.get(uuid);
-
-    if (data == null) {
-      data = new SpyPlayerData();
-      spyData.put(uuid, data);
-    }
+    SpyPlayerData data = spyData.computeIfAbsent(uuid, k -> new SpyPlayerData());
 
     data.lastHitTime = System.currentTimeMillis();
 
