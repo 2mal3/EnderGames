@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
@@ -78,6 +79,16 @@ public class Spy extends AbstractKit {
       exitSpyMode(player, data);
       player.setSneaking(false);
     }
+  }
+
+  @EventHandler
+  private void onItemPickup(EntityPickupItemEvent event) {
+    if (!(event.getEntity() instanceof Player player)) return;
+    if (!playerCanUseThisKit(player)) return;
+    SpyPlayerData data = spyData.computeIfAbsent(player.getUniqueId(), k -> new SpyPlayerData());
+    if (!data.spyModeActive) return;
+
+    event.setCancelled(true);
   }
 
   @EventHandler
