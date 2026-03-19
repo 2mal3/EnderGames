@@ -15,13 +15,11 @@ public abstract class AbstractTeleportingBlock {
   protected final Location location;
   private final World world;
   public int ticksToLive;
-  private EnderGames plugin;
 
   public AbstractTeleportingBlock(EnderGames plugin, Location location, int secondsToLive) {
     this.location = location;
     this.ticksToLive = secondsToLive * 20;
     this.world = location.getWorld();
-    this.plugin = plugin;
 
     if (location.getBlock().getType() != getBlockMaterial()) {
       place();
