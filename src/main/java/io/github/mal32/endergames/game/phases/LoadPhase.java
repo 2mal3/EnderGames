@@ -31,7 +31,9 @@ public class LoadPhase extends AbstractPhase {
   public LoadPhase(EnderGames plugin, PhaseController controller) {
     super(plugin, controller);
 
-    controller.getGameWorld().findAndSaveNewSpawnLocation(); // TODO run scheduler?
+    Bukkit.getPluginManager().callEvent(new GameEndEvent());
+
+    controller.getGameWorld().findNewSpawn(); // TODO run scheduler?
     plugin
         .getComponentLogger()
         .info("Spawn location: {}", controller.getGameWorld().getSpawnLocation());

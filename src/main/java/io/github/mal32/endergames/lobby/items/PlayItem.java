@@ -1,6 +1,5 @@
 package io.github.mal32.endergames.lobby.items;
 
-import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.services.PlayerState;
 import java.util.Map;
 import net.kyori.adventure.text.Component;
@@ -10,11 +9,12 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayItem extends MenuItem {
 
-  public PlayItem(EnderGames plugin) {
+  public PlayItem(JavaPlugin plugin) {
     super(
         plugin,
         (byte) 4,

@@ -1,6 +1,5 @@
 package io.github.mal32.endergames.lobby.items;
 
-import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kits.AbstractKit;
 import io.github.mal32.endergames.kits.KitDescription;
 import io.github.mal32.endergames.kits.KitRegistry;
@@ -30,11 +29,12 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 class KitSelector extends MenuItem implements Listener {
 
-  public KitSelector(EnderGames plugin) {
+  public KitSelector(JavaPlugin plugin) {
     super(
         plugin,
         (byte) 0,
@@ -64,7 +64,7 @@ class KitSelector extends MenuItem implements Listener {
     return sb.toString();
   }
 
-  public static boolean playerHasAdvancement(EnderGames plugin, Player player, NamespacedKey key) {
+  public static boolean playerHasAdvancement(Player player, NamespacedKey key) {
     Advancement kitAdvancement = Bukkit.getAdvancement(key);
     if (kitAdvancement == null) {
       return true;
@@ -106,7 +106,7 @@ class KitSelector extends MenuItem implements Listener {
 
     NamespacedKey advancementKey =
         new NamespacedKey("enga", kitName.replace(" ", "_")); // TODO: use kit_name
-    if (!playerHasAdvancement(plugin, player, advancementKey)) {
+    if (!playerHasAdvancement(player, advancementKey)) {
       player.sendMessage(
           Component.text("Unlock the matching advancement to use that kit.")
               .color(NamedTextColor.RED));
@@ -119,8 +119,10 @@ class KitSelector extends MenuItem implements Listener {
             .getItemMeta()
             .getPersistentDataContainer()
             .get(new NamespacedKey(plugin, "kit_name"), PersistentDataType.STRING);
+
+    KitType type;
     try {
-      KitType type = KitType.valueOf(rawKit);
+      type = KitType.valueOf(rawKit);
       type.set(player);
     } catch (IllegalArgumentException e) {
       plugin.getComponentLogger().warn("Invalid kit selected: {}", kitName);
@@ -134,7 +136,7 @@ class KitSelector extends MenuItem implements Listener {
     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1, 1);
 
     KitInventory kitInv = (KitInventory) event.getInventory().getHolder();
-    kitInv.selectedKitName = kitName;
+    kitInv.selectedKitName = type.name();
     kitInv.updateKitItems();
   }
 
@@ -148,10 +150,10 @@ class KitSelector extends MenuItem implements Listener {
 class KitInventory implements InventoryHolder {
   private final Inventory inventory;
   private final Player player;
-  private final EnderGames plugin;
+  private final JavaPlugin plugin;
   public String selectedKitName;
 
-  public KitInventory(EnderGames plugin, Player player) {
+  public KitInventory(JavaPlugin plugin, Player player) {
     this.inventory = plugin.getServer().createInventory(this, 27, Component.text("Select Kit"));
     this.plugin = plugin;
     this.player = player;
@@ -213,7 +215,7 @@ class KitInventory implements InventoryHolder {
       kitItem.setItemMeta(meta);
 
       // Hightlight the selected kit with a glow effect
-      if (kit.getNameLowercase().equals(selectedKitName)) {
+      if (type.name().equals(selectedKitName)) {
         ItemMeta clickedMeta = kitItem.getItemMeta();
         clickedMeta.addEnchant(Enchantment.INFINITY, 1, true); // dummy enchantment for glow
         clickedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -228,7 +230,7 @@ class KitInventory implements InventoryHolder {
 
     NamespacedKey advancementKey =
         new NamespacedKey("enga", kitDescription.name().toLowerCase().replace(" ", "_"));
-    boolean kitUnlocked = KitSelector.playerHasAdvancement(plugin, player, advancementKey);
+    boolean kitUnlocked = KitSelector.playerHasAdvancement(player, advancementKey);
 
     var lore = new ArrayList<TextComponent>();
 

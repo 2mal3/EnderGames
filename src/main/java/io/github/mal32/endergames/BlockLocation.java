@@ -5,7 +5,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 
 public class BlockLocation {
-  private World world;
+  private final World world;
   private int x;
   private int y;
   private int z;
@@ -32,20 +32,20 @@ public class BlockLocation {
     return x;
   }
 
-  public int getY() {
-    return y;
-  }
-
-  public int getZ() {
-    return z;
-  }
-
   public void setX(int x) {
     this.x = x;
   }
 
+  public int getY() {
+    return y;
+  }
+
   public void setY(int y) {
     this.y = y;
+  }
+
+  public int getZ() {
+    return z;
   }
 
   public void setZ(int z) {

@@ -1,14 +1,8 @@
 package io.github.mal32.endergames.lobby;
 
-import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.AbstractWorld;
-import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.lobby.items.MenuManager;
-import io.github.mal32.endergames.lobby.minigames.EndlessParkour;
-import io.github.mal32.endergames.lobby.minigames.parkour.ParkourGame;
 import io.github.mal32.endergames.services.KitType;
 import io.github.mal32.endergames.services.PlayerInWorld;
-import java.util.List;
 import java.util.Random;
 import org.bukkit.*;
 import org.bukkit.block.structure.Mirror;
@@ -21,20 +15,21 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
 
 public class LobbyWorld extends AbstractWorld {
-  private final World world;
+  public final World world;
   private final Location spawnLocation;
-  private final List<AbstractModule> modules =
-      List.of(new ParkourGame(plugin), new EndlessParkour(plugin));
 
-  public LobbyWorld(EnderGames plugin) {
+  public LobbyWorld(JavaPlugin plugin) {
     super(plugin);
+
     this.world = Bukkit.getWorld("world_enga_lobby");
+
     this.spawnLocation = new Location(world, 0, 64, 0);
 
     assert world != null;
@@ -42,24 +37,12 @@ public class LobbyWorld extends AbstractWorld {
     world.getChunkAt(spawnLocation).setForceLoaded(true);
 
     tryUpdatingLobby();
-
-    for (AbstractModule module : modules) {
-      module.enable();
-    }
-  }
-
-  @Override
-  public void disable() {
-    super.disable();
-
-    for (AbstractModule module : modules) {
-      module.disable();
-    }
   }
 
   @Override
   public void setupWorld() {
     world.setGameRule(GameRules.RESPAWN_RADIUS, 6);
+    world.setGameRule(GameRules.SPAWN_MOBS, false);
     world.setGameRule(GameRules.ADVANCE_TIME, false);
     world.setGameRule(GameRules.ADVANCE_WEATHER, false);
     world.setGameRule(GameRules.LOCATOR_BAR, false);
@@ -81,11 +64,12 @@ public class LobbyWorld extends AbstractWorld {
 
   @Override
   public void initPlayer(Player player) {
-    resetPlayer(player);
-
-    PlayerInWorld.LOBBY.set(player);
+    super.initPlayer(player);
 
     player.setGameMode(GameMode.ADVENTURE);
+
+    player.teleportAsync(spawnLocation.clone().add(0, 10, 0));
+    PlayerInWorld.LOBBY.set(player);
 
     player.addPotionEffect(
         new PotionEffect(
@@ -94,19 +78,9 @@ public class LobbyWorld extends AbstractWorld {
         new PotionEffect(
             PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 0, true, false, false));
 
-    final MenuManager menuManager = plugin.getMenuManager();
-    menuManager.initPlayer(player);
+    Bukkit.getPluginManager().callEvent(new PlayerEnteredLobbyEvent(player));
 
-    if (plugin.getPhaseController().isLoading()) {
-      menuManager.onGameEnd(player);
-    } else {
-      menuManager.onGameStart(player);
-    }
-
-    // TODO generic player init?
     KitType.init(player);
-
-    teleport(player, spawnLocation.clone().add(0, 10, 0));
   }
 
   @Override

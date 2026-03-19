@@ -123,11 +123,7 @@ public class Dolphin extends AbstractKit {
     }
 
     // Bubble columns: treat them as valid water for dolphin jumping
-    if (feetBlock.getType() == Material.BUBBLE_COLUMN) {
-      return true;
-    }
-
-    return false;
+    return feetBlock.getType() == Material.BUBBLE_COLUMN;
   }
 
   @Override

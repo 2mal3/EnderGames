@@ -742,7 +742,6 @@ public class ForestSpirit extends AbstractKit {
 
     Location from = event.getFrom();
     Location to = event.getTo();
-    if (to == null) return;
 
     // If the player has been teleported / moved more than 1 block away from
     // the original rooted position, free them completely.
@@ -1120,7 +1119,6 @@ public class ForestSpirit extends AbstractKit {
 
     if (!(event.getDamager() instanceof Player attacker)) return;
     ItemStack weapon = attacker.getInventory().getItemInMainHand();
-    if (weapon == null) return;
     if (!Tag.ITEMS_AXES.isTagged(weapon.getType())) return;
 
     event.setDamage(event.getDamage() * AXE_DAMAGE_MULTIPLIER);

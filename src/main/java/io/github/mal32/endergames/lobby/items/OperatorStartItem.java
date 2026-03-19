@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.jspecify.annotations.NonNull;
 
@@ -16,7 +17,7 @@ class OperatorStartItem extends MenuItem {
   String state;
   private BukkitTask startGameTask = null;
 
-  public OperatorStartItem(EnderGames plugin) {
+  public OperatorStartItem(JavaPlugin plugin) {
     super(
         plugin,
         (byte) 8,
@@ -34,6 +35,12 @@ class OperatorStartItem extends MenuItem {
   @Override
   protected @NonNull String getState(Player player) {
     return this.state;
+  }
+
+  @Override
+  public void initPlayer(Player player) {
+    if (!player.isOp()) return;
+    giveItem(player);
   }
 
   @Override
@@ -74,7 +81,9 @@ class OperatorStartItem extends MenuItem {
             .runTaskLater(
                 this.plugin,
                 () -> {
-                  this.plugin.getPhaseController().start();
+                  ((EnderGames) this.plugin)
+                      .getPhaseController()
+                      .start(); // TODO: call GameStartEvent?
                   this.startGameTask = null;
                   this.state = "start";
                 },
