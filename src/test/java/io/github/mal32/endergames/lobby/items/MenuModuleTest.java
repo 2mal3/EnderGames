@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import io.github.mal32.endergames.game.phases.GameEndEvent;
 import io.github.mal32.endergames.game.phases.GameStartAbortEvent;
 import io.github.mal32.endergames.game.phases.GameStartingEvent;
+import io.github.mal32.endergames.kitsystem.api.KitSystem;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import io.github.mal32.endergames.services.PlayerState;
 import java.util.List;
@@ -39,7 +40,7 @@ class MenuModuleTest {
     itemB = new FakeMenuItem(plugin, (byte) 1, "b");
 
     module =
-        new MenuModule(plugin) {
+        new MenuModule(plugin, new KitSystem(plugin)) {
           @Override
           void registerDefaultItems() {
             registerItem(itemA);

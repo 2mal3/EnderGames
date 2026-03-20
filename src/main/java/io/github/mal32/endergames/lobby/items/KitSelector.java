@@ -2,13 +2,14 @@ package io.github.mal32.endergames.lobby.items;
 
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitSystem;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -23,43 +24,25 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 class KitSelector extends MenuItem implements Listener {
+  private final NamespacedKey kitName;
+  private final KitSystem kitSystem;
 
-  public KitSelector(JavaPlugin plugin) {
+  public KitSelector(JavaPlugin plugin, KitSystem kitSystem) {
     super(
         plugin,
         (byte) 0,
         "kit_selector",
         Material.ENDER_CHEST,
         Component.text("Select Kit").color(NamedTextColor.GOLD));
+    this.kitName = new NamespacedKey(plugin, "kit_name");
+    this.kitSystem = kitSystem;
     Bukkit.getPluginManager().registerEvents(this, plugin);
-  }
-
-  private static String capitalizeWords(String input) {
-    if (input == null || input.isEmpty()) return input;
-
-    String[] parts = input.split("\\s+");
-    StringBuilder sb = new StringBuilder();
-
-    for (int i = 0; i < parts.length; i++) {
-      String word = parts[i];
-      if (!word.isEmpty()) {
-        sb.append(Character.toUpperCase(word.charAt(0)));
-        if (word.length() > 1) {
-          sb.append(word.substring(1).toLowerCase());
-        }
-      }
-      if (i < parts.length - 1) sb.append(' ');
-    }
-
-    return sb.toString();
   }
 
   public static boolean playerHasAdvancement(Player player, KitDescription kitDescription) {
@@ -80,36 +63,31 @@ class KitSelector extends MenuItem implements Listener {
     Player player = event.getPlayer();
 
     player.playSound(player, Sound.BLOCK_CHEST_OPEN, 1, 1);
-    KitInventory kiInv = new KitInventory(plugin, player);
+    KitInventory kiInv = new KitInventory(plugin, kitSystem, kitName, player);
     player.openInventory(kiInv.getInventory());
   }
 
   @EventHandler
   public void onInventoryClick(InventoryClickEvent event) {
     Inventory clickedInv = event.getClickedInventory();
-    if (clickedInv == null || !(clickedInv.getHolder() instanceof KitInventory)) return;
+    if (clickedInv == null || !(clickedInv.getHolder() instanceof KitInventory kitInv)) return;
     event.setCancelled(true);
 
     ItemStack clickedItem = event.getCurrentItem();
     if (clickedItem == null
         || !clickedItem.hasItemMeta()
-        || !clickedItem.getItemMeta().hasDisplayName()) return;
+        || !clickedItem.getItemMeta().getPersistentDataContainer().has(kitName)) return;
 
     Player player = (Player) event.getWhoClicked();
-    Component displayName = clickedItem.getItemMeta().displayName();
-    if (displayName == null) return;
-
-    String nameText = LegacyComponentSerializer.legacySection().serialize(displayName);
-    String kitName = nameText.length() > 2 ? nameText.substring(2).toLowerCase() : "";
 
     final String rawKit =
         clickedItem
             .getItemMeta()
             .getPersistentDataContainer()
-            .get(new NamespacedKey(plugin, "kit_name"), PersistentDataType.STRING);
-    final AbstractKit kit = KitRegistry.get(rawKit);
+            .get(kitName, PersistentDataType.STRING);
+    final AbstractKit kit = kitSystem.kitManager().get(rawKit);
     if (kit == null) {
-      plugin.getComponentLogger().warn("Invalid kit selected: {}", kitName);
+      plugin.getComponentLogger().warn("Invalid kit selected: {}", clickedItem.getItemMeta().displayName());
       return;
     }
 
@@ -123,13 +101,11 @@ class KitSelector extends MenuItem implements Listener {
 
     player.sendMessage(
         Component.text("You selected the ")
-            .append(Component.text(capitalizeWords(kitName)).color(NamedTextColor.GOLD))
+            .append(Component.text(kit.description().displayName()).color(NamedTextColor.GOLD))
             .append(Component.text(" kit")));
     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1, 1);
 
-    KitInventory kitInv = (KitInventory) event.getInventory().getHolder();
-    kitInv.selectedKitName = kit.id();
-    kitInv.updateKitItems();
+    kitInv.displayKitItems();
   }
 
   @EventHandler
@@ -141,16 +117,17 @@ class KitSelector extends MenuItem implements Listener {
 
 class KitInventory implements InventoryHolder {
   private final Inventory inventory;
+  private final KitSystem kitSystem;
+  private final NamespacedKey kitName;
   private final Player player;
-  private final JavaPlugin plugin;
-  public String selectedKitName;
 
-  public KitInventory(JavaPlugin plugin, Player player) {
+  public KitInventory(JavaPlugin plugin, KitSystem kitSystem, NamespacedKey kitName, Player player) {
     this.inventory = plugin.getServer().createInventory(this, 27, Component.text("Select Kit"));
-    this.plugin = plugin;
     this.player = player;
+    this.kitSystem = Objects.requireNonNull(kitSystem);
+    this.kitName = Objects.requireNonNull(kitName);
 
-    updateKitItems();
+    displayKitItems();
   }
 
   private static ArrayList<String> splitIntoLines(String text) {
@@ -188,32 +165,27 @@ class KitInventory implements InventoryHolder {
     return this.inventory;
   }
 
-  public void updateKitItems() {
+  public void displayKitItems() {
     inventory.clear();
 
-    for (AbstractKit kit : KitRegistry.getKits()) {
+    final AbstractKit selectedKit = kitSystem.kitService().get(player);
+
+    for (AbstractKit kit : kitSystem.kitManager().all()) {
       var kitDescription = kit.description();
       KitItem abstractKitItem = getKitItem(kitDescription);
-
-      var kitItem = new ItemStack(abstractKitItem.item(), 1);
-      var meta = kitItem.getItemMeta();
-      meta.displayName(abstractKitItem.name());
-      meta.lore(abstractKitItem.lore());
-
-      meta.getPersistentDataContainer()
-          .set(new NamespacedKey(plugin, "kit_name"), PersistentDataType.STRING, kit.id());
-
-      kitItem.setItemMeta(meta);
+      final ItemStack item = ItemStack.of(abstractKitItem.item());
+      item.editMeta(meta -> {
+        meta.displayName(abstractKitItem.name());
+        meta.lore(abstractKitItem.lore());
+        meta.getPersistentDataContainer().set(kitName, PersistentDataType.STRING, kit.id());
+      });
 
       // Hightlight the selected kit with a glow effect
-      if (kit.id().equals(selectedKitName)) {
-        ItemMeta clickedMeta = kitItem.getItemMeta();
-        clickedMeta.addEnchant(Enchantment.INFINITY, 1, true); // dummy enchantment for glow
-        clickedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        kitItem.setItemMeta(clickedMeta);
+      if (kit.equals(selectedKit)) {
+        item.addEnchantment(Enchantment.INFINITY, 1); // dummy enchantment for glow
       }
 
-      inventory.addItem(kitItem);
+      inventory.addItem(item);
     }
   }
 
