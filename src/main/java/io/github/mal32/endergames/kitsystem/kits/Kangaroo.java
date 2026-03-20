@@ -32,7 +32,7 @@ public class Kangaroo extends AbstractKit {
             "Kangaroo",
             Material.RABBIT_FOOT,
             "Can double jump at the cost of hunger",
-            null,
+            "",
             Difficulty.EASY),
         kitService,
         plugin);
