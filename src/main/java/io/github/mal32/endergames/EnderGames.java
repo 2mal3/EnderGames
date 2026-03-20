@@ -55,11 +55,6 @@ public class EnderGames extends JavaPlugin {
   public void onLoad() {
     this.kitSystem = new KitSystem(this);
     Kits.registerAll(this);
-
-    this.lobbyWorld = new LobbyWorld(this);
-    this.gameWorld = new GameWorld(this, spawnService);
-
-    this.lobbyManager = new LobbyManager(this);
   }
 
   @Override
@@ -73,6 +68,9 @@ public class EnderGames extends JavaPlugin {
       var metrics = new Metrics(this, PLUGIN_ID);
     }
 
+    this.lobbyManager = new LobbyManager(this);
+    this.lobbyWorld = new LobbyWorld(this);
+    this.gameWorld = new GameWorld(this, spawnService);
     lobbyWorld.setupWorld();
     gameWorld.setupWorld();
     this.phaseController = new PhaseController(this, gameWorld);
