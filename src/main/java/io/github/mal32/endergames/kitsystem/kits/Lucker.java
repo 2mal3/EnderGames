@@ -1,10 +1,13 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.kits;
 
-import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.Difficulty;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitService;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -27,6 +30,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -41,10 +45,18 @@ public class Lucker extends AbstractKit {
           Material.POTATO,
           Material.MELON_SEEDS,
           Material.PUMPKIN_SEEDS);
-  private final Random random = new Random();
 
-  public Lucker(EnderGames plugin) {
-    super(plugin, KitType.LUCKER);
+  public Lucker(KitService kitService, JavaPlugin plugin) {
+    super(
+        new KitDescription(
+            "Lucker",
+            Material.DIAMOND,
+            "Blessed with extraordinary luck. (Better chest loot, more luck when fishing, mining,"
+                + " existing,...)",
+            "Light-Green Leather Chestplate",
+            Difficulty.EASY),
+        kitService,
+        plugin);
   }
 
   @Override
@@ -97,7 +109,7 @@ public class Lucker extends AbstractKit {
     // 2) Increased apple drop chance from specific leaves
     if (type == Material.OAK_LEAVES || type == Material.DARK_OAK_LEAVES) {
       // 50% chance to drop an apple
-      if (random.nextDouble() > 0.5) {
+      if (ThreadLocalRandom.current().nextDouble() > 0.5) {
         ItemStack apple = new ItemStack(Material.APPLE, 1);
         Location dropLoc = block.getLocation().add(0.5, 0.5, 0.5);
         dropLoc.getWorld().dropItemNaturally(dropLoc, apple);
@@ -290,7 +302,7 @@ public class Lucker extends AbstractKit {
     if (pool.isEmpty()) return;
 
     // give between 1 and 4 enchants
-    Random rng = new Random();
+    ThreadLocalRandom rng = ThreadLocalRandom.current();
     int count = 1 + rng.nextInt(4);
     Set<Enchantment> chosen = new HashSet<>();
 
@@ -306,16 +318,5 @@ public class Lucker extends AbstractKit {
       int lvl = 1 + rng.nextInt(e.getMaxLevel());
       item.addUnsafeEnchantment(e, lvl);
     }
-  }
-
-  @Override
-  public KitDescription getDescription() {
-    return new KitDescription(
-        Material.DIAMOND,
-        "Lucker",
-        "Blessed with extraordinary luck. (Better chest loot, more luck when fishing, mining,"
-            + " existing,...)",
-        "Light-Green Leather Chestplate",
-        Difficulty.EASY);
   }
 }

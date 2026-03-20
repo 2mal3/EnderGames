@@ -1,8 +1,10 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.kits;
 
-import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.game.game.PotionEffectsStacking;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.Difficulty;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitService;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.FoodProperties;
 import java.util.List;
@@ -12,6 +14,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -20,12 +23,22 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Cat extends AbstractKit {
-  public Cat(EnderGames plugin) {
-    super(plugin, KitType.CAT);
+  public Cat(KitService kitService, JavaPlugin plugin) {
+    super(
+        new KitDescription(
+            "Cat",
+            Material.COD,
+            "Gains Speed III for 30 seconds when eating raw fish. It deals +3 damage with bare hands"
+                + " and takes 50% less fall damage.",
+            "20 Raw Fish",
+            Difficulty.EASY),
+        kitService,
+        plugin);
   }
 
   @Override
@@ -40,9 +53,10 @@ public class Cat extends AbstractKit {
     fish.setItemMeta(fishMeta);
     player.getInventory().addItem(fish);
 
-    var safeFallDistanceAttribute = player.getAttribute(Attribute.SAFE_FALL_DISTANCE);
+    AttributeInstance safeFallDistanceAttribute = player.getAttribute(Attribute.SAFE_FALL_DISTANCE);
     safeFallDistanceAttribute.setBaseValue(5);
-    var fallDamageMultiplierAttribute = player.getAttribute(Attribute.FALL_DAMAGE_MULTIPLIER);
+    AttributeInstance fallDamageMultiplierAttribute =
+        player.getAttribute(Attribute.FALL_DAMAGE_MULTIPLIER);
     fallDamageMultiplierAttribute.setBaseValue(0.5);
   }
 
@@ -51,9 +65,10 @@ public class Cat extends AbstractKit {
     var player = event.getPlayer();
     if (!playerCanUseThisKit(player)) return;
 
-    var safeFallDistanceAttribute = player.getAttribute(Attribute.SAFE_FALL_DISTANCE);
+    AttributeInstance safeFallDistanceAttribute = player.getAttribute(Attribute.SAFE_FALL_DISTANCE);
     safeFallDistanceAttribute.setBaseValue(safeFallDistanceAttribute.getDefaultValue());
-    var fallDamageMultiplierAttribute = player.getAttribute(Attribute.FALL_DAMAGE_MULTIPLIER);
+    AttributeInstance fallDamageMultiplierAttribute =
+        player.getAttribute(Attribute.FALL_DAMAGE_MULTIPLIER);
     fallDamageMultiplierAttribute.setBaseValue(fallDamageMultiplierAttribute.getDefaultValue());
   }
 
@@ -75,16 +90,5 @@ public class Cat extends AbstractKit {
     if (!damager.getInventory().getItemInMainHand().getType().isAir()) return;
 
     event.setDamage(event.getDamage() + 3);
-  }
-
-  @Override
-  public KitDescription getDescription() {
-    return new KitDescription(
-        Material.COD,
-        "Cat",
-        "Gains Speed III for 30 seconds when eating raw fish. It deals +3 damage with bare hands"
-            + " and takes 50% less fall damage.",
-        "20 Raw Fish",
-        Difficulty.EASY);
   }
 }

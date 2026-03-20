@@ -1,8 +1,11 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.kits;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.game.phases.PhaseController;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.Difficulty;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitService;
 import java.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -15,6 +18,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
@@ -27,8 +31,16 @@ public class Rewind extends AbstractKit {
   private final HashMap<UUID, ArrayList<PlayerState>> playerStates = new HashMap<>();
   private BukkitTask task;
 
-  public Rewind(EnderGames plugin) {
-    super(plugin, KitType.REWIND);
+  public Rewind(KitService kitService, JavaPlugin plugin) {
+    super(
+        new KitDescription(
+            "Rewind",
+            Material.CLOCK,
+            "Can go back 10 seconds in time every 40 seconds.",
+            "Rewind Clock",
+            Difficulty.EASY),
+        kitService,
+        plugin);
 
     rewindKey = new NamespacedKey(plugin, "rewind");
   }
@@ -48,19 +60,7 @@ public class Rewind extends AbstractKit {
   }
 
   @Override
-  public KitDescription getDescription() {
-    return new KitDescription(
-        Material.CLOCK,
-        "Rewind",
-        "Can go back 10 seconds in time every 40 seconds.",
-        "Rewind Clock",
-        Difficulty.EASY);
-  }
-
-  @Override
-  public void enable() {
-    super.enable();
-
+  public void onEnable() {
     BukkitScheduler scheduler = plugin.getServer().getScheduler();
     task =
         scheduler.runTaskTimer(
@@ -68,9 +68,7 @@ public class Rewind extends AbstractKit {
   }
 
   @Override
-  public void disable() {
-    super.disable();
-
+  public void onDisable() {
     task.cancel();
   }
 
@@ -103,7 +101,7 @@ public class Rewind extends AbstractKit {
     if (player.hasCooldown(Material.CLOCK)) return;
 
     if (EnderGames.isInDebugMode()) {
-      player.setCooldown(Material.CLOCK, 1 * 20);
+      player.setCooldown(Material.CLOCK, 20);
     } else {
       player.setCooldown(Material.CLOCK, USE_COOLDOWN_SECONDS * 20);
     }

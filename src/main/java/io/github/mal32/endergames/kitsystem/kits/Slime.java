@@ -1,9 +1,11 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.kits;
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
-import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.services.KitType;
-import java.util.Random;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.Difficulty;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitService;
+import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.*;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.EntityType;
@@ -18,12 +20,21 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootTables;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Slime extends AbstractKit {
-  public Slime(EnderGames plugin) {
-    super(plugin, KitType.SLIME);
+  public Slime(KitService kitService, JavaPlugin plugin) {
+    super(
+        new KitDescription(
+            "Slime",
+            Material.SLIME_BALL,
+            "Occasionally gains slimeballs when jumping, which can be thrown to slow enemies. Spawns small slimes when hit. Permanent Jump Boost II.",
+            "10 slimeballs, green leather chestplate & boots",
+            Difficulty.MEDIUM),
+        kitService,
+        plugin);
   }
 
   @Override
@@ -50,8 +61,7 @@ public class Slime extends AbstractKit {
 
     Location location = player.getLocation();
     World world = player.getWorld();
-    Random random = new Random();
-    int loops = random.nextInt(3) + 1; // 1 bis 3
+    int loops = ThreadLocalRandom.current().nextInt(3) + 1; // 1 bis 3
     for (int x = 0; x < loops; x++) {
       Location editLoc = location.clone();
       editLoc.add(1 - Math.random() * 2, 0.1, 1 - Math.random() * 2);
@@ -159,16 +169,5 @@ public class Slime extends AbstractKit {
 
     ItemStack slimeball = new ItemStack(Material.SLIME_BALL, 1);
     event.getPlayer().getInventory().addItem(slimeball);
-  }
-
-  @Override
-  public KitDescription getDescription() {
-    return new KitDescription(
-        Material.SLIME_BALL,
-        "Slime",
-        "Occasionally gains slimeballs when jumping, which can be thrown to slow enemies. Spawns"
-            + " small slimes when hit. Permanent Jump Boost II.",
-        "10 slimeballs, green leather chestplate & boots",
-        Difficulty.MEDIUM);
   }
 }

@@ -1,11 +1,14 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.kits;
 
-import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.Difficulty;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitService;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.*;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Damageable;
@@ -19,18 +22,28 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
-import org.joml.Random;
 
 public class Cactus extends AbstractKit {
+  private final JavaPlugin plugin;
   private final HashMap<UUID, ArrayList<BlockDisplay>> cactusPlayerMapping = new HashMap<>();
   private final HashSet<UUID> cactusPlayers = new HashSet<>();
   private final HashMap<UUID, PlayerInventory> cactusPlayerInventory = new HashMap<>();
 
-  public Cactus(EnderGames plugin) {
-    super(plugin, KitType.CACTUS);
+  public Cactus(KitService kitService, JavaPlugin plugin) {
+    super(
+        new KitDescription(
+            "Cactus",
+            Material.CACTUS,
+            "Deals thorns damage to attackers. It can sneak to disguise itself as a cactus.",
+            "Green leather helmet and leggings",
+            Difficulty.HARD),
+        kitService,
+        plugin);
+    this.plugin = plugin;
   }
 
   @Override
@@ -205,7 +218,7 @@ public class Cactus extends AbstractKit {
     }
 
     Location blockLocation = player.getLocation().getBlock().getLocation();
-    int cactusBlockCount = new Random().nextInt(3) + 1;
+    int cactusBlockCount = ThreadLocalRandom.current().nextInt(3) + 1;
     int i = 0;
     while (i < cactusBlockCount) {
       Location relativeLocation = blockLocation.clone().add(0, i, 0);
@@ -298,16 +311,6 @@ public class Cactus extends AbstractKit {
     if (!cactusPlayers.contains(player.getUniqueId())) return;
 
     event.setCancelled(true);
-  }
-
-  @Override
-  public KitDescription getDescription() {
-    return new KitDescription(
-        Material.CACTUS,
-        "Cactus",
-        "Deals thorns damage to attackers. It can sneak to disguise itself as a cactus.",
-        "Green leather helmet and leggings",
-        Difficulty.HARD);
   }
 }
 

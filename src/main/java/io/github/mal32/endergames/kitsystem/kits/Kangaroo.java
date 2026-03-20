@@ -1,19 +1,23 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.kits;
 
-import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.Difficulty;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitService;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -22,25 +26,23 @@ public class Kangaroo extends AbstractKit {
   private static final double VERTICAL_JUMP_SPEED = 1;
   private static final double HORIZONTAL_JUMP_SPEED = 2;
 
-  public Kangaroo(EnderGames plugin) {
-    super(plugin, KitType.KANGAROO);
-  }
-
-  @Override
-  public KitDescription getDescription() {
-    return new KitDescription(
-        Material.RABBIT_FOOT,
-        "Kangaroo",
-        "Can double jump at the cost of hunger",
-        null,
-        Difficulty.EASY);
+  public Kangaroo(KitService kitService, JavaPlugin plugin) {
+    super(
+        new KitDescription(
+            "Kangaroo",
+            Material.RABBIT_FOOT,
+            "Can double jump at the cost of hunger",
+            null,
+            Difficulty.EASY),
+        kitService,
+        plugin);
   }
 
   @Override
   public void initPlayer(Player player) {
     player.setAllowFlight(true);
 
-    var attribute = player.getAttribute(Attribute.SAFE_FALL_DISTANCE);
+    AttributeInstance attribute = player.getAttribute(Attribute.SAFE_FALL_DISTANCE);
     attribute.setBaseValue(10);
   }
 
@@ -51,7 +53,7 @@ public class Kangaroo extends AbstractKit {
 
     player.setAllowFlight(false);
 
-    var attribute = player.getAttribute(Attribute.SAFE_FALL_DISTANCE);
+    AttributeInstance attribute = player.getAttribute(Attribute.SAFE_FALL_DISTANCE);
     attribute.setBaseValue(attribute.getDefaultValue());
   }
 

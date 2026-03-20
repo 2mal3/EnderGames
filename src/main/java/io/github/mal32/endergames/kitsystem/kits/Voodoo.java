@@ -1,9 +1,11 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.kits;
 
-import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.game.game.PotionEffectsStacking;
 import io.github.mal32.endergames.game.phases.PhaseController;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.Difficulty;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,6 +29,7 @@ import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
@@ -34,21 +37,26 @@ import org.bukkit.scheduler.BukkitTask;
 public class Voodoo extends AbstractKit {
   private BukkitTask voodooTask;
 
-  public Voodoo(EnderGames plugin) {
-    super(plugin, KitType.VOODOO);
+  public Voodoo(KitService kitService, JavaPlugin plugin) {
+    super(
+        new KitDescription(
+            "Voodoo",
+            Material.SCULK,
+            "Hitting entities with arrows regenerates health. Critically damaging players gives a short health boost. Nearby players get black hearts.",
+            "Bow with Piercing, 10 Arrows, Leather Boots",
+            Difficulty.MEDIUM,
+            "enga:voodoo"),
+        kitService,
+        plugin);
   }
 
   @Override
-  public void enable() {
-    super.enable();
-
+  public void onEnable() {
     voodooTask = Bukkit.getScheduler().runTaskTimer(plugin, this::witherTask, 20L, 20L);
   }
 
   @Override
-  public void disable() {
-    super.disable();
-
+  public void onDisable() {
     voodooTask.cancel();
   }
 
@@ -150,17 +158,6 @@ public class Voodoo extends AbstractKit {
 
     playerInventory.addItem(new ItemStack(Material.ARROW, 10));
     playerInventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
-  }
-
-  @Override
-  public KitDescription getDescription() {
-    return new KitDescription(
-        Material.SCULK,
-        "Voodoo",
-        "Hitting entities with arrows regenerates health. Critcaly damaging players gives a short"
-            + " health boost. Nearby players get black hearts.",
-        "Bow with Piercing, 10 Arrows, Leather Boots",
-        Difficulty.MEDIUM);
   }
 
   @EventHandler

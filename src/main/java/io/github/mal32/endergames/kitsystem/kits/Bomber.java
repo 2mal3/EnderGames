@@ -1,8 +1,10 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.kits;
 
-import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.game.phases.PhaseController;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.Difficulty;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitService;
 import java.util.HashSet;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
@@ -20,15 +22,25 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Bomber extends AbstractKit {
-  private final NamespacedKey isMineItemKey = new NamespacedKey(plugin, "isMineItem");
+  private final NamespacedKey isMineItemKey;
   private final HashSet<String> mineLocations = new HashSet<>();
 
-  public Bomber(EnderGames plugin) {
-    super(plugin, KitType.BOMBER);
+  public Bomber(KitService kitService, JavaPlugin plugin) {
+    super(
+        new KitDescription(
+            "Bomber",
+            Material.TNT,
+            "Takes no explosion damage. Killed entities explode. TNT placed explodes faster.",
+            "5 TNT, 10 Mines",
+            Difficulty.MEDIUM),
+        kitService,
+        plugin);
+    this.isMineItemKey = new NamespacedKey(plugin, "isMineItem");
   }
 
   @Override
@@ -116,15 +128,5 @@ public class Bomber extends AbstractKit {
 
     mineLocations.remove(key);
     blockLocation.createExplosion(4f, true, true);
-  }
-
-  @Override
-  public KitDescription getDescription() {
-    return new KitDescription(
-        Material.TNT,
-        "Bomber",
-        "Takes no explosion damage. Killed entities explode. TNT placed explodes faster.",
-        "5 TNT, 10 Mines",
-        Difficulty.MEDIUM);
   }
 }

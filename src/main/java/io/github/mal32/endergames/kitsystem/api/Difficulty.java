@@ -1,4 +1,4 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.api;
 
 public enum Difficulty {
   EASY,

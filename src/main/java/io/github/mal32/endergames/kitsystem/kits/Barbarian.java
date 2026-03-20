@@ -1,17 +1,28 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.kits;
 
-import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.Difficulty;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitService;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class Barbarian extends AbstractKit {
-  public Barbarian(EnderGames plugin) {
-    super(plugin, KitType.BARBARIAN);
+  public Barbarian(KitService kitService, JavaPlugin plugin) {
+    super(
+        new KitDescription(
+            "Barbarian",
+            Material.LEATHER_CHESTPLATE,
+            "Deals more attack damage with SWORDS the hungrier he is (+2.5% attack damage per half hunger bar missing)",
+            "A wooden sword and a full set of leather armor with Unbreaking I",
+            Difficulty.HARD),
+        kitService,
+        plugin);
   }
 
   @Override
@@ -52,16 +63,5 @@ public class Barbarian extends AbstractKit {
           .getWorld()
           .spawnParticle(Particle.HEART, location.clone().add(0, 1, 0), 10, 0.2, 0.6, 0.2, 2);
     }
-  }
-
-  @Override
-  public KitDescription getDescription() {
-    return new KitDescription(
-        Material.LEATHER_CHESTPLATE,
-        "Barbarian",
-        "Deals more attack damage with SWORDS the hungrier he is (+2.5% attack damage per half"
-            + " hunger bar missing)",
-        "A wooden sword and a full set of leather armor with Unbreaking I",
-        Difficulty.HARD);
   }
 }

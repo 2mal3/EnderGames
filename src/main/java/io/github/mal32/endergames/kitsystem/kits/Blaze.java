@@ -1,10 +1,11 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.kits;
 
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
-import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.game.phases.PhaseController;
-import io.github.mal32.endergames.services.KitType;
-import java.time.LocalTime;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.Difficulty;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitService;
 import java.util.HashMap;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
@@ -23,14 +24,24 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Blaze extends AbstractKit {
-  private final HashMap<UUID, LocalTime> burnTime = new HashMap<>();
+  private final HashMap<UUID, Long> burnTime = new HashMap<>();
 
-  public Blaze(EnderGames plugin) {
-    super(plugin, KitType.BLAZE);
+  public Blaze(KitService kitService, JavaPlugin plugin) {
+    super(
+        new KitDescription(
+            "Blaze",
+            Material.BLAZE_POWDER,
+            "Can leave a fire trail for a short time. It is immune to fire damage, but gains Weakness I in water. Sword or Bow hits have a 20% chance to ignite enemies.",
+            "Golden Sword and Burn Power",
+            Difficulty.EASY,
+            "enga:blaze"),
+        kitService,
+        plugin);
   }
 
   @Override
@@ -106,7 +117,8 @@ public class Blaze extends AbstractKit {
     if (item == null || item.getType() != Material.BLAZE_POWDER) return;
     if (player.hasCooldown(Material.BLAZE_POWDER)) return;
 
-    burnTime.put(player.getUniqueId(), LocalTime.now().plusSeconds(burnDurationSeconds));
+    burnTime.put(
+        player.getUniqueId(), player.getWorld().getFullTime() + (burnDurationSeconds * 20));
 
     player.setCooldown(Material.BLAZE_POWDER, useCooldownSeconds * 20);
 
@@ -125,26 +137,15 @@ public class Blaze extends AbstractKit {
     if (!playerCanUseThisKit(player)) return;
 
     if (!burnTime.containsKey(player.getUniqueId())) return;
-    if (burnTime.get(player.getUniqueId()).isBefore(LocalTime.now())) return;
+    if (burnTime.get(player.getUniqueId()) < player.getWorld().getFullTime()) return;
 
     player.getLocation().getBlock().setType(Material.FIRE);
   }
 
   @Override
-  public KitDescription getDescription() {
-    return new KitDescription(
-        Material.BLAZE_POWDER,
-        "Blaze",
-        "Can leave a fire trail for a short time. It is immune to fire damage, but gains Weakness I"
-            + " in water. Sword or Bow hits have a 20% chance to ignite enemies.",
-        "Golden Sword and Burn Power",
-        Difficulty.EASY);
-  }
-
-  @Override
   public void registerAdvancement(AdvancementAPI api) {
     api.register(PlayerInteractEvent.class)
-        .advancementKey("enga:blaze")
+        .advancementKey(description().advancementKey())
         .condition(
             (player, event) -> {
               if (!PhaseController.playerIsInGame(player)) return false;

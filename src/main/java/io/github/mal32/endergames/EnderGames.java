@@ -4,7 +4,8 @@ import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.game.FindWorldSpawnService;
 import io.github.mal32.endergames.game.GameWorld;
 import io.github.mal32.endergames.game.phases.PhaseController;
-import io.github.mal32.endergames.kits.KitRegistry;
+import io.github.mal32.endergames.kitsystem.api.*;
+import io.github.mal32.endergames.kitsystem.kits.Kits;
 import io.github.mal32.endergames.lobby.LobbyManager;
 import io.github.mal32.endergames.lobby.LobbyWorld;
 import io.github.mal32.endergames.lobby.MapManager;
@@ -21,10 +22,16 @@ public class EnderGames extends JavaPlugin {
   private LobbyWorld lobbyWorld;
   private GameWorld gameWorld;
 
+  private KitSystem kitSystem;
+
   public static boolean isInDebugMode() {
     String debugEnv = System.getenv("EG_DEBUG");
     return debugEnv != null
         && (debugEnv.equalsIgnoreCase("true") || debugEnv.equalsIgnoreCase("1"));
+  }
+
+  public KitSystem getKitSystem() {
+    return kitSystem;
   }
 
   public LobbyWorld getLobbyWorld() {
@@ -45,6 +52,17 @@ public class EnderGames extends JavaPlugin {
   }
 
   @Override
+  public void onLoad() {
+    this.kitSystem = new KitSystem(this);
+    Kits.registerAll(this);
+
+    this.lobbyWorld = new LobbyWorld(this);
+    this.gameWorld = new GameWorld(this, spawnService);
+
+    this.lobbyManager = new LobbyManager(this);
+  }
+
+  @Override
   public void onEnable() {
     saveDefaultConfig();
 
@@ -55,16 +73,13 @@ public class EnderGames extends JavaPlugin {
       var metrics = new Metrics(this, PLUGIN_ID);
     }
 
-    this.lobbyWorld = new LobbyWorld(this);
-    this.gameWorld = new GameWorld(this, spawnService);
     lobbyWorld.setupWorld();
     gameWorld.setupWorld();
     this.phaseController = new PhaseController(this, gameWorld);
 
-    this.lobbyManager = new LobbyManager(this);
-    LobbyManager.registerDefaultModules(this);
+    kitSystem.enable();
 
-    KitRegistry.registerKits(this);
+    LobbyManager.registerDefaultModules(this);
 
     KDScoreboard kdScoreboard = new KDScoreboard(this);
 
@@ -73,7 +88,7 @@ public class EnderGames extends JavaPlugin {
 
   private void registerKitAdvancements() {
     AdvancementAPI advancementAPI = new AdvancementAPI(this);
-    for (var kit : KitRegistry.getKits()) {
+    for (AbstractKit kit : kitSystem.kitManager().all()) {
       kit.registerAdvancement(advancementAPI);
     }
   }
@@ -88,6 +103,7 @@ public class EnderGames extends JavaPlugin {
 
   @Override
   public void onDisable() {
+    kitSystem.disable();
     lobbyManager.disable();
     gameWorld.disable();
     lobbyWorld.disable();

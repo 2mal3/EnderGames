@@ -1,25 +1,26 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.api;
 
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
-import io.github.mal32.endergames.AbstractModule;
-import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.game.phases.PhaseController;
-import io.github.mal32.endergames.services.KitType;
+import java.util.Objects;
 import org.bukkit.Color;
-import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 
-public abstract class AbstractKit extends AbstractModule {
-  public static final NamespacedKey kitStorageKey = new NamespacedKey("endergames", "kit");
-  private final KitType type;
+public abstract class AbstractKit implements Listener {
+  protected final JavaPlugin plugin;
+  private final KitDescription kitDescription;
+  private final KitService kitService;
 
-  public AbstractKit(EnderGames plugin, KitType type) {
-    super(plugin);
-    this.type = type;
+  public AbstractKit(KitDescription kitDescription, KitService kitService, JavaPlugin plugin) {
+    this.kitDescription = Objects.requireNonNull(kitDescription);
+    this.kitService = Objects.requireNonNull(kitService);
+    this.plugin = Objects.requireNonNull(plugin);
   }
 
   protected static ItemStack enchantItem(ItemStack item, Enchantment enchantment, int level) {
@@ -36,19 +37,25 @@ public abstract class AbstractKit extends AbstractModule {
     return item;
   }
 
+  public void onEnable() {}
+
+  public void onDisable() {}
+
   protected boolean playerCanUseThisKit(Player player) {
-    return PhaseController.playerIsInGame(player) && KitType.get(player).equals(this.type);
+    return player != null
+        && PhaseController.playerIsInGame(player)
+        && kitService.get(player).equals(this);
   }
 
   public abstract void initPlayer(Player player);
 
-  public String getNameLowercase() {
-    String simpleName = this.getClass().getSimpleName();
-    String withSpaces = simpleName.replaceAll("([a-z])([A-Z])", "$1 $2"); // "Forest Spirit"
-    return withSpaces.toLowerCase();
+  public String id() {
+    return kitDescription.displayName();
   }
 
-  public abstract KitDescription getDescription();
+  public KitDescription description() {
+    return kitDescription;
+  }
 
   public void registerAdvancement(AdvancementAPI api) {}
 }

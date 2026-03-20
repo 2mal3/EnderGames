@@ -1,7 +1,9 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.kits;
 
-import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.Difficulty;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitService;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -23,6 +25,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootTables;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
@@ -41,14 +44,20 @@ public class Knight extends AbstractKit {
   private BukkitTask horseRespawnTask;
   private BukkitTask horseTetherTask;
 
-  public Knight(EnderGames plugin) {
-    super(plugin, KitType.KNIGHT);
+  public Knight(KitService kitService, JavaPlugin plugin) {
+    super(
+        new KitDescription(
+            "Knight",
+            Material.IRON_SPEAR,
+            "Rides into battle atop a regenerating warhorse clad in iron armor.",
+            "Full Golden Armor, Iron Spear",
+            Difficulty.HARD),
+        kitService,
+        plugin);
   }
 
   @Override
-  public void enable() {
-    super.enable();
-
+  public void onEnable() {
     var scheduler = plugin.getServer().getScheduler();
     horseRespawnTask =
         scheduler.runTaskTimer(
@@ -65,9 +74,7 @@ public class Knight extends AbstractKit {
   }
 
   @Override
-  public void disable() {
-    super.disable();
-
+  public void onDisable() {
     horseRespawnTask.cancel();
     horseTetherTask.cancel();
 
@@ -88,16 +95,6 @@ public class Knight extends AbstractKit {
     inventory.addItem(spear);
 
     spawnHorse(player, true);
-  }
-
-  @Override
-  public KitDescription getDescription() {
-    return new KitDescription(
-        Material.IRON_SPEAR,
-        "Knight",
-        "Rides into battle atop a regenerating warhorse clad in iron armor.",
-        "Full Golden Armor, Iron Spear",
-        Difficulty.HARD);
   }
 
   @EventHandler

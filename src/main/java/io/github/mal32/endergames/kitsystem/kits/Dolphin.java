@@ -1,7 +1,9 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.kits;
 
-import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.Difficulty;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitService;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -16,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -28,8 +31,16 @@ public class Dolphin extends AbstractKit {
 
   private final Map<UUID, Long> lastWaterJump = new HashMap<>();
 
-  public Dolphin(EnderGames plugin) {
-    super(plugin, KitType.DOLPHIN);
+  public Dolphin(KitService kitService, JavaPlugin plugin) {
+    super(
+        new KitDescription(
+            "Dolphin",
+            Material.TROPICAL_FISH,
+            "Has Dolphins Grace and can jump through the water. Swimming gives Fish.",
+            "Water Bucket, Blue Leather Boots",
+            Difficulty.MEDIUM),
+        kitService,
+        plugin);
   }
 
   @Override
@@ -124,15 +135,5 @@ public class Dolphin extends AbstractKit {
 
     // Bubble columns: treat them as valid water for dolphin jumping
     return feetBlock.getType() == Material.BUBBLE_COLUMN;
-  }
-
-  @Override
-  public KitDescription getDescription() {
-    return new KitDescription(
-        Material.TROPICAL_FISH,
-        "Dolphin",
-        "Has Dolphins Grace and can jump through the water. Swimming gives Fish.",
-        "Water Bucket, Blue Leather Boots",
-        Difficulty.MEDIUM);
   }
 }

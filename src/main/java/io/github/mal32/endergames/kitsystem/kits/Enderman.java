@@ -1,7 +1,9 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.kits;
 
-import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.Difficulty;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitService;
 import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -15,12 +17,22 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Enderman extends AbstractKit {
-  public Enderman(EnderGames plugin) {
-    super(plugin, KitType.ENDERMAN);
+  public Enderman(KitService kitService, JavaPlugin plugin) {
+    super(
+        new KitDescription(
+            "Enderman",
+            Material.ENDER_PEARL,
+            "Gain 5 Ender Pearls per player kill. Doesn't take damage from"
+                + " Ender Perls. Can open Ender Chests from further away.",
+            "5 Ender Pearls",
+            Difficulty.EASY),
+        kitService,
+        plugin);
   }
 
   @Override
@@ -76,16 +88,5 @@ public class Enderman extends AbstractKit {
         new PlayerInteractEvent(
             player, Action.RIGHT_CLICK_BLOCK, null, targetBlock, BlockFace.SELF);
     Bukkit.getServer().getPluginManager().callEvent(chestOpenEvent);
-  }
-
-  @Override
-  public KitDescription getDescription() {
-    return new KitDescription(
-        Material.ENDER_PEARL,
-        "Enderman",
-        "Gain 5 Ender Pearls per player kill. Doesn't take damage from"
-            + " Ender Perls. Can open Ender Chests from further away.",
-        "5 Ender Pearls",
-        Difficulty.EASY);
   }
 }

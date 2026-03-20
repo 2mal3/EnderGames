@@ -1,13 +1,13 @@
 package io.github.mal32.endergames.game.phases;
 
 import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.kits.AbstractKit;
-import io.github.mal32.endergames.kits.KitDescription;
-import io.github.mal32.endergames.kits.KitRegistry;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import io.github.mal32.endergames.services.PlayerState;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -24,7 +24,9 @@ public class StartPhase extends AbstractPhase {
   public StartPhase(EnderGames plugin, PhaseController controller) {
     super(plugin, controller);
 
-    Bukkit.getPluginManager().callEvent(new GameStartEvent());
+    Collection<Player> participants = new ArrayList<>(List.of(PlayerState.PLAYING.all()));
+    participants.addAll(List.of(PlayerState.SPECTATING.all()));
+    Bukkit.getPluginManager().callEvent(new GameStartingEvent(participants));
 
     for (Player player : PlayerState.PLAYING.all()) {
       PlayerInWorld.GAME.set(player);
@@ -68,18 +70,17 @@ public class StartPhase extends AbstractPhase {
     }
   }
 
-  private void showPlayersKitInfo() {
+  private void showPlayersKitInfo() { // TODO: move to KitManager
     for (Player player : PlayerState.PLAYING.all()) {
-      KitType playerKit = KitType.get(player);
-      AbstractKit kit = KitRegistry.get(playerKit);
+      final AbstractKit kit = plugin.getKitSystem().kitService().get(player);
 
-      KitDescription kitDescription = kit.getDescription();
+      final KitDescription kitDescription = kit.description();
 
       Component nameMessage =
           Component.text()
               .append(Component.text("\nYou are playing as ", NamedTextColor.YELLOW))
               .append(
-                  Component.text(kitDescription.name())
+                  Component.text(kitDescription.displayName())
                       .color(NamedTextColor.GOLD)
                       .decorate(TextDecoration.BOLD))
               .build();

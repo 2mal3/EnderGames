@@ -1,7 +1,9 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.kits;
 
-import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.Difficulty;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitService;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemEnchantments;
@@ -29,6 +31,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
@@ -61,8 +64,17 @@ public class ForestSpirit extends AbstractKit {
   private BukkitTask healingTask;
   private BukkitTask biomeAdaptTask;
 
-  public ForestSpirit(EnderGames plugin) {
-    super(plugin, KitType.FOREST_SPIRIT);
+  public ForestSpirit(KitService kitService, JavaPlugin plugin) {
+    super(
+        new KitDescription(
+            "Forest Spirit",
+            Material.OAK_SAPLING,
+            "Growth: turns nearby entities into trees and deals suffocating damage. "
+                + "Gets stronger in forests, turns into a tree when standing still",
+            "Full dark-green leather armor with Thorns II, 20 adaptive saplings.",
+            Difficulty.MEDIUM),
+        kitService,
+        plugin);
   }
 
   // ---------------------------------------------------------------------------
@@ -70,9 +82,7 @@ public class ForestSpirit extends AbstractKit {
   // ---------------------------------------------------------------------------
 
   @Override
-  public void enable() {
-    super.enable();
-
+  public void onEnable() {
     // - validates roots each tick so ANY destruction cause frees the player
     stillnessTask =
         plugin
@@ -1557,18 +1567,7 @@ public class ForestSpirit extends AbstractKit {
   }
 
   @Override
-  public KitDescription getDescription() {
-    return new KitDescription(
-        Material.OAK_SAPLING,
-        "Forest Spirit",
-        "Growth: turns nearby entities into trees and deals suffocating damage. "
-            + "Gets stronger in forests, turns into a tree when standing still",
-        "Full dark-green leather armor with Thorns II, 20 adaptive saplings.",
-        Difficulty.MEDIUM);
-  }
-
-  @Override
-  public void disable() {
+  public void onDisable() {
     if (stillnessTask != null) {
       stillnessTask.cancel();
       stillnessTask = null;
@@ -1584,8 +1583,6 @@ public class ForestSpirit extends AbstractKit {
       biomeAdaptTask.cancel();
       biomeAdaptTask = null;
     }
-
-    super.disable();
   }
 
   // ---------------------------------------------------------------------------

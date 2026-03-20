@@ -1,7 +1,9 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.kits;
 
-import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.Difficulty;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitService;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,10 +15,21 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class Lumberjack extends AbstractKit {
-  public Lumberjack(EnderGames plugin) {
-    super(plugin, KitType.LUMBERJACK);
+  public static final String id = "Lumberjack";
+
+  public Lumberjack(KitService kitService, JavaPlugin plugin) {
+    super(
+        new KitDescription(
+            Lumberjack.id,
+            Material.WOODEN_AXE,
+            "The lumberjack can fell entire trees with a single axe swing. Every axe he crafts automatically gains Sharpness I.",
+            "Wooden axe, red leather chestplate, blue leather pants, black boots.",
+            Difficulty.EASY),
+        kitService,
+        plugin);
   }
 
   @Override
@@ -79,16 +92,5 @@ public class Lumberjack extends AbstractKit {
 
     result.addEnchantment(Enchantment.SHARPNESS, 1);
     event.getInventory().setResult(result);
-  }
-
-  @Override
-  public KitDescription getDescription() {
-    return new KitDescription(
-        Material.WOODEN_AXE,
-        "Lumberjack",
-        "The lumberjack can fell entire trees with a single axe swing. Every axe he crafts"
-            + " automatically gains Sharpness I.",
-        "Wooden axe, red leather chestplate, blue leather pants, black boots.",
-        Difficulty.EASY);
   }
 }

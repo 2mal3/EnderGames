@@ -1,9 +1,7 @@
 package io.github.mal32.endergames.lobby.items;
 
-import io.github.mal32.endergames.kits.AbstractKit;
-import io.github.mal32.endergames.kits.KitDescription;
-import io.github.mal32.endergames.kits.KitRegistry;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
 import java.util.ArrayList;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -64,11 +62,11 @@ class KitSelector extends MenuItem implements Listener {
     return sb.toString();
   }
 
-  public static boolean playerHasAdvancement(Player player, NamespacedKey key) {
+  public static boolean playerHasAdvancement(Player player, KitDescription kitDescription) {
+    if (kitDescription.advancementKey() == null) return true;
+    final NamespacedKey key = new NamespacedKey("enga", kitDescription.advancementKey());
     Advancement kitAdvancement = Bukkit.getAdvancement(key);
-    if (kitAdvancement == null) {
-      return true;
-    }
+    if (kitAdvancement == null) return true;
     return player.getAdvancementProgress(kitAdvancement).isDone();
   }
 
@@ -104,28 +102,22 @@ class KitSelector extends MenuItem implements Listener {
     String nameText = LegacyComponentSerializer.legacySection().serialize(displayName);
     String kitName = nameText.length() > 2 ? nameText.substring(2).toLowerCase() : "";
 
-    NamespacedKey advancementKey =
-        new NamespacedKey("enga", kitName.replace(" ", "_")); // TODO: use kit_name
-    if (!playerHasAdvancement(player, advancementKey)) {
-      player.sendMessage(
-          Component.text("Unlock the matching advancement to use that kit.")
-              .color(NamedTextColor.RED));
-      player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-      return;
-    }
-
-    String rawKit =
+    final String rawKit =
         clickedItem
             .getItemMeta()
             .getPersistentDataContainer()
             .get(new NamespacedKey(plugin, "kit_name"), PersistentDataType.STRING);
-
-    KitType type;
-    try {
-      type = KitType.valueOf(rawKit);
-      type.set(player);
-    } catch (IllegalArgumentException e) {
+    final AbstractKit kit = KitRegistry.get(rawKit);
+    if (kit == null) {
       plugin.getComponentLogger().warn("Invalid kit selected: {}", kitName);
+      return;
+    }
+
+    if (!playerHasAdvancement(player, kit.description())) {
+      player.sendMessage(
+          Component.text("Unlock the matching advancement to use that kit.")
+              .color(NamedTextColor.RED));
+      player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
       return;
     }
 
@@ -136,7 +128,7 @@ class KitSelector extends MenuItem implements Listener {
     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1, 1);
 
     KitInventory kitInv = (KitInventory) event.getInventory().getHolder();
-    kitInv.selectedKitName = type.name();
+    kitInv.selectedKitName = kit.id();
     kitInv.updateKitItems();
   }
 
@@ -199,9 +191,8 @@ class KitInventory implements InventoryHolder {
   public void updateKitItems() {
     inventory.clear();
 
-    for (KitType type : KitType.values()) {
-      AbstractKit kit = KitRegistry.get(type);
-      var kitDescription = kit.getDescription();
+    for (AbstractKit kit : KitRegistry.getKits()) {
+      var kitDescription = kit.description();
       KitItem abstractKitItem = getKitItem(kitDescription);
 
       var kitItem = new ItemStack(abstractKitItem.item(), 1);
@@ -210,12 +201,12 @@ class KitInventory implements InventoryHolder {
       meta.lore(abstractKitItem.lore());
 
       meta.getPersistentDataContainer()
-          .set(new NamespacedKey(plugin, "kit_name"), PersistentDataType.STRING, type.name());
+          .set(new NamespacedKey(plugin, "kit_name"), PersistentDataType.STRING, kit.id());
 
       kitItem.setItemMeta(meta);
 
       // Hightlight the selected kit with a glow effect
-      if (type.name().equals(selectedKitName)) {
+      if (kit.id().equals(selectedKitName)) {
         ItemMeta clickedMeta = kitItem.getItemMeta();
         clickedMeta.addEnchant(Enchantment.INFINITY, 1, true); // dummy enchantment for glow
         clickedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -227,10 +218,7 @@ class KitInventory implements InventoryHolder {
   }
 
   private KitItem getKitItem(KitDescription kitDescription) {
-
-    NamespacedKey advancementKey =
-        new NamespacedKey("enga", kitDescription.name().toLowerCase().replace(" ", "_"));
-    boolean kitUnlocked = KitSelector.playerHasAdvancement(player, advancementKey);
+    boolean kitUnlocked = KitSelector.playerHasAdvancement(player, kitDescription);
 
     var lore = new ArrayList<TextComponent>();
 
@@ -296,11 +284,11 @@ class KitInventory implements InventoryHolder {
     }
 
     var name =
-        Component.text(kitDescription.name())
+        Component.text(kitDescription.displayName())
             .color(kitUnlocked ? NamedTextColor.GOLD : NamedTextColor.RED)
             .decoration(TextDecoration.ITALIC, false);
 
-    return new KitItem(name, lore, kitUnlocked ? kitDescription.item() : Material.BARRIER);
+    return new KitItem(name, lore, kitUnlocked ? kitDescription.icon() : Material.BARRIER);
   }
 }
 

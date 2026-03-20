@@ -1,17 +1,29 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.kits;
 
-import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.Difficulty;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitService;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class Mace extends AbstractKit {
-  public Mace(EnderGames plugin) {
-    super(plugin, KitType.MACE);
+  public Mace(KitService kitService, JavaPlugin plugin) {
+    super(
+        new KitDescription(
+            "Mace",
+            Material.MACE,
+            "Gets 4 Wind Charges per player kill",
+            "Maces with Wind Burst, 8 Wind Charges, Feather Falling III boots",
+            Difficulty.HARD,
+            "enga:mace"),
+        kitService,
+        plugin);
   }
 
   @EventHandler
@@ -36,15 +48,5 @@ public class Mace extends AbstractKit {
         .getInventory()
         .setBoots(
             enchantItem(new ItemStack(Material.LEATHER_BOOTS), Enchantment.FEATHER_FALLING, 3));
-  }
-
-  @Override
-  public KitDescription getDescription() {
-    return new KitDescription(
-        Material.MACE,
-        "Mace",
-        "Gets 4 Wind Charges per player kill",
-        "Maces with Wind Burst, 8 Wind Charges, Feather Falling III boots",
-        Difficulty.HARD);
   }
 }

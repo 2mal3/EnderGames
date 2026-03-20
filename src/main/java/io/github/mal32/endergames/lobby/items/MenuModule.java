@@ -2,7 +2,7 @@ package io.github.mal32.endergames.lobby.items;
 
 import io.github.mal32.endergames.game.phases.GameEndEvent;
 import io.github.mal32.endergames.game.phases.GameStartAbortEvent;
-import io.github.mal32.endergames.game.phases.GameStartEvent;
+import io.github.mal32.endergames.game.phases.GameStartingEvent;
 import io.github.mal32.endergames.lobby.LobbyModule;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import io.github.mal32.endergames.services.PlayerState;
@@ -74,7 +74,7 @@ public class MenuModule extends LobbyModule {
   }
 
   @EventHandler
-  public void onGameStart(GameStartEvent ignoredE) {
+  public void onGameStarting(GameStartingEvent ignoredE) {
     for (Player player : PlayerState.IN_LOBBY.all()) {
       onGameStart(player);
     }
