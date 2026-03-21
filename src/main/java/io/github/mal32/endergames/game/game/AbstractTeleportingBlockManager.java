@@ -4,6 +4,7 @@ import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.game.phases.PhaseController;
 import java.util.*;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 /*
@@ -15,6 +16,7 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
   protected final ArrayList<B> blocks = new ArrayList<>();
   protected final Location spawnLocation;
   private final World gameWorld = Objects.requireNonNull(Bukkit.getWorld("world"));
+  private final Random random = new Random();
 
   public AbstractTeleportingBlockManager(EnderGames plugin, Location spawnLocation) {
     super(plugin);
@@ -71,8 +73,36 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     if (blocks.size() > preferredBlockCount) return;
 
     Location randomHorizontalLocation = getRandomHorizontalLocation();
+
+    loadChunkIfNotLoaded(randomHorizontalLocation);
+    int verticalPosition = getVerticalPosition(randomHorizontalLocation);
+    randomHorizontalLocation.setY(verticalPosition);
+
     B newBlock = getNewBlock(randomHorizontalLocation);
     blocks.add(newBlock);
+  }
+
+  private int getVerticalPosition(Location horizontalLocation) {
+    int y = horizontalLocation.getWorld().getMaxHeight() + 1;
+    Location location = horizontalLocation.clone();
+    Block block;
+    do {
+      y--;
+      location.setY(y);
+      block = location.getBlock();
+    } while (block.isPassable() || Tag.LEAVES.isTagged(block.getType()));
+
+    return y + 1;
+  }
+
+  private void loadChunkIfNotLoaded(Location location) {
+    World world = location.getWorld();
+    int chunkX = location.getBlockX() >> 4;
+    int chunkZ = location.getBlockZ() >> 4;
+    boolean chunkLoaded = world.isChunkLoaded(chunkX, chunkZ);
+    if (!chunkLoaded) {
+      world.loadChunk(chunkX, chunkZ, true);
+    }
   }
 
   protected void removeBlock(B block) {
@@ -89,8 +119,8 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
 
     Location targetLocation = null;
     for (int attempts = 0; attempts < MAX_ATTEMPTS; attempts++) {
-      final int randomX = (new Random().nextInt(size) - (size / 2)) + center.getBlockX();
-      final int randomZ = (new Random().nextInt(size) - (size / 2)) + center.getBlockZ();
+      final int randomX = (random.nextInt(size) - (size / 2)) + center.getBlockX();
+      final int randomZ = (random.nextInt(size) - (size / 2)) + center.getBlockZ();
       targetLocation = new Location(Bukkit.getWorld("world"), randomX, 0, randomZ);
 
       final double minHorizontalDistance = getMinHorizontalDistanceToPlayers(targetLocation);

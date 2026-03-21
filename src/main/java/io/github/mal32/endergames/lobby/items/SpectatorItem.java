@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -52,6 +53,7 @@ class SpectatorItem extends MenuItem {
   public void playerInteract(PlayerInteractEvent event) {
     Player player = event.getPlayer();
     player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
+    player.setGameMode(GameMode.SPECTATOR);
     ((EnderGames) plugin).sendToGame(player); // TODO: event?
   }
 }

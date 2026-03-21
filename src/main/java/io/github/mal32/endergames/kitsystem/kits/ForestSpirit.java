@@ -50,7 +50,7 @@ public class ForestSpirit extends AbstractKit {
   private static final int ROOTED_REGEN_DURATION_TICKS = 20 * 60 * 15; // long, removed on free
 
   // --- vulnerabilities ---
-  private static final double FIRE_DAMAGE_MULTIPLIER = 2D;
+  private static final double FIRE_DAMAGE_MULTIPLIER = 3.5D;
   private static final double AXE_DAMAGE_MULTIPLIER = 1.4D;
   private static boolean healingTaskScheduled = false;
   private final Map<UUID, Integer> standStillTicks = new HashMap<>();

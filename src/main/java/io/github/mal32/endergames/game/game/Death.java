@@ -50,10 +50,6 @@ public class Death extends AbstractModule {
     world.setGameRule(GameRules.IMMEDIATE_RESPAWN, true);
   }
 
-  private static String capitalizeFully(String text) {
-    return Pattern.compile("\\b(\\w)").matcher(text).replaceAll(m -> m.group().toUpperCase());
-  }
-
   private void killEffects(PlayerDeathEvent event) {
     Player player = event.getPlayer();
     Location location = player.getLocation();
