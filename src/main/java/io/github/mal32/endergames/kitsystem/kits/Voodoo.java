@@ -31,6 +31,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
+@UnlockRequirement(advancement = "enga:voodoo")
 public class Voodoo extends AbstractKit {
   private BukkitTask voodooTask;
 
@@ -41,8 +42,7 @@ public class Voodoo extends AbstractKit {
             Material.SCULK,
             "Hitting entities with arrows regenerates health. Critically damaging players gives a short health boost. Nearby players get black hearts.",
             "Bow with Piercing, 10 Arrows, Leather Boots",
-            Difficulty.MEDIUM,
-            "enga:voodoo"),
+            Difficulty.MEDIUM),
         kitService,
         plugin);
   }

@@ -3,6 +3,7 @@ package io.github.mal32.endergames.lobby.items;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
 import io.github.mal32.endergames.kitsystem.api.KitSystem;
+import io.github.mal32.endergames.kitsystem.util.UnlockChecker;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -15,7 +16,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
-import org.bukkit.advancement.Advancement;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -43,14 +43,6 @@ class KitSelector extends MenuItem implements Listener {
     this.kitName = new NamespacedKey(plugin, "kit_name");
     this.kitSystem = kitSystem;
     Bukkit.getPluginManager().registerEvents(this, plugin);
-  }
-
-  public static boolean playerHasAdvancement(Player player, KitDescription kitDescription) {
-    if (kitDescription.advancementKey() == null) return true;
-    final NamespacedKey key = NamespacedKey.fromString(kitDescription.advancementKey());
-    Advancement kitAdvancement = Bukkit.getAdvancement(key);
-    if (kitAdvancement == null) return true;
-    return player.getAdvancementProgress(kitAdvancement).isDone();
   }
 
   @Override
@@ -94,7 +86,7 @@ class KitSelector extends MenuItem implements Listener {
     }
     final AbstractKit kit = optionalKit.get();
 
-    if (!playerHasAdvancement(player, kit.description())) {
+    if (!UnlockChecker.isUnlocked(player, kit)) {
       player.sendMessage(
           Component.text("Unlock the matching advancement to use that kit.")
               .color(NamedTextColor.RED));
@@ -194,8 +186,8 @@ class KitInventory implements InventoryHolder {
   }
 
   private KitItem getKitItem(AbstractKit kit) {
+    boolean kitUnlocked = UnlockChecker.isUnlocked(player, kit);
     final KitDescription description = kit.description();
-    boolean kitUnlocked = KitSelector.playerHasAdvancement(player, description);
 
     var lore = new ArrayList<TextComponent>();
 

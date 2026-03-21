@@ -11,6 +11,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+@UnlockRequirement(advancement = "enga:mace")
 public class Mace extends AbstractKit {
   public Mace(KitService kitService, JavaPlugin plugin) {
     super(
@@ -19,8 +20,7 @@ public class Mace extends AbstractKit {
             Material.MACE,
             "Gets 4 Wind Charges per player kill",
             "Maces with Wind Burst, 8 Wind Charges, Feather Falling III boots",
-            Difficulty.HARD,
-            "enga:mace"),
+            Difficulty.HARD),
         kitService,
         plugin);
   }

@@ -1,5 +1,6 @@
 package io.github.mal32.endergames.kitsystem.api;
 
+import io.github.mal32.endergames.kitsystem.registry.KitValidator;
 import java.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
@@ -14,6 +15,7 @@ public class KitManager {
   }
 
   public void register(AbstractKit kit) {
+    KitValidator.validate(kit);
     kits.put(kit.id(), kit);
   }
 

@@ -1,6 +1,5 @@
 package io.github.mal32.endergames.kitsystem.api;
 
-import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.game.phases.PhaseController;
 import java.util.Objects;
 import org.bukkit.entity.Player;
@@ -37,6 +36,4 @@ public abstract class AbstractKit implements Listener {
   public KitDescription description() {
     return kitDescription;
   }
-
-  public void registerAdvancement(AdvancementAPI api) {}
 }

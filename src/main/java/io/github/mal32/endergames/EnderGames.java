@@ -87,7 +87,9 @@ public class EnderGames extends JavaPlugin {
   private void registerKitAdvancements() {
     AdvancementAPI advancementAPI = new AdvancementAPI(this);
     for (AbstractKit kit : kitSystem.manager().all()) {
-      kit.registerAdvancement(advancementAPI);
+      if (kit instanceof CustomAdvancementTrigger) {
+        ((CustomAdvancementTrigger) kit).registerAdvancement(advancementAPI);
+      }
     }
   }
 

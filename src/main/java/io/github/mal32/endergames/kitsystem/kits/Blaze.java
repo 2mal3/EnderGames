@@ -23,7 +23,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class Blaze extends AbstractKit {
+@UnlockRequirement(advancement = "enga:blaze")
+public class Blaze extends AbstractKit implements CustomAdvancementTrigger {
   private final HashMap<UUID, Long> burnTime = new HashMap<>();
 
   public Blaze(KitService kitService, JavaPlugin plugin) {
@@ -33,8 +34,7 @@ public class Blaze extends AbstractKit {
             Material.BLAZE_POWDER,
             "Can leave a fire trail for a short time. It is immune to fire damage, but gains Weakness I in water. Sword or Bow hits have a 20% chance to ignite enemies.",
             "Golden Sword and Burn Power",
-            Difficulty.EASY,
-            "enga:blaze"),
+            Difficulty.EASY),
         kitService,
         plugin);
   }
@@ -139,8 +139,9 @@ public class Blaze extends AbstractKit {
 
   @Override
   public void registerAdvancement(AdvancementAPI api) {
+    final UnlockRequirement req = this.getClass().getAnnotation(UnlockRequirement.class);
     api.register(PlayerInteractEvent.class)
-        .advancementKey(description().advancementKey())
+        .advancementKey(req.advancement())
         .condition(
             (player, event) -> {
               if (!PhaseController.playerIsInGame(player)) return false;
