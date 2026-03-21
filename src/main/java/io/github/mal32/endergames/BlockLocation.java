@@ -62,7 +62,7 @@ public class BlockLocation {
     this.y += y;
     this.z += z;
 
-    return this.clone();
+    return this;
   }
 
   public Block getBlock() {
@@ -79,5 +79,9 @@ public class BlockLocation {
         && location.blockZ() == z
         && location.getWorld() != null
         && location.getWorld().equals(world);
+  }
+
+  public String toString() {
+    return String.format("BlockLocation{x=%d, y=%d, z=%d}", x, y, z);
   }
 }
