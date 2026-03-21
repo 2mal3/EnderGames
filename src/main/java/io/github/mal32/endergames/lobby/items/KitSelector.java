@@ -86,7 +86,9 @@ class KitSelector extends MenuItem implements Listener {
             .get(kitName, PersistentDataType.STRING);
     final AbstractKit kit = kitSystem.kitManager().get(rawKit);
     if (kit == null) {
-      plugin.getComponentLogger().warn("Invalid kit selected: {}", clickedItem.getItemMeta().displayName());
+      plugin
+          .getComponentLogger()
+          .warn("Invalid kit selected: {}", clickedItem.getItemMeta().displayName());
       return;
     }
 
@@ -120,7 +122,8 @@ class KitInventory implements InventoryHolder {
   private final NamespacedKey kitName;
   private final Player player;
 
-  public KitInventory(JavaPlugin plugin, KitSystem kitSystem, NamespacedKey kitName, Player player) {
+  public KitInventory(
+      JavaPlugin plugin, KitSystem kitSystem, NamespacedKey kitName, Player player) {
     this.inventory = plugin.getServer().createInventory(this, 27, Component.text("Select Kit"));
     this.player = player;
     this.kitSystem = Objects.requireNonNull(kitSystem);
@@ -173,15 +176,16 @@ class KitInventory implements InventoryHolder {
       var kitDescription = kit.description();
       KitItem abstractKitItem = getKitItem(kitDescription);
       final ItemStack item = ItemStack.of(abstractKitItem.item());
-      item.editMeta(meta -> {
-        meta.displayName(abstractKitItem.name());
-        meta.lore(abstractKitItem.lore());
-        meta.getPersistentDataContainer().set(kitName, PersistentDataType.STRING, kit.id());
-      });
+      item.editMeta(
+          meta -> {
+            meta.displayName(abstractKitItem.name());
+            meta.lore(abstractKitItem.lore());
+            meta.getPersistentDataContainer().set(kitName, PersistentDataType.STRING, kit.id());
+          });
 
       // Highlight the selected kit with a glow effect
       if (kit.equals(selectedKit)) {
-        item.editMeta(meta->meta.setEnchantmentGlintOverride(true));
+        item.editMeta(meta -> meta.setEnchantmentGlintOverride(true));
       }
 
       inventory.addItem(item);

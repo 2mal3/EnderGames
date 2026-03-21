@@ -106,14 +106,12 @@ public class Lucker extends AbstractKit {
         break;
     }
 
-    // 2) Increased apple drop chance from specific leaves
-    if (type == Material.OAK_LEAVES || type == Material.DARK_OAK_LEAVES) {
-      // 50% chance to drop an apple
-      if (ThreadLocalRandom.current().nextDouble() > 0.5) {
-        ItemStack apple = new ItemStack(Material.APPLE, 1);
-        Location dropLoc = block.getLocation().add(0.5, 0.5, 0.5);
-        dropLoc.getWorld().dropItemNaturally(dropLoc, apple);
-      }
+    // 2) Increased apple drop chance from specific leaves (50% chance to drop an apple)
+    if ((type == Material.OAK_LEAVES || type == Material.DARK_OAK_LEAVES)
+        && ThreadLocalRandom.current().nextDouble() > 0.5) {
+      ItemStack apple = new ItemStack(Material.APPLE, 1);
+      Location dropLoc = block.getLocation().add(0.5, 0.5, 0.5);
+      dropLoc.getWorld().dropItemNaturally(dropLoc, apple);
     }
   }
 
