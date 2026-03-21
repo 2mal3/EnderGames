@@ -24,7 +24,6 @@ import org.bukkit.SoundCategory;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -64,29 +63,28 @@ public class Death extends AbstractModule {
             1);
 
     event.setShowDeathMessages(true);
-    EntityDamageEvent lastDamage = player.getLastDamageCause();
-    if (lastDamage != null
-        && lastDamage.getDamageSource().getCausingEntity() instanceof Player killer) {
+    Player lastDamager = FightDetection.getActiveDamager(player);
+    if (lastDamager != null) {
       // player died by another player
       event.deathMessage(
           Component.text("")
               .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
               .append(Component.text(player.getName()).color(NamedTextColor.RED))
               .append(Component.text(" was killed by ").color(NamedTextColor.DARK_RED))
-              .append(Component.text(killer.getName()).color(NamedTextColor.RED)));
+              .append(Component.text(lastDamager.getName()).color(NamedTextColor.RED)));
 
-      KitType killerKit = KitType.get(killer);
+      KitType killerKit = KitType.get(lastDamager);
       String niceKillerKit = capitalizeFully(KitRegistry.get(killerKit).getNameLowercase());
 
       player.sendMessage(
           Component.text("")
-              .append(Component.text(killer.getName()).color(NamedTextColor.DARK_RED))
+              .append(Component.text(lastDamager.getName()).color(NamedTextColor.DARK_RED))
               .append(Component.text(" (").color(NamedTextColor.RED))
               .append(Component.text(niceKillerKit).color(NamedTextColor.DARK_RED))
               .append(Component.text(") ").color(NamedTextColor.RED))
               .append(Component.text("has ").color(NamedTextColor.RED))
               .append(
-                  Component.text(String.format("%.2f", killer.getHealth()) + "❤")
+                  Component.text(String.format("%.2f", lastDamager.getHealth()) + "❤")
                       .color(NamedTextColor.DARK_RED))
               .append(Component.text(" left").color(NamedTextColor.RED)));
     } else {
