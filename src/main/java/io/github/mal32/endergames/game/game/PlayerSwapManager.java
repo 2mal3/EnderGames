@@ -17,6 +17,7 @@ public class PlayerSwapManager extends AbstractTask {
   private static final int SWAP_COOLDOWN_SECONDS = 60 * 3;
   private static final int CLOCK_SPEED_SECONDS = 5;
   private double swapCooldown = SWAP_COOLDOWN_SECONDS;
+  private static final int FIGHT_PROTECTION_DURATION_SECONDS = 5;
 
   public PlayerSwapManager(EnderGames plugin) {
     super(plugin);
@@ -58,6 +59,9 @@ public class PlayerSwapManager extends AbstractTask {
     teleportPlayer(player2, player1Location);
 
     switchIntoFightProtection(player1, player2);
+
+    FightDetection.fakeDamage(player1, player2);
+    FightDetection.fakeDamage(player2, player1);
   }
 
   private void teleportPlayer(Player player, Location location) {
@@ -82,11 +86,23 @@ public class PlayerSwapManager extends AbstractTask {
   private void switchIntoFightProtection(Player player1, Player player2) {
     if (FightDetection.playerIsInFight(player1) && !FightDetection.playerIsInFight(player2)) {
       player2.addPotionEffect(
-          new PotionEffect(PotionEffectType.RESISTANCE, 20 * 2, 4, true, false, true));
+          new PotionEffect(
+              PotionEffectType.RESISTANCE,
+              20 * FIGHT_PROTECTION_DURATION_SECONDS,
+              4,
+              true,
+              false,
+              true));
     }
     if (FightDetection.playerIsInFight(player2) && !FightDetection.playerIsInFight(player1)) {
       player1.addPotionEffect(
-          new PotionEffect(PotionEffectType.RESISTANCE, 20 * 2, 4, true, false, true));
+          new PotionEffect(
+              PotionEffectType.RESISTANCE,
+              20 * FIGHT_PROTECTION_DURATION_SECONDS,
+              4,
+              true,
+              false,
+              true));
     }
   }
 }
