@@ -1,5 +1,7 @@
 package io.github.mal32.endergames.kitsystem.util;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import io.github.mal32.endergames.BaseMockBukkitTest;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -8,7 +10,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
 class KitUtilsTest extends BaseMockBukkitTest {
   @Test
   void enchantItem() {
@@ -18,7 +19,7 @@ class KitUtilsTest extends BaseMockBukkitTest {
 
     assertTrue(enchanted.getEnchantments().containsKey(Enchantment.UNBREAKING));
     assertEquals(1, enchanted.getEnchantmentLevel(Enchantment.UNBREAKING));
-    }
+  }
 
   @Test
   void colorLeatherArmor() {
@@ -30,5 +31,5 @@ class KitUtilsTest extends BaseMockBukkitTest {
     assertInstanceOf(LeatherArmorMeta.class, colored.getItemMeta());
     LeatherArmorMeta meta = (LeatherArmorMeta) colored.getItemMeta();
     assertEquals(color, meta.getColor());
-    }
+  }
 }
