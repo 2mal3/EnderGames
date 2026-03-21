@@ -186,6 +186,7 @@ public class ForestSpirit extends AbstractKit {
       if (!(nearby instanceof LivingEntity living)) continue;
       if (living.equals(caster)) continue;
       if (living.isDead()) continue;
+      if (living instanceof Player player && player.getGameMode() == GameMode.SPECTATOR) continue;
       targets.add(living);
     }
 

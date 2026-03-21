@@ -1,11 +1,12 @@
 package io.github.mal32.endergames.lobby.minigames;
 
 import io.github.mal32.endergames.BlockLocation;
-import io.github.mal32.endergames.MoreMath;
 import io.github.mal32.endergames.lobby.LobbyModule;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -13,10 +14,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
@@ -26,19 +29,23 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.structure.Structure;
+import org.bukkit.structure.StructureManager;
 import org.jetbrains.annotations.Nullable;
 
 public class EndlessParkour extends LobbyModule {
-  private final Map<UUID, ParkourSession> players = new HashMap<>();
+  private Map<UUID, ParkourSession> players = new HashMap<>();
+  private final StructureManager manager = Bukkit.getServer().getStructureManager();
+  private final Structure structure =
+      manager.loadStructure(new NamespacedKey("enga", "parkour_mask"));
+  private final int structureSize = structure.getSize().getBlockX();
+  private final List<BlockState> possibleBlocks =
+      structure.getPalettes().getFirst().getBlocks().stream()
+          .filter(b -> b.getType() == Material.IRON_BLOCK)
+          .toList();
 
   public EndlessParkour(JavaPlugin plugin) {
     super(plugin);
-  }
-
-  // Why does Java haven't build in this???
-  private static double roundN(double value, int places) {
-    double scale = Math.pow(10, places);
-    return Math.round(value * scale) / scale;
   }
 
   @Override
@@ -132,40 +139,30 @@ public class EndlessParkour extends LobbyModule {
 
   private BlockLocation getRandomJumpLocation(BlockLocation startLocation, double scale) {
     BlockLocation randomLocation;
+
+    int i = 100;
     do {
+      BlockState randomBlock = possibleBlocks.get((new Random()).nextInt(possibleBlocks.size()));
+      BlockLocation structureAbsolutePos = new BlockLocation(randomBlock.getLocation());
       randomLocation = startLocation.clone();
-
-      double angle = Math.random() * 2 * Math.PI;
-      double distance;
-      double hight = 0;
-      if (Math.random() > 0.80) {
-        // one higher
-        distance = 2 + (Math.random() * 2);
-        hight = 1;
-      } else {
-        // same level
-        distance = 2 + (Math.random() * 3);
-      }
-      distance *= scale;
-
-      randomLocation.setX(
-          (int) MoreMath.roundN((startLocation.getX() + (Math.cos(angle) * distance)), 0));
-      randomLocation.setZ(
-          (int) MoreMath.roundN((startLocation.getZ() + (Math.sin(angle) * distance)), 0));
-      randomLocation.add(0, (int) MoreMath.roundN(hight + (scale - 1), 0), 0);
-    } while (!blockIsFree(randomLocation.clone()));
+      randomLocation.add(
+          (int) ((structureAbsolutePos.getX() - (structureSize / 2)) * scale),
+          (int) (structureAbsolutePos.getY() + scale - 1),
+          (int) ((structureAbsolutePos.getZ() - (structureSize / 2)) * scale));
+      i--;
+    } while (!(blockIsFree(randomLocation.clone())) && i > 0);
 
     return randomLocation;
   }
 
   private boolean blockIsFree(BlockLocation location) {
     return location.getBlock().getType() == Material.AIR
-        && location.add(0, 1, 0).getBlock().getType() == Material.AIR
-        && location.add(0, 2, 0).getBlock().getType() == Material.AIR
-        && location.add(1, 0, 0).getBlock().getType() == Material.AIR
-        && location.add(-1, 0, 0).getBlock().getType() == Material.AIR
-        && location.add(0, 0, 1).getBlock().getType() == Material.AIR
-        && location.add(0, 0, -1).getBlock().getType() == Material.AIR;
+        && location.clone().add(0, 1, 0).getBlock().getType() == Material.AIR
+        && location.clone().add(0, 2, 0).getBlock().getType() == Material.AIR
+        && location.clone().add(1, 0, 0).getBlock().getType() == Material.AIR
+        && location.clone().add(-1, 0, 0).getBlock().getType() == Material.AIR
+        && location.clone().add(0, 0, 1).getBlock().getType() == Material.AIR
+        && location.clone().add(0, 0, -1).getBlock().getType() == Material.AIR;
   }
 
   @EventHandler
