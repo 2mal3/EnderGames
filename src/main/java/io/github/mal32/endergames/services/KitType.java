@@ -21,7 +21,8 @@ public enum KitType implements PlayerAttribute<KitType> {
   LUCKER,
   REWIND,
   VOODOO,
-  FOREST_SPIRIT;
+  FOREST_SPIRIT,
+  SPY;
 
   public static final NamespacedKey KEY = new NamespacedKey("endergames", "kit");
 
