@@ -1,11 +1,11 @@
 name: ${project.name}
-version: "${project.version}-${git.commit.id.abbrev}-${git.branch}"
+version: "${project.version}-${git.commit.id.abbrev}-'${git.branch}'"
 main: io.github.mal32.endergames.EnderGames
 authors:
   - 2mal3
   - MCsharerGIT
   - lambdaphoenix
-api-version: '1.21.8'
+api-version: '${project.api.version}'
 bootstrapper: io.github.mal32.endergames.PluginBootstrapper
 description: ${project.description}
 website: ${project.url}

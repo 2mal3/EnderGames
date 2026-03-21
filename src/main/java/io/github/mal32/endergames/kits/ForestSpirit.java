@@ -47,7 +47,7 @@ public class ForestSpirit extends AbstractKit {
   private static final int ROOTED_REGEN_DURATION_TICKS = 20 * 60 * 15; // long, removed on free
 
   // --- vulnerabilities ---
-  private static final double FIRE_DAMAGE_MULTIPLIER = 2D;
+  private static final double FIRE_DAMAGE_MULTIPLIER = 3.5D;
   private static final double AXE_DAMAGE_MULTIPLIER = 1.4D;
   private static boolean healingTaskScheduled = false;
   private final Map<UUID, Integer> standStillTicks = new HashMap<>();
@@ -742,7 +742,6 @@ public class ForestSpirit extends AbstractKit {
 
     Location from = event.getFrom();
     Location to = event.getTo();
-    if (to == null) return;
 
     // If the player has been teleported / moved more than 1 block away from
     // the original rooted position, free them completely.
@@ -1120,7 +1119,6 @@ public class ForestSpirit extends AbstractKit {
 
     if (!(event.getDamager() instanceof Player attacker)) return;
     ItemStack weapon = attacker.getInventory().getItemInMainHand();
-    if (weapon == null) return;
     if (!Tag.ITEMS_AXES.isTagged(weapon.getType())) return;
 
     event.setDamage(event.getDamage() * AXE_DAMAGE_MULTIPLIER);
