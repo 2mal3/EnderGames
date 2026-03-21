@@ -64,6 +64,7 @@ public final class KitSystem implements Listener {
   public void onPlayerJoin(PlayerJoinEvent event) {
     final Player player = event.getPlayer();
     if (service.hasKit(player)) return;
+    assert (manager.get(Lumberjack.id).isPresent());
     service.set(player, manager.get(Lumberjack.id).get());
   }
 }
