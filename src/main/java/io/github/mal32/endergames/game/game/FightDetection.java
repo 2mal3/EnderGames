@@ -6,12 +6,13 @@ import io.github.mal32.endergames.services.PlayerInWorld;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class FightDetection extends AbstractModule {
-  private static final Map<UUID, Integer> fightTimestamps = new ConcurrentHashMap<>();
+  private static final Map<UUID, DamageEvent> damageEvents = new ConcurrentHashMap<>();
   private static final long FIGHT_THRESHOLD_SECONDS = 10;
 
   public FightDetection(EnderGames plugin) {
@@ -19,12 +20,22 @@ public class FightDetection extends AbstractModule {
   }
 
   public static boolean playerIsInFight(Player player) {
-    Integer lastHit = fightTimestamps.get(player.getUniqueId());
-    if (lastHit == null) {
+    DamageEvent lastPlayerDamage = damageEvents.get(player.getUniqueId());
+    if (lastPlayerDamage == null) {
       return false;
     }
     int now = (int) (System.currentTimeMillis() / 1000);
-    return (now - lastHit) <= FIGHT_THRESHOLD_SECONDS;
+    return (now - lastPlayerDamage.timestamp()) <= FIGHT_THRESHOLD_SECONDS;
+  }
+
+  public static Player getActiveDamager(Player player) {
+    if (!playerIsInFight(player)) return null;
+
+    DamageEvent lastPlayerDamage = damageEvents.get(player.getUniqueId());
+    if (lastPlayerDamage == null) {
+      return null;
+    }
+    return Bukkit.getPlayer(lastPlayerDamage.damagerUuid());
   }
 
   @EventHandler
@@ -33,14 +44,15 @@ public class FightDetection extends AbstractModule {
         || !(event.getDamager() instanceof Player damager)) {
       return;
     }
-    if (!PlayerInWorld.GAME.is(target) || !PlayerInWorld.GAME.is(damager)) {
+    if (!PlayerInWorld.GAME.is(target)) {
       return;
     }
 
     int now = (int) (System.currentTimeMillis() / 1000);
     UUID targetId = target.getUniqueId();
-    UUID damagerId = damager.getUniqueId();
-    fightTimestamps.put(targetId, now);
-    fightTimestamps.put(damagerId, now);
+    UUID damagerUuid = damager.getUniqueId();
+    damageEvents.put(targetId, new DamageEvent(damagerUuid, now));
   }
 }
+
+record DamageEvent(UUID damagerUuid, int timestamp) {}
