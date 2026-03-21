@@ -47,7 +47,7 @@ class KitSelector extends MenuItem implements Listener {
 
   public static boolean playerHasAdvancement(Player player, KitDescription kitDescription) {
     if (kitDescription.advancementKey() == null) return true;
-    final NamespacedKey key = new NamespacedKey("enga", kitDescription.advancementKey());
+    final NamespacedKey key = NamespacedKey.fromString(kitDescription.advancementKey());
     Advancement kitAdvancement = Bukkit.getAdvancement(key);
     if (kitAdvancement == null) return true;
     return player.getAdvancementProgress(kitAdvancement).isDone();
