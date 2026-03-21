@@ -182,7 +182,7 @@ class KitInventory implements InventoryHolder {
 
       // Hightlight the selected kit with a glow effect
       if (kit.equals(selectedKit)) {
-        item.addEnchantment(Enchantment.INFINITY, 1); // dummy enchantment for glow
+        item.addUnsafeEnchantment(Enchantment.INFINITY, 1); // dummy enchantment for glow
       }
 
       inventory.addItem(item);
