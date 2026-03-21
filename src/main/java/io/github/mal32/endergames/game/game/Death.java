@@ -168,7 +168,7 @@ public class Death extends AbstractModule {
                   Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)));
 
       KitType kit = KitType.get(lastPlayer);
-      plugin.sendAnalyticsAsync("win", Map.of("kit", kit.name()));
+      plugin.analytics.sendAsync("win", Map.of("kit", kit.name()));
 
       // delay win sound because the player has to respawn first
       Bukkit.getScheduler()

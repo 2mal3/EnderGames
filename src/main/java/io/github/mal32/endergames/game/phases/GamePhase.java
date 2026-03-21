@@ -107,7 +107,7 @@ public class GamePhase extends AbstractPhase {
     KitType kit = KitType.get(player);
     KitRegistry.get(kit).initPlayer(player);
 
-    plugin.sendAnalyticsAsync("play", Map.of("kit", kit.name()));
+    plugin.analytics.sendAsync("play", Map.of("kit", kit.name()));
   }
 
   @Override
