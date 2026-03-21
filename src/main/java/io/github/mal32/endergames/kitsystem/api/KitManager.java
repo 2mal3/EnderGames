@@ -6,7 +6,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 
 public class KitManager {
-  private final Map<String, AbstractKit> kits = new HashMap<>(32);
+  private final Map<String, AbstractKit> kits = new LinkedHashMap<>(32);
   private final Plugin plugin;
   private final Set<AbstractKit> active = new HashSet<>();
 
