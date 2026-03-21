@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.game.game;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.MoreMath;
 import io.github.mal32.endergames.game.phases.PhaseController;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,18 +14,31 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class PlayerSwapManager extends AbstractTask {
+  private static final int SWAP_COOLDOWN_SECONDS = 60 * 3;
+  private static final int CLOCK_SPEED_SECONDS = 5;
+  private double swapCooldown = SWAP_COOLDOWN_SECONDS;
+
   public PlayerSwapManager(EnderGames plugin) {
     super(plugin);
   }
 
   @Override
   public int getDelayTicks() {
-    int playerCount = PhaseController.getPlayersInGame().length;
-    return 20 * 60 * 3 / playerCount;
+    return 20 * CLOCK_SPEED_SECONDS;
   }
 
   @Override
   public void task() {
+    swapCooldown -=
+        MoreMath.roundN(
+            CLOCK_SPEED_SECONDS * (1 + (PhaseController.getPlayersInGame().length * 0.5)), 0);
+    if (swapCooldown <= 0) {
+      swapCooldown = SWAP_COOLDOWN_SECONDS;
+      swap();
+    }
+  }
+
+  private void swap() {
     // get two distinct players
     List<Player> players =
         new ArrayList<>(Arrays.stream(PhaseController.getPlayersInGame()).toList());
