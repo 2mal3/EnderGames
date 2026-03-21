@@ -15,7 +15,6 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.advancement.Advancement;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -180,9 +179,9 @@ class KitInventory implements InventoryHolder {
         meta.getPersistentDataContainer().set(kitName, PersistentDataType.STRING, kit.id());
       });
 
-      // Hightlight the selected kit with a glow effect
+      // Highlight the selected kit with a glow effect
       if (kit.equals(selectedKit)) {
-        item.addUnsafeEnchantment(Enchantment.INFINITY, 1); // dummy enchantment for glow
+        item.editMeta(meta->meta.setEnchantmentGlintOverride(true));
       }
 
       inventory.addItem(item);
