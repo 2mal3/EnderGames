@@ -38,6 +38,13 @@ public class FightDetection extends AbstractModule {
     return Bukkit.getPlayer(lastPlayerDamage.damagerUuid());
   }
 
+  public static void fakeDamage(Player target, Player damager) {
+    int now = (int) (System.currentTimeMillis() / 1000);
+    UUID targetId = target.getUniqueId();
+    UUID damagerUuid = damager.getUniqueId();
+    damageEvents.put(targetId, new DamageEvent(damagerUuid, now));
+  }
+
   @EventHandler
   private void onPlayerDamage(EntityDamageByEntityEvent event) {
     if (!(event.getEntity() instanceof Player target)

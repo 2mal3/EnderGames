@@ -59,6 +59,9 @@ public class PlayerSwapManager extends AbstractTask {
     teleportPlayer(player2, player1Location);
 
     switchIntoFightProtection(player1, player2);
+
+    FightDetection.fakeDamage(player1, player2);
+    FightDetection.fakeDamage(player2, player1);
   }
 
   private void teleportPlayer(Player player, Location location) {
