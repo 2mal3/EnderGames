@@ -3,13 +3,8 @@ package io.github.mal32.endergames.kitsystem.api;
 import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.game.phases.PhaseController;
 import java.util.Objects;
-import org.bukkit.Color;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class AbstractKit implements Listener {
@@ -21,20 +16,6 @@ public abstract class AbstractKit implements Listener {
     this.kitDescription = Objects.requireNonNull(kitDescription);
     this.kitService = Objects.requireNonNull(kitService);
     this.plugin = Objects.requireNonNull(plugin);
-  }
-
-  protected static ItemStack enchantItem(ItemStack item, Enchantment enchantment, int level) {
-    ItemMeta meta = item.getItemMeta();
-    meta.addEnchant(enchantment, level, true);
-    item.setItemMeta(meta);
-    return item;
-  }
-
-  protected static ItemStack colorLeatherArmor(ItemStack item, Color color) {
-    LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
-    meta.setColor(color);
-    item.setItemMeta(meta);
-    return item;
   }
 
   public void onEnable() {}
