@@ -104,7 +104,7 @@ class KitSelector extends MenuItem implements Listener {
             .append(Component.text(kit.description().displayName()).color(NamedTextColor.GOLD))
             .append(Component.text(" kit")));
     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1, 1);
-
+    kitSystem.kitService().set(player, kit);
     kitInv.displayKitItems();
   }
 
