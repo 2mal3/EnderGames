@@ -31,7 +31,7 @@ public class PlayerSwapManager extends AbstractTask {
   public void task() {
     swapCooldown -=
         MoreMath.roundN(
-            CLOCK_SPEED_SECONDS * (1 + PhaseController.getPlayersInGame().length * 0.5), 0);
+            CLOCK_SPEED_SECONDS * (1 + (PhaseController.getPlayersInGame().length * 0.5)), 0);
     if (swapCooldown <= 0) {
       swapCooldown = SWAP_COOLDOWN_SECONDS;
       swap();
