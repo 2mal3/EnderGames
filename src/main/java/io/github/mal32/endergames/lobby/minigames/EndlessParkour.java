@@ -1,8 +1,6 @@
 package io.github.mal32.endergames.lobby.minigames;
 
 import io.github.mal32.endergames.BlockLocation;
-import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.MoreMath;
 import io.github.mal32.endergames.lobby.LobbyModule;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import java.util.HashMap;
@@ -30,6 +28,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
 import org.jetbrains.annotations.Nullable;
@@ -47,12 +46,6 @@ public class EndlessParkour extends LobbyModule {
 
   public EndlessParkour(JavaPlugin plugin) {
     super(plugin);
-  }
-
-  // Why does Java haven't build in this???
-  private static double roundN(double value, int places) {
-    double scale = Math.pow(10, places);
-    return Math.round(value * scale) / scale;
   }
 
   @Override
