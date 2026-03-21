@@ -73,7 +73,8 @@ public class Death extends AbstractModule {
               .append(Component.text(lastDamager.getName()).color(NamedTextColor.RED)));
 
       final AbstractKit killerKit = plugin.getKitSystem().kitService().get(lastDamager);
-      TextComponent killerInfo = Component.text(lastDamager.getName()).color(NamedTextColor.DARK_RED);
+      TextComponent killerInfo =
+          Component.text(lastDamager.getName()).color(NamedTextColor.DARK_RED);
       if (killerKit != null) {
         killerInfo =
             killerInfo

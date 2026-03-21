@@ -16,8 +16,8 @@ import org.bukkit.potion.PotionEffectType;
 public class PlayerSwapManager extends AbstractTask {
   private static final int SWAP_COOLDOWN_SECONDS = 60 * 3;
   private static final int CLOCK_SPEED_SECONDS = 5;
-  private double swapCooldown = SWAP_COOLDOWN_SECONDS;
   private static final int FIGHT_PROTECTION_DURATION_SECONDS = 5;
+  private double swapCooldown = SWAP_COOLDOWN_SECONDS;
 
   public PlayerSwapManager(EnderGames plugin) {
     super(plugin);
