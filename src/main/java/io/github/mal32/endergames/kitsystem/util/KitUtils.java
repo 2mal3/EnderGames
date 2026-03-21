@@ -1,4 +1,4 @@
-package io.github.mal32.endergames.kitsystem.api;
+package io.github.mal32.endergames.kitsystem.util;
 
 import org.bukkit.Color;
 import org.bukkit.enchantments.Enchantment;

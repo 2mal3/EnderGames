@@ -25,7 +25,7 @@ public abstract class AbstractKit implements Listener {
   protected boolean playerCanUseThisKit(Player player) {
     return player != null
         && PhaseController.playerIsInGame(player)
-        && kitService.get(player).equals(this);
+        && kitService.isUsing(player, this);
   }
 
   public abstract void initPlayer(Player player);

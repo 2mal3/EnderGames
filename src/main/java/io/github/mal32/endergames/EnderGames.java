@@ -5,7 +5,7 @@ import io.github.mal32.endergames.game.FindWorldSpawnService;
 import io.github.mal32.endergames.game.GameWorld;
 import io.github.mal32.endergames.game.phases.PhaseController;
 import io.github.mal32.endergames.kitsystem.api.*;
-import io.github.mal32.endergames.kitsystem.kits.Kits;
+import io.github.mal32.endergames.kitsystem.registry.KitRegistry;
 import io.github.mal32.endergames.lobby.LobbyManager;
 import io.github.mal32.endergames.lobby.LobbyWorld;
 import io.github.mal32.endergames.lobby.MapManager;
@@ -54,7 +54,7 @@ public class EnderGames extends JavaPlugin {
   @Override
   public void onLoad() {
     this.kitSystem = new KitSystem(this);
-    Kits.registerAll(this);
+    KitRegistry.registerAll(this);
   }
 
   @Override
@@ -86,7 +86,7 @@ public class EnderGames extends JavaPlugin {
 
   private void registerKitAdvancements() {
     AdvancementAPI advancementAPI = new AdvancementAPI(this);
-    for (AbstractKit kit : kitSystem.kitManager().all()) {
+    for (AbstractKit kit : kitSystem.manager().all()) {
       kit.registerAdvancement(advancementAPI);
     }
   }

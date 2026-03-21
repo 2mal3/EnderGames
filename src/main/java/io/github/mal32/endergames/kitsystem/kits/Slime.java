@@ -1,6 +1,6 @@
 package io.github.mal32.endergames.kitsystem.kits;
 
-import static io.github.mal32.endergames.kitsystem.api.KitUtils.colorLeatherArmor;
+import static io.github.mal32.endergames.kitsystem.util.KitUtils.colorLeatherArmor;
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;

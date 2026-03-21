@@ -1,11 +1,8 @@
 package io.github.mal32.endergames.kitsystem.kits;
 
-import static io.github.mal32.endergames.kitsystem.api.KitUtils.enchantItem;
+import static io.github.mal32.endergames.kitsystem.util.KitUtils.enchantItem;
 
-import io.github.mal32.endergames.kitsystem.api.AbstractKit;
-import io.github.mal32.endergames.kitsystem.api.Difficulty;
-import io.github.mal32.endergames.kitsystem.api.KitDescription;
-import io.github.mal32.endergames.kitsystem.api.KitService;
+import io.github.mal32.endergames.kitsystem.api.*;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;

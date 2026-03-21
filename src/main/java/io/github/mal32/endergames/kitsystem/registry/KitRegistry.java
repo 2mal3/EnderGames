@@ -1,13 +1,14 @@
-package io.github.mal32.endergames.kitsystem.kits;
+package io.github.mal32.endergames.kitsystem.registry;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kitsystem.api.KitManager;
 import io.github.mal32.endergames.kitsystem.api.KitService;
+import io.github.mal32.endergames.kitsystem.kits.*;
 
-public final class Kits {
+public final class KitRegistry {
   public static void registerAll(EnderGames plugin) {
-    final KitManager kitManager = plugin.getKitSystem().kitManager();
-    final KitService kitService = plugin.getKitSystem().kitService();
+    final KitManager kitManager = plugin.getKitSystem().manager();
+    final KitService kitService = plugin.getKitSystem().service();
     kitManager.register(new Barbarian(kitService, plugin));
     kitManager.register(new Bird(kitService, plugin));
     kitManager.register(new Blaze(kitService, plugin));

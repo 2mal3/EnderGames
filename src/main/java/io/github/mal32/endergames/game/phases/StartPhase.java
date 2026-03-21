@@ -72,7 +72,7 @@ public class StartPhase extends AbstractPhase {
 
   private void showPlayersKitInfo() { // TODO: move to KitManager
     for (Player player : PlayerState.PLAYING.all()) {
-      final AbstractKit kit = plugin.getKitSystem().kitService().get(player);
+      final AbstractKit kit = plugin.getKitSystem().service().get(player);
 
       final KitDescription kitDescription = kit.description();
 

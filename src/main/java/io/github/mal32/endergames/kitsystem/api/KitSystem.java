@@ -15,21 +15,21 @@ import org.bukkit.plugin.Plugin;
 
 public final class KitSystem implements Listener {
   private final Plugin plugin;
-  private final KitManager kitManager;
-  private final KitService kitService;
+  private final KitManager manager;
+  private final KitService service;
 
   public KitSystem(Plugin plugin) {
     this.plugin = Objects.requireNonNull(plugin);
-    this.kitManager = new KitManager(plugin);
-    this.kitService = new KitService(plugin, kitManager);
+    this.manager = new KitManager(plugin);
+    this.service = new KitService(plugin, manager);
   }
 
-  public KitManager kitManager() {
-    return kitManager;
+  public KitManager manager() {
+    return manager;
   }
 
-  public KitService kitService() {
-    return kitService;
+  public KitService service() {
+    return service;
   }
 
   public void enable() {
@@ -37,7 +37,7 @@ public final class KitSystem implements Listener {
   }
 
   public void disable() {
-    kitManager.disableAll();
+    manager.disableAll();
     HandlerList.unregisterAll(this);
   }
 
@@ -45,25 +45,25 @@ public final class KitSystem implements Listener {
   public void onGameStart(GameStartEvent event) {
     Set<AbstractKit> toActivate = new LinkedHashSet<>();
     for (Player player : event.getPlayers()) {
-      final AbstractKit kit = kitService().get(player);
+      final AbstractKit kit = service.get(player);
       if (kit != null) {
         toActivate.add(kit);
         kit.initPlayer(player);
       }
     }
 
-    toActivate.forEach(kitManager::enableKit);
+    toActivate.forEach(manager::enableKit);
   }
 
   @EventHandler
   public void onGameEnd(GameEndEvent event) {
-    kitManager.disableAll();
+    manager.disableAll();
   }
 
   @EventHandler
   public void onPlayerJoin(PlayerJoinEvent event) {
     final Player player = event.getPlayer();
-    if (kitService.playerHasKit(player)) return;
-    kitService.set(player, kitManager.get(Lumberjack.id));
+    if (service.hasKit(player)) return;
+    service.set(player, manager.get(Lumberjack.id).get());
   }
 }

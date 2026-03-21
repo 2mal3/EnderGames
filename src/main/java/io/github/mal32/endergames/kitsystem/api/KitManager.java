@@ -8,7 +8,6 @@ import org.bukkit.plugin.Plugin;
 public class KitManager {
   private final Map<String, AbstractKit> kits = new LinkedHashMap<>(32);
   private final Plugin plugin;
-  private final Set<AbstractKit> active = new HashSet<>();
 
   public KitManager(Plugin plugin) {
     this.plugin = plugin;
@@ -18,29 +17,27 @@ public class KitManager {
     kits.put(kit.id(), kit);
   }
 
-  public Collection<AbstractKit> all() {
-    return Collections.unmodifiableCollection(kits.values());
+  public Optional<AbstractKit> get(String id) {
+    return Optional.ofNullable(kits.get(id));
   }
 
-  public AbstractKit get(String id) { // TODO: handle null
-    return kits.get(id);
+  public Collection<AbstractKit> all() {
+    return Collections.unmodifiableCollection(kits.values());
   }
 
   public void enableKit(AbstractKit kit) {
     Objects.requireNonNull(kit);
     Bukkit.getPluginManager().registerEvents(kit, plugin);
     kit.onEnable();
-    active.add(kit);
   }
 
   public void disableKit(AbstractKit kit) {
     Objects.requireNonNull(kit);
     HandlerList.unregisterAll(kit);
     kit.onDisable();
-    active.remove(kit);
   }
 
   public void disableAll() {
-    active.forEach(this::disableKit);
+    new ArrayList<>(kits.values()).forEach(this::disableKit);
   }
 }

@@ -24,10 +24,15 @@ public class KitService {
   public AbstractKit get(Player player) {
     Objects.requireNonNull(player);
     final String id = player.getPersistentDataContainer().get(kitKey, PersistentDataType.STRING);
-    return id == null ? null : kitManager.get(id);
+    return id == null ? null : kitManager.get(id).orElse(null);
   }
 
-  public boolean playerHasKit(Player player) {
+  public boolean isUsing(Player player, AbstractKit kit) {
+    final AbstractKit current = get(player);
+    return current != null && current.id().equals(kit.id());
+  }
+
+  public boolean hasKit(Player player) {
     return player.getPersistentDataContainer().has(kitKey);
   }
 }

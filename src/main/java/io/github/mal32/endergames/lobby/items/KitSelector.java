@@ -6,6 +6,7 @@ import io.github.mal32.endergames.kitsystem.api.KitSystem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -84,13 +85,14 @@ class KitSelector extends MenuItem implements Listener {
             .getItemMeta()
             .getPersistentDataContainer()
             .get(kitName, PersistentDataType.STRING);
-    final AbstractKit kit = kitSystem.kitManager().get(rawKit);
-    if (kit == null) {
+    final Optional<AbstractKit> optionalKit = kitSystem.manager().get(rawKit);
+    if (optionalKit.isEmpty()) {
       plugin
           .getComponentLogger()
           .warn("Invalid kit selected: {}", clickedItem.getItemMeta().displayName());
       return;
     }
+    final AbstractKit kit = optionalKit.get();
 
     if (!playerHasAdvancement(player, kit.description())) {
       player.sendMessage(
@@ -105,7 +107,7 @@ class KitSelector extends MenuItem implements Listener {
             .append(Component.text(kit.description().displayName()).color(NamedTextColor.GOLD))
             .append(Component.text(" kit")));
     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1, 1);
-    kitSystem.kitService().set(player, kit);
+    kitSystem.service().set(player, kit);
     kitInv.displayKitItems();
   }
 
@@ -170,11 +172,10 @@ class KitInventory implements InventoryHolder {
   public void displayKitItems() {
     inventory.clear();
 
-    final AbstractKit selectedKit = kitSystem.kitService().get(player);
+    final AbstractKit selectedKit = kitSystem.service().get(player);
 
-    for (AbstractKit kit : kitSystem.kitManager().all()) {
-      var kitDescription = kit.description();
-      KitItem abstractKitItem = getKitItem(kitDescription);
+    for (AbstractKit kit : kitSystem.manager().all()) {
+      final KitItem abstractKitItem = getKitItem(kit);
       final ItemStack item = ItemStack.of(abstractKitItem.item());
       item.editMeta(
           meta -> {
@@ -192,8 +193,9 @@ class KitInventory implements InventoryHolder {
     }
   }
 
-  private KitItem getKitItem(KitDescription kitDescription) {
-    boolean kitUnlocked = KitSelector.playerHasAdvancement(player, kitDescription);
+  private KitItem getKitItem(AbstractKit kit) {
+    final KitDescription description = kit.description();
+    boolean kitUnlocked = KitSelector.playerHasAdvancement(player, description);
 
     var lore = new ArrayList<TextComponent>();
 
@@ -203,19 +205,19 @@ class KitInventory implements InventoryHolder {
             .color(NamedTextColor.GRAY)
             .decoration(TextDecoration.ITALIC, false);
     lore.add(abilitiesHeaderComponent);
-    var abilitiesText = splitIntoLines(kitDescription.abilities());
+    var abilitiesText = splitIntoLines(description.abilities());
     lore.addAll(convertTextListToComponents(abilitiesText));
 
     lore.add(Component.text(""));
 
     // Equipment
-    if (kitDescription.equipment() != null) {
+    if (!description.equipment().isBlank()) {
       var equipmentHeaderComponent =
           Component.text("Equipment:")
               .color(NamedTextColor.GRAY)
               .decoration(TextDecoration.ITALIC, false);
       lore.add(equipmentHeaderComponent);
-      var equipmentText = splitIntoLines(kitDescription.equipment());
+      var equipmentText = splitIntoLines(description.equipment());
       lore.addAll(convertTextListToComponents(equipmentText));
 
       lore.add(Component.text(""));
@@ -227,7 +229,7 @@ class KitInventory implements InventoryHolder {
             .color(NamedTextColor.GRAY)
             .decoration(TextDecoration.ITALIC, false));
 
-    switch (kitDescription.difficulty()) {
+    switch (description.difficulty()) {
       case EASY ->
           lore.add(
               Component.text("█▒▒ Easy")
@@ -259,11 +261,11 @@ class KitInventory implements InventoryHolder {
     }
 
     var name =
-        Component.text(kitDescription.displayName())
+        Component.text(description.displayName())
             .color(kitUnlocked ? NamedTextColor.GOLD : NamedTextColor.RED)
             .decoration(TextDecoration.ITALIC, false);
 
-    return new KitItem(name, lore, kitUnlocked ? kitDescription.icon() : Material.BARRIER);
+    return new KitItem(name, lore, kitUnlocked ? description.icon() : Material.BARRIER);
   }
 }
 

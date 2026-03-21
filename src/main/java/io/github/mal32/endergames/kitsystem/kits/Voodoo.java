@@ -2,10 +2,7 @@ package io.github.mal32.endergames.kitsystem.kits;
 
 import io.github.mal32.endergames.game.game.PotionEffectsStacking;
 import io.github.mal32.endergames.game.phases.PhaseController;
-import io.github.mal32.endergames.kitsystem.api.AbstractKit;
-import io.github.mal32.endergames.kitsystem.api.Difficulty;
-import io.github.mal32.endergames.kitsystem.api.KitDescription;
-import io.github.mal32.endergames.kitsystem.api.KitService;
+import io.github.mal32.endergames.kitsystem.api.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
