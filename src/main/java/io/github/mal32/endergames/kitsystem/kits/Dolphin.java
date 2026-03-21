@@ -29,7 +29,7 @@ public class Dolphin extends AbstractKit {
   private static final double MIN_VERTICAL_JUMP_SPEED = 1.2;
   private static final double MAX_VERTICAL_JUMP_SPEED = 1.8;
   private static final double HORIZONTAL_JUMP_SPEED = 1.4;
-  private static final long WATER_JUMP_COOLDOWN_MS = 500;
+  private static final long WATER_JUMP_COOLDOWN_MS = 1500;
 
   private final Map<UUID, Long> lastWaterJump = new HashMap<>();
 
