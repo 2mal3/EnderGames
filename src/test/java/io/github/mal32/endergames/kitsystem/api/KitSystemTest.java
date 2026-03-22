@@ -54,10 +54,6 @@ class KitSystemTest extends BaseMockBukkitTest {
 
   @Test
   void onPlayerJoin() {
-    AbstractKit lumberjackKit = Mockito.mock(AbstractKit.class);
-    Mockito.when(lumberjackKit.id()).thenReturn(Lumberjack.id);
-    system.manager().register(lumberjackKit);
-
     PlayerMock player = server.addPlayer();
     assertNotNull(system.service().get(player));
     assertEquals(Lumberjack.id, system.service().get(player).id());
@@ -69,5 +65,18 @@ class KitSystemTest extends BaseMockBukkitTest {
     player.reconnect();
     assertNotNull(system.service().get(player));
     assertNotEquals(Lumberjack.id, system.service().get(player).id());
+  }
+
+  @Test
+  void onPlayerJoinWithInvalidKit() {
+    DummyKit kit3 = new DummyKit("Dummy3", system.service(), plugin);
+
+    PlayerMock player = server.addPlayer();
+    player.disconnect();
+    system.service().set(player, kit3);
+    player.reconnect();
+
+    assertNotNull(system.service().get(player));
+    assertEquals(Lumberjack.id, system.service().get(player).id());
   }
 }
