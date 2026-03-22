@@ -11,7 +11,7 @@ public abstract class BaseMockBukkitTest {
   protected PluginMock plugin;
 
   @BeforeEach
-  void setUp() {
+  protected void setUp() {
     server = MockBukkit.mock();
     plugin = MockBukkit.createMockPlugin("Test Plugin");
     onSetUp();

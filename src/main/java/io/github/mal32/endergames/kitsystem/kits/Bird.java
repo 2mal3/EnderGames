@@ -12,6 +12,30 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * The Bird kit.
+ *
+ * <p>Players using this kit begin the game with an Elytra and a small supply of firework rockets,
+ * allowing them to glide and maneuver through the air right from the start. This kit grants
+ * additional rockets whenever the player kills another player.
+ *
+ * <p>At game start, the player receives:
+ *
+ * <ul>
+ *   <li>An Elytra enchanted with Curse of Vanishing
+ *   <li>5 Firework Rockets
+ * </ul>
+ *
+ * <h2>Ability: Sky Hunter</h2>
+ *
+ * When the player kills another player:
+ *
+ * <ul>
+ *   <li>The killer receives +5 Firework Rockets
+ * </ul>
+ *
+ * <p>This kit is classified as {@link Difficulty#MEDIUM}.
+ */
 public class Bird extends AbstractKit {
   public Bird(KitService kitService, JavaPlugin plugin) {
     super(

@@ -12,6 +12,30 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * The Barbarian kit.
+ *
+ * <p>Players using this kit deal increased melee damage with swords depending on how hungry they
+ * are. For every missing half hunger bar, the player gains +2.5% attack damage.
+ *
+ * <p>At game start, the player receives:
+ *
+ * <ul>
+ *   <li>A full set of leather armor enchanted with Unbreaking I
+ *   <li>A wooden sword
+ * </ul>
+ *
+ * <h2>Ability: Hunger Rage</h2>
+ *
+ * When the player hits another entity with a sword:
+ *
+ * <ul>
+ *   <li>Damage is multiplied by {@code 1 + (missingFood * 0.025)}
+ *   <li>If the multiplier exceeds 1.30, a sound and heart particles are played
+ * </ul>
+ *
+ * <p>This kit is classified as {@link Difficulty#HARD}.
+ */
 public class Barbarian extends AbstractKit {
   public Barbarian(KitService kitService, JavaPlugin plugin) {
     super(

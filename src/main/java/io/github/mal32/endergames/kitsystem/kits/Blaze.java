@@ -18,10 +18,31 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+/**
+ * The Blaze kit.
+ *
+ * <p>Players using this kit gain fire‑based abilities: permanent fire immunity, a temporary fire trail, and a chance to ignite enemies with melee or bow hits. Contact with water applies Weakness I until the player leaves it.
+ *
+ * <p>At game start, the player receives:
+ * <ul>
+ *   <li>A Blaze Powder ability item</li>
+ *   <li>A Golden Sword</li>
+ *   <li>Permanent Fire Resistance</li>
+ * </ul>
+ *
+ * <h2>Abilities</h2>
+ * <ul>
+ *   <li><strong>Fire Trail:</strong> Right‑click Blaze Powder to leave fire behind for 10s (30s cooldown)</li>
+ *   <li><strong>Ignition:</strong> 25% chance to ignite on melee hit, 60% on bow shot</li>
+ *   <li><strong>Water Weakness:</strong> Weakness I while in water</li>
+ * </ul>
+ *
+ * <p>Unlocks via the {@code enga:blaze} advancement and is classified as {@link Difficulty#EASY}.
+ */
 
 @UnlockRequirement(advancement = "enga:blaze")
 public class Blaze extends AbstractKit implements CustomAdvancementTrigger {
@@ -42,10 +63,7 @@ public class Blaze extends AbstractKit implements CustomAdvancementTrigger {
   @Override
   public void initPlayer(Player player) {
     ItemStack blazePowder = new ItemStack(Material.BLAZE_POWDER);
-    ItemMeta meta = blazePowder.getItemMeta();
-    meta.displayName(
-        Component.text("Burn").color(NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
-    blazePowder.setItemMeta(meta);
+    blazePowder.editMeta(meta-> meta.displayName(Component.text("Burn").color(NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false)));
     blazePowder.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
     player.getInventory().addItem(blazePowder);
 
