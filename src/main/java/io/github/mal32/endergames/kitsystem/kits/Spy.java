@@ -24,6 +24,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class Spy extends AbstractKit {
   private static final int HIT_COOLDOWN_SECONDS = 5;
+  private static final double SPY_MODE_HUGER_LOSS_PER_SECOND = 0.5;
   private final HashMap<UUID, SpyPlayerData> spyData = new HashMap<>();
 
   public Spy(EnderGames plugin) {
@@ -136,6 +137,16 @@ public class Spy extends AbstractKit {
         new PotionEffect(
             PotionEffectType.INVISIBILITY, PotionEffect.INFINITE_DURATION, 0, true, false, true));
 
+    // hunger takes 1 saturation per second per 40 levels
+    player.addPotionEffect(
+        new PotionEffect(
+            PotionEffectType.HUNGER,
+            PotionEffect.INFINITE_DURATION,
+            (int) (40 * SPY_MODE_HUGER_LOSS_PER_SECOND),
+            true,
+            false,
+            true));
+
     playSound(player.getLocation());
   }
 
@@ -147,6 +158,7 @@ public class Spy extends AbstractKit {
     data.spyModeActive = false;
 
     player.removePotionEffect(PotionEffectType.INVISIBILITY);
+    player.removePotionEffect(PotionEffectType.HUNGER);
 
     data.inventory = null;
 
