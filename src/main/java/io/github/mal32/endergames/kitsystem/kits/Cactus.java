@@ -187,7 +187,7 @@ public class Cactus extends AbstractKit {
     player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 1, 1);
 
     // Store the player's current inventory state
-    ItemStack[] hotbar = ItemStack.of[9];
+    ItemStack[] hotbar = new ItemStack[9];
     for (int i = 0; i < 9; i++) {
       hotbar[i] = player.getInventory().getItem(i);
     }

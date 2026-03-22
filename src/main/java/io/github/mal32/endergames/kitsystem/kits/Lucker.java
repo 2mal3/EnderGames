@@ -125,7 +125,7 @@ public class Lucker extends AbstractKit {
     if (!playerCanUseThisKit(killer)) return;
 
     // Clone and multiply regular drops
-    for (ItemStack drop : event.getDrops().toArray(ItemStack.of[0])) {
+    for (ItemStack drop : event.getDrops().toArray(new ItemStack[0])) {
       ItemStack extra = drop.clone();
       extra.setAmount(2);
       event.getDrops().add(extra);
