@@ -13,6 +13,27 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 
+/**
+ * Central controller for the kit system.
+ *
+ * <p>Handles:
+ *
+ * <ul>
+ *   <li>Kit activation at game start
+ *   <li>Kit deactivation at game end
+ *   <li>Assigning a default kit ({@link Lumberjack}) to new players or players with invalid kits
+ * </ul>
+ *
+ * <h2>Game Integration</h2>
+ *
+ * <ul>
+ *   <li>On {@link GameStartEvent}: initializes players and enables all used kits
+ *   <li>On {@link GameEndEvent}: disables all active kits
+ *   <li>On {@link PlayerJoinEvent}: ensures the player has a valid kit
+ * </ul>
+ *
+ * <p>This class owns a {@link KitManager} and {@link KitService} instance.
+ */
 public final class KitSystem implements Listener {
   private final Plugin plugin;
   private final KitManager manager;
@@ -32,15 +53,24 @@ public final class KitSystem implements Listener {
     return service;
   }
 
+  /** Enables the kit system by registering its event listeners. */
   public void enable() {
     plugin.getServer().getPluginManager().registerEvents(this, plugin);
   }
 
+  /** Disables the kit system and all active kits. */
   public void disable() {
     manager.disableAll();
     HandlerList.unregisterAll(this);
   }
 
+  /**
+   * Called when a game starts.
+   *
+   * <p>Initializes all players' kits and activates all kits that are in use.
+   *
+   * @param event the game start event
+   */
   @EventHandler
   public void onGameStart(GameStartEvent event) {
     Set<AbstractKit> toActivate = new LinkedHashSet<>();
@@ -55,11 +85,26 @@ public final class KitSystem implements Listener {
     toActivate.forEach(manager::enableKit);
   }
 
+  /**
+   * Called when a game ends.
+   *
+   * <p>Disables all active kits.
+   *
+   * @param event the game end event
+   */
   @EventHandler
   public void onGameEnd(GameEndEvent event) {
     manager.disableAll();
   }
 
+  /**
+   * Ensures that a joining player has a valid kit.
+   *
+   * <p>If the player has no kit or an invalid/unlocked kit, the default kit ({@link Lumberjack}) is
+   * assigned.
+   *
+   * @param event the join event
+   */
   @EventHandler
   public void onPlayerJoin(PlayerJoinEvent event) {
     final Player player = event.getPlayer();
