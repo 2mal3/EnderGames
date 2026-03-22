@@ -19,6 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * are. For every missing half hunger bar, the player gains +2.5% attack damage.
  *
  * <p>At game start, the player receives:
+ *
  * <ul>
  *   <li>A full set of leather armor enchanted with Unbreaking I
  *   <li>A wooden sword

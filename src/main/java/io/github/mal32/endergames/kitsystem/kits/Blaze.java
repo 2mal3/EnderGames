@@ -30,6 +30,7 @@ import org.bukkit.potion.PotionEffectType;
  * I until the player leaves it.
  *
  * <p>At game start, the player receives:
+ *
  * <ul>
  *   <li>A Blaze Powder ability item
  *   <li>A Golden Sword

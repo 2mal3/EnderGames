@@ -20,6 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * additional rockets whenever the player kills another player.
  *
  * <p>At game start, the player receives:
+ *
  * <ul>
  *   <li>An Elytra enchanted with Curse of Vanishing
  *   <li>5 Firework Rockets
