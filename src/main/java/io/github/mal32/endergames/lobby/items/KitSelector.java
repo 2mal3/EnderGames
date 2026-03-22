@@ -1,22 +1,21 @@
 package io.github.mal32.endergames.lobby.items;
 
-import io.github.mal32.endergames.kits.AbstractKit;
-import io.github.mal32.endergames.kits.KitDescription;
-import io.github.mal32.endergames.kits.KitRegistry;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitSystem;
+import io.github.mal32.endergames.kitsystem.util.UnlockChecker;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
-import org.bukkit.advancement.Advancement;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,51 +24,25 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 class KitSelector extends MenuItem implements Listener {
+  private final NamespacedKey kitName;
+  private final KitSystem kitSystem;
 
-  public KitSelector(JavaPlugin plugin) {
+  public KitSelector(JavaPlugin plugin, KitSystem kitSystem) {
     super(
         plugin,
         (byte) 0,
         "kit_selector",
         Material.ENDER_CHEST,
         Component.text("Select Kit").color(NamedTextColor.GOLD));
+    this.kitName = new NamespacedKey(plugin, "kit_name");
+    this.kitSystem = kitSystem;
     Bukkit.getPluginManager().registerEvents(this, plugin);
-  }
-
-  private static String capitalizeWords(String input) {
-    if (input == null || input.isEmpty()) return input;
-
-    String[] parts = input.split("\\s+");
-    StringBuilder sb = new StringBuilder();
-
-    for (int i = 0; i < parts.length; i++) {
-      String word = parts[i];
-      if (!word.isEmpty()) {
-        sb.append(Character.toUpperCase(word.charAt(0)));
-        if (word.length() > 1) {
-          sb.append(word.substring(1).toLowerCase());
-        }
-      }
-      if (i < parts.length - 1) sb.append(' ');
-    }
-
-    return sb.toString();
-  }
-
-  public static boolean playerHasAdvancement(Player player, NamespacedKey key) {
-    Advancement kitAdvancement = Bukkit.getAdvancement(key);
-    if (kitAdvancement == null) {
-      return true;
-    }
-    return player.getAdvancementProgress(kitAdvancement).isDone();
   }
 
   @Override
@@ -82,31 +55,38 @@ class KitSelector extends MenuItem implements Listener {
     Player player = event.getPlayer();
 
     player.playSound(player, Sound.BLOCK_CHEST_OPEN, 1, 1);
-    KitInventory kiInv = new KitInventory(plugin, player);
+    KitInventory kiInv = new KitInventory(plugin, kitSystem, kitName, player);
     player.openInventory(kiInv.getInventory());
   }
 
   @EventHandler
   public void onInventoryClick(InventoryClickEvent event) {
     Inventory clickedInv = event.getClickedInventory();
-    if (clickedInv == null || !(clickedInv.getHolder() instanceof KitInventory)) return;
+    if (clickedInv == null || !(clickedInv.getHolder() instanceof KitInventory kitInv)) return;
     event.setCancelled(true);
 
     ItemStack clickedItem = event.getCurrentItem();
     if (clickedItem == null
         || !clickedItem.hasItemMeta()
-        || !clickedItem.getItemMeta().hasDisplayName()) return;
+        || !clickedItem.getItemMeta().getPersistentDataContainer().has(kitName)) return;
 
     Player player = (Player) event.getWhoClicked();
-    Component displayName = clickedItem.getItemMeta().displayName();
-    if (displayName == null) return;
 
-    String nameText = LegacyComponentSerializer.legacySection().serialize(displayName);
-    String kitName = nameText.length() > 2 ? nameText.substring(2).toLowerCase() : "";
+    final String rawKit =
+        clickedItem
+            .getItemMeta()
+            .getPersistentDataContainer()
+            .get(kitName, PersistentDataType.STRING);
+    final Optional<AbstractKit> optionalKit = kitSystem.manager().get(rawKit);
+    if (optionalKit.isEmpty()) {
+      plugin
+          .getComponentLogger()
+          .warn("Invalid kit selected: {}", clickedItem.getItemMeta().displayName());
+      return;
+    }
+    final AbstractKit kit = optionalKit.get();
 
-    NamespacedKey advancementKey =
-        new NamespacedKey("enga", kitName.replace(" ", "_")); // TODO: use kit_name
-    if (!playerHasAdvancement(player, advancementKey)) {
+    if (!UnlockChecker.isUnlocked(player, kit)) {
       player.sendMessage(
           Component.text("Unlock the matching advancement to use that kit.")
               .color(NamedTextColor.RED));
@@ -114,30 +94,13 @@ class KitSelector extends MenuItem implements Listener {
       return;
     }
 
-    String rawKit =
-        clickedItem
-            .getItemMeta()
-            .getPersistentDataContainer()
-            .get(new NamespacedKey(plugin, "kit_name"), PersistentDataType.STRING);
-
-    KitType type;
-    try {
-      type = KitType.valueOf(rawKit);
-      type.set(player);
-    } catch (IllegalArgumentException e) {
-      plugin.getComponentLogger().warn("Invalid kit selected: {}", kitName);
-      return;
-    }
-
     player.sendMessage(
         Component.text("You selected the ")
-            .append(Component.text(capitalizeWords(kitName)).color(NamedTextColor.GOLD))
+            .append(Component.text(kit.description().displayName()).color(NamedTextColor.GOLD))
             .append(Component.text(" kit")));
     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1, 1);
-
-    KitInventory kitInv = (KitInventory) event.getInventory().getHolder();
-    kitInv.selectedKitName = type.name();
-    kitInv.updateKitItems();
+    kitSystem.service().set(player, kit);
+    kitInv.displayKitItems();
   }
 
   @EventHandler
@@ -149,16 +112,18 @@ class KitSelector extends MenuItem implements Listener {
 
 class KitInventory implements InventoryHolder {
   private final Inventory inventory;
+  private final KitSystem kitSystem;
+  private final NamespacedKey kitName;
   private final Player player;
-  private final JavaPlugin plugin;
-  public String selectedKitName;
 
-  public KitInventory(JavaPlugin plugin, Player player) {
+  public KitInventory(
+      JavaPlugin plugin, KitSystem kitSystem, NamespacedKey kitName, Player player) {
     this.inventory = plugin.getServer().createInventory(this, 27, Component.text("Select Kit"));
-    this.plugin = plugin;
     this.player = player;
+    this.kitSystem = Objects.requireNonNull(kitSystem);
+    this.kitName = Objects.requireNonNull(kitName);
 
-    updateKitItems();
+    displayKitItems();
   }
 
   private static ArrayList<String> splitIntoLines(String text) {
@@ -196,41 +161,33 @@ class KitInventory implements InventoryHolder {
     return this.inventory;
   }
 
-  public void updateKitItems() {
+  public void displayKitItems() {
     inventory.clear();
 
-    for (KitType type : KitType.values()) {
-      AbstractKit kit = KitRegistry.get(type);
-      var kitDescription = kit.getDescription();
-      KitItem abstractKitItem = getKitItem(kitDescription);
+    final AbstractKit selectedKit = kitSystem.service().get(player);
 
-      var kitItem = new ItemStack(abstractKitItem.item(), 1);
-      var meta = kitItem.getItemMeta();
-      meta.displayName(abstractKitItem.name());
-      meta.lore(abstractKitItem.lore());
+    for (AbstractKit kit : kitSystem.manager().all()) {
+      final KitItem abstractKitItem = getKitItem(kit);
+      final ItemStack item = ItemStack.of(abstractKitItem.item());
+      item.editMeta(
+          meta -> {
+            meta.displayName(abstractKitItem.name());
+            meta.lore(abstractKitItem.lore());
+            meta.getPersistentDataContainer().set(kitName, PersistentDataType.STRING, kit.id());
+          });
 
-      meta.getPersistentDataContainer()
-          .set(new NamespacedKey(plugin, "kit_name"), PersistentDataType.STRING, type.name());
-
-      kitItem.setItemMeta(meta);
-
-      // Hightlight the selected kit with a glow effect
-      if (type.name().equals(selectedKitName)) {
-        ItemMeta clickedMeta = kitItem.getItemMeta();
-        clickedMeta.addEnchant(Enchantment.INFINITY, 1, true); // dummy enchantment for glow
-        clickedMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        kitItem.setItemMeta(clickedMeta);
+      // Highlight the selected kit with a glow effect
+      if (kit.equals(selectedKit)) {
+        item.editMeta(meta -> meta.setEnchantmentGlintOverride(true));
       }
 
-      inventory.addItem(kitItem);
+      inventory.addItem(item);
     }
   }
 
-  private KitItem getKitItem(KitDescription kitDescription) {
-
-    NamespacedKey advancementKey =
-        new NamespacedKey("enga", kitDescription.name().toLowerCase().replace(" ", "_"));
-    boolean kitUnlocked = KitSelector.playerHasAdvancement(player, advancementKey);
+  private KitItem getKitItem(AbstractKit kit) {
+    boolean kitUnlocked = UnlockChecker.isUnlocked(player, kit);
+    final KitDescription description = kit.description();
 
     var lore = new ArrayList<TextComponent>();
 
@@ -240,19 +197,19 @@ class KitInventory implements InventoryHolder {
             .color(NamedTextColor.GRAY)
             .decoration(TextDecoration.ITALIC, false);
     lore.add(abilitiesHeaderComponent);
-    var abilitiesText = splitIntoLines(kitDescription.abilities());
+    var abilitiesText = splitIntoLines(description.abilities());
     lore.addAll(convertTextListToComponents(abilitiesText));
 
     lore.add(Component.text(""));
 
     // Equipment
-    if (kitDescription.equipment() != null) {
+    if (!description.equipment().isBlank()) {
       var equipmentHeaderComponent =
           Component.text("Equipment:")
               .color(NamedTextColor.GRAY)
               .decoration(TextDecoration.ITALIC, false);
       lore.add(equipmentHeaderComponent);
-      var equipmentText = splitIntoLines(kitDescription.equipment());
+      var equipmentText = splitIntoLines(description.equipment());
       lore.addAll(convertTextListToComponents(equipmentText));
 
       lore.add(Component.text(""));
@@ -264,7 +221,7 @@ class KitInventory implements InventoryHolder {
             .color(NamedTextColor.GRAY)
             .decoration(TextDecoration.ITALIC, false));
 
-    switch (kitDescription.difficulty()) {
+    switch (description.difficulty()) {
       case EASY ->
           lore.add(
               Component.text("█▒▒ Easy")
@@ -296,11 +253,11 @@ class KitInventory implements InventoryHolder {
     }
 
     var name =
-        Component.text(kitDescription.name())
+        Component.text(description.displayName())
             .color(kitUnlocked ? NamedTextColor.GOLD : NamedTextColor.RED)
             .decoration(TextDecoration.ITALIC, false);
 
-    return new KitItem(name, lore, kitUnlocked ? kitDescription.item() : Material.BARRIER);
+    return new KitItem(name, lore, kitUnlocked ? description.icon() : Material.BARRIER);
   }
 }
 

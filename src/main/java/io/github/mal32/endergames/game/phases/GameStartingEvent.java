@@ -8,13 +8,13 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class GameStartEvent extends Event {
+public class GameStartingEvent extends Event {
   private static final HandlerList HANDLER_LIST = new HandlerList();
-  private final Collection<Player> players;
+  private final Collection<Player> participants;
 
-  public GameStartEvent(Collection<Player> players) {
+  public GameStartingEvent(Collection<Player> players) {
     super();
-    this.players = Collections.unmodifiableCollection(Objects.requireNonNull(players));
+    this.participants = Collections.unmodifiableCollection(Objects.requireNonNull(players));
   }
 
   public static @NotNull HandlerList getHandlerList() {
@@ -26,7 +26,7 @@ public class GameStartEvent extends Event {
     return HANDLER_LIST;
   }
 
-  public @NotNull Collection<Player> getPlayers() {
-    return players;
+  public @NotNull Collection<Player> getParticipants() {
+    return participants;
   }
 }

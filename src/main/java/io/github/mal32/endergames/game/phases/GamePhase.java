@@ -3,9 +3,6 @@ package io.github.mal32.endergames.game.phases;
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.game.game.*;
-import io.github.mal32.endergames.kits.AbstractKit;
-import io.github.mal32.endergames.kits.KitRegistry;
-import io.github.mal32.endergames.services.KitType;
 import java.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -32,8 +29,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 public class GamePhase extends AbstractPhase {
-  private final List<AbstractModule> modules;
   private static final int MIN_WORLDBOARDER_SIZE = 40;
+  private final List<AbstractModule> modules;
 
   public GamePhase(EnderGames plugin, PhaseController controller) {
     super(plugin, controller);
@@ -87,9 +84,8 @@ public class GamePhase extends AbstractPhase {
     for (AbstractModule module : modules) {
       module.enable();
     }
-    for (AbstractKit kit : KitRegistry.getKits()) {
-      kit.enable();
-    }
+    Bukkit.getPluginManager()
+        .callEvent(new GameStartEvent(List.of(PhaseController.getPlayersInGame())));
   }
 
   private void playerInit(Player player, List<NamespacedKey> allRecipeKeys) {
@@ -103,9 +99,6 @@ public class GamePhase extends AbstractPhase {
     trackerItem.setItemMeta(trackerMeta);
     trackerItem.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
     player.getInventory().addItem(trackerItem);
-
-    KitType kit = KitType.get(player);
-    KitRegistry.get(kit).initPlayer(player);
   }
 
   @Override
@@ -155,9 +148,6 @@ public class GamePhase extends AbstractPhase {
 
     for (AbstractModule module : modules) {
       module.disable();
-    }
-    for (AbstractKit kit : KitRegistry.getKits()) {
-      kit.disable();
     }
   }
 

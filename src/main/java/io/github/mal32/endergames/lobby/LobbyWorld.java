@@ -1,7 +1,6 @@
 package io.github.mal32.endergames.lobby;
 
 import io.github.mal32.endergames.AbstractWorld;
-import io.github.mal32.endergames.services.KitType;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import java.util.Random;
 import org.bukkit.*;
@@ -79,8 +78,6 @@ public class LobbyWorld extends AbstractWorld {
             PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 0, true, false, false));
 
     Bukkit.getPluginManager().callEvent(new PlayerEnteredLobbyEvent(player));
-
-    KitType.init(player);
   }
 
   @Override
