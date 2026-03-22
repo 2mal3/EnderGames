@@ -1,4 +1,4 @@
-package io.github.mal32.endergames.kitsystem.util;
+package io.github.mal32.endergames.kitsystem;
 
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.KitUnlockAdvancement;

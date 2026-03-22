@@ -1,7 +1,7 @@
 package io.github.mal32.endergames.kitsystem.kits;
 
-import static io.github.mal32.endergames.kitsystem.util.KitUtils.colorLeatherArmor;
-import static io.github.mal32.endergames.kitsystem.util.KitUtils.enchantItem;
+import static io.github.mal32.endergames.kitsystem.KitUtils.colorLeatherArmor;
+import static io.github.mal32.endergames.kitsystem.KitUtils.enchantItem;
 
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;

@@ -1,6 +1,6 @@
 package io.github.mal32.endergames.kitsystem.kits;
 
-import static io.github.mal32.endergames.kitsystem.util.KitUtils.enchantItem;
+import static io.github.mal32.endergames.kitsystem.KitUtils.enchantItem;
 
 import io.github.mal32.endergames.kitsystem.api.*;
 import org.bukkit.Material;

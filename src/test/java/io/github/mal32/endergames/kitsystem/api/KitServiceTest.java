@@ -3,7 +3,7 @@ package io.github.mal32.endergames.kitsystem.api;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.mal32.endergames.BaseMockBukkitTest;
-import io.github.mal32.endergames.kitsystem.util.UnlockChecker;
+import io.github.mal32.endergames.kitsystem.UnlockChecker;
 import org.bukkit.NamespacedKey;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.entity.PlayerMock;

@@ -1,6 +1,6 @@
 package io.github.mal32.endergames.kitsystem.api;
 
-import io.github.mal32.endergames.kitsystem.util.UnlockChecker;
+import io.github.mal32.endergames.kitsystem.UnlockChecker;
 import java.util.Objects;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;

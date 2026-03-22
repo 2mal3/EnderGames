@@ -1,9 +1,9 @@
 package io.github.mal32.endergames.lobby.items;
 
+import io.github.mal32.endergames.kitsystem.UnlockChecker;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
 import io.github.mal32.endergames.kitsystem.api.KitSystem;
-import io.github.mal32.endergames.kitsystem.util.UnlockChecker;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
