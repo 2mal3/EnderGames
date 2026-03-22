@@ -9,7 +9,6 @@ import io.github.mal32.endergames.kitsystem.kits.Lumberjack;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.entity.PlayerMock;
-import org.mockito.Mockito;
 
 class KitSystemTest extends BaseMockBukkitTest {
   private KitSystem system;
