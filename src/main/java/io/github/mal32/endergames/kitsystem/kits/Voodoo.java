@@ -31,7 +31,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
-@UnlockRequirement(advancement = "enga:voodoo")
 public class Voodoo extends AbstractKit {
   private BukkitTask voodooTask;
 
@@ -46,6 +45,10 @@ public class Voodoo extends AbstractKit {
             Difficulty.MEDIUM),
         kitService,
         plugin);
+  }
+
+  String getKitAdvancementKey() {
+    return "enga:voodoo";
   }
 
   @Override

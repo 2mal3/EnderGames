@@ -11,7 +11,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-@UnlockRequirement(advancement = "enga:mace")
 public class Mace extends AbstractKit {
   public Mace(KitService kitService, JavaPlugin plugin) {
     super(
@@ -23,6 +22,10 @@ public class Mace extends AbstractKit {
             Difficulty.HARD),
         kitService,
         plugin);
+  }
+
+  public String getKitAdvancementKey() {
+    return "enga:mace";
   }
 
   @EventHandler

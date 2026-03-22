@@ -1,7 +1,7 @@
 package io.github.mal32.endergames.kitsystem.registry;
 
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
-import io.github.mal32.endergames.kitsystem.api.UnlockRequirement;
+import io.github.mal32.endergames.kitsystem.api.KitUnlockAdvancement;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 
@@ -41,12 +41,14 @@ public final class KitValidator {
       throw new IllegalStateException("Kit has no valid id: " + kit.getClass().getName());
     }
 
-    final UnlockRequirement req = kit.getClass().getAnnotation(UnlockRequirement.class);
-    if (req != null) {
-      final NamespacedKey key = NamespacedKey.fromString(req.advancement());
+    if (kit instanceof KitUnlockAdvancement advancementKit) {
+      final NamespacedKey key = NamespacedKey.fromString(advancementKit.getKitAdvancementKey());
       if (key == null || Bukkit.getAdvancement(key) == null)
         throw new IllegalArgumentException(
-            "Invalid advancement in Kit " + kit.id() + ": " + req.advancement());
+            "Invalid advancement in Kit "
+                + kit.id()
+                + ": "
+                + advancementKit.getKitAdvancementKey());
     }
   }
 }

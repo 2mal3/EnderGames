@@ -48,8 +48,7 @@ import org.bukkit.potion.PotionEffectType;
  *
  * <p>Unlocks via the {@code enga:blaze} advancement and is classified as {@link Difficulty#EASY}.
  */
-@UnlockRequirement(advancement = "enga:blaze")
-public class Blaze extends AbstractKit implements CustomAdvancementTrigger {
+public class Blaze extends AbstractKit implements CustomKitUnlockAdvancement {
   private final HashMap<UUID, Long> burnTime = new HashMap<>();
 
   public Blaze(KitService kitService, JavaPlugin plugin) {
@@ -63,6 +62,10 @@ public class Blaze extends AbstractKit implements CustomAdvancementTrigger {
             Difficulty.EASY),
         kitService,
         plugin);
+  }
+
+  public String getKitAdvancementKey() {
+    return "enga:blaze";
   }
 
   @Override
@@ -167,9 +170,8 @@ public class Blaze extends AbstractKit implements CustomAdvancementTrigger {
 
   @Override
   public void registerAdvancement(AdvancementAPI api) {
-    final UnlockRequirement req = this.getClass().getAnnotation(UnlockRequirement.class);
     api.register(PlayerInteractEvent.class)
-        .advancementKey(req.advancement())
+        .advancementKey(getKitAdvancementKey())
         .condition(
             (player, event) -> {
               if (!PhaseController.playerIsInGame(player)) return false;

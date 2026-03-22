@@ -1,7 +1,7 @@
 package io.github.mal32.endergames.kitsystem.util;
 
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
-import io.github.mal32.endergames.kitsystem.api.UnlockRequirement;
+import io.github.mal32.endergames.kitsystem.api.KitUnlockAdvancement;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.advancement.Advancement;
@@ -33,11 +33,10 @@ public final class UnlockChecker {
    * @param kit the kit whose unlock status should be evaluated
    * @return true if the kit is unlocked for the player
    */
-  public static boolean isUnlocked(Player player, AbstractKit kit) {
-    UnlockRequirement req = kit.getClass().getAnnotation(UnlockRequirement.class);
-    if (req == null) return true;
+  public static boolean isUnlocked(Player player, AbstractKit kit_) {
+    if (!(kit_ instanceof KitUnlockAdvancement kit)) return true;
 
-    NamespacedKey key = NamespacedKey.fromString(req.advancement());
+    NamespacedKey key = NamespacedKey.fromString((kit).getKitAdvancementKey());
     if (key == null) return false;
 
     Advancement adv = Bukkit.getAdvancement(key);

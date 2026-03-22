@@ -87,24 +87,33 @@ class UnlockCheckerTest extends BaseMockBukkitTest {
     public void initPlayer(org.bukkit.entity.Player player) {}
   }
 
-  @UnlockRequirement(advancement = "invalid key")
-  static class InvalidKeyKit extends NoReqKit {
+  static class InvalidKeyKit extends NoReqKit implements KitUnlockAdvancement {
     InvalidKeyKit(KitService s, JavaPlugin p) {
       super(s, p);
     }
-  }
 
-  @UnlockRequirement(advancement = "test:adv")
-  static class MissingAdvKit extends NoReqKit {
-    MissingAdvKit(KitService s, JavaPlugin p) {
-      super(s, p);
+    public String getKitAdvancementKey() {
+      return "invalid key";
     }
   }
 
-  @UnlockRequirement(advancement = "test:adv")
-  static class AdvKit extends NoReqKit {
+  static class MissingAdvKit extends NoReqKit implements KitUnlockAdvancement {
+    MissingAdvKit(KitService s, JavaPlugin p) {
+      super(s, p);
+    }
+
+    public String getKitAdvancementKey() {
+      return "test:adv";
+    }
+  }
+
+  static class AdvKit extends NoReqKit implements KitUnlockAdvancement {
     AdvKit(KitService s, JavaPlugin p) {
       super(s, p);
+    }
+
+    public String getKitAdvancementKey() {
+      return "test:adv";
     }
   }
 }

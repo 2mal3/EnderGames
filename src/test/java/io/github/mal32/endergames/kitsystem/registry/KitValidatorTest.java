@@ -54,24 +54,33 @@ class KitValidatorTest extends BaseMockBukkitTest {
     }
   }
 
-  @UnlockRequirement(advancement = "invalid key")
-  static class KitWithInvalidKey extends DummyKit {
+  static class KitWithInvalidKey extends DummyKit implements KitUnlockAdvancement {
     KitWithInvalidKey(KitService s, JavaPlugin p) {
       super("Test", s, p);
     }
-  }
 
-  @UnlockRequirement(advancement = "test:adv")
-  static class KitWithMissingAdvancement extends DummyKit {
-    KitWithMissingAdvancement(KitService s, JavaPlugin p) {
-      super("Test", s, p);
+    public String getKitAdvancementKey() {
+      return "invalid key";
     }
   }
 
-  @UnlockRequirement(advancement = "test:adv")
-  static class KitWithValidAdvancement extends DummyKit {
+  static class KitWithMissingAdvancement extends DummyKit implements KitUnlockAdvancement {
+    KitWithMissingAdvancement(KitService s, JavaPlugin p) {
+      super("Test", s, p);
+    }
+
+    public String getKitAdvancementKey() {
+      return "test:adv";
+    }
+  }
+
+  static class KitWithValidAdvancement extends DummyKit implements KitUnlockAdvancement {
     KitWithValidAdvancement(KitService s, JavaPlugin p) {
       super("Test", s, p);
+    }
+
+    public String getKitAdvancementKey() {
+      return "test:adv";
     }
   }
 }
