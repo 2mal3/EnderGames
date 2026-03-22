@@ -51,7 +51,8 @@ class BlazeTest extends KitMockBukkitTest<Blaze> {
 
   @Test
   void testWeaknessRemovedWhenLeavingWater() {
-    player.addPotionEffect(PotionEffectType.WEAKNESS.createEffect(PotionEffect.INFINITE_DURATION, 0));
+    player.addPotionEffect(
+        PotionEffectType.WEAKNESS.createEffect(PotionEffect.INFINITE_DURATION, 0));
 
     Location dryLoc = player.getLocation().clone().add(0, 0, 1);
 
