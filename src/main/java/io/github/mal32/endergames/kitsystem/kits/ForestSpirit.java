@@ -113,7 +113,7 @@ public class ForestSpirit extends AbstractKit {
   public void initPlayer(Player player) {
     Color biomeColor = getArmorColorForBiome(player.getLocation().getBlock().getBiome());
 
-    ItemStack green_dye = new ItemStack(Material.GREEN_DYE);
+    ItemStack green_dye = ItemStack.of(Material.GREEN_DYE);
     ItemMeta meta = green_dye.getItemMeta();
     meta.displayName(
         Component.text("Growth")
@@ -136,7 +136,7 @@ public class ForestSpirit extends AbstractKit {
 
     // give saplings adapted to the current biome
     Material saplingType = getSaplingForBiome(player.getLocation().getBlock().getBiome());
-    player.getInventory().addItem(new ItemStack(saplingType, 20));
+    player.getInventory().addItem(ItemStack.of(saplingType, 20));
 
     // Init stillness tracking
     UUID id = player.getUniqueId();
@@ -147,7 +147,7 @@ public class ForestSpirit extends AbstractKit {
   }
 
   private ItemStack createSpiritArmorPiece(Material type, Color color) {
-    ItemStack item = colorLeatherArmor(new ItemStack(type), color);
+    ItemStack item = colorLeatherArmor(ItemStack.of(type), color);
     return enchantItem(item, Enchantment.THORNS, 2);
   }
 
@@ -883,7 +883,7 @@ public class ForestSpirit extends AbstractKit {
               // If the tree failed to generate (e.g., too little space), refund one sapling
               if (!success) {
                 Player current = Bukkit.getPlayer(playerId);
-                ItemStack refund = new ItemStack(originalSaplingType, 1);
+                ItemStack refund = ItemStack.of(originalSaplingType, 1);
 
                 if (current != null && current.isOnline()) {
                   var leftover = current.getInventory().addItem(refund);
@@ -1226,7 +1226,7 @@ public class ForestSpirit extends AbstractKit {
       // When entering desert/badlands, convert any saplings to dead bushes.
       if (targetIsDeadBush) {
         if (Tag.SAPLINGS.isTagged(type)) {
-          ItemStack newStack = new ItemStack(targetSapling, stack.getAmount());
+          ItemStack newStack = ItemStack.of(targetSapling, stack.getAmount());
           ItemMeta oldMeta = stack.getItemMeta();
           if (oldMeta != null) {
             newStack.setItemMeta(oldMeta);
@@ -1237,7 +1237,7 @@ public class ForestSpirit extends AbstractKit {
       }
 
       if (type == Material.DEAD_BUSH || Tag.SAPLINGS.isTagged(type)) {
-        ItemStack newStack = new ItemStack(targetSapling, stack.getAmount());
+        ItemStack newStack = ItemStack.of(targetSapling, stack.getAmount());
         ItemMeta oldMeta = stack.getItemMeta();
         if (oldMeta != null) {
           newStack.setItemMeta(oldMeta);

@@ -45,11 +45,11 @@ public class Slime extends AbstractKit {
     player
         .getInventory()
         .setChestplate(
-            colorLeatherArmor(new ItemStack(Material.LEATHER_CHESTPLATE), Color.fromRGB(3144049)));
+            colorLeatherArmor(ItemStack.of(Material.LEATHER_CHESTPLATE), Color.fromRGB(3144049)));
     player
         .getInventory()
-        .setBoots(colorLeatherArmor(new ItemStack(Material.LEATHER_BOOTS), Color.fromRGB(3144049)));
-    player.getInventory().addItem(new ItemStack(Material.SLIME_BALL, 20));
+        .setBoots(colorLeatherArmor(ItemStack.of(Material.LEATHER_BOOTS), Color.fromRGB(3144049)));
+    player.getInventory().addItem(ItemStack.of(Material.SLIME_BALL, 20));
 
     player.addPotionEffect(
         new PotionEffect(
@@ -123,7 +123,7 @@ public class Slime extends AbstractKit {
 
   public void throwSlimeball(Player player) {
     Snowball snowball = player.launchProjectile(Snowball.class);
-    snowball.setItem(new ItemStack(Material.SLIME_BALL));
+    snowball.setItem(ItemStack.of(Material.SLIME_BALL));
     snowball.setShooter(player);
   }
 
@@ -170,7 +170,7 @@ public class Slime extends AbstractKit {
     final double SLIMEBALL_PROBABILITY = 0.15;
     if (Math.random() > SLIMEBALL_PROBABILITY) return;
 
-    ItemStack slimeball = new ItemStack(Material.SLIME_BALL, 1);
+    ItemStack slimeball = ItemStack.of(Material.SLIME_BALL, 1);
     event.getPlayer().getInventory().addItem(slimeball);
   }
 }

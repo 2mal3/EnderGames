@@ -265,7 +265,7 @@ public class ParkourManager implements Listener {
   }
 
   public ItemStack createResetItem() {
-    ItemStack item = new ItemStack(Material.RED_DYE);
+    ItemStack item = ItemStack.of(Material.RED_DYE);
     ItemMeta meta = item.getItemMeta();
     meta.displayName(
         Component.text("Reset", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
@@ -275,7 +275,7 @@ public class ParkourManager implements Listener {
   }
 
   public ItemStack createCancelItem() {
-    ItemStack item = new ItemStack(Material.BARRIER);
+    ItemStack item = ItemStack.of(Material.BARRIER);
     ItemMeta meta = item.getItemMeta();
     meta.displayName(
         Component.text("Cancel Parkour", NamedTextColor.RED)

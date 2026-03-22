@@ -45,10 +45,10 @@ public class Bomber extends AbstractKit {
 
   @Override
   public void initPlayer(Player player) {
-    ItemStack tntStack = new ItemStack(Material.TNT, 5);
+    ItemStack tntStack = ItemStack.of(Material.TNT, 5);
     player.getInventory().addItem(tntStack);
 
-    ItemStack mineStack = new ItemStack(Material.STONE_BUTTON, 10);
+    ItemStack mineStack = ItemStack.of(Material.STONE_BUTTON, 10);
     var meta = mineStack.getItemMeta();
     meta.itemName(Component.text("Mine"));
     meta.setRarity(ItemRarity.RARE);

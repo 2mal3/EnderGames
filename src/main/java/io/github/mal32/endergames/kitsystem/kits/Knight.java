@@ -84,12 +84,12 @@ public class Knight extends AbstractKit {
   @Override
   public void initPlayer(Player player) {
     var inventory = player.getInventory();
-    inventory.setHelmet(new ItemStack(Material.GOLDEN_HELMET));
-    inventory.setChestplate(new ItemStack(Material.GOLDEN_CHESTPLATE));
-    inventory.setLeggings(new ItemStack(Material.GOLDEN_LEGGINGS));
-    inventory.setBoots(new ItemStack(Material.GOLDEN_BOOTS));
+    inventory.setHelmet(ItemStack.of(Material.GOLDEN_HELMET));
+    inventory.setChestplate(ItemStack.of(Material.GOLDEN_CHESTPLATE));
+    inventory.setLeggings(ItemStack.of(Material.GOLDEN_LEGGINGS));
+    inventory.setBoots(ItemStack.of(Material.GOLDEN_BOOTS));
 
-    ItemStack spear = new ItemStack(Material.IRON_SPEAR);
+    ItemStack spear = ItemStack.of(Material.IRON_SPEAR);
     spear.addEnchantment(Enchantment.UNBREAKING, 1);
     spear.addEnchantment(Enchantment.VANISHING_CURSE, 1);
     inventory.addItem(spear);
@@ -184,11 +184,11 @@ public class Knight extends AbstractKit {
 
     // Inventory
     HorseInventory inventory = horse.getInventory();
-    var saddle = new ItemStack(Material.SADDLE);
+    var saddle = ItemStack.of(Material.SADDLE);
     saddle.addUnsafeEnchantments(
         Map.of(Enchantment.VANISHING_CURSE, 1, Enchantment.BINDING_CURSE, 1));
     inventory.setSaddle(saddle);
-    var armor = new ItemStack(Material.IRON_HORSE_ARMOR);
+    var armor = ItemStack.of(Material.IRON_HORSE_ARMOR);
     armor.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
     inventory.setArmor(armor);
 

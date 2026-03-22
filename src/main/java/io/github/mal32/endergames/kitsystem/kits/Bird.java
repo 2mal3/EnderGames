@@ -53,11 +53,11 @@ public class Bird extends AbstractKit {
   @Override
   public void initPlayer(Player player) {
     // Give the player an Elytra
-    final ItemStack elytra = new ItemStack(Material.ELYTRA);
+    final ItemStack elytra = ItemStack.of(Material.ELYTRA);
     elytra.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
     player.getInventory().setChestplate(elytra);
     // Give the player 5 rockets (firework rockets)
-    player.getInventory().addItem(new ItemStack(Material.FIREWORK_ROCKET, 5));
+    player.getInventory().addItem(ItemStack.of(Material.FIREWORK_ROCKET, 5));
   }
 
   @EventHandler
@@ -66,6 +66,6 @@ public class Bird extends AbstractKit {
     Player killer = victim.getKiller();
     if (killer == null || !playerCanUseThisKit(killer)) return;
 
-    killer.getInventory().addItem(new ItemStack(Material.FIREWORK_ROCKET, 5));
+    killer.getInventory().addItem(ItemStack.of(Material.FIREWORK_ROCKET, 5));
   }
 }

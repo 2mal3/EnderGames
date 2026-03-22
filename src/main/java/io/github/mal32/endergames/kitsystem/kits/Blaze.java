@@ -67,7 +67,7 @@ public class Blaze extends AbstractKit implements CustomAdvancementTrigger {
 
   @Override
   public void initPlayer(Player player) {
-    ItemStack blazePowder = new ItemStack(Material.BLAZE_POWDER);
+    ItemStack blazePowder = ItemStack.of(Material.BLAZE_POWDER);
     blazePowder.editMeta(
         meta ->
             meta.displayName(
@@ -77,7 +77,7 @@ public class Blaze extends AbstractKit implements CustomAdvancementTrigger {
     blazePowder.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
     player.getInventory().addItem(blazePowder);
 
-    player.getInventory().addItem(new ItemStack(Material.GOLDEN_SWORD));
+    player.getInventory().addItem(ItemStack.of(Material.GOLDEN_SWORD));
 
     player.addPotionEffect(
         new PotionEffect(

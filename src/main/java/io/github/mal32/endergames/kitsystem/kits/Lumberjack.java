@@ -41,14 +41,14 @@ public class Lumberjack extends AbstractKit {
     player
         .getInventory()
         .setChestplate(
-            colorLeatherArmor(new ItemStack(Material.LEATHER_CHESTPLATE), Color.fromRGB(10820909)));
+            colorLeatherArmor(ItemStack.of(Material.LEATHER_CHESTPLATE), Color.fromRGB(10820909)));
     player
         .getInventory()
         .setLeggings(
-            colorLeatherArmor(new ItemStack(Material.LEATHER_LEGGINGS), Color.fromRGB(1728436)));
+            colorLeatherArmor(ItemStack.of(Material.LEATHER_LEGGINGS), Color.fromRGB(1728436)));
     player
         .getInventory()
-        .addItem(enchantItem(new ItemStack(Material.WOODEN_AXE), Enchantment.SHARPNESS, 1));
+        .addItem(enchantItem(ItemStack.of(Material.WOODEN_AXE), Enchantment.SHARPNESS, 1));
   }
 
   @EventHandler
@@ -69,7 +69,7 @@ public class Lumberjack extends AbstractKit {
 
     if (Tag.LOGS.isTagged(material)) {
       if (leaveMode) return;
-      var item = new ItemStack(material);
+      var item = ItemStack.of(material);
       player.getInventory().addItem(item);
     }
 

@@ -150,12 +150,12 @@ public class Voodoo extends AbstractKit {
   public void initPlayer(Player player) {
     var playerInventory = player.getInventory();
 
-    var bow = new ItemStack(Material.BOW);
+    var bow = ItemStack.of(Material.BOW);
     bow.addEnchantment(Enchantment.PIERCING, 1);
     playerInventory.addItem(bow);
 
-    playerInventory.addItem(new ItemStack(Material.ARROW, 10));
-    playerInventory.setBoots(new ItemStack(Material.LEATHER_BOOTS));
+    playerInventory.addItem(ItemStack.of(Material.ARROW, 10));
+    playerInventory.setBoots(ItemStack.of(Material.LEATHER_BOOTS));
   }
 
   @EventHandler

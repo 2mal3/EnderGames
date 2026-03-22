@@ -86,7 +86,7 @@ public class MapManager {
 
         renderers.put(tile, renderer);
 
-        ItemStack filled = new ItemStack(Material.FILLED_MAP);
+        ItemStack filled = ItemStack.of(Material.FILLED_MAP);
         MapMeta meta = (MapMeta) filled.getItemMeta();
         meta.setMapView(view);
         filled.setItemMeta(meta);

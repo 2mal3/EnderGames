@@ -54,19 +54,19 @@ public class Barbarian extends AbstractKit {
   public void initPlayer(Player player) {
     player
         .getInventory()
-        .setHelmet(enchantItem(new ItemStack(Material.LEATHER_HELMET), Enchantment.UNBREAKING, 1));
+        .setHelmet(enchantItem(ItemStack.of(Material.LEATHER_HELMET), Enchantment.UNBREAKING, 1));
     player
         .getInventory()
         .setChestplate(
-            enchantItem(new ItemStack(Material.LEATHER_CHESTPLATE), Enchantment.UNBREAKING, 1));
+            enchantItem(ItemStack.of(Material.LEATHER_CHESTPLATE), Enchantment.UNBREAKING, 1));
     player
         .getInventory()
         .setLeggings(
-            enchantItem(new ItemStack(Material.LEATHER_LEGGINGS), Enchantment.UNBREAKING, 1));
+            enchantItem(ItemStack.of(Material.LEATHER_LEGGINGS), Enchantment.UNBREAKING, 1));
     player
         .getInventory()
-        .setBoots(enchantItem(new ItemStack(Material.LEATHER_BOOTS), Enchantment.UNBREAKING, 1));
-    player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
+        .setBoots(enchantItem(ItemStack.of(Material.LEATHER_BOOTS), Enchantment.UNBREAKING, 1));
+    player.getInventory().addItem(ItemStack.of(Material.WOODEN_SWORD));
   }
 
   @EventHandler

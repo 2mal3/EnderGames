@@ -93,7 +93,7 @@ public class GamePhase extends AbstractPhase {
 
     player.discoverRecipes(allRecipeKeys);
 
-    final ItemStack trackerItem = new ItemStack(Material.COMPASS);
+    final ItemStack trackerItem = ItemStack.of(Material.COMPASS);
     final ItemMeta trackerMeta = trackerItem.getItemMeta();
     trackerMeta.itemName(Component.text("Tracker").color(NamedTextColor.AQUA));
     trackerItem.setItemMeta(trackerMeta);

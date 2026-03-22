@@ -64,7 +64,7 @@ public class Lucker extends AbstractKit {
   @Override
   public void initPlayer(Player player) {
     // Give a light-green leather chestplate as starting item
-    ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE);
+    ItemStack chestplate = ItemStack.of(Material.LEATHER_CHESTPLATE);
     colorLeatherArmor(chestplate, Color.LIME);
     player.getInventory().setChestplate(chestplate);
 
@@ -111,7 +111,7 @@ public class Lucker extends AbstractKit {
     // 2) Increased apple drop chance from specific leaves (50% chance to drop an apple)
     if ((type == Material.OAK_LEAVES || type == Material.DARK_OAK_LEAVES)
         && ThreadLocalRandom.current().nextDouble() > 0.5) {
-      ItemStack apple = new ItemStack(Material.APPLE, 1);
+      ItemStack apple = ItemStack.of(Material.APPLE, 1);
       Location dropLoc = block.getLocation().add(0.5, 0.5, 0.5);
       dropLoc.getWorld().dropItemNaturally(dropLoc, apple);
     }
@@ -125,7 +125,7 @@ public class Lucker extends AbstractKit {
     if (!playerCanUseThisKit(killer)) return;
 
     // Clone and multiply regular drops
-    for (ItemStack drop : event.getDrops().toArray(new ItemStack[0])) {
+    for (ItemStack drop : event.getDrops().toArray(ItemStack.of[0])) {
       ItemStack extra = drop.clone();
       extra.setAmount(2);
       event.getDrops().add(extra);
@@ -135,17 +135,17 @@ public class Lucker extends AbstractKit {
     switch (dead.getType()) {
       case ZOMBIE, HUSK, DROWNED -> {
         if (Math.random() > 0.4) {
-          event.getDrops().add(new ItemStack(Material.IRON_INGOT));
+          event.getDrops().add(ItemStack.of(Material.IRON_INGOT));
         }
       }
       case SKELETON -> {
         if (Math.random() > 0.5) { // 5% chance for rare bow
-          event.getDrops().add(new ItemStack(Material.BOW));
+          event.getDrops().add(ItemStack.of(Material.BOW));
         }
       }
-      case WITCH -> event.getDrops().add(new ItemStack(Material.GLOWSTONE));
+      case WITCH -> event.getDrops().add(ItemStack.of(Material.GLOWSTONE));
       case PLAYER -> {
-        ItemStack bad_luck_potions = new ItemStack(Material.SPLASH_POTION);
+        ItemStack bad_luck_potions = ItemStack.of(Material.SPLASH_POTION);
         PotionMeta meta = (PotionMeta) bad_luck_potions.getItemMeta();
         meta.addCustomEffect(new PotionEffect(PotionEffectType.UNLUCK, 20 * 160, 4), true);
         meta.displayName(
@@ -185,7 +185,7 @@ public class Lucker extends AbstractKit {
       };
       for (int i = 0; i < 25; i++) {
         Material species = fishTypes[rng.nextInt(fishTypes.length)];
-        ItemStack fish = new ItemStack(species, 1);
+        ItemStack fish = ItemStack.of(species, 1);
         player
             .getInventory()
             .addItem(fish)

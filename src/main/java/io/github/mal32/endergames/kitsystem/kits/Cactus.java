@@ -53,10 +53,10 @@ public class Cactus extends AbstractKit {
     player
         .getInventory()
         .setLeggings(
-            colorLeatherArmor(new ItemStack(Material.LEATHER_LEGGINGS), Color.fromRGB(3064446)));
+            colorLeatherArmor(ItemStack.of(Material.LEATHER_LEGGINGS), Color.fromRGB(3064446)));
     player
         .getInventory()
-        .setBoots(colorLeatherArmor(new ItemStack(Material.LEATHER_BOOTS), Color.fromRGB(3064446)));
+        .setBoots(colorLeatherArmor(ItemStack.of(Material.LEATHER_BOOTS), Color.fromRGB(3064446)));
   }
 
   @EventHandler
@@ -187,7 +187,7 @@ public class Cactus extends AbstractKit {
     player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 1, 1);
 
     // Store the player's current inventory state
-    ItemStack[] hotbar = new ItemStack[9];
+    ItemStack[] hotbar = ItemStack.of[9];
     for (int i = 0; i < 9; i++) {
       hotbar[i] = player.getInventory().getItem(i);
     }
@@ -199,7 +199,7 @@ public class Cactus extends AbstractKit {
     cactusPlayerInventory.put(uuid, inventory);
 
     // Fill hotbar with cactus blocks except items in hand
-    ItemStack cactusBlock = new ItemStack(Material.CACTUS);
+    ItemStack cactusBlock = ItemStack.of(Material.CACTUS);
     for (int i = 0; i < 9; i++) {
       player.getInventory().setItem(i, cactusBlock);
     }

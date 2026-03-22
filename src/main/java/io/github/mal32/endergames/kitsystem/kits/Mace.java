@@ -31,21 +31,21 @@ public class Mace extends AbstractKit {
     if (killer == null) return;
     if (!playerCanUseThisKit(killer)) return;
 
-    killer.getInventory().addItem(new ItemStack(Material.WIND_CHARGE, 4));
+    killer.getInventory().addItem(ItemStack.of(Material.WIND_CHARGE, 4));
   }
 
   @Override
   public void initPlayer(Player player) {
-    ItemStack mace = new ItemStack(Material.MACE);
+    ItemStack mace = ItemStack.of(Material.MACE);
     enchantItem(mace, Enchantment.WIND_BURST, 1);
     mace.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
     player.getInventory().addItem(mace);
 
-    player.getInventory().addItem(new ItemStack(Material.WIND_CHARGE, 8));
+    player.getInventory().addItem(ItemStack.of(Material.WIND_CHARGE, 8));
 
     player
         .getInventory()
         .setBoots(
-            enchantItem(new ItemStack(Material.LEATHER_BOOTS), Enchantment.FEATHER_FALLING, 3));
+            enchantItem(ItemStack.of(Material.LEATHER_BOOTS), Enchantment.FEATHER_FALLING, 3));
   }
 }

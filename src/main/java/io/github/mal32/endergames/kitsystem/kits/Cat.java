@@ -43,7 +43,7 @@ public class Cat extends AbstractKit {
 
   @Override
   public void initPlayer(Player player) {
-    ItemStack fish = new ItemStack(Material.COD, 20);
+    ItemStack fish = ItemStack.of(Material.COD, 20);
     FoodProperties fishProperties =
         FoodProperties.food().canAlwaysEat(true).nutrition(3).saturation(0.6f).build();
     fish.setData(DataComponentTypes.FOOD, fishProperties);

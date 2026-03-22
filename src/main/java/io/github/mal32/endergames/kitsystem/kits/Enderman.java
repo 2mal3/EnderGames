@@ -37,7 +37,7 @@ public class Enderman extends AbstractKit {
 
   @Override
   public void initPlayer(Player player) {
-    var enderPerls = new ItemStack(Material.ENDER_PEARL, 5);
+    var enderPerls = ItemStack.of(Material.ENDER_PEARL, 5);
     player.getInventory().addItem(enderPerls);
   }
 
@@ -47,7 +47,7 @@ public class Enderman extends AbstractKit {
     if (killer == null) return;
     if (!playerCanUseThisKit(killer)) return;
 
-    killer.getInventory().addItem(new ItemStack(Material.ENDER_PEARL, 5));
+    killer.getInventory().addItem(ItemStack.of(Material.ENDER_PEARL, 5));
   }
 
   @EventHandler

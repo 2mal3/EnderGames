@@ -47,7 +47,7 @@ public class Rewind extends AbstractKit {
 
   @Override
   public void initPlayer(Player player) {
-    var clock = new ItemStack(Material.CLOCK);
+    var clock = ItemStack.of(Material.CLOCK);
 
     var meta = clock.getItemMeta();
     meta.getPersistentDataContainer().set(rewindKey, PersistentDataType.BOOLEAN, true);
