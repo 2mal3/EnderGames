@@ -11,7 +11,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Mace extends AbstractKit {
+public class Mace extends AbstractKit implements KitUnlockAdvancement {
   public Mace(KitService kitService, JavaPlugin plugin) {
     super(
         new KitDescription(
