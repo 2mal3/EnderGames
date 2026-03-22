@@ -39,6 +39,8 @@ class KitManagerTest extends BaseMockBukkitTest {
   void disableAll() {
     DummyKit kit2 = new DummyKit("Dummy2", service, plugin);
     manager.register(kit2);
+    DummyKit kit3 = new DummyKit("Dummy3", service, plugin);
+    manager.register(kit3);
 
     manager.enableKit(kit);
     manager.enableKit(kit2);
@@ -46,5 +48,6 @@ class KitManagerTest extends BaseMockBukkitTest {
 
     assertTrue(kit.disabled);
     assertTrue(kit2.disabled);
+    assertFalse(kit3.disabled);
   }
 }

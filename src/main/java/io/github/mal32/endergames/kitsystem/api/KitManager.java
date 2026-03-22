@@ -9,6 +9,7 @@ import org.bukkit.plugin.Plugin;
 public class KitManager {
   private final Map<String, AbstractKit> kits = new LinkedHashMap<>(32);
   private final Plugin plugin;
+  private final Set<AbstractKit> activeKits = new HashSet<>();
 
   public KitManager(Plugin plugin) {
     this.plugin = plugin;
@@ -29,17 +30,21 @@ public class KitManager {
 
   public void enableKit(AbstractKit kit) {
     Objects.requireNonNull(kit);
+    if (activeKits.contains(kit)) return;
     Bukkit.getPluginManager().registerEvents(kit, plugin);
     kit.onEnable();
+    activeKits.add(kit);
   }
 
   public void disableKit(AbstractKit kit) {
     Objects.requireNonNull(kit);
+    if (!activeKits.contains(kit)) return;
     HandlerList.unregisterAll(kit);
     kit.onDisable();
+    activeKits.remove(kit);
   }
 
   public void disableAll() {
-    new ArrayList<>(kits.values()).forEach(this::disableKit);
+    new ArrayList<>(activeKits).forEach(this::disableKit);
   }
 }
