@@ -1,6 +1,8 @@
 package io.github.mal32.endergames.kitsystem.api;
 
 import java.util.Objects;
+
+import io.github.mal32.endergames.kitsystem.util.UnlockChecker;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
@@ -32,7 +34,9 @@ public class KitService {
     return current != null && current.id().equals(kit.id());
   }
 
-  public boolean hasKit(Player player) {
-    return player.getPersistentDataContainer().has(kitKey);
+  public boolean hasValidKit(Player player) {
+    return (player.getPersistentDataContainer().has(kitKey)
+        && get(player) != null
+        && UnlockChecker.isUnlocked(player, get(player)));
   }
 }
