@@ -40,7 +40,8 @@ public class Voodoo extends AbstractKit {
         new KitDescription(
             "Voodoo",
             Material.SCULK,
-            "Hitting entities with arrows regenerates health. Critically damaging players gives a short health boost. Nearby players get black hearts.",
+            "Hitting entities with arrows regenerates health. Critically damaging players gives a"
+                + " short health boost. Nearby players get black hearts.",
             "Bow with Piercing, 10 Arrows, Leather Boots",
             Difficulty.MEDIUM),
         kitService,

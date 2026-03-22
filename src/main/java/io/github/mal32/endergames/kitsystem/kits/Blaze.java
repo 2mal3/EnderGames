@@ -57,7 +57,8 @@ public class Blaze extends AbstractKit implements CustomAdvancementTrigger {
         new KitDescription(
             "Blaze",
             Material.BLAZE_POWDER,
-            "Can leave a fire trail for a short time. It is immune to fire damage, but gains Weakness I in water. Sword or Bow hits have a 20% chance to ignite enemies.",
+            "Can leave a fire trail for a short time. It is immune to fire damage, but gains"
+                + " Weakness I in water. Sword or Bow hits have a 20% chance to ignite enemies.",
             "Golden Sword and Burn Power",
             Difficulty.EASY),
         kitService,

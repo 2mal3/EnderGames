@@ -28,7 +28,8 @@ public class Lumberjack extends AbstractKit {
         new KitDescription(
             Lumberjack.id,
             Material.WOODEN_AXE,
-            "The lumberjack can fell entire trees with a single axe swing. Every axe he crafts automatically gains Sharpness I.",
+            "The lumberjack can fell entire trees with a single axe swing. Every axe he crafts"
+                + " automatically gains Sharpness I.",
             "Wooden axe, red leather chestplate, blue leather pants, black boots.",
             Difficulty.EASY),
         kitService,

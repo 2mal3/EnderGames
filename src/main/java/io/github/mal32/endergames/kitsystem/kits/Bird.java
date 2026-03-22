@@ -42,7 +42,8 @@ public class Bird extends AbstractKit {
         new KitDescription(
             "Bird",
             Material.ELYTRA,
-            "Starts with an Elytra and 10 Rockets. Gains 5 rockets per player kill. Fly like a bird!",
+            "Starts with an Elytra and 10 Rockets. Gains 5 rockets per player kill. Fly like a"
+                + " bird!",
             "1 Elytra, 5 Firework Rockets",
             Difficulty.MEDIUM),
         kitService,

@@ -32,7 +32,8 @@ public class Slime extends AbstractKit {
         new KitDescription(
             "Slime",
             Material.SLIME_BALL,
-            "Occasionally gains slimeballs when jumping, which can be thrown to slow enemies. Spawns small slimes when hit. Permanent Jump Boost II.",
+            "Occasionally gains slimeballs when jumping, which can be thrown to slow enemies."
+                + " Spawns small slimes when hit. Permanent Jump Boost II.",
             "10 slimeballs, green leather chestplate & boots",
             Difficulty.MEDIUM),
         kitService,
