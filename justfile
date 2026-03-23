@@ -1,13 +1,13 @@
 export EG_DEBUG := "true"
 
-set dotenv-load := true
-
 build:
     mvn clean
     mvn package
 
 dev: build
-    cd $EG_SEVER_PATH && minecraft-server
+    mkdir -p mc-server/plugins
+    ln -s --force ../../target/endergames-0.9.0.jar mc-server/plugins/endergames.jar
+    cd mc-server && minecraft-server
 
 upload: build
     ./upload.sh
