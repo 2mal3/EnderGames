@@ -168,11 +168,37 @@ public class StartPhase extends AbstractPhase {
     double x = spawnLocation.getX() + offset.getX();
     double y = spawnLocation.getY();
     double z = spawnLocation.getZ() + offset.getZ();
+    x = Math.floor(x) + 0.5;
+    z = Math.floor(z) + 0.5;
+
     var dest = new Location(world, x, y + 1.5, z);
 
-    float yaw = (float) (Math.toDegrees(Math.atan2(offset.getZ(), offset.getX())) - 90.0);
-    dest.setYaw(yaw);
+    Location lookTarget = spawnLocation.clone().add(0.5, 0, 0.5);
+    dest.setDirection(lookTarget.toVector().subtract(dest.toVector()));
+
+    double dx = lookTarget.getX() - x;
+    double dz = lookTarget.getZ() - z;
+    float yaw = dest.getYaw();
     dest.setPitch(0);
+
+    plugin
+        .getLogger()
+        .info(
+            String.format(
+                "SpawnDebug player=%s idx=%d/%d offsetIdx=%d offset=(%.2f,%.2f) spawn=(%.2f,%.2f) dest=(%.2f,%.2f) vecToCenter=(dx=%.2f,dz=%.2f) yaw=%.2f",
+                player.getName(),
+                playerIndex,
+                totalPlayers,
+                offsetIndex,
+                offset.getX(),
+                offset.getZ(),
+                spawnLocation.getX(),
+                spawnLocation.getZ(),
+                x,
+                z,
+                dx,
+                dz,
+                yaw));
 
     // Teleport the player
     player.teleport(dest);
