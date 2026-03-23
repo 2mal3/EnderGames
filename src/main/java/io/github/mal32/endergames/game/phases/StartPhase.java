@@ -15,8 +15,6 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.BlockVector;
 
@@ -63,6 +61,9 @@ public class StartPhase extends AbstractPhase {
       teleportToPlayerSpawns(player, playerindex, totalPlayers);
       playerindex += 1;
     }
+
+    barriersAroundPlayers(false);
+
     for (Player player : PlayerState.SPECTATING.all()) {
       player.setGameMode(GameMode.SPECTATOR);
       player.getInventory().clear();
@@ -136,6 +137,9 @@ public class StartPhase extends AbstractPhase {
     scheduler.runTaskLater(
         plugin,
         () -> {
+          // Remove the start cages so players can move when the game begins.
+          barriersAroundPlayers(true);
+
           for (Player player : PhaseController.getPlayersInGame()) {
             showTitleToPlayerWithSound(
                 player,
@@ -163,21 +167,24 @@ public class StartPhase extends AbstractPhase {
     List<BlockVector> offsets = makeSpawnOffsets();
     int offsetIndex = (playerIndex * offsets.size()) / totalPlayers;
     BlockVector offset = offsets.get(offsetIndex);
-
     final World world = controller.getGameWorld().getWorld();
     final Location spawnLocation = controller.getGameWorld().getSpawnLocation();
     double x = spawnLocation.getX() + offset.getX();
     double y = spawnLocation.getY();
     double z = spawnLocation.getZ() + offset.getZ();
+
     var dest = new Location(world, x, y + 1.5, z);
 
-    float yaw = (float) (Math.toDegrees(Math.atan2(offset.getZ(), offset.getX())) - 90.0);
-    dest.setYaw(yaw);
+    Location lookTarget = spawnLocation.clone().add(0.5, 0, 0.5);
+    dest.setDirection(lookTarget.toVector().subtract(dest.toVector()));
+
+    double dx = lookTarget.getX() - x;
+    double dz = lookTarget.getZ() - z;
+    float yaw = dest.getYaw();
     dest.setPitch(0);
 
     // Teleport the player
     player.teleport(dest);
-    plugin.getLogger().info("Teleporting to " + dest);
   }
 
   public List<BlockVector> makeSpawnOffsets() {
@@ -188,7 +195,7 @@ public class StartPhase extends AbstractPhase {
         new BlockVector(6.5, 0, -6.5),
         new BlockVector(8.5, 0, -4.5),
         new BlockVector(9.5, 0, -2.5),
-        new BlockVector(9.5, 0, 0.5),
+        new BlockVector(9.5, 0, -0.5),
         new BlockVector(9.5, 0, 1.5),
         new BlockVector(8.5, 0, 3.5),
         new BlockVector(6.5, 0, 5.5),
@@ -208,12 +215,28 @@ public class StartPhase extends AbstractPhase {
         new BlockVector(-1.5, 0, -9.5));
   }
 
-  @EventHandler
-  private void onPlayerMove(PlayerMoveEvent event) {
-    if (!PhaseController.playerIsInGame(event.getPlayer())) return;
+  private void barriersAroundPlayers() {
+    barriersAroundPlayers(false);
+  }
 
-    Location startLocation = event.getFrom();
-    event.getTo().setX(startLocation.getX());
-    event.getTo().setZ(startLocation.getZ());
+  private void barriersAroundPlayers(boolean remove) {
+    final World world = controller.getGameWorld().getWorld();
+    final Material material = remove ? Material.AIR : Material.BARRIER;
+    final int baseY = controller.getGameWorld().getSpawnLocation().getBlockY() + 1;
+
+    for (Player player : PhaseController.getPlayersInGame()) {
+      Location base = player.getLocation();
+      int bx = base.getBlockX();
+      int bz = base.getBlockZ();
+
+      int[][] sides = new int[][] {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+      for (int[] side : sides) {
+        int x = bx + side[0];
+        int z = bz + side[1];
+        for (int dy = 0; dy < 2; dy++) {
+          world.getBlockAt(x, baseY + dy, z).setType(material, false);
+        }
+      }
+    }
   }
 }
