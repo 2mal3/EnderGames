@@ -169,18 +169,15 @@ public class StartPhase extends AbstractPhase {
 
     final World world = controller.getGameWorld().getWorld();
     final Location spawnLocation = controller.getGameWorld().getSpawnLocation();
-
-    double centerX = spawnLocation.getX() + 0.5;
-    double centerY = spawnLocation.getY();
-    double centerZ = spawnLocation.getZ() + 0.5;
-
-    double x = centerX + offset.getX();
-    double y = centerY;
-    double z = centerZ + offset.getZ();
+    double x = spawnLocation.getX() + offset.getX();
+    double y = spawnLocation.getY();
+    double z = spawnLocation.getZ() + offset.getZ();
+    x = Math.floor(x) + 0.5;
+    z = Math.floor(z) + 0.5;
 
     var dest = new Location(world, x, y + 1.5, z);
 
-    Location lookTarget = new Location(world, centerX, centerY, centerZ);
+    Location lookTarget = spawnLocation.clone().add(0.5, 0, 0.5);
     dest.setDirection(lookTarget.toVector().subtract(dest.toVector()));
 
     double dx = lookTarget.getX() - x;
@@ -220,7 +217,7 @@ public class StartPhase extends AbstractPhase {
         new BlockVector(6.5, 0, -6.5),
         new BlockVector(8.5, 0, -4.5),
         new BlockVector(9.5, 0, -2.5),
-        new BlockVector(9.5, 0, 0.5),
+        new BlockVector(9.5, 0, -0.5),
         new BlockVector(9.5, 0, 1.5),
         new BlockVector(8.5, 0, 3.5),
         new BlockVector(6.5, 0, 5.5),
