@@ -61,6 +61,9 @@ public class StartPhase extends AbstractPhase {
       teleportToPlayerSpawns(player, playerindex, totalPlayers);
       playerindex += 1;
     }
+
+    barriersAroundPlayers(false);
+
     for (Player player : PlayerState.SPECTATING.all()) {
       player.setGameMode(GameMode.SPECTATOR);
       player.getInventory().clear();
@@ -135,6 +138,9 @@ public class StartPhase extends AbstractPhase {
     scheduler.runTaskLater(
         plugin,
         () -> {
+          // Remove the start cages so players can move when the game begins.
+          barriersAroundPlayers(true);
+
           for (Player player : PhaseController.getPlayersInGame()) {
             showTitleToPlayerWithSound(
                 player,
@@ -233,12 +239,43 @@ public class StartPhase extends AbstractPhase {
         new BlockVector(-1.5, 0, -9.5));
   }
 
+  private void barriersAroundPlayers() {
+    barriersAroundPlayers(false);
+  }
+
+  private void barriersAroundPlayers(boolean remove) {
+    final World world = controller.getGameWorld().getWorld();
+    final Material material = remove ? Material.AIR : Material.BARRIER;
+    final int baseY = controller.getGameWorld().getSpawnLocation().getBlockY() + 1;
+
+    for (Player player : PhaseController.getPlayersInGame()) {
+      Location base = player.getLocation();
+      int bx = base.getBlockX();
+      int bz = base.getBlockZ();
+
+      int[][] sides = new int[][] {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+      for (int[] side : sides) {
+        int x = bx + side[0];
+        int z = bz + side[1];
+        for (int dy = 0; dy < 2; dy++) {
+          world.getBlockAt(x, baseY + dy, z).setType(material, false);
+        }
+      }
+    }
+  }
+
   @EventHandler
   private void onPlayerMove(PlayerMoveEvent event) {
     if (!PhaseController.playerIsInGame(event.getPlayer())) return;
 
-    Location startLocation = event.getFrom();
-    event.getTo().setX(startLocation.getX());
-    event.getTo().setZ(startLocation.getZ());
+    Location from = event.getFrom();
+    Location to = event.getTo();
+    if (to == null) return;
+
+    if (from.getWorld() == to.getWorld() && from.distanceSquared(to) <= 1.0) return;
+
+    // In case somehow the player bugs out of barrier
+    event.getTo().setX(from.getX());
+    event.getTo().setZ(from.getZ());
   }
 }
