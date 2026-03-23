@@ -186,7 +186,8 @@ public class StartPhase extends AbstractPhase {
         .getLogger()
         .info(
             String.format(
-                "SpawnDebug player=%s idx=%d/%d offsetIdx=%d offset=(%.2f,%.2f) spawn=(%.2f,%.2f) dest=(%.2f,%.2f) vecToCenter=(dx=%.2f,dz=%.2f) yaw=%.2f",
+                "SpawnDebug player=%s idx=%d/%d offsetIdx=%d offset=(%.2f,%.2f) spawn=(%.2f,%.2f)"
+                    + " dest=(%.2f,%.2f) vecToCenter=(dx=%.2f,dz=%.2f) yaw=%.2f",
                 player.getName(),
                 playerIndex,
                 totalPlayers,
