@@ -34,7 +34,6 @@ import org.bukkit.structure.StructureManager;
 import org.jetbrains.annotations.Nullable;
 
 public class EndlessParkour extends LobbyModule {
-  private Map<UUID, ParkourSession> players = new HashMap<>();
   private final StructureManager manager = Bukkit.getServer().getStructureManager();
   private final Structure structure =
       manager.loadStructure(new NamespacedKey("enga", "parkour_mask"));
@@ -43,6 +42,7 @@ public class EndlessParkour extends LobbyModule {
       structure.getPalettes().getFirst().getBlocks().stream()
           .filter(b -> b.getType() == Material.IRON_BLOCK)
           .toList();
+  private final Map<UUID, ParkourSession> players = new HashMap<>();
 
   public EndlessParkour(JavaPlugin plugin) {
     super(plugin);

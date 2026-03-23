@@ -4,15 +4,14 @@ import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.game.phases.PhaseController;
-import io.github.mal32.endergames.kits.KitRegistry;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.regex.Pattern;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
@@ -49,7 +48,7 @@ public class Death extends AbstractModule {
     world.setGameRule(GameRules.IMMEDIATE_RESPAWN, true);
   }
 
-  private static void killEffects(PlayerDeathEvent event) {
+  private void killEffects(PlayerDeathEvent event) {
     Player player = event.getPlayer();
     Location location = player.getLocation();
 
@@ -73,16 +72,19 @@ public class Death extends AbstractModule {
               .append(Component.text(" was killed by ").color(NamedTextColor.DARK_RED))
               .append(Component.text(lastDamager.getName()).color(NamedTextColor.RED)));
 
-      KitType killerKit = KitType.get(lastDamager);
-      String niceKillerKit = capitalizeFully(KitRegistry.get(killerKit).getNameLowercase());
-
+      final AbstractKit killerKit = plugin.getKitSystem().service().get(lastDamager);
+      TextComponent killerInfo =
+          Component.text(lastDamager.getName()).color(NamedTextColor.DARK_RED);
+      if (killerKit != null) {
+        killerInfo =
+            killerInfo
+                .append(Component.text(" (").color(NamedTextColor.RED))
+                .append(Component.text(killerKit.id()).color(NamedTextColor.DARK_RED))
+                .append(Component.text(")").color(NamedTextColor.RED));
+      }
       player.sendMessage(
-          Component.text("")
-              .append(Component.text(lastDamager.getName()).color(NamedTextColor.DARK_RED))
-              .append(Component.text(" (").color(NamedTextColor.RED))
-              .append(Component.text(niceKillerKit).color(NamedTextColor.DARK_RED))
-              .append(Component.text(") ").color(NamedTextColor.RED))
-              .append(Component.text("has ").color(NamedTextColor.RED))
+          killerInfo
+              .append(Component.text(" has ").color(NamedTextColor.RED))
               .append(
                   Component.text(String.format("%.2f", lastDamager.getHealth()) + "❤")
                       .color(NamedTextColor.DARK_RED))
@@ -94,10 +96,6 @@ public class Death extends AbstractModule {
               .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
               .append(Component.text(player.getName()).color(NamedTextColor.RED)));
     }
-  }
-
-  private static String capitalizeFully(String text) {
-    return Pattern.compile("\\b(\\w)").matcher(text).replaceAll(m -> m.group().toUpperCase());
   }
 
   @EventHandler

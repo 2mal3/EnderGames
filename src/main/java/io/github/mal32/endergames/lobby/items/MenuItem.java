@@ -35,7 +35,7 @@ abstract class MenuItem {
   public void giveItem(Player player) {
     final String key = getState(player);
     assert this.display.containsKey(key);
-    ItemStack item = new ItemStack(this.display.get(key).display);
+    ItemStack item = ItemStack.of(this.display.get(key).display);
     ItemMeta meta = item.getItemMeta();
     if (meta == null) return;
     meta.itemName(this.display.get(key).name);

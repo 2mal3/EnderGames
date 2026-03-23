@@ -19,7 +19,7 @@ public class SmithingTemplateManager extends AbstractModule {
   @EventHandler
   public void onSmithingTableOpen(InventoryOpenEvent event) {
     if (!(event.getInventory() instanceof SmithingInventory inventory)) return;
-    inventory.setInputTemplate(new ItemStack(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE, 16));
+    inventory.setInputTemplate(ItemStack.of(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE, 16));
   }
 
   @EventHandler

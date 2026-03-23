@@ -34,7 +34,7 @@ public class EnchanterManager extends AbstractTeleportingBlockManager<Enchanter>
   public void onEnchanterOpen(InventoryOpenEvent event) {
     if (!(event.getInventory() instanceof EnchantingInventory inventory)) return;
 
-    inventory.setSecondary(new ItemStack(Material.LAPIS_LAZULI, 64));
+    inventory.setSecondary(ItemStack.of(Material.LAPIS_LAZULI, 64));
 
     // Mark the enchanter as used when a player opens it
     var location = event.getInventory().getLocation();

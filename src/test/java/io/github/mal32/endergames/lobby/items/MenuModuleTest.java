@@ -4,9 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.github.mal32.endergames.game.phases.GameEndEvent;
 import io.github.mal32.endergames.game.phases.GameStartAbortEvent;
-import io.github.mal32.endergames.game.phases.GameStartEvent;
+import io.github.mal32.endergames.game.phases.GameStartingEvent;
+import io.github.mal32.endergames.kitsystem.api.KitSystem;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import io.github.mal32.endergames.services.PlayerState;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -38,7 +40,7 @@ class MenuModuleTest {
     itemB = new FakeMenuItem(plugin, (byte) 1, "b");
 
     module =
-        new MenuModule(plugin) {
+        new MenuModule(plugin, new KitSystem(plugin)) {
           @Override
           void registerDefaultItems() {
             registerItem(itemA);
@@ -87,17 +89,17 @@ class MenuModuleTest {
   }
 
   @Test
-  void onGameStart() {
+  void onGameStarting() {
     PlayerMock player1 = server.addPlayer();
     PlayerState.IN_LOBBY.set(player1);
     PlayerMock player2 = server.addPlayer();
     PlayerState.PLAYING.set(player2);
 
-    server.getPluginManager().callEvent(new GameStartEvent());
+    server.getPluginManager().callEvent(new GameStartingEvent(List.of(player2)));
 
     assertEquals(1, itemA.gameStartCount);
 
-    server.getPluginManager().callEvent(new GameStartEvent());
+    server.getPluginManager().callEvent(new GameStartingEvent(List.of(player2)));
 
     assertEquals(2, itemA.gameStartCount);
   }
