@@ -15,8 +15,6 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.BlockVector;
 
@@ -171,15 +169,18 @@ public class StartPhase extends AbstractPhase {
 
     final World world = controller.getGameWorld().getWorld();
     final Location spawnLocation = controller.getGameWorld().getSpawnLocation();
-    double x = spawnLocation.getX() + offset.getX();
-    double y = spawnLocation.getY();
-    double z = spawnLocation.getZ() + offset.getZ();
-    x = Math.floor(x) + 0.5;
-    z = Math.floor(z) + 0.5;
+
+    double centerX = spawnLocation.getX() + 0.5;
+    double centerY = spawnLocation.getY();
+    double centerZ = spawnLocation.getZ() + 0.5;
+
+    double x = centerX + offset.getX();
+    double y = centerY;
+    double z = centerZ + offset.getZ();
 
     var dest = new Location(world, x, y + 1.5, z);
 
-    Location lookTarget = spawnLocation.clone().add(0.5, 0, 0.5);
+    Location lookTarget = new Location(world, centerX, centerY, centerZ);
     dest.setDirection(lookTarget.toVector().subtract(dest.toVector()));
 
     double dx = lookTarget.getX() - x;
@@ -262,20 +263,5 @@ public class StartPhase extends AbstractPhase {
         }
       }
     }
-  }
-
-  @EventHandler
-  private void onPlayerMove(PlayerMoveEvent event) {
-    if (!PhaseController.playerIsInGame(event.getPlayer())) return;
-
-    Location from = event.getFrom();
-    Location to = event.getTo();
-    if (to == null) return;
-
-    if (from.getWorld() == to.getWorld() && from.distanceSquared(to) <= 1.0) return;
-
-    // In case somehow the player bugs out of barrier
-    event.getTo().setX(from.getX());
-    event.getTo().setZ(from.getZ());
   }
 }
