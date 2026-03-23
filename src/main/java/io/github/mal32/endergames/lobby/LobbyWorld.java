@@ -65,19 +65,42 @@ public class LobbyWorld extends AbstractWorld {
   public void initPlayer(Player player) {
     super.initPlayer(player);
 
-    player.setGameMode(GameMode.ADVENTURE);
-
-    player.teleportAsync(spawnLocation.clone().add(0, 10, 0));
+    // Mark lobby immediately (some logic/tests rely on this), but keep the player in spectator
+    // until the async teleport completes so they can't pick up items in the old world.
     PlayerInWorld.LOBBY.set(player);
+    player.setGameMode(GameMode.SPECTATOR);
 
-    player.addPotionEffect(
-        new PotionEffect(
-            PotionEffectType.SATURATION, PotionEffect.INFINITE_DURATION, 1, true, false, false));
-    player.addPotionEffect(
-        new PotionEffect(
-            PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 0, true, false, false));
+    player
+        .teleportAsync(spawnLocation.clone().add(0, 10, 0))
+        .thenRun(
+            () ->
+                Bukkit.getScheduler()
+                    .runTask(
+                        plugin,
+                        () -> {
+                          if (!player.isOnline()) return;
 
-    Bukkit.getPluginManager().callEvent(new PlayerEnteredLobbyEvent(player));
+                          player.setGameMode(GameMode.ADVENTURE);
+
+                          player.addPotionEffect(
+                              new PotionEffect(
+                                  PotionEffectType.SATURATION,
+                                  PotionEffect.INFINITE_DURATION,
+                                  1,
+                                  true,
+                                  false,
+                                  false));
+                          player.addPotionEffect(
+                              new PotionEffect(
+                                  PotionEffectType.RESISTANCE,
+                                  PotionEffect.INFINITE_DURATION,
+                                  0,
+                                  true,
+                                  false,
+                                  false));
+
+                          Bukkit.getPluginManager().callEvent(new PlayerEnteredLobbyEvent(player));
+                        }));
   }
 
   @Override

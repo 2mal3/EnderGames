@@ -65,6 +65,11 @@ class LobbyWorldTest {
 
     lobbyWorld.initPlayer(player);
 
+    // The lobby init now finalizes state (adventure mode, effects, event) only after the
+    // teleportAsync future completes and the follow-up is executed on the main thread.
+    // In MockBukkit we need to execute pending tasks manually.
+    server.getScheduler().performOneTick();
+
     assertEquals(PlayerInWorld.LOBBY, PlayerInWorld.get(player));
     assertEquals(world, player.getWorld());
     assertEquals(GameMode.ADVENTURE, player.getGameMode());
