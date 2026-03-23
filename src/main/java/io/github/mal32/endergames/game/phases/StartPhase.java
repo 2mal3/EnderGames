@@ -182,29 +182,8 @@ public class StartPhase extends AbstractPhase {
     float yaw = dest.getYaw();
     dest.setPitch(0);
 
-    plugin
-        .getLogger()
-        .info(
-            String.format(
-                "SpawnDebug player=%s idx=%d/%d offsetIdx=%d offset=(%.2f,%.2f) spawn=(%.2f,%.2f)"
-                    + " dest=(%.2f,%.2f) vecToCenter=(dx=%.2f,dz=%.2f) yaw=%.2f",
-                player.getName(),
-                playerIndex,
-                totalPlayers,
-                offsetIndex,
-                offset.getX(),
-                offset.getZ(),
-                spawnLocation.getX(),
-                spawnLocation.getZ(),
-                x,
-                z,
-                dx,
-                dz,
-                yaw));
-
     // Teleport the player
     player.teleport(dest);
-    plugin.getLogger().info("Teleporting to " + dest);
   }
 
   public List<BlockVector> makeSpawnOffsets() {
