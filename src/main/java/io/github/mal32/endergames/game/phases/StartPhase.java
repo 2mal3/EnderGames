@@ -166,7 +166,6 @@ public class StartPhase extends AbstractPhase {
     List<BlockVector> offsets = makeSpawnOffsets();
     int offsetIndex = (playerIndex * offsets.size()) / totalPlayers;
     BlockVector offset = offsets.get(offsetIndex);
-
     final World world = controller.getGameWorld().getWorld();
     final Location spawnLocation = controller.getGameWorld().getSpawnLocation();
     double x = spawnLocation.getX() + offset.getX();
