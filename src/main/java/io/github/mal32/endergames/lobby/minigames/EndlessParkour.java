@@ -1,12 +1,12 @@
 package io.github.mal32.endergames.lobby.minigames;
 
-import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.BlockLocation;
-import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.MoreMath;
+import io.github.mal32.endergames.lobby.LobbyModule;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -14,10 +14,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
@@ -26,18 +28,29 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.structure.Structure;
+import org.bukkit.structure.StructureManager;
 import org.jetbrains.annotations.Nullable;
 
-public class EndlessParkour extends AbstractModule {
+public class EndlessParkour extends LobbyModule {
   private Map<UUID, ParkourSession> players = new HashMap<>();
+  private final StructureManager manager = Bukkit.getServer().getStructureManager();
+  private final Structure structure =
+      manager.loadStructure(new NamespacedKey("enga", "parkour_mask"));
+  private final int structureSize = structure.getSize().getBlockX();
+  private final List<BlockState> possibleBlocks =
+      structure.getPalettes().getFirst().getBlocks().stream()
+          .filter(b -> b.getType() == Material.IRON_BLOCK)
+          .toList();
 
-  public EndlessParkour(EnderGames plugin) {
+  public EndlessParkour(JavaPlugin plugin) {
     super(plugin);
   }
 
   @Override
-  public void disable() {
-    super.disable();
+  public void onDisable() {
+    super.onDisable();
 
     for (UUID uuid : players.keySet()) {
       leave(uuid);
@@ -51,6 +64,7 @@ public class EndlessParkour extends AbstractModule {
     if (event.getAction() != Action.PHYSICAL) return;
     if (players.containsKey(player.getUniqueId())) return;
     Block block = event.getClickedBlock();
+    if (block == null) return;
     if (block.getType() != Material.HEAVY_WEIGHTED_PRESSURE_PLATE) return;
     if (block.getLocation().add(0, -1, 0).getBlock().getType() != Material.WHITE_WOOL) return;
 
@@ -125,40 +139,30 @@ public class EndlessParkour extends AbstractModule {
 
   private BlockLocation getRandomJumpLocation(BlockLocation startLocation, double scale) {
     BlockLocation randomLocation;
+
+    int i = 100;
     do {
+      BlockState randomBlock = possibleBlocks.get((new Random()).nextInt(possibleBlocks.size()));
+      BlockLocation structureAbsolutePos = new BlockLocation(randomBlock.getLocation());
       randomLocation = startLocation.clone();
-
-      double angle = Math.random() * 2 * Math.PI;
-      double distance;
-      double hight = 0;
-      if (Math.random() > 0.80) {
-        // one higher
-        distance = 2 + (Math.random() * 2);
-        hight = 1;
-      } else {
-        // same level
-        distance = 2 + (Math.random() * 3);
-      }
-      distance *= scale;
-
-      randomLocation.setX(
-          (int) MoreMath.roundN((startLocation.getX() + (Math.cos(angle) * distance)), 0));
-      randomLocation.setZ(
-          (int) MoreMath.roundN((startLocation.getZ() + (Math.sin(angle) * distance)), 0));
-      randomLocation.add(0, (int) MoreMath.roundN(hight + (scale - 1), 0), 0);
-    } while (!blockIsFree(randomLocation.clone()));
+      randomLocation.add(
+          (int) ((structureAbsolutePos.getX() - (structureSize / 2)) * scale),
+          (int) (structureAbsolutePos.getY() + scale - 1),
+          (int) ((structureAbsolutePos.getZ() - (structureSize / 2)) * scale));
+      i--;
+    } while (!(blockIsFree(randomLocation.clone())) && i > 0);
 
     return randomLocation;
   }
 
   private boolean blockIsFree(BlockLocation location) {
     return location.getBlock().getType() == Material.AIR
-        && location.add(0, 1, 0).getBlock().getType() == Material.AIR
-        && location.add(0, 2, 0).getBlock().getType() == Material.AIR
-        && location.add(1, 0, 0).getBlock().getType() == Material.AIR
-        && location.add(-1, 0, 0).getBlock().getType() == Material.AIR
-        && location.add(0, 0, 1).getBlock().getType() == Material.AIR
-        && location.add(0, 0, -1).getBlock().getType() == Material.AIR;
+        && location.clone().add(0, 1, 0).getBlock().getType() == Material.AIR
+        && location.clone().add(0, 2, 0).getBlock().getType() == Material.AIR
+        && location.clone().add(1, 0, 0).getBlock().getType() == Material.AIR
+        && location.clone().add(-1, 0, 0).getBlock().getType() == Material.AIR
+        && location.clone().add(0, 0, 1).getBlock().getType() == Material.AIR
+        && location.clone().add(0, 0, -1).getBlock().getType() == Material.AIR;
   }
 
   @EventHandler
@@ -176,7 +180,7 @@ public class EndlessParkour extends AbstractModule {
     final int highScore = plugin.getConfig().getInt(key);
     if (highScore < session.jumps) {
       plugin.getConfig().set(key, session.jumps);
-      Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> plugin.saveConfig());
+      Bukkit.getScheduler().runTaskAsynchronously(plugin, plugin::saveConfig);
       player.playSound(player, Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.UI, 1.0f, 1.0f);
       player.sendMessage(
           Component.text("")
@@ -221,81 +225,45 @@ public class EndlessParkour extends AbstractModule {
   }
 
   private Material getWoolForColor(DyeColor color) {
-    switch (color) {
-      case BLACK:
-        return Material.BLACK_WOOL;
-      case BLUE:
-        return Material.BLUE_WOOL;
-      case BROWN:
-        return Material.BROWN_WOOL;
-      case CYAN:
-        return Material.CYAN_WOOL;
-      case GRAY:
-        return Material.GRAY_WOOL;
-      case GREEN:
-        return Material.GREEN_WOOL;
-      case LIGHT_BLUE:
-        return Material.LIGHT_BLUE_WOOL;
-      case LIGHT_GRAY:
-        return Material.LIGHT_GRAY_WOOL;
-      case LIME:
-        return Material.LIME_WOOL;
-      case MAGENTA:
-        return Material.MAGENTA_WOOL;
-      case ORANGE:
-        return Material.ORANGE_WOOL;
-      case PINK:
-        return Material.PINK_WOOL;
-      case PURPLE:
-        return Material.PURPLE_WOOL;
-      case RED:
-        return Material.RED_WOOL;
-      case WHITE:
-        return Material.WHITE_WOOL;
-      case YELLOW:
-        return Material.YELLOW_WOOL;
-      default:
-        return Material.WHITE_WOOL;
-    }
+    return switch (color) {
+      case BLACK -> Material.BLACK_WOOL;
+      case BLUE -> Material.BLUE_WOOL;
+      case BROWN -> Material.BROWN_WOOL;
+      case CYAN -> Material.CYAN_WOOL;
+      case GRAY -> Material.GRAY_WOOL;
+      case GREEN -> Material.GREEN_WOOL;
+      case LIGHT_BLUE -> Material.LIGHT_BLUE_WOOL;
+      case LIGHT_GRAY -> Material.LIGHT_GRAY_WOOL;
+      case LIME -> Material.LIME_WOOL;
+      case MAGENTA -> Material.MAGENTA_WOOL;
+      case ORANGE -> Material.ORANGE_WOOL;
+      case PINK -> Material.PINK_WOOL;
+      case PURPLE -> Material.PURPLE_WOOL;
+      case RED -> Material.RED_WOOL;
+      case WHITE -> Material.WHITE_WOOL;
+      case YELLOW -> Material.YELLOW_WOOL;
+    };
   }
 
   private Material getTerracotaForColor(DyeColor color) {
-    switch (color) {
-      case BLACK:
-        return Material.BLACK_TERRACOTTA;
-      case BLUE:
-        return Material.BLUE_TERRACOTTA;
-      case BROWN:
-        return Material.BROWN_TERRACOTTA;
-      case CYAN:
-        return Material.CYAN_TERRACOTTA;
-      case GRAY:
-        return Material.GRAY_TERRACOTTA;
-      case GREEN:
-        return Material.GREEN_TERRACOTTA;
-      case LIGHT_BLUE:
-        return Material.LIGHT_BLUE_TERRACOTTA;
-      case LIGHT_GRAY:
-        return Material.LIGHT_GRAY_TERRACOTTA;
-      case LIME:
-        return Material.LIME_TERRACOTTA;
-      case MAGENTA:
-        return Material.MAGENTA_TERRACOTTA;
-      case ORANGE:
-        return Material.ORANGE_TERRACOTTA;
-      case PINK:
-        return Material.PINK_TERRACOTTA;
-      case PURPLE:
-        return Material.PURPLE_TERRACOTTA;
-      case RED:
-        return Material.RED_TERRACOTTA;
-      case WHITE:
-        return Material.WHITE_TERRACOTTA;
-      case YELLOW:
-        return Material.YELLOW_TERRACOTTA;
-      default:
-        return Material.WHITE_TERRACOTTA;
-    }
+    return switch (color) {
+      case BLACK -> Material.BLACK_TERRACOTTA;
+      case BLUE -> Material.BLUE_TERRACOTTA;
+      case BROWN -> Material.BROWN_TERRACOTTA;
+      case CYAN -> Material.CYAN_TERRACOTTA;
+      case GRAY -> Material.GRAY_TERRACOTTA;
+      case GREEN -> Material.GREEN_TERRACOTTA;
+      case LIGHT_BLUE -> Material.LIGHT_BLUE_TERRACOTTA;
+      case LIGHT_GRAY -> Material.LIGHT_GRAY_TERRACOTTA;
+      case LIME -> Material.LIME_TERRACOTTA;
+      case MAGENTA -> Material.MAGENTA_TERRACOTTA;
+      case ORANGE -> Material.ORANGE_TERRACOTTA;
+      case PINK -> Material.PINK_TERRACOTTA;
+      case PURPLE -> Material.PURPLE_TERRACOTTA;
+      case RED -> Material.RED_TERRACOTTA;
+      case WHITE -> Material.WHITE_TERRACOTTA;
+      case YELLOW -> Material.YELLOW_TERRACOTTA;
+    };
   }
 }
 

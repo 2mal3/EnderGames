@@ -5,7 +5,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 
 public class BlockLocation {
-  private World world;
+  private final World world;
   private int x;
   private int y;
   private int z;
@@ -32,20 +32,20 @@ public class BlockLocation {
     return x;
   }
 
-  public int getY() {
-    return y;
-  }
-
-  public int getZ() {
-    return z;
-  }
-
   public void setX(int x) {
     this.x = x;
   }
 
+  public int getY() {
+    return y;
+  }
+
   public void setY(int y) {
     this.y = y;
+  }
+
+  public int getZ() {
+    return z;
   }
 
   public void setZ(int z) {
@@ -62,7 +62,7 @@ public class BlockLocation {
     this.y += y;
     this.z += z;
 
-    return this.clone();
+    return this;
   }
 
   public Block getBlock() {
@@ -79,5 +79,9 @@ public class BlockLocation {
         && location.blockZ() == z
         && location.getWorld() != null
         && location.getWorld().equals(world);
+  }
+
+  public String toString() {
+    return String.format("BlockLocation{x=%d, y=%d, z=%d}", x, y, z);
   }
 }

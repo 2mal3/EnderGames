@@ -1,71 +1,37 @@
 package io.github.mal32.endergames.game;
 
 import io.github.mal32.endergames.AbstractWorld;
-import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import org.bukkit.*;
-import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class GameWorld extends AbstractWorld {
   private final World world;
-  private final NamespacedKey spawnLocationKey;
+  private final FindWorldSpawnService spawnService;
+  private final NamespacedKey spawnKey;
+
   private Location spawnLocation;
 
-  public GameWorld(EnderGames plugin) {
+  public GameWorld(JavaPlugin plugin, FindWorldSpawnService spawnService) {
     super(plugin);
-    this.world = Bukkit.getWorld("world");
-    this.spawnLocationKey = new NamespacedKey(plugin, "spawnLocation");
+
+    this.world = Bukkit.getWorld("world"); // TODO: service?
+    this.spawnService = spawnService;
+    this.spawnKey = new NamespacedKey(plugin, "spawnLocation");
 
     assert world != null;
-    if (world.getPersistentDataContainer().has(this.spawnLocationKey)) {
-      loadSpawnLocation();
-    } else {
+    Integer savedX = loadSpawn(world);
+    if (savedX == null) {
       plugin.getComponentLogger().info("Creating spawn location");
-      spawnLocation = new Location(world, 0, 200, 0);
-      findAndSaveNewSpawnLocation();
+      spawnLocation = spawnService.findNextValidSpawn(new Location(world, 0, 200, 0));
+      saveSpawn(world, spawnLocation.getBlockX());
+    } else {
+      spawnLocation = new Location(world, savedX, 200, 0);
     }
-  }
-
-  // Why doesn't BiomeTagKeys.IS_OCEAN work?
-  // using directly:
-  // https://github.com/misode/mcmeta/blob/data/data/minecraft/tags/worldgen/biome/is_ocean.json
-  private static boolean isInvalidBiome(Biome biome) {
-    return biome.equals(Biome.DEEP_FROZEN_OCEAN)
-        || biome.equals(Biome.DEEP_COLD_OCEAN)
-        || biome.equals(Biome.DEEP_OCEAN)
-        || biome.equals(Biome.DEEP_LUKEWARM_OCEAN)
-        || biome.equals(Biome.FROZEN_OCEAN)
-        || biome.equals(Biome.OCEAN)
-        || biome.equals(Biome.COLD_OCEAN)
-        || biome.equals(Biome.LUKEWARM_OCEAN)
-        || biome.equals(Biome.WARM_OCEAN)
-        || biome.equals(Biome.JUNGLE)
-        || biome.equals(Biome.SPARSE_JUNGLE)
-        || biome.equals(Biome.BAMBOO_JUNGLE)
-        || biome.equals(Biome.RIVER)
-        || biome.equals(Biome.STONY_SHORE);
-  }
-
-  private void loadSpawnLocation() {
-    double rawSpawnX =
-        world.getPersistentDataContainer().get(spawnLocationKey, PersistentDataType.INTEGER);
-    spawnLocation = new Location(world, rawSpawnX, 200, 0);
-  }
-
-  public void findAndSaveNewSpawnLocation() {
-    do {
-      this.spawnLocation.add(1000, 0, 0);
-      this.spawnLocation.getChunk().load(true);
-    } while (GameWorld.isInvalidBiome(this.spawnLocation.getBlock().getBiome()));
-
-    this.world
-        .getPersistentDataContainer()
-        .set(this.spawnLocationKey, PersistentDataType.INTEGER, this.spawnLocation.getBlockX());
-    world.getWorldBorder().setCenter(spawnLocation);
   }
 
   @Override
@@ -78,7 +44,7 @@ public class GameWorld extends AbstractWorld {
     world.setGameRule(GameRules.ALLOW_ENTERING_NETHER_USING_PORTALS, false);
     world.setGameRule(GameRules.SPECTATORS_GENERATE_CHUNKS, false);
 
-    WorldBorder border = this.world.getWorldBorder();
+    WorldBorder border = world.getWorldBorder();
     border.setWarningDistance(32);
     border.setWarningTimeTicks(60 * 20);
     border.setDamageBuffer(1);
@@ -101,16 +67,23 @@ public class GameWorld extends AbstractWorld {
   }
 
   @Override
-  public void initPlayer(Player player) {
-    player.teleportAsync(getSpawnLocation().add(0, 5, 0));
-
-    PlayerInWorld.GAME.set(player);
-    plugin.getPhaseController().initPlayer(player);
-  }
-
-  @Override
   protected boolean isInThisWorld(Player player) {
     return PlayerInWorld.GAME.is(player);
+  }
+
+  public void findNewSpawn() {
+    spawnLocation = spawnService.findNextValidSpawn(spawnLocation);
+    saveSpawn(world, spawnLocation.getBlockX());
+    WorldBorder border = world.getWorldBorder();
+    border.setCenter(spawnLocation);
+  }
+
+  private void saveSpawn(World world, int x) {
+    world.getPersistentDataContainer().set(spawnKey, PersistentDataType.INTEGER, x);
+  }
+
+  private Integer loadSpawn(World world) {
+    return world.getPersistentDataContainer().get(spawnKey, PersistentDataType.INTEGER);
   }
 
   @EventHandler
@@ -121,5 +94,14 @@ public class GameWorld extends AbstractWorld {
     if (player.getGameMode() == GameMode.SPECTATOR) {
       event.setCancelled(true);
     }
+  }
+
+  @Override
+  public void initPlayer(Player player) {
+    super.initPlayer(player);
+
+    player.teleportAsync(spawnLocation.clone().add(0, 5, 0));
+    PlayerInWorld.GAME.set(player);
+    Bukkit.getPluginManager().callEvent(new PlayerEnteredGameEvent(player));
   }
 }

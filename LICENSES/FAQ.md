@@ -16,7 +16,7 @@ Yes, as long as your use is genuinely noncommercial.
 
 ### Can I modify the plugin for my own private use?
 
-Yes, as long as your use remains noncommercial and you continue to follow the license.
+Yes, as long as your use remains noncommercial, and you continue to follow the license.
 
 ### Can I share the plugin with others?
 

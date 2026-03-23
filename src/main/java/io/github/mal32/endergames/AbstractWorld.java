@@ -8,13 +8,13 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.potion.PotionEffect;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
 public abstract class AbstractWorld implements Listener {
-  protected final EnderGames plugin;
+  protected final JavaPlugin plugin;
 
-  public AbstractWorld(EnderGames plugin) {
+  public AbstractWorld(JavaPlugin plugin) {
     this.plugin = plugin;
 
     Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -28,27 +28,19 @@ public abstract class AbstractWorld implements Listener {
 
   public abstract Location getSpawnLocation();
 
+  protected abstract boolean isInThisWorld(Player player);
+
   public void disable() {
     HandlerList.unregisterAll(this);
   }
 
-  public abstract void initPlayer(Player player);
-
-  protected abstract boolean isInThisWorld(Player player);
-
-  protected void resetPlayer(Player player) {
+  public void initPlayer(Player player) {
     player.getInventory().clear();
     player.setFireTicks(0);
     player.setFoodLevel(20);
     player.setHealth(Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).getValue());
     player.setFallDistance(0);
     player.setVelocity(new Vector(0, 0, 0));
-    for (PotionEffect effect : player.getActivePotionEffects()) {
-      player.removePotionEffect(effect.getType());
-    }
-  }
-
-  protected void teleport(Player player, Location location) {
-    player.teleportAsync(location);
+    player.getActivePotionEffects().forEach(e -> player.removePotionEffect(e.getType()));
   }
 }

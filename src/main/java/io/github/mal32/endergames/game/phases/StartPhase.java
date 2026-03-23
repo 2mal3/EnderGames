@@ -24,6 +24,8 @@ public class StartPhase extends AbstractPhase {
   public StartPhase(EnderGames plugin, PhaseController controller) {
     super(plugin, controller);
 
+    Bukkit.getPluginManager().callEvent(new GameStartEvent());
+
     for (Player player : PlayerState.PLAYING.all()) {
       PlayerInWorld.GAME.set(player);
     }

@@ -13,6 +13,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.inventory.ItemStack;
@@ -46,12 +47,11 @@ public class ParkourManager implements Listener {
           new Checkpoint(new Location(world, 21.5, 80, 0.5, 180f, 0f)));
 
   public ParkourManager(JavaPlugin plugin) {
-    Bukkit.getPluginManager().registerEvents(this, plugin);
     this.plugin = plugin;
     this.resetKey = new NamespacedKey(plugin, "parkour_reset");
     this.cancelKey = new NamespacedKey(plugin, "parkour_cancel");
     this.recordsFile = new File(plugin.getDataFolder(), "parkour-records.yml");
-    loadRecords();
+    enable();
   }
 
   private static String formatTime(long ms) {
@@ -59,6 +59,11 @@ public class ParkourManager implements Listener {
     long seconds = (ms / 1000) % 60;
     long millis = ms % 1000;
     return String.format("%d:%02d.%03d", minutes, seconds, millis);
+  }
+
+  void enable() {
+    Bukkit.getPluginManager().registerEvents(this, plugin);
+    loadRecords();
   }
 
   private void loadRecords() {
@@ -358,6 +363,8 @@ public class ParkourManager implements Listener {
     }
     sessions.clear();
     saveRecords();
+
+    HandlerList.unregisterAll(this);
   }
 }
 
