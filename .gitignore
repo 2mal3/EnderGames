@@ -1,15 +1,21 @@
+.env
+*.sh
+
+# Java
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### IntelliJ IDEA ###
+# Editors
+
+## IntelliJ
 .idea/
 *.iws
 *.iml
 *.ipr
 
-### Eclipse ###
+## Eclipse
 .apt_generated
 .classpath
 .factorypath
@@ -18,7 +24,7 @@ target/
 .springBeans
 .sts4-cache
 
-### NetBeans ###
+## NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
@@ -28,12 +34,8 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### VS Code ###
+## VSCode
 .vscode/
 
-### Mac OS ###
+## Mac OS
 .DS_Store
-
-### Custom Scripts ###
-*.sh
-.env
