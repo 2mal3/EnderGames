@@ -172,8 +172,6 @@ public class StartPhase extends AbstractPhase {
     double x = spawnLocation.getX() + offset.getX();
     double y = spawnLocation.getY();
     double z = spawnLocation.getZ() + offset.getZ();
-    x = Math.floor(x) + 0.5;
-    z = Math.floor(z) + 0.5;
 
     var dest = new Location(world, x, y + 1.5, z);
 
