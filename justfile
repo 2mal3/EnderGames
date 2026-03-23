@@ -11,3 +11,6 @@ dev: build
 
 upload: build
     ./upload.sh
+
+format:
+    find . -name '*.java' -exec google-java-format --replace {} +
