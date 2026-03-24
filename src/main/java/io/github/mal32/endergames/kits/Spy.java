@@ -2,6 +2,7 @@ package io.github.mal32.endergames.kits;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.services.KitType;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
@@ -11,24 +12,56 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.Display.Brightness;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Transformation;
+import org.joml.AxisAngle4f;
+import org.joml.Vector3f;
 
 public class Spy extends AbstractKit {
   private static final int HIT_COOLDOWN_SECONDS = 5;
-  private static final double SPY_MODE_HUGER_LOSS_PER_SECOND = 0.5;
+  private static final double SPY_MODE_HUGER_LOSS_PER_SECOND = 0.25;
+  private static final long FOOTSTEP_COOLDOWN_MILLIS = 1500;
+  private static final int FOOTSTEP_MAX_TICKS_LIVED = 100;
   private final HashMap<UUID, SpyPlayerData> spyData = new HashMap<>();
+  private final ArrayList<BlockDisplay> footsteps = new ArrayList<>();
+  private BukkitTask cleanupTask;
 
   public Spy(EnderGames plugin) {
     super(plugin, KitType.SPY);
+  }
+
+  @Override
+  public void enable() {
+    super.enable();
+
+    cleanupTask = plugin.getServer().getScheduler().runTaskTimer(plugin, this::cleanupFootsteps, 20L, 20L);
+  }
+
+  @Override
+  public void disable() {
+    super.disable();
+
+    cleanupTask.cancel();
+    
+    for (BlockDisplay footstep : footsteps) {
+      footstep.remove();
+    }
+    footsteps.clear();
   }
 
   @Override
@@ -127,6 +160,47 @@ public class Spy extends AbstractKit {
     }
   }
 
+  @EventHandler
+  private void onSpyModeMove(PlayerMoveEvent event) {
+    if (!playerCanUseThisKit(event.getPlayer())) return;
+    if (!event.hasChangedPosition()) return;
+    SpyPlayerData data = spyData.get(event.getPlayer().getUniqueId());
+    if (data == null || !data.spyModeActive) return;
+
+    if (!event.getPlayer().getLocation().clone().add(0, -0.1, 0).getBlock().isSolid()) return;
+
+    long currentTime = System.currentTimeMillis();
+    if (currentTime - data.lastFootstepTime < FOOTSTEP_COOLDOWN_MILLIS) return;
+    data.lastFootstepTime = currentTime;
+
+    Location spawnLocation = event.getPlayer().getLocation().clone().setRotation(0, 0);
+    BlockDisplay footstep =
+        (BlockDisplay)
+            spawnLocation
+                .getWorld()
+                .spawnEntity(spawnLocation, EntityType.BLOCK_DISPLAY, SpawnReason.COMMAND);
+    footstep.setTransformation(
+        new Transformation(
+            new Vector3f(0f, 0f, 0f),
+            new AxisAngle4f(0f, 0f, 0f, 1f),
+            new Vector3f(0.25f, 0.01f, 0.25f),
+            new AxisAngle4f(0f, 0f, 0f, 1f)));
+    footstep.setBlock(Material.LIGHT_GRAY_STAINED_GLASS.createBlockData());
+    footstep.setBrightness(new Brightness(15, 15));
+    
+    footsteps.add(footstep);
+  }
+
+  private void cleanupFootsteps() {
+    footsteps.removeIf(footstep -> {
+      if (footstep.getTicksLived() > FOOTSTEP_MAX_TICKS_LIVED) {
+        footstep.remove();
+        return true;
+      }
+      return false;
+    });
+  }
+
   private void enterSpyMode(Player player, SpyPlayerData data) {
     data.inventory = player.getInventory().getContents();
     player.getInventory().clear();
@@ -185,11 +259,13 @@ public class Spy extends AbstractKit {
 class SpyPlayerData {
   ItemStack[] inventory;
   long lastHitTime;
+  long lastFootstepTime;
   boolean spyModeActive;
 
   SpyPlayerData() {
     this.inventory = null;
     this.lastHitTime = 0;
+    this.lastFootstepTime = 0;
     this.spyModeActive = false;
   }
 }
