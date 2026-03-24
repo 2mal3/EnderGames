@@ -4,7 +4,7 @@ build:
     mvn clean
     mvn package -Dmaven.test.skip=true
 
-test: build
+test:
     mvn test
 
 dev: build
