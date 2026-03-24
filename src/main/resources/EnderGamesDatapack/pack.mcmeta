@@ -12,6 +12,10 @@
       {
         "namespace": "minecraft",
         "path": "recipe\/.+_spear.json"
+      },
+      {
+        "namespace": "minecraft",
+        "path": "loot_table\/blocks\/(enchanting_table|ender_chest).json"
       }
     ]
   }

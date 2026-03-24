@@ -25,6 +25,7 @@ versions.
 - potion effects stack
 - no Spear recipe
 - Nether is disabled
+- Enchantig Tables and Ender Chests don't drop anything when mined
 
 ## Using the Plugin
 
