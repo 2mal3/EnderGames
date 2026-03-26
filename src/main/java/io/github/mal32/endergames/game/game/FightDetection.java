@@ -7,7 +7,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
@@ -47,10 +50,37 @@ public class FightDetection extends AbstractModule {
 
   @EventHandler
   private void onPlayerDamage(EntityDamageByEntityEvent event) {
-    if (!(event.getEntity() instanceof Player target)
-        || !(event.getDamager() instanceof Player damager)) {
-      return;
+    if (!(event.getEntity() instanceof Player target)) return;
+
+    Player damager = null;
+    switch (event.getDamager().getType()) {
+      case PLAYER:
+        damager = (Player) event.getDamager();
+        break;
+
+      case SPECTRAL_ARROW:
+      case ARROW:
+        Arrow arrow = (Arrow) event.getDamager();
+        UUID shooterUuid = arrow.getOwnerUniqueId();
+        if (shooterUuid == null) break;
+        Player shooter = Bukkit.getPlayer(shooterUuid);
+        if (shooter == null) break; // not a player
+        damager = shooter;
+        break;
+
+      case TNT:
+        plugin.getComponentLogger().info("hit by tnt");
+        TNTPrimed tnt = (TNTPrimed) event.getDamager();
+        if (tnt.getSource() == null) return;
+        if (tnt.getSource().getType() != EntityType.PLAYER) return;
+        damager = (Player) tnt.getSource();
+        break;
+
+      default:
+        break;
     }
+    if (damager == null) return;
+
     if (!PlayerInWorld.GAME.is(target)) {
       return;
     }

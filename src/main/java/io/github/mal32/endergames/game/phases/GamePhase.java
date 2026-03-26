@@ -168,6 +168,7 @@ public class GamePhase extends AbstractPhase {
                 .getWorld()
                 .spawnEntity(block.getLocation().clone().add(0.5, 0, 0.5), EntityType.TNT);
     tnt.setFuseTicks(30);
+    tnt.setSource(event.getPlayer());
   }
 
   @EventHandler
