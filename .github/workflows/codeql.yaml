@@ -18,11 +18,11 @@ jobs:
     container:
       image: ghcr.io/cachix/devenv/devenv:latest
     steps:
-      - name: Install Node
-        run: nix profile install nixpkgs#nodejs
-
       - name: Checkout
-        uses: actions/checkout@v5
+        run: |
+          cd $GITHUB_WORKSPACE
+          git clone https://github.com/${GITHUB_REPOSITORY}.git .
+          git checkout ${GITHUB_SHA}
 
       - name: Run google-java-format
         run: devenv tasks run test:format
@@ -37,7 +37,10 @@ jobs:
         run: nix profile install nixpkgs#nodejs
 
       - name: Checkout
-        uses: actions/checkout@v5
+        run: |
+          cd $GITHUB_WORKSPACE
+          git clone https://github.com/${GITHUB_REPOSITORY}.git .
+          git checkout ${GITHUB_SHA}
 
       - name: Run mvn
         run: devenv tasks run test:logic
