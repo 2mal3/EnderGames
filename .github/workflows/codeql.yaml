@@ -43,13 +43,19 @@ jobs:
       - name: Install Nix
         uses: cachix/install-nix-action@v31
 
-      - name: Cache
+      - name: Cache Nix
         uses: cachix/cachix-action@v16
         with:
           name: devenv
 
       - name: Install devenv.sh
         run: nix profile add nixpkgs#devenv
+
+      - name: Cache .devenv
+        uses: actions/cache@v5
+        with:
+          path: .devenv
+          key: devenv
 
       - name: Run mvn
         run: devenv tasks run test:logic
