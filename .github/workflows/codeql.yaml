@@ -43,11 +43,6 @@ jobs:
       - name: Install Nix
         uses: cachix/install-nix-action@v31
 
-      - name: Cache Nix
-        uses: cachix/cachix-action@v16
-        with:
-          name: devenv
-
       - name: Install devenv.sh
         run: nix profile add nixpkgs#devenv
 
