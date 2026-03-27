@@ -53,6 +53,7 @@ public class PlayerDifficulty extends LobbyModule {
 
   @EventHandler
   private void onButtonPress(PlayerInteractEvent event) {
+
     var player = event.getPlayer();
     if (!PlayerInWorld.LOBBY.is(player)) return;
     if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return; // prevent double trigger

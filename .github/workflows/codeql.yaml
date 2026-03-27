@@ -15,29 +15,30 @@ jobs:
   google-java-format:
     name: Google Java Format
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/cachix/devenv/devenv:latest
     steps:
+      - run: pwd
+
       - name: Checkout
-        uses: actions/checkout@v4
+        run: |
+          git clone https://github.com/${GITHUB_REPOSITORY}.git .
 
-      - name: Install Nix
-        uses: DeterminateSystems/determinate-nix-action@v3.16.3
-
-      - name: Lint
-        run: nix shell nixpkgs#google-java-format -c find . -name '*.java' -exec google-java-format --dry-run --set-exit-if-changed --skip-sorting-imports {} +
+      - name: Run google-java-format
+        run: devenv tasks run test:format
 
   test:
     name: Test
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/cachix/devenv/devenv:latest
     steps:
+      - name: Install Node
+        run: nix profile install nixpkgs#nodejs
+
       - name: Checkout
-        uses: actions/checkout@v4
+        run: |
+          git checkout ${GITHUB_SHA}
 
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-          cache: maven
-
-      - name: Test
-        run: mvn test
+      - name: Run mvn
+        run: devenv tasks run test:logic
