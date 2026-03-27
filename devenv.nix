@@ -12,6 +12,7 @@
     google-java-format
     maven
     jdk21
+    nodejs
   ];
 
   tasks."eg:build".exec = ''
