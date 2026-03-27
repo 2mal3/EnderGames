@@ -18,11 +18,11 @@ jobs:
     container:
       image: ghcr.io/cachix/devenv/devenv:latest
     steps:
-      - run: ls -a
+      - run: pwd
 
       - name: Checkout
         run: |
-          git checkout ${GITHUB_SHA}
+          git clone https://github.com/${GITHUB_REPOSITORY}.git .
 
       - name: Run google-java-format
         run: devenv tasks run test:format
