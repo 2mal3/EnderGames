@@ -18,6 +18,8 @@ jobs:
     container:
       image: ghcr.io/cachix/devenv/devenv:latest
     steps:
+      - run: ls -a
+
       - name: Checkout
         run: |
           git checkout ${GITHUB_SHA}
