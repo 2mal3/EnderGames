@@ -187,7 +187,7 @@ public class Spy extends AbstractKit {
             new Vector3f(0.25f, 0.01f, 0.25f),
             new AxisAngle4f(0f, 0f, 0f, 1f)));
     footstep.setBlock(Material.LIGHT_GRAY_STAINED_GLASS.createBlockData());
-    footstep.setBrightness(new Brightness(15, 15));
+    footstep.setBrightness(new Brightness(8, 8));
 
     footsteps.add(footstep);
   }
