@@ -40,6 +40,7 @@ public class Spy extends AbstractKit {
   private final HashMap<UUID, SpyPlayerData> spyData = new HashMap<>();
   private final ArrayList<BlockDisplay> footsteps = new ArrayList<>();
   private BukkitTask cleanupTask;
+  private BukkitTask cooldownDisplayTask;
 
   public Spy(EnderGames plugin) {
     super(plugin, KitType.SPY);
@@ -51,6 +52,11 @@ public class Spy extends AbstractKit {
 
     cleanupTask =
         plugin.getServer().getScheduler().runTaskTimer(plugin, this::cleanupFootsteps, 20L, 20L);
+    cooldownDisplayTask =
+        plugin
+            .getServer()
+            .getScheduler()
+            .runTaskTimer(plugin, this::displayCooldownProgress, 0L, 5L);
   }
 
   @Override
@@ -58,6 +64,7 @@ public class Spy extends AbstractKit {
     super.disable();
 
     cleanupTask.cancel();
+    cooldownDisplayTask.cancel();
 
     for (BlockDisplay footstep : footsteps) {
       footstep.remove();
@@ -95,10 +102,7 @@ public class Spy extends AbstractKit {
             || !player.getLocation().clone().add(0, -0.1, 0).getBlock().isPassable();
 
     if (event.isSneaking() && !data.spyModeActive && standingOnGround) {
-      if (System.currentTimeMillis() - data.lastHitTime < 1000 * HIT_COOLDOWN_SECONDS) {
-        player.sendActionBar(Component.text("Can't use that right now", NamedTextColor.RED));
-        return;
-      }
+      if (System.currentTimeMillis() - data.lastHitTime < 1000 * HIT_COOLDOWN_SECONDS) return;
       enterSpyMode(player, data);
     } else if (!event.isSneaking() && data.spyModeActive) {
       exitSpyMode(player, data);
@@ -245,6 +249,56 @@ public class Spy extends AbstractKit {
     location
         .getWorld()
         .playSound(location, Sound.ENTITY_ILLUSIONER_MIRROR_MOVE, SoundCategory.PLAYERS, 1, 1.5f);
+  }
+
+  private void displayCooldownProgress() {
+    long currentTime = System.currentTimeMillis();
+
+    for (var entry : spyData.entrySet()) {
+      UUID uuid = entry.getKey();
+      SpyPlayerData data = entry.getValue();
+
+      double cooldownRemainingTicks =
+          ((data.lastHitTime + (HIT_COOLDOWN_SECONDS * 1000)) - currentTime) / 50;
+
+      Player player = plugin.getServer().getPlayer(uuid);
+
+      if (cooldownRemainingTicks < 0) {
+        if (cooldownRemainingTicks >= -10) {
+          player.sendActionBar(Component.text(""));
+        }
+        return;
+      }
+
+      if (player == null || !playerCanUseThisKit(player)) continue;
+
+      double progress = (double) cooldownRemainingTicks / (HIT_COOLDOWN_SECONDS * 20);
+
+      // Build progress bar
+      int totalBars = 10;
+      int filledBars = (int) Math.ceil(progress * totalBars);
+
+      StringBuilder barContent = new StringBuilder();
+      for (int i = 0; i < totalBars; i++) {
+        if (i < filledBars) {
+          barContent.append("█");
+        } else {
+          barContent.append("░");
+        }
+      }
+
+      Component subtitle =
+          Component.text("")
+              .append(Component.text("Spying Blocked ").color(NamedTextColor.RED))
+              .append(Component.text("[").color(NamedTextColor.DARK_RED))
+              .append(Component.text(barContent.toString()).color(NamedTextColor.RED))
+              .append(Component.text("] ").color(NamedTextColor.DARK_RED))
+              .append(
+                  Component.text(String.format("%.0fs", cooldownRemainingTicks / 20.0))
+                      .color(NamedTextColor.RED));
+
+      player.sendActionBar(subtitle);
+    }
   }
 
   @Override
