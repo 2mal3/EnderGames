@@ -110,8 +110,9 @@ public class Spy extends AbstractKit {
   }
 
   @EventHandler
-  public void onDamageTaken(EntityDamageByEntityEvent event) {
+  public void onSpyDamageTaken(EntityDamageByEntityEvent event) {
     if (!(event.getEntity() instanceof Player player)) return;
+    if (!(event.getDamager() instanceof Player)) return;
     if (!playerCanUseThisKit(player)) return;
 
     UUID uuid = player.getUniqueId();
