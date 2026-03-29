@@ -35,7 +35,7 @@ import org.joml.Vector3f;
 public class Spy extends AbstractKit {
   private static final int HIT_COOLDOWN_SECONDS = 5;
   private static final double SPY_MODE_HUGER_LOSS_PER_SECOND = 0.25;
-  private static final long FOOTSTEP_COOLDOWN_MILLIS = 1500;
+  private static final long FOOTSTEP_COOLDOWN_MILLIS = 1000;
   private static final int FOOTSTEP_MAX_TICKS_LIVED = 100;
   private final HashMap<UUID, SpyPlayerData> spyData = new HashMap<>();
   private final ArrayList<BlockDisplay> footsteps = new ArrayList<>();
@@ -49,7 +49,8 @@ public class Spy extends AbstractKit {
   public void enable() {
     super.enable();
 
-    cleanupTask = plugin.getServer().getScheduler().runTaskTimer(plugin, this::cleanupFootsteps, 20L, 20L);
+    cleanupTask =
+        plugin.getServer().getScheduler().runTaskTimer(plugin, this::cleanupFootsteps, 20L, 20L);
   }
 
   @Override
@@ -57,7 +58,7 @@ public class Spy extends AbstractKit {
     super.disable();
 
     cleanupTask.cancel();
-    
+
     for (BlockDisplay footstep : footsteps) {
       footstep.remove();
     }
@@ -187,18 +188,19 @@ public class Spy extends AbstractKit {
             new AxisAngle4f(0f, 0f, 0f, 1f)));
     footstep.setBlock(Material.LIGHT_GRAY_STAINED_GLASS.createBlockData());
     footstep.setBrightness(new Brightness(15, 15));
-    
+
     footsteps.add(footstep);
   }
 
   private void cleanupFootsteps() {
-    footsteps.removeIf(footstep -> {
-      if (footstep.getTicksLived() > FOOTSTEP_MAX_TICKS_LIVED) {
-        footstep.remove();
-        return true;
-      }
-      return false;
-    });
+    footsteps.removeIf(
+        footstep -> {
+          if (footstep.getTicksLived() > FOOTSTEP_MAX_TICKS_LIVED) {
+            footstep.remove();
+            return true;
+          }
+          return false;
+        });
   }
 
   private void enterSpyMode(Player player, SpyPlayerData data) {
