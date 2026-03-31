@@ -92,7 +92,7 @@
           "functions": [
             {
               "function": "minecraft:set_potion",
-              "id": "minecraft:slowness"
+              "id": "minecraft:long_slowness"
             }
           ]
         },
