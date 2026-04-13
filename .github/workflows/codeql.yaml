@@ -1,44 +1,44 @@
 name: CodeQL
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "**.java"
-  pull_request:
-    branches: [main]
-    paths:
-      - "**.java"
-  workflow_dispatch:
+    push:
+        branches: [main]
+        paths:
+            - "**.java"
+    pull_request:
+        branches: [main]
+        paths:
+            - "**.java"
+    workflow_dispatch:
 
 jobs:
-  google-java-format:
-    name: Google Java Format
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/cachix/devenv/devenv:latest
-    steps:
-      - run: pwd
+    google-java-format:
+        name: Google Java Format
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+            - uses: cachix/install-nix-action@v31
+            - uses: cachix/cachix-action@v16
+              with:
+                  name: devenv
+            - name: Install devenv.sh
+              run: nix profile add nixpkgs#devenv
 
-      - name: Checkout
-        run: |
-          git clone https://github.com/${GITHUB_REPOSITORY}.git .
+            - name: Run google-java-format
+              run: devenv tasks run test:format
 
-      - name: Run google-java-format
-        run: devenv tasks run test:format
+    test:
+        name: Test
+        runs-on: ubuntu-latest
+        container:
+            image: ghcr.io/cachix/devenv/devenv:latest
+        steps:
+            - name: Install Node
+              run: nix profile install nixpkgs#nodejs
 
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/cachix/devenv/devenv:latest
-    steps:
-      - name: Install Node
-        run: nix profile install nixpkgs#nodejs
+            - name: Checkout
+              run: |
+                  git checkout ${GITHUB_SHA}
 
-      - name: Checkout
-        run: |
-          git checkout ${GITHUB_SHA}
-
-      - name: Run mvn
-        run: devenv tasks run test:logic
+            - name: Run mvn
+              run: devenv tasks run test:logic
