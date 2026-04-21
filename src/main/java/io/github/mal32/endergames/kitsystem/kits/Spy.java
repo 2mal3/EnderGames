@@ -40,7 +40,7 @@ public class Spy extends AbstractKit {
   private static final int HIT_COOLDOWN_SECONDS = 5;
   private static final double SPY_MODE_HUGER_LOSS_PER_SECOND = 0.25;
   private static final long FOOTSTEP_COOLDOWN_MILLIS = 1000;
-  private static final int FOOTSTEP_MAX_TICKS_LIVED = 100;
+  private static final int FOOTSTEP_MAX_TICKS_LIVED = 50;
   private final HashMap<UUID, SpyPlayerData> spyData = new HashMap<>();
   private final ArrayList<BlockDisplay> footsteps = new ArrayList<>();
   private BukkitTask cleanupTask;
