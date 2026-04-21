@@ -3,6 +3,7 @@ package io.github.mal32.endergames.kitsystem.kits;
 import static io.github.mal32.endergames.kitsystem.KitUtils.colorLeatherArmor;
 import static io.github.mal32.endergames.kitsystem.KitUtils.enchantItem;
 
+import io.github.mal32.endergames.game.game.FightDetection;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
@@ -207,6 +208,8 @@ public class ForestSpirit extends AbstractKit {
     Location baseLoc = target.getLocation().getBlock().getLocation();
     World world = baseLoc.getWorld();
     if (world == null) return;
+
+    if (target instanceof Player targetPlayer) FightDetection.fakeDamage(targetPlayer, caster);
 
     // Determine biome and corresponding materials
     Biome biome = baseLoc.getBlock().getBiome();
