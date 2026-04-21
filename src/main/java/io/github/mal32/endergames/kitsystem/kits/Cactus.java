@@ -71,6 +71,10 @@ public class Cactus extends AbstractKit {
       player.setSneaking(false);
     }
 
+    // don't do damage to other cactus players
+    if (damager instanceof Player damagingPlayer && kitService.isUsing(damagingPlayer, this))
+      return;
+
     Location location = player.getLocation();
     location.getWorld().playSound(location, Sound.ENCHANT_THORNS_HIT, 1, 1);
 

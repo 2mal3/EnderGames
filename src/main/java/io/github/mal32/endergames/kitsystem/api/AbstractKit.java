@@ -26,7 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public abstract class AbstractKit implements Listener {
   protected final JavaPlugin plugin;
   private final KitDescription kitDescription;
-  private final KitService kitService;
+  protected final KitService kitService;
 
   public AbstractKit(KitDescription kitDescription, KitService kitService, JavaPlugin plugin) {
     this.kitDescription = Objects.requireNonNull(kitDescription);
