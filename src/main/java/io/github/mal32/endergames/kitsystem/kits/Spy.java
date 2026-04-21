@@ -1,7 +1,10 @@
-package io.github.mal32.endergames.kits;
+package io.github.mal32.endergames.kitsystem.kits;
 
-import io.github.mal32.endergames.EnderGames;
-import io.github.mal32.endergames.services.KitType;
+import io.github.mal32.endergames.kitsystem.KitUtils;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.Difficulty;
+import io.github.mal32.endergames.kitsystem.api.KitDescription;
+import io.github.mal32.endergames.kitsystem.api.KitService;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -25,6 +28,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
@@ -42,13 +46,21 @@ public class Spy extends AbstractKit {
   private BukkitTask cleanupTask;
   private BukkitTask cooldownDisplayTask;
 
-  public Spy(EnderGames plugin) {
-    super(plugin, KitType.SPY);
+  public Spy(KitService kitService, JavaPlugin plugin) {
+    super(
+        new KitDescription(
+            "Spy",
+            Material.SPYGLASS,
+            "Become invisible while sneaking. Cannot attack while invisible and armor is removed.",
+            "Black Leather Armor",
+            Difficulty.MEDIUM),
+        kitService,
+        plugin);
   }
 
   @Override
-  public void enable() {
-    super.enable();
+  public void onEnable() {
+    super.onEnable();
 
     cleanupTask =
         plugin.getServer().getScheduler().runTaskTimer(plugin, this::cleanupFootsteps, 20L, 20L);
@@ -60,8 +72,8 @@ public class Spy extends AbstractKit {
   }
 
   @Override
-  public void disable() {
-    super.disable();
+  public void onDisable() {
+    super.onDisable();
 
     cleanupTask.cancel();
     cooldownDisplayTask.cancel();
@@ -76,16 +88,18 @@ public class Spy extends AbstractKit {
   public void initPlayer(Player player) {
     player
         .getInventory()
-        .setHelmet(colorLeatherArmor(new ItemStack(Material.LEATHER_HELMET), Color.BLACK));
+        .setHelmet(KitUtils.colorLeatherArmor(new ItemStack(Material.LEATHER_HELMET), Color.BLACK));
     player
         .getInventory()
-        .setChestplate(colorLeatherArmor(new ItemStack(Material.LEATHER_CHESTPLATE), Color.BLACK));
+        .setChestplate(
+            KitUtils.colorLeatherArmor(new ItemStack(Material.LEATHER_CHESTPLATE), Color.BLACK));
     player
         .getInventory()
-        .setLeggings(colorLeatherArmor(new ItemStack(Material.LEATHER_LEGGINGS), Color.BLACK));
+        .setLeggings(
+            KitUtils.colorLeatherArmor(new ItemStack(Material.LEATHER_LEGGINGS), Color.BLACK));
     player
         .getInventory()
-        .setBoots(colorLeatherArmor(new ItemStack(Material.LEATHER_BOOTS), Color.BLACK));
+        .setBoots(KitUtils.colorLeatherArmor(new ItemStack(Material.LEATHER_BOOTS), Color.BLACK));
   }
 
   @EventHandler
@@ -300,16 +314,6 @@ public class Spy extends AbstractKit {
 
       player.sendActionBar(subtitle);
     }
-  }
-
-  @Override
-  public KitDescription getDescription() {
-    return new KitDescription(
-        Material.SPYGLASS,
-        "Spy",
-        "Become invisible while sneaking. Cannot attack while invisible and armor is removed.",
-        "Black Leather Armor",
-        Difficulty.MEDIUM);
   }
 }
 
