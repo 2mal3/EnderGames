@@ -88,15 +88,8 @@ public class Spy extends AbstractKit {
   public void initPlayer(Player player) {
     player
         .getInventory()
-        .setHelmet(KitUtils.colorLeatherArmor(new ItemStack(Material.LEATHER_HELMET), Color.BLACK));
-    player
-        .getInventory()
         .setChestplate(
             KitUtils.colorLeatherArmor(new ItemStack(Material.LEATHER_CHESTPLATE), Color.BLACK));
-    player
-        .getInventory()
-        .setLeggings(
-            KitUtils.colorLeatherArmor(new ItemStack(Material.LEATHER_LEGGINGS), Color.BLACK));
     player
         .getInventory()
         .setBoots(KitUtils.colorLeatherArmor(new ItemStack(Material.LEATHER_BOOTS), Color.BLACK));
