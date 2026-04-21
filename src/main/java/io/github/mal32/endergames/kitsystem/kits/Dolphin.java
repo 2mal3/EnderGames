@@ -30,6 +30,7 @@ public class Dolphin extends AbstractKit {
   private static final double MAX_VERTICAL_JUMP_SPEED = 1.8;
   private static final double HORIZONTAL_JUMP_SPEED = 1.4;
   private static final long WATER_JUMP_COOLDOWN_MS = 1500;
+  private static final double SLOWNESS_JUMP_STRENGTH_DECREASE_PERCENT = 0.4;
 
   private final Map<UUID, Long> lastWaterJump = new HashMap<>();
 
@@ -110,8 +111,10 @@ public class Dolphin extends AbstractKit {
         MIN_VERTICAL_JUMP_SPEED
             + Math.random() * (MAX_VERTICAL_JUMP_SPEED - MIN_VERTICAL_JUMP_SPEED);
 
-    double horizontalMultiplier = HORIZONTAL_JUMP_SPEED * (1 - 0.30 * slownessLevel);
-    double verticalMultiplier = rawVertical * (1 - 0.30 * slownessLevel);
+    double jumpStrengthDecrease =
+        Math.max((1 - SLOWNESS_JUMP_STRENGTH_DECREASE_PERCENT / slownessLevel), 0);
+    double horizontalMultiplier = HORIZONTAL_JUMP_SPEED * jumpStrengthDecrease;
+    double verticalMultiplier = rawVertical * jumpStrengthDecrease;
     Vector jump =
         player.getLocation().getDirection().multiply(horizontalMultiplier).setY(verticalMultiplier);
     player.setVelocity(jump);
