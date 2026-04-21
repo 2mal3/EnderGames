@@ -7,7 +7,7 @@
     "description": "Talk to a jobless Vilager",
     "frame": "task",
     "show_toast": true,
-    "announce_to_chat": false,
+    "announce_to_chat": true,
     "hidden": false
   },
   "parent": "enga:root",
