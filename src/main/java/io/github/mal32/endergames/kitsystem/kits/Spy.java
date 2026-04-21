@@ -5,6 +5,7 @@ import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
 import io.github.mal32.endergames.kitsystem.api.KitService;
+import io.github.mal32.endergames.kitsystem.api.KitUnlockAdvancement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -36,7 +37,7 @@ import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
-public class Spy extends AbstractKit {
+public class Spy extends AbstractKit implements KitUnlockAdvancement {
   private static final int HIT_COOLDOWN_SECONDS = 5;
   private static final double SPY_MODE_HUGER_LOSS_PER_SECOND = 0.25;
   private static final long FOOTSTEP_COOLDOWN_MILLIS = 1000;
@@ -56,6 +57,10 @@ public class Spy extends AbstractKit {
             Difficulty.MEDIUM),
         kitService,
         plugin);
+  }
+
+  public String getKitAdvancementKey() {
+    return "enga:spy";
   }
 
   @Override
