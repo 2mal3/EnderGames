@@ -48,5 +48,6 @@ public final class KitRegistry {
     kitManager.register(new Rewind(kitService, plugin));
     kitManager.register(new Slime(kitService, plugin));
     kitManager.register(new Voodoo(kitService, plugin));
+    kitManager.register(new Spy(kitService, plugin));
   }
 }
