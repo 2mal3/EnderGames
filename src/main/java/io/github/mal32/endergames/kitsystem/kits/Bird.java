@@ -42,9 +42,9 @@ public class Bird extends AbstractKit {
         new KitDescription(
             "Bird",
             Material.ELYTRA,
-            "Starts with an Elytra and 10 Rockets. Gains 5 rockets per player kill. Fly like a"
+            "Starts with an Elytra and a Rockets. Gains a rockets per player kill. Fly like a"
                 + " bird!",
-            "1 Elytra, 5 Firework Rockets",
+            "Elytra, Firework Rocket",
             Difficulty.MEDIUM),
         kitService,
         plugin);
@@ -57,7 +57,7 @@ public class Bird extends AbstractKit {
     elytra.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
     player.getInventory().setChestplate(elytra);
     // Give the player 5 rockets (firework rockets)
-    player.getInventory().addItem(ItemStack.of(Material.FIREWORK_ROCKET, 5));
+    player.getInventory().addItem(ItemStack.of(Material.FIREWORK_ROCKET, 1));
   }
 
   @EventHandler
@@ -66,6 +66,6 @@ public class Bird extends AbstractKit {
     Player killer = victim.getKiller();
     if (killer == null || !playerCanUseThisKit(killer)) return;
 
-    killer.getInventory().addItem(ItemStack.of(Material.FIREWORK_ROCKET, 5));
+    killer.getInventory().addItem(ItemStack.of(Material.FIREWORK_ROCKET, 1));
   }
 }
