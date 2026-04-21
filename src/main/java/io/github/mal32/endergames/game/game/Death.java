@@ -82,13 +82,19 @@ public class Death extends AbstractModule {
                 .append(Component.text(killerKit.id()).color(NamedTextColor.DARK_RED))
                 .append(Component.text(")").color(NamedTextColor.RED));
       }
-      player.sendMessage(
+      var message =
           killerInfo
               .append(Component.text(" has ").color(NamedTextColor.RED))
               .append(
                   Component.text(String.format("%.2f", lastDamager.getHealth()) + "❤")
                       .color(NamedTextColor.DARK_RED))
-              .append(Component.text(" left").color(NamedTextColor.RED)));
+              .append(Component.text(" left").color(NamedTextColor.RED));
+      player.sendMessage(message);
+      // Also send the message to all spectators
+      for (Player p : PlayerInWorld.GAME.all()) {
+        if (p.getGameMode() != GameMode.SPECTATOR) continue;
+        p.sendMessage(message);
+      }
     } else {
       // player died from non-player cause
       event.deathMessage(
