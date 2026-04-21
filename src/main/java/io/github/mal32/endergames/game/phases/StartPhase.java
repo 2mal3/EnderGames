@@ -39,7 +39,7 @@ public class StartPhase extends AbstractPhase {
 
     final World world = controller.getGameWorld().getWorld();
     world.setTime(0);
-    world.getWorldBorder().setSize(600);
+    world.getWorldBorder().setSize(500);
   }
 
   @Override
