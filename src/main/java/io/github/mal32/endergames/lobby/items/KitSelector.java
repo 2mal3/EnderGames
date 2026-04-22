@@ -29,7 +29,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-class KitSelector extends MenuItem implements Listener {
+class KitSelector extends AbstractMenuItem implements Listener {
   private final NamespacedKey kitName;
   private final KitSystem kitSystem;
 

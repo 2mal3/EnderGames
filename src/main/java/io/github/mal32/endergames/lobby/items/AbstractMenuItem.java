@@ -12,20 +12,22 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-abstract class MenuItem {
+abstract class AbstractMenuItem {
   protected final JavaPlugin plugin;
   protected final byte slot;
   private final Map<String, ItemDisplay> display;
   private final String key;
 
-  protected MenuItem(JavaPlugin plugin, byte slot, String key, Map<String, ItemDisplay> display) {
+  protected AbstractMenuItem(
+      JavaPlugin plugin, byte slot, String key, Map<String, ItemDisplay> display) {
     this.plugin = plugin;
     this.display = display;
     this.key = key;
     this.slot = slot;
   }
 
-  protected MenuItem(JavaPlugin plugin, byte slot, String key, Material display, Component name) {
+  protected AbstractMenuItem(
+      JavaPlugin plugin, byte slot, String key, Material display, Component name) {
     this.plugin = plugin;
     this.display = Map.of("", new ItemDisplay(display, name));
     this.key = key;

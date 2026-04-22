@@ -134,7 +134,7 @@ class MenuModuleTest {
     // TODO
   }
 
-  static class FakeMenuItem extends MenuItem {
+  static class FakeMenuItem extends AbstractMenuItem {
 
     int initCount = 0;
     int interactCount = 0;

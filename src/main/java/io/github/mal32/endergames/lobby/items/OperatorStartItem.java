@@ -13,7 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.jspecify.annotations.NonNull;
 
-class OperatorStartItem extends MenuItem {
+class OperatorStartItem extends AbstractMenuItem {
   String state;
   private BukkitTask startGameTask = null;
 

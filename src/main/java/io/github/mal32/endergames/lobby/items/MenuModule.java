@@ -22,7 +22,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class MenuModule extends LobbyModule {
-  private final HashMap<String, MenuItem> items = new HashMap<>();
+  private final HashMap<String, AbstractMenuItem> items = new HashMap<>();
   private final NamespacedKey menuKey;
   private final KitSystem kitSystem;
 
@@ -41,25 +41,25 @@ public class MenuModule extends LobbyModule {
   }
 
   void registerDefaultItems() {
-    List<MenuItem> rawItems =
+    List<AbstractMenuItem> rawItems =
         List.of(
             new KitSelector(plugin, kitSystem),
             new OperatorStartItem(plugin),
             new SpectatorItem(plugin),
             new PlayItem(plugin));
 
-    for (MenuItem item : rawItems) {
+    for (AbstractMenuItem item : rawItems) {
       registerItem(item);
     }
   }
 
-  void registerItem(MenuItem item) {
+  void registerItem(AbstractMenuItem item) {
     items.put(item.getKey(), item);
   }
 
   @Override
   public void onPlayerJoinLobby(Player player) {
-    for (MenuItem item : items.values()) {
+    for (AbstractMenuItem item : items.values()) {
       item.initPlayer(player);
     }
   }
@@ -71,7 +71,7 @@ public class MenuModule extends LobbyModule {
   }
 
   public void onGameStart(Player player) {
-    for (MenuItem item : items.values()) {
+    for (AbstractMenuItem item : items.values()) {
       item.onGameStart(player);
     }
   }
@@ -84,7 +84,7 @@ public class MenuModule extends LobbyModule {
   }
 
   public void onGameEnd(Player player) {
-    for (MenuItem item : items.values()) {
+    for (AbstractMenuItem item : items.values()) {
       item.onGameEnd(player);
     }
   }
@@ -96,12 +96,12 @@ public class MenuModule extends LobbyModule {
 
   @EventHandler
   public void onGameStartAbort(GameStartAbortEvent ignoredE) {
-    for (MenuItem item : items.values()) {
+    for (AbstractMenuItem item : items.values()) {
       item.onGameStartAbort();
     }
     forEachLobbyPlayer(
         player -> {
-          for (MenuItem item : items.values()) {
+          for (AbstractMenuItem item : items.values()) {
             item.onGameStartAbort(player);
           }
         });

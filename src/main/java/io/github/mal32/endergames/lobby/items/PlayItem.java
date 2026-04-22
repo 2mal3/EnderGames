@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-public class PlayItem extends MenuItem {
+public class PlayItem extends AbstractMenuItem {
 
   public PlayItem(JavaPlugin plugin) {
     super(

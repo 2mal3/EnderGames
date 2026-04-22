@@ -17,7 +17,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
-class SpectatorItem extends MenuItem {
+class SpectatorItem extends AbstractMenuItem {
 
   public SpectatorItem(JavaPlugin plugin) {
     super(
