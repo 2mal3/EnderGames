@@ -106,4 +106,12 @@ public abstract class AbstractKit implements Listener {
   public KitDescription description() {
     return kitDescription;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    AbstractKit that = (AbstractKit) o;
+    return id().equals(that.id());
+  }
 }
