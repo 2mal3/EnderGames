@@ -163,7 +163,7 @@ class KitInventory implements InventoryHolder {
 
     final AbstractKit selectedKit = KitStorage.getKit((EnderGames) plugin, player);
 
-    for (AbstractKit kit : KitRegisty.getKits((EnderGames) plugin).values()) {
+    for (AbstractKit kit : KitRegisty.getKitsList((EnderGames) plugin)) {
       final KitItem abstractKitItem = getKitItem(kit);
       final ItemStack item = ItemStack.of(abstractKitItem.item());
       item.editMeta(
