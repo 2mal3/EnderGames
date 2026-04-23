@@ -1,6 +1,6 @@
 package io.github.mal32.endergames.kitsystem;
 
-import io.github.mal32.endergames.EnderGames;
+import org.bukkit.plugin.java.JavaPlugin;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.KitUnlockAdvancement;
 import io.github.mal32.endergames.kitsystem.kits.Barbarian;
@@ -29,7 +29,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 
 public class KitRegisty {
-  public static final List<AbstractKit> getKitsList(EnderGames plugin) {
+  public static final List<AbstractKit> getKitsList(JavaPlugin plugin) {
     return List.of(
         new Barbarian(plugin),
         new Bird(plugin),
@@ -52,7 +52,7 @@ public class KitRegisty {
         new Spectator(plugin));
   }
 
-  public static final Map<String, AbstractKit> getKits(EnderGames plugin) {
+  public static final Map<String, AbstractKit> getKits(JavaPlugin plugin) {
     HashMap<String, AbstractKit> kitMap = new HashMap<>();
     for (AbstractKit kit : getKitsList(plugin)) {
       validate(kit);

@@ -13,6 +13,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Manages registration, activation and deactivation of all kits.
@@ -39,7 +40,7 @@ public class KitManager implements Listener {
 
   public KitManager(Plugin plugin) {
     this.plugin = plugin;
-    this.kits = KitRegisty.getKits((EnderGames) plugin);
+    this.kits = KitRegisty.getKits((JavaPlugin) plugin);
 
     this.enable();
   }
@@ -69,7 +70,7 @@ public class KitManager implements Listener {
   public void onGameStart(GameStartEvent event) {
     Set<AbstractKit> toActivate = new LinkedHashSet<>();
     for (Player player : event.getPlayers()) {
-      final AbstractKit kit = KitStorage.getKit((EnderGames) plugin, player);
+      final AbstractKit kit = KitStorage.getKit((JavaPlugin) plugin, player);
       if (kit != null) {
         toActivate.add(kit);
         kit.initPlayer(player);
@@ -96,7 +97,7 @@ public class KitManager implements Listener {
   public void onPlayerJoin(PlayerJoinEvent event) {
     final Player player = event.getPlayer();
     if (hasValidKit(player)) return;
-    KitStorage.setKit(player, KitRegisty.getKits((EnderGames) plugin).get(Lumberjack.id));
+    KitStorage.setKit(player, KitRegisty.getKits((JavaPlugin) plugin).get(Lumberjack.id));
   }
 
   /**
@@ -114,7 +115,7 @@ public class KitManager implements Listener {
    * @return true if the player has a valid, unlocked kit
    */
   public boolean hasValidKit(Player player) {
-    AbstractKit kit = KitStorage.getKit((EnderGames) plugin, player);
+    AbstractKit kit = KitStorage.getKit((JavaPlugin) plugin, player);
     if (kit == null) return false;
     if (!UnlockChecker.isUnlocked(player, kit)) return false;
     return true;

@@ -1,6 +1,6 @@
 package io.github.mal32.endergames.kitsystem;
 
-import io.github.mal32.endergames.EnderGames;
+import org.bukkit.plugin.java.JavaPlugin;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import java.util.Objects;
 import org.bukkit.NamespacedKey;
@@ -17,7 +17,7 @@ public class KitStorage {
     player.getPersistentDataContainer().set(KIT_KEY, PersistentDataType.STRING, kit.id());
   }
 
-  public static @Nullable AbstractKit getKit(EnderGames plugin, Player player) {
+  public static @Nullable AbstractKit getKit(JavaPlugin plugin, Player player) {
     Objects.requireNonNull(player);
     final String id = player.getPersistentDataContainer().get(KIT_KEY, PersistentDataType.STRING);
     if (id == null) return null;
@@ -26,7 +26,7 @@ public class KitStorage {
     return kits.get(id);
   }
 
-  public static boolean isUsing(EnderGames plugin, Player player, AbstractKit kit) {
+  public static boolean isUsing(JavaPlugin plugin, Player player, AbstractKit kit) {
     final AbstractKit current = getKit(plugin, player);
     if (current == null) return false;
     return current.id().equals(kit.id());

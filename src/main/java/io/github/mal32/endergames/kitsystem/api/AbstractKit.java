@@ -73,7 +73,7 @@ public abstract class AbstractKit implements Listener {
   protected boolean playerCanUseThisKit(Player player) {
     return player != null
         && PhaseController.playerIsInGame(player)
-        && KitStorage.isUsing((EnderGames) plugin, player, this);
+        && KitStorage.isUsing(plugin, player, this);
   }
 
   /**
