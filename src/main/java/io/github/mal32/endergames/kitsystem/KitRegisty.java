@@ -53,6 +53,7 @@ public class KitRegisty {
             new Spectator(plugin));
     HashMap<String, AbstractKit> kitMap = new HashMap<>();
     for (AbstractKit kit : allKits) {
+      validate(kit);
       kitMap.put(kit.id(), kit);
     }
     return kitMap;
