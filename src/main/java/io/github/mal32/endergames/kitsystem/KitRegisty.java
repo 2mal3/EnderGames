@@ -29,30 +29,32 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 
 public class KitRegisty {
+  public static final List<AbstractKit> getKitsList(EnderGames plugin) {
+    return List.of(
+        new Barbarian(plugin),
+        new Bird(plugin),
+        new Blaze(plugin),
+        new Bomber(plugin),
+        new Cactus(plugin),
+        new Cat(plugin),
+        new Dolphin(plugin),
+        new Enderman(plugin),
+        new ForestSpirit(plugin),
+        new Kangaroo(plugin),
+        new Knight(plugin),
+        new Lucker(plugin),
+        new Lumberjack(plugin),
+        new Mace(plugin),
+        new Rewind(plugin),
+        new Slime(plugin),
+        new Voodoo(plugin),
+        new Spy(plugin),
+        new Spectator(plugin));
+  }
+
   public static final Map<String, AbstractKit> getKits(EnderGames plugin) {
-    var allKits =
-        List.of(
-            new Barbarian(plugin),
-            new Bird(plugin),
-            new Blaze(plugin),
-            new Bomber(plugin),
-            new Cactus(plugin),
-            new Cat(plugin),
-            new Dolphin(plugin),
-            new Enderman(plugin),
-            new ForestSpirit(plugin),
-            new Kangaroo(plugin),
-            new Knight(plugin),
-            new Lucker(plugin),
-            new Lumberjack(plugin),
-            new Mace(plugin),
-            new Rewind(plugin),
-            new Slime(plugin),
-            new Voodoo(plugin),
-            new Spy(plugin),
-            new Spectator(plugin));
     HashMap<String, AbstractKit> kitMap = new HashMap<>();
-    for (AbstractKit kit : allKits) {
+    for (AbstractKit kit : getKitsList(plugin)) {
       validate(kit);
       kitMap.put(kit.id(), kit);
     }
