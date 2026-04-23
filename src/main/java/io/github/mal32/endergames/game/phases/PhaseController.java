@@ -57,4 +57,8 @@ public class PhaseController {
   public boolean isLoading() {
     return (current instanceof LoadPhase);
   }
+
+  public boolean isInGame() {
+    return (current instanceof GamePhase);
+  }
 }

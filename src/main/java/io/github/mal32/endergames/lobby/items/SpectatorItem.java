@@ -32,6 +32,12 @@ class SpectatorItem extends AbstractMenuItem {
   }
 
   @Override
+  public void initPlayer(Player player) {
+    if ((plugin instanceof EnderGames eg) && !eg.getPhaseController().isInGame()) return;
+    giveItem(player);
+  }
+
+  @Override
   public void onGameEnd(Player player) {
     @Nullable ItemStack item = player.getInventory().getItem(slot);
     if (item == null) return;
