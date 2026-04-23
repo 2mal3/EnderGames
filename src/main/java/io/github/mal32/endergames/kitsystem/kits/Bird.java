@@ -3,7 +3,6 @@ package io.github.mal32.endergames.kitsystem.kits;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
-import io.github.mal32.endergames.kitsystem.api.KitService;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -37,7 +36,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * <p>This kit is classified as {@link Difficulty#MEDIUM}.
  */
 public class Bird extends AbstractKit {
-  public Bird(KitService kitService, JavaPlugin plugin) {
+  public Bird(JavaPlugin plugin) {
     super(
         new KitDescription(
             "Bird",
@@ -46,7 +45,6 @@ public class Bird extends AbstractKit {
                 + " bird!",
             "Elytra, Firework Rocket",
             Difficulty.MEDIUM),
-        kitService,
         plugin);
   }
 

@@ -4,7 +4,6 @@ import io.github.mal32.endergames.game.game.PotionEffectsStacking;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
-import io.github.mal32.endergames.kitsystem.api.KitService;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.FoodProperties;
 import java.util.List;
@@ -28,7 +27,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Cat extends AbstractKit {
-  public Cat(KitService kitService, JavaPlugin plugin) {
+  public Cat(JavaPlugin plugin) {
     super(
         new KitDescription(
             "Cat",
@@ -37,7 +36,6 @@ public class Cat extends AbstractKit {
                 + " hands and takes 50% less fall damage.",
             "20 Raw Fish",
             Difficulty.EASY),
-        kitService,
         plugin);
   }
 

@@ -2,10 +2,11 @@ package io.github.mal32.endergames.kitsystem.kits;
 
 import static io.github.mal32.endergames.kitsystem.KitUtils.colorLeatherArmor;
 
+import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.kitsystem.KitStorage;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
-import io.github.mal32.endergames.kitsystem.api.KitService;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,7 +36,7 @@ public class Cactus extends AbstractKit {
   private final HashSet<UUID> cactusPlayers = new HashSet<>();
   private final HashMap<UUID, PlayerInventory> cactusPlayerInventory = new HashMap<>();
 
-  public Cactus(KitService kitService, JavaPlugin plugin) {
+  public Cactus(JavaPlugin plugin) {
     super(
         new KitDescription(
             "Cactus",
@@ -43,7 +44,6 @@ public class Cactus extends AbstractKit {
             "Deals thorns damage to attackers. It can sneak to disguise itself as a cactus.",
             "Green leather helmet and leggings",
             Difficulty.HARD),
-        kitService,
         plugin);
     this.plugin = plugin;
   }
@@ -72,8 +72,8 @@ public class Cactus extends AbstractKit {
     }
 
     // don't do damage to other cactus players
-    if (damager instanceof Player damagingPlayer && kitService.isUsing(damagingPlayer, this))
-      return;
+    if (damager instanceof Player damagingPlayer
+        && KitStorage.isUsing((EnderGames) plugin, damagingPlayer, this)) return;
 
     Location location = player.getLocation();
     location.getWorld().playSound(location, Sound.ENCHANT_THORNS_HIT, 1, 1);

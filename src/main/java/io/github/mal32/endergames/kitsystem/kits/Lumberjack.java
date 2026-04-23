@@ -6,7 +6,6 @@ import static io.github.mal32.endergames.kitsystem.KitUtils.enchantItem;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
-import io.github.mal32.endergames.kitsystem.api.KitService;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,7 +22,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Lumberjack extends AbstractKit {
   public static final String id = "Lumberjack";
 
-  public Lumberjack(KitService kitService, JavaPlugin plugin) {
+  public Lumberjack(JavaPlugin plugin) {
     super(
         new KitDescription(
             Lumberjack.id,
@@ -32,7 +31,6 @@ public class Lumberjack extends AbstractKit {
                 + " automatically gains Sharpness I.",
             "Wooden axe, red leather chestplate, blue leather pants, black boots.",
             Difficulty.EASY),
-        kitService,
         plugin);
   }
 

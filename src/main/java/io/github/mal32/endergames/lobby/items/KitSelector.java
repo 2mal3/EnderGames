@@ -1,13 +1,14 @@
 package io.github.mal32.endergames.lobby.items;
 
+import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.kitsystem.KitRegisty;
+import io.github.mal32.endergames.kitsystem.KitStorage;
 import io.github.mal32.endergames.kitsystem.UnlockChecker;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
-import io.github.mal32.endergames.kitsystem.api.KitSystem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -31,9 +32,8 @@ import org.jetbrains.annotations.NotNull;
 
 class KitSelector extends AbstractMenuItem implements Listener {
   private final NamespacedKey kitName;
-  private final KitSystem kitSystem;
 
-  public KitSelector(JavaPlugin plugin, KitSystem kitSystem) {
+  public KitSelector(JavaPlugin plugin) {
     super(
         plugin,
         (byte) 0,
@@ -41,7 +41,6 @@ class KitSelector extends AbstractMenuItem implements Listener {
         Material.ENDER_CHEST,
         Component.text("Select Kit").color(NamedTextColor.GOLD));
     this.kitName = new NamespacedKey(plugin, "kit_name");
-    this.kitSystem = kitSystem;
     Bukkit.getPluginManager().registerEvents(this, plugin);
   }
 
@@ -55,7 +54,7 @@ class KitSelector extends AbstractMenuItem implements Listener {
     Player player = event.getPlayer();
 
     player.playSound(player, Sound.BLOCK_CHEST_OPEN, 1, 1);
-    KitInventory kiInv = new KitInventory(plugin, kitSystem, kitName, player);
+    KitInventory kiInv = new KitInventory(plugin, kitName, player);
     player.openInventory(kiInv.getInventory());
   }
 
@@ -77,14 +76,13 @@ class KitSelector extends AbstractMenuItem implements Listener {
             .getItemMeta()
             .getPersistentDataContainer()
             .get(kitName, PersistentDataType.STRING);
-    final Optional<AbstractKit> optionalKit = kitSystem.manager().get(rawKit);
-    if (optionalKit.isEmpty()) {
+    final AbstractKit kit = KitRegisty.getKits((EnderGames) plugin).get(rawKit);
+    if (kit == null) {
       plugin
           .getComponentLogger()
           .warn("Invalid kit selected: {}", clickedItem.getItemMeta().displayName());
       return;
     }
-    final AbstractKit kit = optionalKit.get();
 
     if (!UnlockChecker.isUnlocked(player, kit)) {
       player.sendMessage(
@@ -99,7 +97,7 @@ class KitSelector extends AbstractMenuItem implements Listener {
             .append(Component.text(kit.description().displayName()).color(NamedTextColor.GOLD))
             .append(Component.text(" kit")));
     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1, 1);
-    kitSystem.service().set(player, kit);
+    KitStorage.setKit(player, kit);
     kitInv.displayKitItems();
   }
 
@@ -112,16 +110,15 @@ class KitSelector extends AbstractMenuItem implements Listener {
 
 class KitInventory implements InventoryHolder {
   private final Inventory inventory;
-  private final KitSystem kitSystem;
   private final NamespacedKey kitName;
   private final Player player;
+  private final JavaPlugin plugin;
 
-  public KitInventory(
-      JavaPlugin plugin, KitSystem kitSystem, NamespacedKey kitName, Player player) {
+  public KitInventory(JavaPlugin plugin, NamespacedKey kitName, Player player) {
     this.inventory = plugin.getServer().createInventory(this, 27, Component.text("Select Kit"));
     this.player = player;
-    this.kitSystem = Objects.requireNonNull(kitSystem);
     this.kitName = Objects.requireNonNull(kitName);
+    this.plugin = plugin;
 
     displayKitItems();
   }
@@ -164,9 +161,9 @@ class KitInventory implements InventoryHolder {
   public void displayKitItems() {
     inventory.clear();
 
-    final AbstractKit selectedKit = kitSystem.service().get(player);
+    final AbstractKit selectedKit = KitStorage.getKit((EnderGames) plugin, player);
 
-    for (AbstractKit kit : kitSystem.manager().all()) {
+    for (AbstractKit kit : KitRegisty.getKits((EnderGames) plugin).values()) {
       final KitItem abstractKitItem = getKitItem(kit);
       final ItemStack item = ItemStack.of(abstractKitItem.item());
       item.editMeta(

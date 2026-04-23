@@ -51,7 +51,7 @@ import org.bukkit.potion.PotionEffectType;
 public class Blaze extends AbstractKit implements CustomKitUnlockAdvancement {
   private final HashMap<UUID, Long> burnTime = new HashMap<>();
 
-  public Blaze(KitService kitService, JavaPlugin plugin) {
+  public Blaze(JavaPlugin plugin) {
     super(
         new KitDescription(
             "Blaze",
@@ -60,7 +60,6 @@ public class Blaze extends AbstractKit implements CustomKitUnlockAdvancement {
                 + " Weakness I in water. Sword or Bow hits have a 20% chance to ignite enemies.",
             "Golden Sword and Burn Power",
             Difficulty.EASY),
-        kitService,
         plugin);
   }
 

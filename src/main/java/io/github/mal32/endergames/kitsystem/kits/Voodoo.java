@@ -34,7 +34,7 @@ import org.bukkit.scheduler.BukkitTask;
 public class Voodoo extends AbstractKit implements KitUnlockAdvancement {
   private BukkitTask voodooTask;
 
-  public Voodoo(KitService kitService, JavaPlugin plugin) {
+  public Voodoo(JavaPlugin plugin) {
     super(
         new KitDescription(
             "Voodoo",
@@ -43,7 +43,6 @@ public class Voodoo extends AbstractKit implements KitUnlockAdvancement {
                 + " short health boost. Nearby players get black hearts.",
             "Bow with Piercing, 10 Arrows, Leather Boots",
             Difficulty.MEDIUM),
-        kitService,
         plugin);
   }
 

@@ -1,9 +1,19 @@
 package io.github.mal32.endergames.kitsystem.api;
 
-import io.github.mal32.endergames.kitsystem.registry.KitValidator;
+import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.game.phases.GameEndEvent;
+import io.github.mal32.endergames.game.phases.GameStartEvent;
+import io.github.mal32.endergames.kitsystem.KitRegisty;
+import io.github.mal32.endergames.kitsystem.KitStorage;
+import io.github.mal32.endergames.kitsystem.UnlockChecker;
+import io.github.mal32.endergames.kitsystem.kits.Lumberjack;
 import java.util.*;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 
 /**
@@ -25,80 +35,89 @@ import org.bukkit.plugin.Plugin;
  *   <li>{@link #disableAll()} disables all currently active kits
  * </ul>
  */
-public class KitManager {
-  private final Map<String, AbstractKit> kits = new LinkedHashMap<>(32);
+public class KitManager implements Listener {
   private final Plugin plugin;
-  private final Set<AbstractKit> activeKits = new HashSet<>();
+  private final Map<String, AbstractKit> kits;
 
   public KitManager(Plugin plugin) {
     this.plugin = plugin;
+    this.kits = KitRegisty.getKits((EnderGames) plugin);
+  }
+
+  public void enable() {
+    enableKits();
+    Bukkit.getPluginManager().registerEvents(this, plugin);
+  }
+
+  private void enableKits() {
+    for (AbstractKit kit : kits.values()) {
+      kit.onEnable();
+    }
+  }
+
+  public void disable() {
+    disableKits();
+    HandlerList.unregisterAll(this);
+  }
+
+  private void disableKits() {
+    for (AbstractKit kit : kits.values()) {
+      kit.onDisable();
+    }
+  }
+
+  @EventHandler
+  public void onGameStart(GameStartEvent event) {
+    Set<AbstractKit> toActivate = new LinkedHashSet<>();
+    for (Player player : event.getPlayers()) {
+      final AbstractKit kit = KitStorage.getKit((EnderGames) plugin, player);
+      if (kit != null) {
+        toActivate.add(kit);
+        kit.initPlayer(player);
+      }
+    }
+
+    enableKits();
+  }
+
+  @EventHandler
+  public void onGameEnd(GameEndEvent event) {
+    disableKits();
   }
 
   /**
-   * Registers a kit and validates it using {@link KitValidator}.
+   * Ensures that a joining player has a valid kit.
    *
-   * @param kit the kit to register
-   * @throws IllegalArgumentException for invalid advancement requirement
-   * @throws IllegalStateException for invalid id
+   * <p>If the player has no kit or an invalid/unlocked kit, the default kit ({@link Lumberjack}) is
+   * assigned.
+   *
+   * @param event the join event
    */
-  public void register(AbstractKit kit) {
-    KitValidator.validate(kit);
-    kits.put(kit.id(), kit);
+  @EventHandler
+  public void onPlayerJoin(PlayerJoinEvent event) {
+    final Player player = event.getPlayer();
+    if (hasValidKit(player)) return;
+    KitStorage.setKit(player, KitRegisty.getKits((EnderGames) plugin).get(Lumberjack.id));
   }
 
   /**
-   * Retrieves a kit by its ID.
+   * Checks whether the player has a valid and unlocked kit assigned.
    *
-   * @param id the kit ID
-   * @return an {@link Optional} containing the kit if found
+   * <p>A kit is considered valid if:
+   *
+   * <ul>
+   *   <li>the persistent data contains a kit ID
+   *   <li>the ID resolves to a registered kit
+   *   <li>the kit is unlocked according to {@link UnlockChecker}
+   * </ul>
+   *
+   * @param player the player to check
+   * @return true if the player has a valid, unlocked kit
    */
-  public Optional<AbstractKit> get(String id) {
-    return Optional.ofNullable(kits.get(id));
-  }
-
-  /**
-   * Returns all registered kits.
-   *
-   * @return an unmodifiable collection of kits
-   */
-  public Collection<AbstractKit> all() {
-    return Collections.unmodifiableCollection(kits.values());
-  }
-
-  /**
-   * Activates a kit for the current game.
-   *
-   * <p>Registers its event listeners and calls {@link AbstractKit#onEnable()}. If the kit is
-   * already active, this method does nothing.
-   *
-   * @param kit the kit to enable
-   */
-  public void enableKit(AbstractKit kit) {
-    Objects.requireNonNull(kit);
-    if (activeKits.contains(kit)) return;
-    Bukkit.getPluginManager().registerEvents(kit, plugin);
-    kit.onEnable();
-    activeKits.add(kit);
-  }
-
-  /**
-   * Deactivates a kit for the current game.
-   *
-   * <p>Unregisters its event listeners and calls {@link AbstractKit#onDisable()}. If the kit is not
-   * active, this method does nothing.
-   *
-   * @param kit the kit to disable
-   */
-  public void disableKit(AbstractKit kit) {
-    Objects.requireNonNull(kit);
-    if (!activeKits.contains(kit)) return;
-    HandlerList.unregisterAll(kit);
-    kit.onDisable();
-    activeKits.remove(kit);
-  }
-
-  /** Disables all currently active kits. */
-  public void disableAll() {
-    new ArrayList<>(activeKits).forEach(this::disableKit);
+  public boolean hasValidKit(Player player) {
+    AbstractKit kit = KitStorage.getKit((EnderGames) plugin, player);
+    if (kit == null) return false;
+    if (!UnlockChecker.isUnlocked(player, kit)) return false;
+    return true;
   }
 }

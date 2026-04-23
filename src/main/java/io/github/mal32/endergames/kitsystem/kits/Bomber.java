@@ -4,7 +4,6 @@ import io.github.mal32.endergames.game.phases.PhaseController;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
-import io.github.mal32.endergames.kitsystem.api.KitService;
 import java.util.HashSet;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
@@ -30,7 +29,7 @@ public class Bomber extends AbstractKit {
   private final NamespacedKey isMineItemKey;
   private final HashSet<String> mineLocations = new HashSet<>();
 
-  public Bomber(KitService kitService, JavaPlugin plugin) {
+  public Bomber(JavaPlugin plugin) {
     super(
         new KitDescription(
             "Bomber",
@@ -38,7 +37,6 @@ public class Bomber extends AbstractKit {
             "Takes no explosion damage. Killed entities explode. TNT placed explodes faster.",
             "5 TNT, 10 Mines",
             Difficulty.MEDIUM),
-        kitService,
         plugin);
     this.isMineItemKey = new NamespacedKey(plugin, "isMineItem");
   }

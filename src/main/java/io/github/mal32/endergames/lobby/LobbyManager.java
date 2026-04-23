@@ -22,7 +22,7 @@ public class LobbyManager implements Listener {
 
   public static void registerDefaultModules(EnderGames plugin) {
     final LobbyManager lobbyManager = plugin.getLobbyManager();
-    lobbyManager.registerModule(new MenuModule(plugin, plugin.getKitSystem()));
+    lobbyManager.registerModule(new MenuModule(plugin));
     lobbyManager.registerModule(new EndlessParkour(plugin));
     lobbyManager.registerModule(new PlayerDifficulty(plugin, plugin.getLobbyWorld().getWorld()));
     lobbyManager.registerModule(new ParkourGame(plugin));

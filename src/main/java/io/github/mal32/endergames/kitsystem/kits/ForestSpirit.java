@@ -7,7 +7,6 @@ import io.github.mal32.endergames.game.game.FightDetection;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
-import io.github.mal32.endergames.kitsystem.api.KitService;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemEnchantments;
@@ -68,7 +67,7 @@ public class ForestSpirit extends AbstractKit {
   private BukkitTask healingTask;
   private BukkitTask biomeAdaptTask;
 
-  public ForestSpirit(KitService kitService, JavaPlugin plugin) {
+  public ForestSpirit(JavaPlugin plugin) {
     super(
         new KitDescription(
             "Forest Spirit",
@@ -77,7 +76,6 @@ public class ForestSpirit extends AbstractKit {
                 + "Gets stronger in forests, turns into a tree when standing still",
             "Full dark-green leather armor with Thorns II, 20 adaptive saplings.",
             Difficulty.MEDIUM),
-        kitService,
         plugin);
   }
 

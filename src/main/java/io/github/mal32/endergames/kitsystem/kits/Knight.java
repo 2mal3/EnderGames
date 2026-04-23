@@ -3,7 +3,6 @@ package io.github.mal32.endergames.kitsystem.kits;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
-import io.github.mal32.endergames.kitsystem.api.KitService;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -44,7 +43,7 @@ public class Knight extends AbstractKit {
   private BukkitTask horseRespawnTask;
   private BukkitTask horseTetherTask;
 
-  public Knight(KitService kitService, JavaPlugin plugin) {
+  public Knight(JavaPlugin plugin) {
     super(
         new KitDescription(
             "Knight",
@@ -52,7 +51,6 @@ public class Knight extends AbstractKit {
             "Rides into battle atop a regenerating warhorse clad in iron armor.",
             "Full Golden Armor, Iron Spear",
             Difficulty.HARD),
-        kitService,
         plugin);
   }
 

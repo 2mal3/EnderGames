@@ -5,7 +5,6 @@ import io.github.mal32.endergames.game.phases.PhaseController;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
-import io.github.mal32.endergames.kitsystem.api.KitService;
 import java.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -31,7 +30,7 @@ public class Rewind extends AbstractKit {
   private final HashMap<UUID, ArrayList<PlayerState>> playerStates = new HashMap<>();
   private BukkitTask task;
 
-  public Rewind(KitService kitService, JavaPlugin plugin) {
+  public Rewind(JavaPlugin plugin) {
     super(
         new KitDescription(
             "Rewind",
@@ -39,7 +38,6 @@ public class Rewind extends AbstractKit {
             "Can go back 10 seconds in time every 40 seconds.",
             "Rewind Clock",
             Difficulty.EASY),
-        kitService,
         plugin);
 
     rewindKey = new NamespacedKey(plugin, "rewind");

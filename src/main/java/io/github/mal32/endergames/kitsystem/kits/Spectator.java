@@ -3,14 +3,13 @@ package io.github.mal32.endergames.kitsystem.kits;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
-import io.github.mal32.endergames.kitsystem.api.KitService;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Spectator extends AbstractKit {
-  public Spectator(KitService kitService, JavaPlugin plugin) {
+  public Spectator(JavaPlugin plugin) {
     super(
         new KitDescription(
             "Spectator",
@@ -18,7 +17,6 @@ public class Spectator extends AbstractKit {
             "You are a spectator and cannot interact with the game.",
             "",
             Difficulty.EASY),
-        kitService,
         plugin);
   }
 
