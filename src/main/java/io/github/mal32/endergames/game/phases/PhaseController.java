@@ -3,7 +3,6 @@ package io.github.mal32.endergames.game.phases;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.game.GameWorld;
 import io.github.mal32.endergames.services.PlayerInWorld;
-import io.github.mal32.endergames.services.PlayerState;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -34,8 +33,7 @@ public class PhaseController {
   }
 
   public void start() {
-    if (!(current instanceof LoadPhase)
-        || PlayerState.PLAYING.all().length < 1) { // TODO: < 1 only in DEBUG?
+    if (!(current instanceof LoadPhase) || Bukkit.getOnlinePlayers().isEmpty()) {
       Bukkit.getPluginManager().callEvent(new GameStartAbortEvent());
       return;
     }
@@ -56,15 +54,11 @@ public class PhaseController {
     return gameWorld;
   }
 
-  public void initPlayer(Player player) {
-    if (current instanceof StartPhase && PlayerState.PLAYING.is(player)) {
-      player.setGameMode(GameMode.ADVENTURE);
-    } else {
-      player.setGameMode(GameMode.SPECTATOR);
-    }
-  }
-
   public boolean isLoading() {
     return (current instanceof LoadPhase);
+  }
+
+  public boolean isInGame() {
+    return (current instanceof GamePhase);
   }
 }

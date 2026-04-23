@@ -18,7 +18,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 class SpectatorItem extends AbstractMenuItem {
-
   public SpectatorItem(JavaPlugin plugin) {
     super(
         plugin,
@@ -33,8 +32,9 @@ class SpectatorItem extends AbstractMenuItem {
   }
 
   @Override
-  public void onGameStart(Player player) {
-    this.giveItem(player);
+  public void initPlayer(Player player) {
+    if ((plugin instanceof EnderGames eg) && !eg.getPhaseController().isInGame()) return;
+    giveItem(player);
   }
 
   @Override

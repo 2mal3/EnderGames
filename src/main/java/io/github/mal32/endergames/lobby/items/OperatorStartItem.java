@@ -40,6 +40,7 @@ class OperatorStartItem extends AbstractMenuItem {
   @Override
   public void initPlayer(Player player) {
     if (!player.isOp()) return;
+    if ((plugin instanceof EnderGames eg) && eg.getPhaseController().isInGame()) return;
     giveItem(player);
   }
 
