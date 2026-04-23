@@ -1,11 +1,11 @@
 package io.github.mal32.endergames.kitsystem;
 
-import org.bukkit.plugin.java.JavaPlugin;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import java.util.Objects;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 public class KitStorage {

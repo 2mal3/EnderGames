@@ -1,6 +1,5 @@
 package io.github.mal32.endergames.kitsystem.api;
 
-import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.game.phases.PhaseController;
 import io.github.mal32.endergames.kitsystem.KitStorage;
 import java.util.Objects;

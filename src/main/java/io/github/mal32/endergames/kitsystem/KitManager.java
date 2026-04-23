@@ -1,6 +1,5 @@
 package io.github.mal32.endergames.kitsystem;
 
-import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.game.phases.GameEndEvent;
 import io.github.mal32.endergames.game.phases.GameStartEvent;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;

@@ -6,7 +6,6 @@ import io.github.mal32.endergames.BaseMockBukkitTest;
 import io.github.mal32.endergames.kitsystem.KitManager;
 import io.github.mal32.endergames.kitsystem.KitStorage;
 import io.github.mal32.endergames.kitsystem.kits.Lumberjack;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.entity.PlayerMock;
 
@@ -35,7 +34,7 @@ class KitManagerTest extends BaseMockBukkitTest {
   void testOnPlayerJoinAssignsLumberjack() {
     // adding a player triggers PlayerJoinEvent
     PlayerMock player = server.addPlayer();
-    
+
     // Should have Lumberjack assigned automatically
     assertTrue(manager.hasValidKit(player));
     AbstractKit assigned = KitStorage.getKit(plugin, player);

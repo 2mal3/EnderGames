@@ -1,6 +1,5 @@
 package io.github.mal32.endergames.kitsystem;
 
-import org.bukkit.plugin.java.JavaPlugin;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.KitUnlockAdvancement;
 import io.github.mal32.endergames.kitsystem.kits.Barbarian;
@@ -27,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class KitRegisty {
   public static final List<AbstractKit> getKitsList(JavaPlugin plugin) {
