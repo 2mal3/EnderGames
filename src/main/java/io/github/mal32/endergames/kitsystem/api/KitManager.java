@@ -42,10 +42,11 @@ public class KitManager implements Listener {
   public KitManager(Plugin plugin) {
     this.plugin = plugin;
     this.kits = KitRegisty.getKits((EnderGames) plugin);
+
+    this.enable();
   }
 
   public void enable() {
-    enableKits();
     Bukkit.getPluginManager().registerEvents(this, plugin);
   }
 

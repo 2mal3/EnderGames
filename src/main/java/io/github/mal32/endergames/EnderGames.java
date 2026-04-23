@@ -21,6 +21,7 @@ public class EnderGames extends JavaPlugin {
   private LobbyManager lobbyManager;
   private LobbyWorld lobbyWorld;
   private GameWorld gameWorld;
+  private KitManager kitManager;
 
   public static boolean isInDebugMode() {
     String debugEnv = System.getenv("EG_DEBUG");
@@ -62,6 +63,7 @@ public class EnderGames extends JavaPlugin {
     lobbyWorld.setupWorld();
     gameWorld.setupWorld();
     this.phaseController = new PhaseController(this, gameWorld);
+    this.kitManager = new KitManager(this);
 
     LobbyManager.registerDefaultModules(this);
 
@@ -89,6 +91,7 @@ public class EnderGames extends JavaPlugin {
 
   @Override
   public void onDisable() {
+    if (kitManager != null) kitManager.disable();
     if (lobbyManager != null) lobbyManager.disable();
     if (gameWorld != null) gameWorld.disable();
     if (lobbyWorld != null) lobbyWorld.disable();
