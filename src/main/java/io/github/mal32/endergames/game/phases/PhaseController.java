@@ -54,12 +54,6 @@ public class PhaseController {
     return gameWorld;
   }
 
-  public void initPlayer(Player player) {
-    if (current instanceof StartPhase && PlayerInWorld.GAME.is(player)) {
-      player.setGameMode(GameMode.ADVENTURE);
-    }
-  }
-
   public boolean isLoading() {
     return (current instanceof LoadPhase);
   }
