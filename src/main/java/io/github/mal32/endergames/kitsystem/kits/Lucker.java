@@ -1,11 +1,10 @@
 package io.github.mal32.endergames.kitsystem.kits;
 
-import static io.github.mal32.endergames.kitsystem.KitUtils.colorLeatherArmor;
+import static io.github.mal32.endergames.kitsystem.api.KitUtils.colorLeatherArmor;
 
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
-import io.github.mal32.endergames.kitsystem.api.KitService;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import java.util.*;
@@ -48,7 +47,7 @@ public class Lucker extends AbstractKit {
           Material.MELON_SEEDS,
           Material.PUMPKIN_SEEDS);
 
-  public Lucker(KitService kitService, JavaPlugin plugin) {
+  public Lucker(JavaPlugin plugin) {
     super(
         new KitDescription(
             "Lucker",
@@ -57,7 +56,6 @@ public class Lucker extends AbstractKit {
                 + " existing,...)",
             "Light-Green Leather Chestplate",
             Difficulty.EASY),
-        kitService,
         plugin);
   }
 

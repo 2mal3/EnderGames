@@ -4,6 +4,7 @@ import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import io.github.mal32.endergames.AbstractModule;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.game.phases.PhaseController;
+import io.github.mal32.endergames.kitsystem.KitStorage;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import java.time.Duration;
@@ -72,7 +73,7 @@ public class Death extends AbstractModule {
               .append(Component.text(" was killed by ").color(NamedTextColor.DARK_RED))
               .append(Component.text(lastDamager.getName()).color(NamedTextColor.RED)));
 
-      final AbstractKit killerKit = plugin.getKitSystem().service().get(lastDamager);
+      final AbstractKit killerKit = KitStorage.getKit(plugin, player);
       TextComponent killerInfo =
           Component.text(lastDamager.getName()).color(NamedTextColor.DARK_RED);
       if (killerKit != null) {

@@ -4,8 +4,9 @@ import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.game.FindWorldSpawnService;
 import io.github.mal32.endergames.game.GameWorld;
 import io.github.mal32.endergames.game.phases.PhaseController;
+import io.github.mal32.endergames.kitsystem.KitManager;
+import io.github.mal32.endergames.kitsystem.KitRegisty;
 import io.github.mal32.endergames.kitsystem.api.*;
-import io.github.mal32.endergames.kitsystem.registry.KitRegistry;
 import io.github.mal32.endergames.lobby.LobbyManager;
 import io.github.mal32.endergames.lobby.LobbyWorld;
 import io.github.mal32.endergames.lobby.MapManager;
@@ -21,17 +22,12 @@ public class EnderGames extends JavaPlugin {
   private LobbyManager lobbyManager;
   private LobbyWorld lobbyWorld;
   private GameWorld gameWorld;
-
-  private KitSystem kitSystem;
+  private KitManager kitManager;
 
   public static boolean isInDebugMode() {
     String debugEnv = System.getenv("EG_DEBUG");
     return debugEnv != null
         && (debugEnv.equalsIgnoreCase("true") || debugEnv.equalsIgnoreCase("1"));
-  }
-
-  public KitSystem getKitSystem() {
-    return kitSystem;
   }
 
   public LobbyWorld getLobbyWorld() {
@@ -52,12 +48,6 @@ public class EnderGames extends JavaPlugin {
   }
 
   @Override
-  public void onLoad() {
-    this.kitSystem = new KitSystem(this);
-    KitRegistry.registerAll(this);
-  }
-
-  @Override
   public void onEnable() {
     saveDefaultConfig();
 
@@ -74,8 +64,7 @@ public class EnderGames extends JavaPlugin {
     lobbyWorld.setupWorld();
     gameWorld.setupWorld();
     this.phaseController = new PhaseController(this, gameWorld);
-
-    kitSystem.enable();
+    this.kitManager = new KitManager(this);
 
     LobbyManager.registerDefaultModules(this);
 
@@ -86,7 +75,7 @@ public class EnderGames extends JavaPlugin {
 
   private void registerKitAdvancements() {
     AdvancementAPI advancementAPI = new AdvancementAPI(this);
-    for (AbstractKit kit : kitSystem.manager().all()) {
+    for (AbstractKit kit : KitRegisty.getKits(this).values()) {
       if (kit instanceof CustomKitUnlockAdvancement) {
         ((CustomKitUnlockAdvancement) kit).registerAdvancement(advancementAPI);
       }
@@ -103,7 +92,7 @@ public class EnderGames extends JavaPlugin {
 
   @Override
   public void onDisable() {
-    if (kitSystem != null) kitSystem.disable();
+    if (kitManager != null) kitManager.disable();
     if (lobbyManager != null) lobbyManager.disable();
     if (gameWorld != null) gameWorld.disable();
     if (lobbyWorld != null) lobbyWorld.disable();

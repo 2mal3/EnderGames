@@ -1,6 +1,6 @@
 package io.github.mal32.endergames.kitsystem.kits;
 
-import static io.github.mal32.endergames.kitsystem.KitUtils.enchantItem;
+import static io.github.mal32.endergames.kitsystem.api.KitUtils.enchantItem;
 
 import io.github.mal32.endergames.kitsystem.api.*;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
@@ -37,7 +37,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * <p>This kit is classified as {@link Difficulty#HARD}.
  */
 public class Barbarian extends AbstractKit {
-  public Barbarian(KitService kitService, JavaPlugin plugin) {
+  public Barbarian(JavaPlugin plugin) {
     super(
         new KitDescription(
             "Barbarian",
@@ -46,7 +46,6 @@ public class Barbarian extends AbstractKit {
                 + " hunger bar missing)",
             "A wooden sword and a full set of leather armor with Unbreaking I",
             Difficulty.HARD),
-        kitService,
         plugin);
   }
 

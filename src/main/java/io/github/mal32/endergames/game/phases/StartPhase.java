@@ -1,6 +1,7 @@
 package io.github.mal32.endergames.game.phases;
 
 import io.github.mal32.endergames.EnderGames;
+import io.github.mal32.endergames.kitsystem.KitStorage;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
 import io.github.mal32.endergames.services.PlayerInWorld;
@@ -63,7 +64,7 @@ public class StartPhase extends AbstractPhase {
 
   private void showPlayersKitInfo() { // TODO: move to KitManager
     for (Player player : participants) {
-      final AbstractKit kit = plugin.getKitSystem().service().get(player);
+      final AbstractKit kit = KitStorage.getKit(plugin, player);
 
       final KitDescription kitDescription = kit.description();
 

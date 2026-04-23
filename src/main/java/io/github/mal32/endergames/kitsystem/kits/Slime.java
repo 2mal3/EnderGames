@@ -1,12 +1,11 @@
 package io.github.mal32.endergames.kitsystem.kits;
 
-import static io.github.mal32.endergames.kitsystem.KitUtils.colorLeatherArmor;
+import static io.github.mal32.endergames.kitsystem.api.KitUtils.colorLeatherArmor;
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
-import io.github.mal32.endergames.kitsystem.api.KitService;
 import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.*;
 import org.bukkit.entity.EnderPearl;
@@ -27,7 +26,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Slime extends AbstractKit {
-  public Slime(KitService kitService, JavaPlugin plugin) {
+  public Slime(JavaPlugin plugin) {
     super(
         new KitDescription(
             "Slime",
@@ -36,7 +35,6 @@ public class Slime extends AbstractKit {
                 + " Spawns small slimes when hit. Permanent Jump Boost II.",
             "10 slimeballs, green leather chestplate & boots",
             Difficulty.MEDIUM),
-        kitService,
         plugin);
   }
 

@@ -3,7 +3,6 @@ package io.github.mal32.endergames.lobby.items;
 import io.github.mal32.endergames.game.phases.GameEndEvent;
 import io.github.mal32.endergames.game.phases.GameStartAbortEvent;
 import io.github.mal32.endergames.game.phases.GameStartingEvent;
-import io.github.mal32.endergames.kitsystem.api.KitSystem;
 import io.github.mal32.endergames.lobby.LobbyModule;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import java.util.HashMap;
@@ -23,13 +22,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class MenuModule extends LobbyModule {
   private final HashMap<String, AbstractMenuItem> items = new HashMap<>();
   private final NamespacedKey menuKey;
-  private final KitSystem kitSystem;
 
-  public MenuModule(JavaPlugin plugin, KitSystem kitSystem) {
+  public MenuModule(JavaPlugin plugin) {
     super(plugin);
 
     this.menuKey = new NamespacedKey(plugin, "menu");
-    this.kitSystem = kitSystem;
   }
 
   @Override
@@ -41,10 +38,7 @@ public class MenuModule extends LobbyModule {
 
   void registerDefaultItems() {
     List<AbstractMenuItem> rawItems =
-        List.of(
-            new KitSelector(plugin, kitSystem),
-            new OperatorStartItem(plugin),
-            new SpectatorItem(plugin));
+        List.of(new KitSelector(plugin), new OperatorStartItem(plugin), new SpectatorItem(plugin));
 
     for (AbstractMenuItem item : rawItems) {
       registerItem(item);

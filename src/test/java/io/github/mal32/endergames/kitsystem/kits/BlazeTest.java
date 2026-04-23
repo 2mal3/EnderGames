@@ -14,12 +14,7 @@ import org.mockbukkit.mockbukkit.simulate.entity.PlayerSimulation;
 class BlazeTest extends KitMockBukkitTest<Blaze> {
   @Override
   protected Blaze createKit() {
-    return new Blaze(service, plugin);
-  }
-
-  @Override
-  protected void onSetUp() {
-    manager.enableKit(kit);
+    return new Blaze(plugin);
   }
 
   @Override

@@ -1,8 +1,11 @@
 package io.github.mal32.endergames.kitsystem.api;
 
 import io.github.mal32.endergames.game.phases.PhaseController;
+import io.github.mal32.endergames.kitsystem.KitStorage;
 import java.util.Objects;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -26,11 +29,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 public abstract class AbstractKit implements Listener {
   protected final JavaPlugin plugin;
   private final KitDescription kitDescription;
-  protected final KitService kitService;
 
-  public AbstractKit(KitDescription kitDescription, KitService kitService, JavaPlugin plugin) {
+  public AbstractKit(KitDescription kitDescription, JavaPlugin plugin) {
     this.kitDescription = Objects.requireNonNull(kitDescription);
-    this.kitService = Objects.requireNonNull(kitService);
     this.plugin = Objects.requireNonNull(plugin);
   }
 
@@ -40,7 +41,9 @@ public abstract class AbstractKit implements Listener {
    * <p>Override this to initialize timers, repeating tasks or other per‑game logic. This method is
    * invoked once per game, not once per player.
    */
-  public void onEnable() {}
+  public void onEnable() {
+    Bukkit.getPluginManager().registerEvents(this, plugin);
+  }
 
   /**
    * Called when the kit is deactivated at the end of a game.
@@ -48,7 +51,9 @@ public abstract class AbstractKit implements Listener {
    * <p>Override this to cancel tasks, clear temporary data or unregister logic. This method is
    * invoked once per game, not once per player.
    */
-  public void onDisable() {}
+  public void onDisable() {
+    HandlerList.unregisterAll(this);
+  }
 
   /**
    * Checks whether the given player is currently allowed to use this kit.
@@ -67,7 +72,7 @@ public abstract class AbstractKit implements Listener {
   protected boolean playerCanUseThisKit(Player player) {
     return player != null
         && PhaseController.playerIsInGame(player)
-        && kitService.isUsing(player, this);
+        && KitStorage.isUsing(plugin, player, this);
   }
 
   /**
@@ -99,5 +104,13 @@ public abstract class AbstractKit implements Listener {
    */
   public KitDescription description() {
     return kitDescription;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    AbstractKit that = (AbstractKit) o;
+    return id().equals(that.id());
   }
 }

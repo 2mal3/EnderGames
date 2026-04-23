@@ -3,7 +3,6 @@ package io.github.mal32.endergames.kitsystem.kits;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
-import io.github.mal32.endergames.kitsystem.api.KitService;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
@@ -26,7 +25,7 @@ public class Kangaroo extends AbstractKit {
   private static final double VERTICAL_JUMP_SPEED = 1;
   private static final double HORIZONTAL_JUMP_SPEED = 2;
 
-  public Kangaroo(KitService kitService, JavaPlugin plugin) {
+  public Kangaroo(JavaPlugin plugin) {
     super(
         new KitDescription(
             "Kangaroo",
@@ -34,7 +33,6 @@ public class Kangaroo extends AbstractKit {
             "Can double jump at the cost of hunger",
             "",
             Difficulty.EASY),
-        kitService,
         plugin);
   }
 

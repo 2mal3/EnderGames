@@ -1,6 +1,6 @@
 package io.github.mal32.endergames.kitsystem.kits;
 
-import static io.github.mal32.endergames.kitsystem.KitUtils.enchantItem;
+import static io.github.mal32.endergames.kitsystem.api.KitUtils.enchantItem;
 
 import io.github.mal32.endergames.kitsystem.api.*;
 import org.bukkit.Material;
@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Mace extends AbstractKit implements KitUnlockAdvancement {
-  public Mace(KitService kitService, JavaPlugin plugin) {
+  public Mace(JavaPlugin plugin) {
     super(
         new KitDescription(
             "Mace",
@@ -20,7 +20,6 @@ public class Mace extends AbstractKit implements KitUnlockAdvancement {
             "Gets 4 Wind Charges per player kill",
             "Maces with Wind Burst, 8 Wind Charges, Feather Falling III boots",
             Difficulty.HARD),
-        kitService,
         plugin);
   }
 

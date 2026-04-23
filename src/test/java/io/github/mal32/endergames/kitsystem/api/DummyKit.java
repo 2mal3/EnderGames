@@ -8,8 +8,8 @@ public class DummyKit extends AbstractKit {
   public boolean enabled = false;
   public boolean disabled = false;
 
-  public DummyKit(String id, KitService kitService, JavaPlugin plugin) {
-    super(new KitDescription(id, Material.STONE, "", "", Difficulty.EASY), kitService, plugin);
+  public DummyKit(String id, JavaPlugin plugin) {
+    super(new KitDescription(id, Material.STONE, "", "", Difficulty.EASY), plugin);
   }
 
   @Override

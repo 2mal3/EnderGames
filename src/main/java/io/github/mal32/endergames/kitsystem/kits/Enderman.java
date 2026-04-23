@@ -3,7 +3,6 @@ package io.github.mal32.endergames.kitsystem.kits;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
-import io.github.mal32.endergames.kitsystem.api.KitService;
 import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -22,7 +21,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Enderman extends AbstractKit {
-  public Enderman(KitService kitService, JavaPlugin plugin) {
+  public Enderman(JavaPlugin plugin) {
     super(
         new KitDescription(
             "Enderman",
@@ -31,7 +30,6 @@ public class Enderman extends AbstractKit {
                 + " Ender Perls. Can open Ender Chests from further away.",
             "5 Ender Pearls",
             Difficulty.EASY),
-        kitService,
         plugin);
   }
 

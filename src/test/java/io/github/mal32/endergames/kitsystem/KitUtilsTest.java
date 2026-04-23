@@ -3,6 +3,7 @@ package io.github.mal32.endergames.kitsystem;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.mal32.endergames.BaseMockBukkitTest;
+import io.github.mal32.endergames.kitsystem.api.KitUtils;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;

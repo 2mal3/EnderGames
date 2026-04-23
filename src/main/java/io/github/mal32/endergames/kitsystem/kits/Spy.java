@@ -1,11 +1,10 @@
 package io.github.mal32.endergames.kitsystem.kits;
 
-import io.github.mal32.endergames.kitsystem.KitUtils;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
-import io.github.mal32.endergames.kitsystem.api.KitService;
 import io.github.mal32.endergames.kitsystem.api.KitUnlockAdvancement;
+import io.github.mal32.endergames.kitsystem.api.KitUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -47,7 +46,7 @@ public class Spy extends AbstractKit implements KitUnlockAdvancement {
   private BukkitTask cleanupTask;
   private BukkitTask cooldownDisplayTask;
 
-  public Spy(KitService kitService, JavaPlugin plugin) {
+  public Spy(JavaPlugin plugin) {
     super(
         new KitDescription(
             "Spy",
@@ -55,7 +54,6 @@ public class Spy extends AbstractKit implements KitUnlockAdvancement {
             "Become invisible while sneaking. Cannot attack while invisible and armor is removed.",
             "Black Leather Armor",
             Difficulty.MEDIUM),
-        kitService,
         plugin);
   }
 

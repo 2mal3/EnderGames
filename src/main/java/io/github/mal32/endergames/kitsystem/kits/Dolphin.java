@@ -1,11 +1,10 @@
 package io.github.mal32.endergames.kitsystem.kits;
 
-import static io.github.mal32.endergames.kitsystem.KitUtils.colorLeatherArmor;
+import static io.github.mal32.endergames.kitsystem.api.KitUtils.colorLeatherArmor;
 
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
-import io.github.mal32.endergames.kitsystem.api.KitService;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -33,7 +32,7 @@ public class Dolphin extends AbstractKit {
 
   private final Map<UUID, Long> lastWaterJump = new HashMap<>();
 
-  public Dolphin(KitService kitService, JavaPlugin plugin) {
+  public Dolphin(JavaPlugin plugin) {
     super(
         new KitDescription(
             "Dolphin",
@@ -41,7 +40,6 @@ public class Dolphin extends AbstractKit {
             "Has Dolphins Grace and can jump through the water. Swimming gives Fish.",
             "Water Bucket, Blue Leather Boots",
             Difficulty.MEDIUM),
-        kitService,
         plugin);
   }
 
