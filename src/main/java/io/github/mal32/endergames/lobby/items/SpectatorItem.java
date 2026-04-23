@@ -18,7 +18,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 class SpectatorItem extends AbstractMenuItem {
-
   public SpectatorItem(JavaPlugin plugin) {
     super(
         plugin,
@@ -30,11 +29,6 @@ class SpectatorItem extends AbstractMenuItem {
                 Material.ENDER_EYE,
                 Component.text("Spectate Game").color(NamedTextColor.GOLD),
                 NamespacedKey.minecraft("spyglass"))));
-  }
-
-  @Override
-  public void onGameStart(Player player) {
-    this.giveItem(player);
   }
 
   @Override

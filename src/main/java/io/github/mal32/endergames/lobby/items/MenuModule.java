@@ -6,7 +6,6 @@ import io.github.mal32.endergames.game.phases.GameStartingEvent;
 import io.github.mal32.endergames.kitsystem.api.KitSystem;
 import io.github.mal32.endergames.lobby.LobbyModule;
 import io.github.mal32.endergames.services.PlayerInWorld;
-import io.github.mal32.endergames.services.PlayerState;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
@@ -45,8 +44,7 @@ public class MenuModule extends LobbyModule {
         List.of(
             new KitSelector(plugin, kitSystem),
             new OperatorStartItem(plugin),
-            new SpectatorItem(plugin),
-            new PlayItem(plugin));
+            new SpectatorItem(plugin));
 
     for (AbstractMenuItem item : rawItems) {
       registerItem(item);
@@ -78,7 +76,7 @@ public class MenuModule extends LobbyModule {
 
   @EventHandler
   public void onGameStarting(GameStartingEvent ignoredE) {
-    for (Player player : PlayerState.IN_LOBBY.all()) {
+    for (Player player : PlayerInWorld.LOBBY.all()) {
       onGameStart(player);
     }
   }

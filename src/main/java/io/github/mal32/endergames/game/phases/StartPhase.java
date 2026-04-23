@@ -4,9 +4,7 @@ import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
 import io.github.mal32.endergames.services.PlayerInWorld;
-import io.github.mal32.endergames.services.PlayerState;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -19,17 +17,15 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.BlockVector;
 
 public class StartPhase extends AbstractPhase {
+  private final Collection<Player> participants;
+
   public StartPhase(EnderGames plugin, PhaseController controller) {
     super(plugin, controller);
 
-    Collection<Player> participants = new ArrayList<>(List.of(PlayerState.PLAYING.all()));
-    participants.addAll(List.of(PlayerState.SPECTATING.all()));
+    participants = List.copyOf(Bukkit.getServer().getOnlinePlayers());
     Bukkit.getPluginManager().callEvent(new GameStartingEvent(participants));
 
-    for (Player player : PlayerState.PLAYING.all()) {
-      PlayerInWorld.GAME.set(player);
-    }
-    for (Player player : PlayerState.SPECTATING.all()) {
+    for (Player player : participants) {
       PlayerInWorld.GAME.set(player);
     }
 
@@ -49,12 +45,12 @@ public class StartPhase extends AbstractPhase {
 
   public void distributePlayers() {
     int playerindex = 0;
-    final int totalPlayers = PlayerState.PLAYING.all().length;
+    final int totalPlayers = participants.size();
     if (totalPlayers == 0) {
-      System.out.println();
-      // TODO!
+      plugin.getComponentLogger().warn("No players in game to start!");
+      return;
     }
-    for (Player player : PlayerState.PLAYING.all()) {
+    for (Player player : participants) {
       player.setGameMode(GameMode.ADVENTURE);
       player.getInventory().clear();
 
@@ -63,16 +59,10 @@ public class StartPhase extends AbstractPhase {
     }
 
     barriersAroundPlayers(false);
-
-    for (Player player : PlayerState.SPECTATING.all()) {
-      player.setGameMode(GameMode.SPECTATOR);
-      player.getInventory().clear();
-      controller.getGameWorld().initPlayer(player);
-    }
   }
 
   private void showPlayersKitInfo() { // TODO: move to KitManager
-    for (Player player : PlayerState.PLAYING.all()) {
+    for (Player player : participants) {
       final AbstractKit kit = plugin.getKitSystem().service().get(player);
 
       final KitDescription kitDescription = kit.description();
