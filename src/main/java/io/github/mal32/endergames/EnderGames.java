@@ -4,6 +4,7 @@ import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
 import io.github.mal32.endergames.game.FindWorldSpawnService;
 import io.github.mal32.endergames.game.GameWorld;
 import io.github.mal32.endergames.game.phases.PhaseController;
+import io.github.mal32.endergames.kitsystem.KitManager;
 import io.github.mal32.endergames.kitsystem.KitRegisty;
 import io.github.mal32.endergames.kitsystem.api.*;
 import io.github.mal32.endergames.lobby.LobbyManager;

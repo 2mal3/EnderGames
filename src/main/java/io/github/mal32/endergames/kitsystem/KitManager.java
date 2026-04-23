@@ -1,11 +1,9 @@
-package io.github.mal32.endergames.kitsystem.api;
+package io.github.mal32.endergames.kitsystem;
 
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.game.phases.GameEndEvent;
 import io.github.mal32.endergames.game.phases.GameStartEvent;
-import io.github.mal32.endergames.kitsystem.KitRegisty;
-import io.github.mal32.endergames.kitsystem.KitStorage;
-import io.github.mal32.endergames.kitsystem.UnlockChecker;
+import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.kits.Lumberjack;
 import java.util.*;
 import org.bukkit.Bukkit;

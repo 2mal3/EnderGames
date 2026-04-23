@@ -1,10 +1,10 @@
 package io.github.mal32.endergames.kitsystem.kits;
 
-import io.github.mal32.endergames.kitsystem.KitUtils;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
 import io.github.mal32.endergames.kitsystem.api.KitUnlockAdvancement;
+import io.github.mal32.endergames.kitsystem.api.KitUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;

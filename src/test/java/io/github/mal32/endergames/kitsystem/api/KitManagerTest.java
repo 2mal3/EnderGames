@@ -3,6 +3,7 @@ package io.github.mal32.endergames.kitsystem.api;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.mal32.endergames.BaseMockBukkitTest;
+import io.github.mal32.endergames.kitsystem.KitManager;
 import org.junit.jupiter.api.Test;
 
 class KitManagerTest extends BaseMockBukkitTest {

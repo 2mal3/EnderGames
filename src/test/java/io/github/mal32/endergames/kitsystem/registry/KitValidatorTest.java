@@ -3,6 +3,7 @@ package io.github.mal32.endergames.kitsystem.registry;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.mal32.endergames.BaseMockBukkitTest;
+import io.github.mal32.endergames.kitsystem.KitManager;
 import io.github.mal32.endergames.kitsystem.api.*;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
