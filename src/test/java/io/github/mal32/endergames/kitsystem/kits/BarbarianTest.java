@@ -9,12 +9,7 @@ import org.junit.jupiter.api.Test;
 class BarbarianTest extends KitMockBukkitTest<Barbarian> {
   @Override
   protected Barbarian createKit() {
-    return new Barbarian(service, plugin);
-  }
-
-  @Override
-  protected void onSetUp() {
-    manager.enableKit(kit);
+    return new Barbarian(plugin);
   }
 
   @Override

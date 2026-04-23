@@ -16,23 +16,16 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 class UnlockCheckerTest extends BaseMockBukkitTest {
-  private KitService service;
-
-  @Override
-  public void onSetUp() {
-    service = new KitService(plugin, new KitManager(plugin));
-  }
-
   @Test
   void returnsTrueWhenNoRequirement() {
     PlayerMock player = server.addPlayer();
-    assertTrue(UnlockChecker.isUnlocked(player, new NoReqKit(service, plugin)));
+    assertTrue(UnlockChecker.isUnlocked(player, new NoReqKit(plugin)));
   }
 
   @Test
   void returnsFalseWhenKeyInvalid() {
     PlayerMock player = server.addPlayer();
-    assertFalse(UnlockChecker.isUnlocked(player, new InvalidKeyKit(service, plugin)));
+    assertFalse(UnlockChecker.isUnlocked(player, new InvalidKeyKit(plugin)));
   }
 
   @Test
@@ -42,7 +35,7 @@ class UnlockCheckerTest extends BaseMockBukkitTest {
     try (MockedStatic<Bukkit> mocked = Mockito.mockStatic(Bukkit.class)) {
       mocked.when(() -> Bukkit.getAdvancement(new NamespacedKey("test", "adv"))).thenReturn(null);
 
-      assertFalse(UnlockChecker.isUnlocked(player, new MissingAdvKit(service, plugin)));
+      assertFalse(UnlockChecker.isUnlocked(player, new MissingAdvKit(plugin)));
     }
   }
 
@@ -58,7 +51,7 @@ class UnlockCheckerTest extends BaseMockBukkitTest {
       Mockito.when(player.getAdvancementProgress(adv)).thenReturn(progress);
       Mockito.when(progress.isDone()).thenReturn(false);
 
-      assertFalse(UnlockChecker.isUnlocked(player, new AdvKit(service, plugin)));
+      assertFalse(UnlockChecker.isUnlocked(player, new AdvKit(plugin)));
     }
   }
 
@@ -74,13 +67,13 @@ class UnlockCheckerTest extends BaseMockBukkitTest {
       Mockito.when(player.getAdvancementProgress(adv)).thenReturn(progress);
       Mockito.when(progress.isDone()).thenReturn(true);
 
-      assertTrue(UnlockChecker.isUnlocked(player, new AdvKit(service, plugin)));
+      assertTrue(UnlockChecker.isUnlocked(player, new AdvKit(plugin)));
     }
   }
 
   static class NoReqKit extends AbstractKit {
-    NoReqKit(KitService s, JavaPlugin p) {
-      super(new KitDescription("A", org.bukkit.Material.STONE, "", "", Difficulty.EASY), s, p);
+    NoReqKit(JavaPlugin p) {
+      super(new KitDescription("A", org.bukkit.Material.STONE, "", "", Difficulty.EASY), p);
     }
 
     @Override
@@ -88,8 +81,8 @@ class UnlockCheckerTest extends BaseMockBukkitTest {
   }
 
   static class InvalidKeyKit extends NoReqKit implements KitUnlockAdvancement {
-    InvalidKeyKit(KitService s, JavaPlugin p) {
-      super(s, p);
+    InvalidKeyKit(JavaPlugin p) {
+      super(p);
     }
 
     public String getKitAdvancementKey() {
@@ -98,8 +91,8 @@ class UnlockCheckerTest extends BaseMockBukkitTest {
   }
 
   static class MissingAdvKit extends NoReqKit implements KitUnlockAdvancement {
-    MissingAdvKit(KitService s, JavaPlugin p) {
-      super(s, p);
+    MissingAdvKit(JavaPlugin p) {
+      super(p);
     }
 
     public String getKitAdvancementKey() {
@@ -108,8 +101,8 @@ class UnlockCheckerTest extends BaseMockBukkitTest {
   }
 
   static class AdvKit extends NoReqKit implements KitUnlockAdvancement {
-    AdvKit(KitService s, JavaPlugin p) {
-      super(s, p);
+    AdvKit(JavaPlugin p) {
+      super(p);
     }
 
     public String getKitAdvancementKey() {

@@ -8,14 +8,12 @@ import org.junit.jupiter.api.Test;
 
 class KitManagerTest extends BaseMockBukkitTest {
   private KitManager manager;
-  private KitService service;
   private DummyKit kit;
 
   @Override
   protected void onSetUp() {
     manager = new KitManager(plugin);
-    service = new KitService(plugin, manager);
-    kit = new DummyKit("Dummy", service, plugin);
+    kit = new DummyKit("Dummy", plugin);
     manager.register(kit);
   }
 
@@ -28,16 +26,7 @@ class KitManagerTest extends BaseMockBukkitTest {
   }
 
   @Test
-  void enableDisableKit() {
-    manager.enableKit(kit);
-    assertTrue(kit.enabled);
-
-    manager.disableKit(kit);
-    assertTrue(kit.disabled);
-  }
-
-  @Test
-  void disableAll() {
+  void disableKits() {
     DummyKit kit2 = new DummyKit("Dummy2", service, plugin);
     manager.register(kit2);
     DummyKit kit3 = new DummyKit("Dummy3", service, plugin);
