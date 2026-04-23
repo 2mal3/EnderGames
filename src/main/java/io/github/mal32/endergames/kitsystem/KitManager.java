@@ -116,7 +116,6 @@ public class KitManager implements Listener {
   public boolean hasValidKit(Player player) {
     AbstractKit kit = KitStorage.getKit((JavaPlugin) plugin, player);
     if (kit == null) return false;
-    if (!UnlockChecker.isUnlocked(player, kit)) return false;
-    return true;
+    return (UnlockChecker.isUnlocked(player, kit));
   }
 }
