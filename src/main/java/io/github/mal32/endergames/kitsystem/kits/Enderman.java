@@ -1,6 +1,10 @@
 package io.github.mal32.endergames.kitsystem.kits;
 
+import io.github.lambdaphoenix.advancementLib.AdvancementAPI;
+import io.github.lambdaphoenix.advancementLib.GrantMode;
+import io.github.mal32.endergames.game.game.FightDetection;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
+import io.github.mal32.endergames.kitsystem.api.CustomKitUnlockAdvancement;
 import io.github.mal32.endergames.kitsystem.api.Difficulty;
 import io.github.mal32.endergames.kitsystem.api.KitDescription;
 import java.util.Set;
@@ -15,12 +19,14 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class Enderman extends AbstractKit {
+public class Enderman extends AbstractKit implements CustomKitUnlockAdvancement {
   public Enderman(JavaPlugin plugin) {
     super(
         new KitDescription(
@@ -31,6 +37,26 @@ public class Enderman extends AbstractKit {
             "5 Ender Pearls",
             Difficulty.EASY),
         plugin);
+  }
+
+  public void registerAdvancement(AdvancementAPI api) {
+    api.register(PlayerTeleportEvent.class)
+        .advancementKey(getKitAdvancementKey())
+        .playerExtractor((event) -> event.getPlayer())
+        .condition(
+            (player, event) -> {
+              if (event.getCause() != TeleportCause.ENDER_PEARL) return false;
+              double healthAfterTeleport = player.getHealth() - 5;
+              if (healthAfterTeleport > 4 || healthAfterTeleport <= 0) return false;
+              if (!FightDetection.playerIsInFight(player)) return false;
+              return true;
+            })
+        .grantMode(GrantMode.ALL_AT_ONCE)
+        .build();
+  }
+
+  public String getKitAdvancementKey() {
+    return "enga:enderman";
   }
 
   @Override
