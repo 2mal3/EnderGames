@@ -3,6 +3,7 @@ package io.github.mal32.endergames.lobby.minigames;
 import io.github.mal32.endergames.BlockLocation;
 import io.github.mal32.endergames.lobby.LobbyModule;
 import io.github.mal32.endergames.services.PlayerInWorld;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,14 +39,32 @@ public class EndlessParkour extends LobbyModule {
   private final Structure structure =
       manager.loadStructure(new NamespacedKey("enga", "parkour_mask"));
   private final int structureSize = structure.getSize().getBlockX();
-  private final List<BlockState> possibleBlocks =
-      structure.getPalettes().getFirst().getBlocks().stream()
-          .filter(b -> b.getType() == Material.IRON_BLOCK)
-          .toList();
+  private final List<BlockState> possibleBlocks = new ArrayList<>();
   private final Map<UUID, ParkourSession> players = new HashMap<>();
 
   public EndlessParkour(JavaPlugin plugin) {
     super(plugin);
+
+    for (BlockState block : structure.getPalettes().getFirst().getBlocks()) {
+      int count = 0;
+      switch (block.getType()) {
+        case GREEN_STAINED_GLASS:
+          count = 3;
+          break;
+        case ORANGE_STAINED_GLASS:
+          count = 2;
+          break;
+        case RED_STAINED_GLASS:
+          count = 1;
+          break;
+        default:
+          break;
+      }
+
+      for (int i = 0; i < count; i++) {
+        possibleBlocks.add(block);
+      }
+    }
   }
 
   @Override
