@@ -1,0 +1,40 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:elytra"
+    },
+    "title": "Bird Kit",
+    "description": "Fall more than 64 blocks excluding the spawn platform",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "enga:root",
+  "criteria": {
+    "unlock": {
+      "trigger": "minecraft:fall_from_height",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:inverted",
+            "term": {
+              "condition": "minecraft:entity_properties",
+              "entity": "this",
+              "predicate": {
+                "effects": {
+                  "minecraft:resistance": {}
+                }
+              }
+            }
+          }
+        ],
+        "distance": {
+          "y": {
+            "min": 64
+          }
+        }
+      }
+    }
+  }
+}
