@@ -32,6 +32,9 @@ public class PlayerDifficulty extends LobbyModule {
   private static final NamespacedKey ATTRIBUTE_NAME =
       new NamespacedKey("endergames", "difficulty_armor_modifier");
   private final TextDisplay display;
+  private static final double STEP_SIZE = 0.10;
+  private static final double MAX_FACTOR = 0.6;
+  private static final double MIN_FACTOR = -0.6;
 
   public PlayerDifficulty(JavaPlugin plugin, World lobby) {
     super(plugin);
@@ -95,26 +98,26 @@ public class PlayerDifficulty extends LobbyModule {
   }
 
   private void nerf(Player player) {
-    if (getArmorModifier(player) <= -1) {
+    if (getArmorModifier(player) <= MIN_FACTOR) {
       return;
     }
 
     player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, SoundCategory.UI, 1.0f, 1.0f);
 
     double factor = getArmorModifier(player);
-    double newFactor = factor - 0.25;
+    double newFactor = factor - STEP_SIZE;
     setArmorModifier(player, newFactor);
   }
 
   private void buff(Player player) {
-    if (getArmorModifier(player) >= 1) {
+    if (getArmorModifier(player) >= MAX_FACTOR) {
       return;
     }
 
     player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_YES, SoundCategory.UI, 1.0f, 1.0f);
 
     double factor = getArmorModifier(player);
-    double newFactor = factor + 0.25;
+    double newFactor = factor + STEP_SIZE;
     setArmorModifier(player, newFactor);
   }
 
