@@ -78,8 +78,14 @@ public class Spy extends AbstractKit implements KitUnlockAdvancement {
   public void onDisable() {
     super.onDisable();
 
-    cleanupTask.cancel();
-    cooldownDisplayTask.cancel();
+    if (cleanupTask != null) {
+      cleanupTask.cancel();
+      cleanupTask = null;
+    }
+    if (cooldownDisplayTask != null) {
+      cooldownDisplayTask.cancel();
+      cleanupTask = null;
+    }
 
     for (BlockDisplay footstep : footsteps) {
       footstep.remove();

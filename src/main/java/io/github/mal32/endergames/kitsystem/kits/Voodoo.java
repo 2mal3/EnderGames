@@ -57,7 +57,10 @@ public class Voodoo extends AbstractKit implements KitUnlockAdvancement {
 
   @Override
   public void onDisable() {
-    voodooTask.cancel();
+    if (voodooTask != null) {
+      voodooTask.cancel();
+      voodooTask = null;
+    }
   }
 
   @EventHandler(priority = EventPriority.HIGH)

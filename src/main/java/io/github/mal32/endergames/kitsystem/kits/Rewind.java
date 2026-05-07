@@ -67,7 +67,10 @@ public class Rewind extends AbstractKit {
 
   @Override
   public void onDisable() {
-    task.cancel();
+    if (task != null) {
+      task.cancel();
+      task = null;
+    }
   }
 
   private void tick() {

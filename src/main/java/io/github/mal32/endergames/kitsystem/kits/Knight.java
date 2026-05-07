@@ -73,8 +73,14 @@ public class Knight extends AbstractKit {
 
   @Override
   public void onDisable() {
-    horseRespawnTask.cancel();
-    horseTetherTask.cancel();
+    if (horseRespawnTask != null) {
+      horseRespawnTask.cancel();
+      horseRespawnTask = null;
+    }
+    if (horseTetherTask != null) {
+      horseTetherTask.cancel();
+      horseTetherTask = null;
+    }
 
     mounts.clear();
   }
