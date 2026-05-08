@@ -47,7 +47,7 @@ public class Enderman extends AbstractKit implements CustomKitUnlockAdvancement 
             (player, event) -> {
               if (event.getCause() != TeleportCause.ENDER_PEARL) return false;
               double healthAfterTeleport = player.getHealth() - 5;
-              if (healthAfterTeleport > 4 || healthAfterTeleport <= 0) return false;
+              if (healthAfterTeleport > 6 || healthAfterTeleport <= 0) return false;
               if (!FightDetection.playerIsInFight(player)) return false;
               return true;
             })
