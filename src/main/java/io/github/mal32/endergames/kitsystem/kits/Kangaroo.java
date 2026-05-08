@@ -80,7 +80,7 @@ public class Kangaroo extends AbstractKit {
       slownessLevel = player.getPotionEffect(PotionEffectType.SLOWNESS).getAmplifier() + 1;
     }
     double jumpStrengthDecrease =
-        Math.max((1 - SLOWNESS_JUMP_STRENGTH_DECREASE_PERCENT / slownessLevel), 0);
+        Math.max((1 - (SLOWNESS_JUMP_STRENGTH_DECREASE_PERCENT * slownessLevel)), 0);
     double horizontalMultiplier = HORIZONTAL_JUMP_SPEED * jumpStrengthDecrease;
     double verticalMultiplier = VERTICAL_JUMP_SPEED * jumpStrengthDecrease;
     Vector jump =
