@@ -17,7 +17,6 @@ class BlazeTest extends KitMockBukkitTest<Blaze> {
     return new Blaze(plugin);
   }
 
-  @Override
   @Test
   protected void initPlayerGivesCorrectItems() {
     player.getInventory().clear();

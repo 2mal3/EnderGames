@@ -7,7 +7,6 @@ import io.github.mal32.endergames.kitsystem.KitStorage;
 import io.github.mal32.endergames.kitsystem.api.AbstractKit;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import org.mockito.Mockito;
@@ -43,7 +42,4 @@ public abstract class KitMockBukkitTest<Kit extends AbstractKit> extends BaseMoc
   }
 
   protected abstract Kit createKit();
-
-  @Test
-  protected abstract void initPlayerGivesCorrectItems();
 }

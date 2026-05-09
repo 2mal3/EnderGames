@@ -12,7 +12,6 @@ class BarbarianTest extends KitMockBukkitTest<Barbarian> {
     return new Barbarian(plugin);
   }
 
-  @Override
   @Test
   protected void initPlayerGivesCorrectItems() {
     player.getInventory().clear();
