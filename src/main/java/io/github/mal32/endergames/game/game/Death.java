@@ -50,8 +50,8 @@ public class Death extends AbstractModule {
   }
 
   private void killEffects(PlayerDeathEvent event) {
-    Player player = event.getPlayer();
-    Location location = player.getLocation();
+    Player diedPlayer = event.getPlayer();
+    Location location = diedPlayer.getLocation();
 
     location
         .getWorld()
@@ -63,19 +63,18 @@ public class Death extends AbstractModule {
             1);
 
     event.setShowDeathMessages(true);
-    Player lastDamager = FightDetection.getActiveDamager(player);
-    if (lastDamager != null) {
+    Player killer = FightDetection.getActiveDamager(diedPlayer);
+    if (killer != null) {
       // player died by another player
       event.deathMessage(
           Component.text("")
               .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
-              .append(Component.text(player.getName()).color(NamedTextColor.RED))
+              .append(Component.text(diedPlayer.getName()).color(NamedTextColor.RED))
               .append(Component.text(" was killed by ").color(NamedTextColor.DARK_RED))
-              .append(Component.text(lastDamager.getName()).color(NamedTextColor.RED)));
+              .append(Component.text(killer.getName()).color(NamedTextColor.RED)));
 
-      final AbstractKit killerKit = KitStorage.getKit(plugin, player);
-      TextComponent killerInfo =
-          Component.text(lastDamager.getName()).color(NamedTextColor.DARK_RED);
+      final AbstractKit killerKit = KitStorage.getKit(plugin, killer);
+      TextComponent killerInfo = Component.text(killer.getName()).color(NamedTextColor.DARK_RED);
       if (killerKit != null) {
         killerInfo =
             killerInfo
@@ -87,10 +86,10 @@ public class Death extends AbstractModule {
           killerInfo
               .append(Component.text(" has ").color(NamedTextColor.RED))
               .append(
-                  Component.text(String.format("%.2f", lastDamager.getHealth()) + "❤")
+                  Component.text(String.format("%.2f", killer.getHealth()) + "❤")
                       .color(NamedTextColor.DARK_RED))
               .append(Component.text(" left").color(NamedTextColor.RED));
-      player.sendMessage(message);
+      diedPlayer.sendMessage(message);
       // Also send the message to all spectators
       for (Player p : PlayerInWorld.GAME.all()) {
         if (p.getGameMode() != GameMode.SPECTATOR) continue;
@@ -101,7 +100,7 @@ public class Death extends AbstractModule {
       event.deathMessage(
           Component.text("")
               .append(Component.text("☠ ").color(NamedTextColor.DARK_RED))
-              .append(Component.text(player.getName()).color(NamedTextColor.RED)));
+              .append(Component.text(diedPlayer.getName()).color(NamedTextColor.RED)));
     }
   }
 
