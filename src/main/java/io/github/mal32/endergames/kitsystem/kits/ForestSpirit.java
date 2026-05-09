@@ -40,17 +40,18 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 public class ForestSpirit extends AbstractKit {
-
   private static final Color DEFAULT_DARK_GREEN = Color.fromRGB(0x1B5E20);
 
   // --- ability tuning ---
   private static final int GROWTH_COOLDOWN_SECONDS = 25;
   private static final double GROWTH_RADIUS = 12.0;
+  private static final int LOG_HEALING_COOLDWON_SECONDS = 5;
 
   // --- stillness / rooted tree tuning ---
   private static final int ROOTS_TRIGGER_TICKS = 20 * 15; // 15s standing still
   private static final int ROOTED_REGEN_LEVEL = 2; // Regen III (0=I,1=II,2=III)
   private static final int ROOTED_REGEN_DURATION_TICKS = 20 * 60 * 15; // long, removed on free
+  private static final int ROOTED_START_COOLDOWN_SECONDS = 40;
 
   // --- vulnerabilities ---
   private static final double FIRE_DAMAGE_MULTIPLIER = 3.5D;
@@ -83,13 +84,15 @@ public class ForestSpirit extends AbstractKit {
 
   @Override
   public void onEnable() {
+    super.onEnable();
+
     // - validates roots each tick so ANY destruction cause frees the player
     stillnessTask =
         plugin
             .getServer()
             .getScheduler()
-            // delay 800 ticks (~40 seconds) so roots cannot trigger during the first 40s
-            .runTaskTimer(plugin, this::tickStillnessAndRoots, 800L, 1L);
+            .runTaskTimer(
+                plugin, this::tickStillnessAndRoots, ROOTED_START_COOLDOWN_SECONDS * 20, 1L);
 
     // Passive: every 5 seconds, check for nearby logs and heal if surrounded by enough
     if (!healingTaskScheduled) {
@@ -97,7 +100,11 @@ public class ForestSpirit extends AbstractKit {
           plugin
               .getServer()
               .getScheduler()
-              .runTaskTimer(plugin, this::tickLogAuraHealing, 60L, 60L);
+              .runTaskTimer(
+                  plugin,
+                  this::tickLogAuraHealing,
+                  LOG_HEALING_COOLDWON_SECONDS * 20,
+                  LOG_HEALING_COOLDWON_SECONDS * 20);
       healingTaskScheduled = true;
     }
 
@@ -139,7 +146,7 @@ public class ForestSpirit extends AbstractKit {
     UUID id = player.getUniqueId();
     standStillTicks.put(id, 0);
     lastKnownBlockPos.put(id, BlockKey.of(player.getLocation()));
-    
+
     player.setCooldown(Material.GREEN_DYE, GROWTH_COOLDOWN_SECONDS * 20);
   }
 
@@ -1556,6 +1563,8 @@ public class ForestSpirit extends AbstractKit {
 
   @Override
   public void onDisable() {
+    super.onDisable();
+
     if (stillnessTask != null) {
       stillnessTask.cancel();
       stillnessTask = null;
