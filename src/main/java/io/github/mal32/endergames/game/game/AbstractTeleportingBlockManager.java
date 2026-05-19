@@ -3,7 +3,9 @@ package io.github.mal32.endergames.game.game;
 import io.github.mal32.endergames.EnderGames;
 import io.github.mal32.endergames.game.phases.PhaseController;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.*;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -16,7 +18,6 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
   protected final ArrayList<B> blocks = new ArrayList<>();
   protected final Location spawnLocation;
   private final World gameWorld = Objects.requireNonNull(Bukkit.getWorld("world"));
-  private final Random random = new Random();
 
   public AbstractTeleportingBlockManager(EnderGames plugin, Location spawnLocation) {
     super(plugin);
@@ -112,25 +113,64 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
 
   protected Location getRandomHorizontalLocation() {
     final int MIN_PLAYER_DISTANCE = 32;
-    final int MAX_ATTEMPTS = 50;
+    final int MAX_ATTEMPTS = 25;
 
     final Location center = gameWorld.getWorldBorder().getCenter();
     final int size = (int) gameWorld.getWorldBorder().getSize();
 
     Location targetLocation = null;
     for (int attempts = 0; attempts < MAX_ATTEMPTS; attempts++) {
-      final int randomX = (random.nextInt(size) - (size / 2)) + center.getBlockX();
-      final int randomZ = (random.nextInt(size) - (size / 2)) + center.getBlockZ();
-      targetLocation = new Location(Bukkit.getWorld("world"), randomX, 0, randomZ);
+      final int randomX =
+          (ThreadLocalRandom.current().nextInt(size) - (size / 2)) + center.getBlockX();
+      final int randomZ =
+          (ThreadLocalRandom.current().nextInt(size) - (size / 2)) + center.getBlockZ();
+      targetLocation = new Location(Bukkit.getWorld("world"), randomX, 65, randomZ);
 
       final double minHorizontalDistance = getMinHorizontalDistanceToPlayers(targetLocation);
       if (minHorizontalDistance < MIN_PLAYER_DISTANCE) {
         continue;
       }
+
+      Biome biome = gameWorld.getBiome(targetLocation);
+      if (ThreadLocalRandom.current().nextDouble() > getBiomeSelectChance(biome)) {
+        continue;
+      }
+
+      plugin.getComponentLogger().info("Took " + attempts + " attempts");
       break;
     }
 
     return targetLocation;
+  }
+
+  private double getBiomeSelectChance(Biome biome) {
+    // Up
+    if (biome == Biome.BAMBOO_JUNGLE) return 0.75;
+    if (biome == Biome.BIRCH_FOREST) return 0.75;
+    if (biome == Biome.DARK_FOREST) return 0.75;
+    if (biome == Biome.FOREST) return 0.75;
+    if (biome == Biome.FLOWER_FOREST) return 0.75;
+    if (biome == Biome.JUNGLE) return 0.75;
+    if (biome == Biome.PALE_GARDEN) return 0.75;
+    if (biome == Biome.MANGROVE_SWAMP) return 0.75;
+    if (biome == Biome.OLD_GROWTH_BIRCH_FOREST) return 0.75;
+    if (biome == Biome.OLD_GROWTH_PINE_TAIGA) return 0.75;
+    if (biome == Biome.OLD_GROWTH_SPRUCE_TAIGA) return 0.75;
+    if (biome == Biome.SUNFLOWER_PLAINS) return 0.75;
+    if (biome == Biome.SWAMP) return 0.75;
+    if (biome == Biome.TAIGA) return 0.75;
+    if (biome == Biome.SNOWY_TAIGA) return 0.75;
+
+    // Down
+    if (biome == Biome.DESERT) return 0.25;
+    if (biome == Biome.PLAINS) return 0.25;
+    if (biome == Biome.MEADOW) return 0.25;
+    if (biome == Biome.SNOWY_PLAINS) return 0.25;
+    if (biome == Biome.MUSHROOM_FIELDS) return 0.25;
+    if (biome == Biome.SAVANNA) return 0.25;
+
+    // Default
+    return 0.5;
   }
 
   @Override
