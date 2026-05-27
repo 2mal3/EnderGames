@@ -81,7 +81,8 @@ public class Rewind extends AbstractKit {
           new PlayerState(
               player.getLocation(), player.getHealth(), player.getActivePotionEffects());
 
-      ArrayList<PlayerState> stateRecords = playerStates.get(player.getUniqueId());
+      ArrayList<PlayerState> stateRecords =
+          playerStates.computeIfAbsent(player.getUniqueId(), k -> new ArrayList<>());
       stateRecords.addFirst(playerState);
       if (stateRecords.size() >= REWIND_SECONDS * (20 / PLAYER_STATE_INTERVAL_TICKS)) {
         stateRecords.removeLast();
