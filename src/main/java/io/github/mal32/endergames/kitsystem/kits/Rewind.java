@@ -59,6 +59,7 @@ public class Rewind extends AbstractKit {
 
   @Override
   public void onEnable() {
+    super.onEnable();
     BukkitScheduler scheduler = plugin.getServer().getScheduler();
     task =
         scheduler.runTaskTimer(
@@ -67,6 +68,7 @@ public class Rewind extends AbstractKit {
 
   @Override
   public void onDisable() {
+    super.onDisable();
     if (task != null) {
       task.cancel();
       task = null;
@@ -81,7 +83,8 @@ public class Rewind extends AbstractKit {
           new PlayerState(
               player.getLocation(), player.getHealth(), player.getActivePotionEffects());
 
-      ArrayList<PlayerState> stateRecords = playerStates.get(player.getUniqueId());
+      ArrayList<PlayerState> stateRecords =
+          playerStates.computeIfAbsent(player.getUniqueId(), k -> new ArrayList<>());
       stateRecords.addFirst(playerState);
       if (stateRecords.size() >= REWIND_SECONDS * (20 / PLAYER_STATE_INTERVAL_TICKS)) {
         stateRecords.removeLast();
