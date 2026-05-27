@@ -32,7 +32,7 @@ public class Cat extends AbstractKit {
         new KitDescription(
             "Cat",
             Material.COD,
-            "Gains Speed III for 30 seconds when eating raw fish. It deals +3 damage with bare"
+            "Gains Speed III for 30 seconds when eating raw fish. It deals +4 damage with bare"
                 + " hands and takes 50% less fall damage.",
             "20 Raw Fish",
             Difficulty.EASY),
@@ -87,6 +87,6 @@ public class Cat extends AbstractKit {
     // skip if damage is not with bare hands
     if (!damager.getInventory().getItemInMainHand().getType().isAir()) return;
 
-    event.setDamage(event.getDamage() + 3);
+    event.setDamage(event.getDamage() + 4);
   }
 }
