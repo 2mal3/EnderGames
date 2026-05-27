@@ -14,7 +14,6 @@ import org.mockito.Mockito;
 public abstract class KitMockBukkitTest<Kit extends AbstractKit> extends BaseMockBukkitTest {
   protected KitManager manager;
   protected Kit kit;
-  protected Lumberjack dummyKit;
 
   protected PlayerMock player;
 
@@ -31,8 +30,6 @@ public abstract class KitMockBukkitTest<Kit extends AbstractKit> extends BaseMoc
 
     kit = createKit();
     kit.onEnable();
-
-    dummyKit = new Lumberjack(plugin);
 
     player = server.addPlayer();
     PlayerInWorld.GAME.set(player);
