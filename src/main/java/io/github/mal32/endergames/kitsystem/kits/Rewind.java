@@ -59,6 +59,7 @@ public class Rewind extends AbstractKit {
 
   @Override
   public void onEnable() {
+    super.onEnable();
     BukkitScheduler scheduler = plugin.getServer().getScheduler();
     task =
         scheduler.runTaskTimer(
@@ -67,6 +68,7 @@ public class Rewind extends AbstractKit {
 
   @Override
   public void onDisable() {
+    super.onDisable();
     if (task != null) {
       task.cancel();
       task = null;
