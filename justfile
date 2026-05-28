@@ -12,8 +12,5 @@ dev: build
     ln -s --force ../../target/endergames-0.9.0.jar mc-server/plugins/endergames.jar
     cd mc-server && minecraft-server
 
-upload: build test
-    ./upload.sh
-
 format:
     find . -name '*.java' -exec google-java-format --replace {} +
