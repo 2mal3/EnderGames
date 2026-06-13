@@ -67,11 +67,9 @@ public class KitManager implements Listener {
 
   @EventHandler
   public void onGameStart(GameStartEvent event) {
-    Set<AbstractKit> toActivate = new LinkedHashSet<>();
     for (Player player : event.getPlayers()) {
-      final AbstractKit kit = KitStorage.getKit((JavaPlugin) plugin, player);
+      final AbstractKit kit = kits.get(KitStorage.getKit((JavaPlugin) plugin, player).id());
       if (kit != null) {
-        toActivate.add(kit);
         kit.initPlayer(player);
       }
     }
