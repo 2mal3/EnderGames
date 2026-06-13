@@ -33,7 +33,7 @@ public class Enderman extends AbstractKit implements CustomKitUnlockAdvancement 
             "Enderman",
             Material.ENDER_PEARL,
             "Gain 5 Ender Pearls per player kill. Doesn't take damage from"
-                + " Ender Perls. Can open Ender Chests from further away.",
+                + " Ender Pearls. Can open Ender Chests from further away.",
             "5 Ender Pearls",
             Difficulty.EASY),
         plugin);
