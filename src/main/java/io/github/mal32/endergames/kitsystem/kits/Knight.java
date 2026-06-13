@@ -39,7 +39,7 @@ public class Knight extends AbstractKit {
   private static final double HORSE_JUMP_HIGHT = 0.9;
   private static final int HORSE_HEALTH = 20;
 
-  private final Map<UUID, Horse> mounts = new HashMap<>();
+  private final Map<UUID, UUID> mounts = new HashMap<>();
   private BukkitTask horseRespawnTask;
   private BukkitTask horseTetherTask;
 
@@ -56,6 +56,8 @@ public class Knight extends AbstractKit {
 
   @Override
   public void onEnable() {
+    super.onEnable();
+
     var scheduler = plugin.getServer().getScheduler();
     horseRespawnTask =
         scheduler.runTaskTimer(
@@ -73,6 +75,8 @@ public class Knight extends AbstractKit {
 
   @Override
   public void onDisable() {
+    super.onDisable();
+
     if (horseRespawnTask != null) {
       horseRespawnTask.cancel();
       horseRespawnTask = null;
@@ -98,7 +102,9 @@ public class Knight extends AbstractKit {
     spear.addEnchantment(Enchantment.VANISHING_CURSE, 1);
     inventory.addItem(spear);
 
-    spawnHorse(player, true);
+    var horse = spawnHorse(player);
+    horse.addPotionEffect(
+        new PotionEffect(PotionEffectType.RESISTANCE, 20 * 60 * 3, 4, true, false, false));
   }
 
   @EventHandler
@@ -112,11 +118,11 @@ public class Knight extends AbstractKit {
     if (!(event.getMount() instanceof Horse horse)) return;
 
     // don't protect horses from non-knight players
-    if (!mounts.containsValue(horse)) return;
+    if (!mounts.containsValue(horse.getUniqueId())) return;
     // check if the player is the rightful owner
     // using .equals here since the paperapi doesn't guarantee the same entity instance for the same
     // entity
-    Horse playerHorse = mounts.get(player.getUniqueId());
+    Horse playerHorse = (Horse) Bukkit.getEntity(mounts.get(player.getUniqueId()));
     if (playerHorse != null && playerHorse.equals(horse)) return;
 
     horse
@@ -137,9 +143,9 @@ public class Knight extends AbstractKit {
         continue;
       }
 
-      Horse horse = mounts.get(playerId);
+      Horse horse = (Horse) Bukkit.getEntity(mounts.get(playerId));
       if (!horseExists(horse)) {
-        spawnHorse(player, false);
+        spawnHorse(player);
       }
     }
   }
@@ -151,7 +157,7 @@ public class Knight extends AbstractKit {
         continue;
       }
 
-      Horse horse = mounts.get(playerId);
+      Horse horse = (Horse) Bukkit.getEntity(mounts.get(playerId));
       if (!horseExists(horse)) continue;
 
       if (horse.getLocation().distance(player.getLocation()) > MAX_MOUNT_DISTANCE) {
@@ -160,7 +166,7 @@ public class Knight extends AbstractKit {
     }
   }
 
-  private void spawnHorse(Player player, boolean start) {
+  private Horse spawnHorse(Player player) {
     Location spawnLocation = player.getLocation().clone();
     spawnLocation.setY(spawnLocation.getWorld().getMaxHeight());
 
@@ -181,10 +187,6 @@ public class Knight extends AbstractKit {
     var maxHealth = horse.getAttribute(Attribute.MAX_HEALTH);
     maxHealth.setBaseValue(HORSE_HEALTH);
     horse.setHealth(maxHealth.getBaseValue());
-    if (start) {
-      horse.addPotionEffect(
-          new PotionEffect(PotionEffectType.RESISTANCE, 20 * 60 * 3, 4, true, false, false));
-    }
 
     // Inventory
     HorseInventory inventory = horse.getInventory();
@@ -196,8 +198,10 @@ public class Knight extends AbstractKit {
     armor.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
     inventory.setArmor(armor);
 
-    mounts.put(player.getUniqueId(), horse);
+    mounts.put(player.getUniqueId(), horse.getUniqueId());
     teleportHorseNearPlayer(player, horse);
+
+    return horse;
   }
 
   private boolean horseExists(@Nullable Horse horse) {
