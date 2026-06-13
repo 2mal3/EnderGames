@@ -136,7 +136,6 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
         continue;
       }
 
-      plugin.getComponentLogger().info("Took " + attempts + " attempts");
       break;
     }
 
