@@ -26,6 +26,7 @@ public class Rewind extends AbstractKit {
   private static final int REWIND_SECONDS = 10;
   private static final int PLAYER_STATE_INTERVAL_TICKS = 10;
   private static final int USE_COOLDOWN_SECONDS = 40;
+  private static final int STARTING_COOLDOWN_SECONDS = 15;
   private final NamespacedKey rewindKey;
   private final HashMap<UUID, ArrayList<PlayerState>> playerStates = new HashMap<>();
   private BukkitTask task;
@@ -46,13 +47,14 @@ public class Rewind extends AbstractKit {
   @Override
   public void initPlayer(Player player) {
     var clock = ItemStack.of(Material.CLOCK);
-
     var meta = clock.getItemMeta();
     meta.getPersistentDataContainer().set(rewindKey, PersistentDataType.BOOLEAN, true);
     meta.itemName(Component.text("Rewind").color(NamedTextColor.GOLD));
     clock.setItemMeta(meta);
     clock.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
     player.getInventory().addItem(clock);
+
+    player.setCooldown(Material.CLOCK, STARTING_COOLDOWN_SECONDS * 20);
 
     playerStates.put(player.getUniqueId(), new ArrayList<>());
   }

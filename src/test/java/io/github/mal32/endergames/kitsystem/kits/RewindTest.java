@@ -35,6 +35,9 @@ class RewindTest extends KitMockBukkitTest<Rewind> {
     // Initial state
     player.teleport(new Location(player.getWorld(), 0, 100, 0));
 
+    assertTrue(player.hasCooldown(Material.CLOCK), "Player shoud have a starting cooldown");
+    player.setCooldown(Material.CLOCK, 0);
+
     // Perform ticks to save this state
     server.getScheduler().performTicks(10);
 
