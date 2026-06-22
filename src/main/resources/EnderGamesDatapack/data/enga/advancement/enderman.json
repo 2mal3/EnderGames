@@ -4,7 +4,7 @@
       "id": "minecraft:ender_pearl"
     },
     "title": "Enderman Kit",
-    "description": "Use and Ender Pearl to flee from a fight with fewer than 3 hearts remaining",
+    "description": "Use an Ender Pearl to flee a fight and land with fewer than 3 hearts remaining.",
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": true,
