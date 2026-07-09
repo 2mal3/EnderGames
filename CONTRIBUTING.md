@@ -1,5 +1,16 @@
 # Contributing
 
+## Contribution Terms
+
+By submitting a contribution to this repository, you confirm that you have the legal right to do so.
+
+You agree that your contribution may be used, modified, and distributed as part of this project under its current licensing model and under future versions of that licensing model, including reasonable updates, clarifications, replacements, or adjustments to the project's public license terms, commercial use terms, notices, and related legal wording.
+
+You keep ownership of your contribution. However, by contributing, you allow the project maintainers to include your contribution in the project and to maintain and update the project's licensing framework without needing to ask for your separate approval for each change.
+
+If you do not agree to these terms, please do not submit a contribution.
+
+
 ## Developing
 
 - Set the environment variable `EG_DEBUG=true` to enable debug mode: This speeda up internal timers and is useful during development.
