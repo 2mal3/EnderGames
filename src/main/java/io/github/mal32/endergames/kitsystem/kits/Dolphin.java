@@ -110,7 +110,7 @@ public class Dolphin extends AbstractKit {
             + Math.random() * (MAX_VERTICAL_JUMP_SPEED - MIN_VERTICAL_JUMP_SPEED);
 
     double jumpStrengthDecrease =
-        Math.max((1 - SLOWNESS_JUMP_STRENGTH_DECREASE_PERCENT / slownessLevel), 0);
+        Math.max((1 - (SLOWNESS_JUMP_STRENGTH_DECREASE_PERCENT * slownessLevel)), 0);
     double horizontalMultiplier = HORIZONTAL_JUMP_SPEED * jumpStrengthDecrease;
     double verticalMultiplier = rawVertical * jumpStrengthDecrease;
     Vector jump =
