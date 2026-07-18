@@ -53,7 +53,7 @@ public class Spy extends AbstractKit implements KitUnlockAdvancement {
             Material.SPYGLASS,
             "Become invisible while sneaking. Cannot attack while invisible and armor is removed.",
             "Black Leather Armor",
-            Difficulty.MEDIUM),
+            Difficulty.HARD),
         plugin);
   }
 
