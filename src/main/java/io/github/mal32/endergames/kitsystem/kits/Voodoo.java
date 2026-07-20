@@ -48,6 +48,8 @@ public class Voodoo extends AbstractKit {
 
   @Override
   public void onEnable() {
+    super.onEnable();
+
     voodooTask = Bukkit.getScheduler().runTaskTimer(plugin, this::witherTask, 20L, 20L);
   }
 
