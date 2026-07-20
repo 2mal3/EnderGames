@@ -24,6 +24,7 @@
         <junit.version>5.10.2</junit.version>
         <mockito.version>5.12.0</mockito.version>
         <mockbukkit.version>4.107.0</mockbukkit.version>
+        <jacoco.version>0.8.12</jacoco.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.api.version>1.21.11</project.api.version>
@@ -133,6 +134,30 @@
                 <configuration>
                     <useModulePath>false</useModulePath>
                 </configuration>
+            </plugin>
+
+            <!-- Code Coverage -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                <!-- 1. Attach the JaCoCo agent before tests run -->
+                <execution>
+                    <id>prepare-agent</id>
+                    <goals>
+                    <goal>prepare-agent</goal>
+                    </goals>
+                </execution>
+                <!-- 2. Generate HTML/CSV/XML report after tests -->
+                <execution>
+                    <id>report</id>
+                    <phase>test</phase>   <!-- bind to 'test' so `mvn test` is enough -->
+                    <goals>
+                    <goal>report</goal>
+                    </goals>
+                </execution>
+                </executions>
             </plugin>
 
             <!-- Shading -->
