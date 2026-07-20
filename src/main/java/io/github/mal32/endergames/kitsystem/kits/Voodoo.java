@@ -156,7 +156,7 @@ public class Voodoo extends AbstractKit implements KitUnlockAdvancement {
     var playerInventory = player.getInventory();
 
     var bow = ItemStack.of(Material.BOW);
-    bow.addEnchantment(Enchantment.PIERCING, 1);
+    bow.addUnsafeEnchantment(Enchantment.PIERCING, 1);
     playerInventory.addItem(bow);
 
     playerInventory.addItem(ItemStack.of(Material.ARROW, 10));
