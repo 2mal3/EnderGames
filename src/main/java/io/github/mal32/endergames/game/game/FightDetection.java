@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Arrow;
+import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
@@ -60,7 +60,7 @@ public class FightDetection extends AbstractModule {
 
       case SPECTRAL_ARROW:
       case ARROW:
-        Arrow arrow = (Arrow) event.getDamager();
+        AbstractArrow arrow = (AbstractArrow) event.getDamager();
         UUID shooterUuid = arrow.getOwnerUniqueId();
         if (shooterUuid == null) break;
         Player shooter = Bukkit.getPlayer(shooterUuid);
