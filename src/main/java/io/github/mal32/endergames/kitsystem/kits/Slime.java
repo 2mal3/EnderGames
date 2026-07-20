@@ -10,6 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.*;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
@@ -128,9 +129,9 @@ public class Slime extends AbstractKit {
   @EventHandler
   public void onProjectileHit(ProjectileHitEvent event) {
     if (!(event.getEntity() instanceof Snowball)) return;
-    if (!(event.getHitEntity() instanceof Player hitEntity)) return;
+    if (!(event.getHitEntity() instanceof LivingEntity hitEntity)) return;
 
-    if (hitEntity.isBlocking()) return;
+    if ((hitEntity instanceof Player player) && player.isBlocking()) return;
 
     final int EFFECT_DURATION_SECONDS = 15;
     int amplifier = 0;
