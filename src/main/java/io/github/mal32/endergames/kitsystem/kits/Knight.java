@@ -119,11 +119,9 @@ public class Knight extends AbstractKit {
 
     // don't protect horses from non-knight players
     if (!mounts.containsValue(horse.getUniqueId())) return;
-    // check if the player is the rightful owner
-    // using .equals here since the paperapi doesn't guarantee the same entity instance for the same
-    // entity
-    Horse playerHorse = (Horse) Bukkit.getEntity(mounts.get(player.getUniqueId()));
-    if (playerHorse != null && playerHorse.equals(horse)) return;
+
+    UUID playerHorseId = mounts.get(player.getUniqueId());
+    if (playerHorseId != null && playerHorseId.equals(horse.getUniqueId())) return;
 
     horse
         .getLocation()
