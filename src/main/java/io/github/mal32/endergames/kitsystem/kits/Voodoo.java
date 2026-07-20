@@ -31,7 +31,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
-public class Voodoo extends AbstractKit implements KitUnlockAdvancement {
+public class Voodoo extends AbstractKit {
   private BukkitTask voodooTask;
 
   public Voodoo(JavaPlugin plugin) {
@@ -44,10 +44,6 @@ public class Voodoo extends AbstractKit implements KitUnlockAdvancement {
             "Bow with Piercing, 10 Arrows, Leather Boots",
             Difficulty.MEDIUM),
         plugin);
-  }
-
-  public String getKitAdvancementKey() {
-    return "enga:voodoo";
   }
 
   @Override
