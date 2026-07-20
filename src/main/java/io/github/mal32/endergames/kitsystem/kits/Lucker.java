@@ -118,6 +118,7 @@ public class Lucker extends AbstractKit {
   @EventHandler
   public void onEntityDeath(EntityDeathEvent event) {
     LivingEntity dead = event.getEntity();
+    if (!(dead instanceof Player)) return;
     Player killer = dead.getKiller();
     if (killer == null) return;
     if (!playerCanUseThisKit(killer)) return;
