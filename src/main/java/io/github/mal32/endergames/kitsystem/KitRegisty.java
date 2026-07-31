@@ -16,6 +16,7 @@ import io.github.mal32.endergames.kitsystem.kits.Knight;
 import io.github.mal32.endergames.kitsystem.kits.Lucker;
 import io.github.mal32.endergames.kitsystem.kits.Lumberjack;
 import io.github.mal32.endergames.kitsystem.kits.Mace;
+import io.github.mal32.endergames.kitsystem.kits.NoAbility;
 import io.github.mal32.endergames.kitsystem.kits.Rewind;
 import io.github.mal32.endergames.kitsystem.kits.Slime;
 import io.github.mal32.endergames.kitsystem.kits.Spectator;
@@ -49,6 +50,7 @@ public class KitRegisty {
         new Slime(plugin),
         new Voodoo(plugin),
         new Spy(plugin),
+        new NoAbility(plugin),
         new Spectator(plugin));
   }
 
