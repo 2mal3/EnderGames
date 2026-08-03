@@ -10,7 +10,6 @@ You keep ownership of your contribution. However, by contributing, you give the 
 
 If you do not agree to these terms, please do not submit a contribution.
 
-
 ## Developing
 
 - Set the environment variable `EG_DEBUG=true` to enable debug mode: This speeda up internal timers and is useful during development.
@@ -22,14 +21,14 @@ If you do not agree to these terms, please do not submit a contribution.
 - Code is formatted using [Google Java Style](https://google.github.io/styleguide/javaguide.html). You can apply formatting automatically using e.g. [google-java-format](https://github.com/google/google-java-format).
 - Experimental Paper APIs can be used if necessary.
 - Deprecated APIs are not allowed.
-- Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages.
+- Use [Scoped Commits](https://scopedcommits.com/) for commit messages.
 - Use [Conventional Branch](https://conventional-branch.github.io/) naming for branches.
 
 ### Kit API
 
 - The constructor is called once at plugin initialization. Do not put per‑game logic here.
-- `onEnable()` is called at the start of every game. Use this for timers, schedulers, or per-game initialization.
-- `onDisable()` is called when a game ends. Use this to stop tasks and clean up temporary state.
+- `onEnable()` is called at the start of every game. Use this for timers, schedulers, or per-game initialization and dont forget to call `super.onEnable()`.
+- `onDisable()` is called when a game ends. Use this to stop tasks and clean up temporary state and dont forget to call `super.onDisable()`.
 - You only need to listen for player death to deregister a player. A disconnect automatically counts as a death in the game system.
 
 ### Adding a new Kit
@@ -42,15 +41,16 @@ To add a new kit to the game:
    - Optional Override:
      - `onEnable()` &rarr; per-game initialization
      - `onDisable()` &rarr; cleanup, cancel tasks
-3. Register the kit in [`KitRegistry`](/src/main/java/io/github/mal32/endergames/kitsystem/registry/KitRegistry.java):
+3. Register the kit in [`KitRegistry`](/src/main/java/io/github/mal32/endergames/kitsystem/KitRegistry.java):
    ```java
-   kitManager.register(new YourKitName(kitService, plugin));
+   new YourKitName(plugin),
    ```
 4. (Optional) If the kit should be locked behind an advancement:
    - Implement the `KitUnlockAdvancement` interface.
    - Implement the `getKitAdvancementKey()` method that returns your advancement key (e.g. `enga:mycustomadvancement`).
    - Add the advancement JSON to: [`/src/main/resources/EnderGamesDatapack/data/enga/advancement`](/src/main/resources/EnderGamesDatapack/data/enga/advancement)
-5. Test the kit in-game. Ensure:
+5. (Optional) Write unit and/or integration tests in [`test/java/io/github/mal32/endergames/kitsystem/kits`](/test/java/io/github/mal32/endergames/kitsystem/kits).
+6. Test the kit in-game. Ensure:
    - it appears in the selection menu
    - abilities work as expected
    - unlock conditions behave correctly
