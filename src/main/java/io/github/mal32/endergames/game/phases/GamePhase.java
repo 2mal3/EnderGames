@@ -226,4 +226,15 @@ public class GamePhase extends AbstractPhase {
     toLocation.setY(lowestBlockY);
     event.setTo(toLocation);
   }
+
+  @EventHandler
+  private void onPlayerEnderpearlTeleport(PlayerTeleportEvent event) {
+    if (event.getCause() != TeleportCause.ENDER_PEARL) return;
+    if (!PhaseController.playerIsInGame(event.getPlayer())) return;
+
+    var player = event.getPlayer();
+
+    player.addPotionEffect(
+        new PotionEffect(PotionEffectType.RESISTANCE, 20, 4, true, false, false));
+  }
 }

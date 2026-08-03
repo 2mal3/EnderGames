@@ -23,8 +23,6 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 public class Enderman extends AbstractKit implements CustomKitUnlockAdvancement {
   public Enderman(JavaPlugin plugin) {
@@ -81,9 +79,6 @@ public class Enderman extends AbstractKit implements CustomKitUnlockAdvancement 
     if (event.getDamageSource().getDamageType() != DamageType.ENDER_PEARL) return;
 
     event.setCancelled(true);
-
-    player.addPotionEffect(
-        new PotionEffect(PotionEffectType.RESISTANCE, 10, 4, true, false, false));
   }
 
   @EventHandler
