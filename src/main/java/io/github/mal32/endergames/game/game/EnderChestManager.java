@@ -30,7 +30,7 @@ public class EnderChestManager extends AbstractTeleportingBlockManager<EnderChes
 
   @Override
   protected int getBlockSecondsToLive() {
-    return 60 * 2 + 10;
+    return 60 * 2 + 30;
   }
 
   @Override
