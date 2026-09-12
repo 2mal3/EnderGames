@@ -151,7 +151,7 @@ public abstract class AbstractTeleportingBlockManager<B extends AbstractTeleport
     if (biome == Biome.FLOWER_FOREST) return 0.75;
     if (biome == Biome.JUNGLE) return 0.75;
     if (biome == Biome.PALE_GARDEN) return 0.75;
-    if (biome == Biome.MANGROVE_SWAMP) return 0.75;
+    if (biome == Biome.MANGROVE_SWAMP) return 1.0;
     if (biome == Biome.OLD_GROWTH_BIRCH_FOREST) return 0.75;
     if (biome == Biome.OLD_GROWTH_PINE_TAIGA) return 0.75;
     if (biome == Biome.OLD_GROWTH_SPRUCE_TAIGA) return 0.75;
