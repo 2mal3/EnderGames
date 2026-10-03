@@ -24,7 +24,7 @@ public class LobbyManager implements Listener {
     final LobbyManager lobbyManager = plugin.getLobbyManager();
     lobbyManager.registerModule(new MenuModule(plugin));
     lobbyManager.registerModule(new EndlessParkour(plugin));
-    lobbyManager.registerModule(new PlayerDifficulty(plugin, plugin.getLobbyWorld().getWorld()));
+    lobbyManager.registerModule(new PlayerDifficulty(plugin));
     lobbyManager.registerModule(new ParkourGame(plugin));
   }
 
