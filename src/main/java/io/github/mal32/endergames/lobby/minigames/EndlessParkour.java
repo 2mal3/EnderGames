@@ -85,7 +85,7 @@ public class EndlessParkour extends LobbyModule {
     Block block = event.getClickedBlock();
     if (block == null) return;
     if (block.getType() != Material.HEAVY_WEIGHTED_PRESSURE_PLATE) return;
-    if (block.getLocation().add(0, -1, 0).getBlock().getType() != Material.WHITE_WOOL) return;
+    if (block.getLocation().add(0, -1, 0).getBlock().getType() != Material.SPRUCE_LOG) return;
 
     DyeColor randomColor = DyeColor.values()[(int) (Math.random() * DyeColor.values().length)];
 
