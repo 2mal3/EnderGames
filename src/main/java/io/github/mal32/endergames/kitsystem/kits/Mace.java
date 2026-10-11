@@ -4,9 +4,11 @@ import static io.github.mal32.endergames.kitsystem.api.KitUtils.enchantItem;
 
 import io.github.mal32.endergames.kitsystem.api.*;
 import org.bukkit.Material;
+import org.bukkit.damage.DamageType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -49,5 +51,15 @@ public class Mace extends AbstractKit implements KitUnlockAdvancement {
         .getInventory()
         .setBoots(
             enchantItem(ItemStack.of(Material.LEATHER_BOOTS), Enchantment.FEATHER_FALLING, 3));
+  }
+
+  @EventHandler
+  private void onPlayerHit(EntityDamageByEntityEvent event) {
+    if (!(event.getEntity() instanceof Player)) return;
+    if (!(event.getDamager() instanceof Player attacker)) return;
+    if (!playerCanUseThisKit(attacker)) return;
+    if (event.getDamageSource().getDamageType() != DamageType.MACE_SMASH) return;
+
+    event.setDamage(Math.min(event.getDamage(), 20));
   }
 }
