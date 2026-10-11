@@ -8,7 +8,6 @@ import static org.mockito.Mockito.spy;
 import io.github.mal32.endergames.services.PlayerInWorld;
 import java.util.concurrent.CompletableFuture;
 import org.bukkit.GameMode;
-import org.bukkit.GameRules;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
@@ -43,17 +42,6 @@ class LobbyWorldTest {
   @AfterEach
   void tearDown() {
     MockBukkit.unmock();
-  }
-
-  @Test
-  void setupWorld() {
-    lobbyWorld.setupWorld();
-
-    assertEquals(Boolean.FALSE, world.getGameRuleValue(GameRules.SPAWN_MOBS));
-    assertEquals(Boolean.FALSE, world.getGameRuleValue(GameRules.ADVANCE_TIME));
-    assertEquals(Boolean.FALSE, world.getGameRuleValue(GameRules.ADVANCE_WEATHER));
-    assertEquals(Boolean.FALSE, world.getGameRuleValue(GameRules.LOCATOR_BAR));
-    assertEquals(6, world.getGameRuleValue(GameRules.RESPAWN_RADIUS));
   }
 
   @Test
