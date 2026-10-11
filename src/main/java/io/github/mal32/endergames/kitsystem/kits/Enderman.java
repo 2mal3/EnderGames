@@ -96,7 +96,10 @@ public class Enderman extends AbstractKit implements CustomKitUnlockAdvancement 
             Material.TALL_GRASS,
             Material.SEAGRASS,
             Material.TALL_SEAGRASS,
-            Material.LEAF_LITTER);
+            Material.LEAF_LITTER,
+            Material.KELP,
+            Material.KELP_PLANT);
+
     var targetBlock = player.getTargetBlock(passableBlocks, 24);
     if (targetBlock.getType() != Material.ENDER_CHEST) return;
 
