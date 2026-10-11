@@ -27,7 +27,7 @@ public class PlayerDifficulty extends LobbyModule {
   private static final NamespacedKey ATTRIBUTE_NAME =
       new NamespacedKey("endergames", "difficulty_armor_modifier");
   private static final double STEP_SIZE = 0.10;
-  private static final double MAX_FACTOR = 0.6;
+  private static final double MAX_FACTOR = 0.8;
   private static final double MIN_FACTOR = -0.6;
   private static final BlockLocation difficultySelectorPos =
       new BlockLocation(LobbyWorld.world, -23, 70, -6);
